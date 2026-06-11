@@ -1,0 +1,56 @@
+{
+  "name": "astra-clean-start",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm --workspace apps/astra-web run dev",
+    "build": "npm --workspace apps/astra-web run build",
+    "start": "npm --workspace apps/astra-web run start",
+    "composer:dev": "npm --workspace apps/composer-web run dev",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --import tsx scripts/check-foundation.mts",
+    "test:e2e": "playwright test --config apps/astra-web/playwright.config.ts",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run check:no-supabase && npm run build",
+    "check:no-supabase": "node --import tsx scripts/check-no-supabase.mts",
+    "db:generate": "drizzle-kit generate --config packages/db/drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config packages/db/drizzle.config.ts",
+    "db:reset:local": "node --import tsx scripts/reset-local-db.mts",
+    "db:seed": "node --import tsx scripts/seed-db.mts"
+  },
+  "dependencies": {
+    "@better-auth/drizzle-adapter": "^1.6.11",
+    "@neondatabase/serverless": "^1.1.0",
+    "better-auth": "^1.6.11",
+    "drizzle-orm": "^0.45.2",
+    "lucide-react": "^1.16.0",
+    "next": "^16.2.6",
+    "nodemailer": "^8.0.10",
+    "postgres": "^3.4.9",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "resend": "^6.12.4",
+    "server-only": "^0.0.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^22.15.3",
+    "@types/nodemailer": "^8.0.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.6",
+    "tsx": "^4.21.0",
+    "typescript": "^5.8.3"
+  },
+  "overrides": {
+    "postcss": "8.5.15"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@astra/composer-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'Composer is intentionally placeholder-only in the clean-start foundation. Reserved local port: 3012.'",
+    "build": "echo 'Composer placeholder build complete.'",
+    "lint": "echo 'Composer placeholder lint complete.'",
+    "typecheck": "echo 'Composer placeholder typecheck complete.'"
+  }
+}
