@@ -9,6 +9,10 @@
   ],
   "scripts": {
     "dev": "npm --workspace apps/astra-web run dev",
+    "dev:up": "node --import tsx scripts/dev-server.mts up",
+    "dev:status": "node --import tsx scripts/dev-server.mts status",
+    "dev:stop": "node --import tsx scripts/dev-server.mts stop",
+    "dev:restart": "node --import tsx scripts/dev-server.mts restart",
     "build": "npm --workspace apps/astra-web run build",
     "start": "npm --workspace apps/astra-web run start",
     "composer:dev": "npm --workspace apps/composer-web run dev",

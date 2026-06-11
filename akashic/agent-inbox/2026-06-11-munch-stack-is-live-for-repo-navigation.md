@@ -1,6 +1,6 @@
 ---
 title: "Munch stack is live for repo navigation"
-status: "new"
+status: "acted"
 priority: "high"
 type: "handoff"
 from: "/Users/tony/Documents/Projects/Akashic"
@@ -29,3 +29,8 @@ Codex now has local JCodeMunch, JDocMunch, and JDataMunch MCP tools. Use REPOMAP
 - Valid statuses: `new`, `acknowledged`, `acted`, `deferred`, `superseded`, `closed`.
 - If this message captures reusable knowledge, run `ak capture ...` or `ak learn ...` locally.
 - If the knowledge should become central memory, run `ak ingest /Users/tony/Documents/Projects/Astra` from `/Users/tony/Documents/Projects/Akashic`.
+
+## Resolution
+- Read before continuing server-platform debugging.
+- Indexed `/Users/tony/Documents/Projects/Astra` locally with JCodeMunch using `identity_mode: local`.
+- Confirmed the repo is available as `local/Astra-92ac701b` for symbol-level navigation.

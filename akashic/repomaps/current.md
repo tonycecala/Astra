@@ -17,11 +17,11 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `107574`
+- Estimated token footprint: `108520`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
-- Package scripts expose: `build`, `check`, `check:boundaries`, `check:no-supabase`, `composer:dev`, `db:generate`, `db:migrate`, `db:reset:local`, `db:seed`, `dev`, `lint`, `start`, `test`, `test:auth-code`, `test:e2e`, `typecheck`.
+- Package scripts expose: `build`, `check`, `check:boundaries`, `check:no-supabase`, `composer:dev`, `db:generate`, `db:migrate`, `db:reset:local`, `db:seed`, `dev`, `dev:restart`, `dev:status`, `dev:stop`, `dev:up`, `lint`, `start`, `test`, `test:auth-code`, `test:e2e`, `typecheck`.
 
 ## Directory Structure
 ```txt
@@ -46,7 +46,7 @@ tsconfig.json
 - `akashic/warnings` knowledge artifacts
 
 ## Entry Points
-- `package.json` - ~515 tokens
+- `package.json` - ~581 tokens
 
 ## External Integrations
 - Auth provider/library
@@ -81,9 +81,9 @@ tsconfig.json
 - No route files detected.
 
 ## Pareto Profiles
-- `32000` tokens -> 57 files, 296 symbols, ~35438 estimated tokens.
-- `64000` tokens -> 58 files, 296 symbols, ~105901 estimated tokens.
-- `128000` tokens -> 78 files, 296 symbols, ~107574 estimated tokens.
+- `32000` tokens -> 59 files, 304 symbols, ~36385 estimated tokens.
+- `64000` tokens -> 60 files, 304 symbols, ~106848 estimated tokens.
+- `128000` tokens -> 80 files, 304 symbols, ~108520 estimated tokens.
 
 ## Data Model
 Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.
@@ -115,4 +115,4 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - Treat auth as a first-class product concern and verify the repo's documented local auth flow.
 - Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 78 local files in `/Users/tony/Documents/Projects/Astra`.
+Generated from 80 local files in `/Users/tony/Documents/Projects/Astra`.
