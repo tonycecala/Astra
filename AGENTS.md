@@ -1,5 +1,14 @@
 # Astra Agent Instructions
 
+## Akashic Governance
+
+- Run `ak governance check` before broad implementation or debugging to verify the executable attention gate.
+- Before non-trivial edits, check local `akashic/agent-inbox/`, `akashic/warnings/`, and `git status --short`.
+- Use REPOMAP, JCodeMunch, source, logs, tests, API responses, and diffs before screenshots or computer-use.
+- Repeated screenshots or computer-use require a written justification: reason, structured evidence checked, and expected visual proof.
+- Before patching a bug, use one hypothesis and one test; do not patch multiple suspected causes unless evidence proves one shared root cause.
+- The gate must never deadlock work: acknowledge/defer/close active messages with `ak inbox ack`, `ak inbox defer`, or `ak inbox close`, or edit files inside `akashic/agent-inbox/` and `akashic/warnings/`.
+
 ## Akashic Knowledge Source
 
 - Treat `/Users/tony/Documents/Projects/Akashic` as the shared engineering knowledge source before broad implementation or debugging.
