@@ -51,6 +51,8 @@ The local database defaults to `postgresql://astra:astra@127.0.0.1:5432/astra_cl
 
 Local auth email uses Mailpit by default: SMTP `127.0.0.1:1025`, inbox `http://localhost:8025`. Set `ASTRA_EMAIL_DELIVERY=file` to capture mail in `.astra-email/outbox.jsonl` instead.
 
+Run `npm run test:auth-code` when a local app server, migrated local database, and Mailpit are available. The smoke sends a sign-in OTP, retrieves the code from Mailpit, verifies it through Better Auth, checks the session, and signs out.
+
 ## Future Delivery Posture
 
 For published stream artifacts, prefer edge-first caching with origin fallback. Keep this out of the first foundation until the publishing contract exists, but do not design future retrieval paths around request-time origin dependency only.
