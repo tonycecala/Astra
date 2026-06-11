@@ -321,9 +321,9 @@ input {
 
   .mobile-theme-toggle {
     position: fixed;
-    right: 12px;
-    bottom: 74px;
-    z-index: 10;
+    top: calc(env(safe-area-inset-top, 0px) + 14px);
+    right: 14px;
+    z-index: 20;
     display: block;
   }
 }
