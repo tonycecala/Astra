@@ -5,6 +5,7 @@
 - Treat `/Users/tony/Documents/Projects/Akashic` as the shared engineering knowledge source before broad implementation or debugging.
 - First read `/Users/tony/Documents/Projects/Akashic/akashic/repomaps/current.md`.
 - Then consult relevant Akashic artifacts under `akashic/skills`, `akashic/playbooks`, `akashic/warnings`, `akashic/decisions`, and `akashic/frameworks`.
+- Check local `akashic/agent-inbox/` for repo-specific messages from other agents before broad work.
 - For Next.js, Vercel, route, compile, or testing work, start with:
   - `/Users/tony/Documents/Projects/Akashic/akashic/frameworks/nextjs/platform-lessons.md`
   - `/Users/tony/Documents/Projects/Akashic/akashic/skills/verify-nextjs-change-locally.md`
@@ -15,6 +16,7 @@
 - Central Akashic does not learn automatically from local captures. After meaningful local learning, run `ak ingest <repo-path>` from `/Users/tony/Documents/Projects/Akashic` so central Akashic gains the knowledge with provenance.
 - Direct-edit central Akashic only when deliberately promoting a lesson into canonical cross-project guidance; then run `ak repomap build && ak validate`.
 - When unsure, capture locally first, ingest centrally second, and promote canonically only after the lesson proves reusable.
+- Use `ak notify <repo-path> <title> --body <text>` when another repo's agent needs to know something; do not rely on Tony as the message carrier.
 - Preserve local repo instructions first when they are stricter or more specific.
 
 ## Composer Context
