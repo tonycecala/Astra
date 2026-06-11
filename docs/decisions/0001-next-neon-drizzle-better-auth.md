@@ -12,6 +12,7 @@ The old Astria repository contains useful product wisdom but also legacy auth an
 
 - Drizzle owns schema and migrations.
 - Better Auth owns authentication/session tables and app session resolution.
+- User-facing auth prefers email code sign-in over password-first login.
 - Neon is treated as Postgres, not as a Supabase replacement.
 - Application runtime performs queries only; no request-time DDL, grants, role creation, or policy creation.
 - Email delivery is routed through an app boundary so Better Auth is not coupled to a provider.

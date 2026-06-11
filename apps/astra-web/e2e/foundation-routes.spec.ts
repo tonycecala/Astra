@@ -7,7 +7,7 @@ const routes = [
   { path: "/self", heading: "Astra Founder" },
   { path: "/library", heading: "Artifacts worth keeping" },
   { path: "/gifts", heading: "Stars stay accountable" },
-  { path: "/login", heading: "Better Auth boundary" }
+  { path: "/login", heading: "Email code sign-in" }
 ];
 
 test.describe("clean-start routes", () => {
@@ -71,11 +71,9 @@ test.describe("clean-start routes", () => {
   test("login route exposes Better Auth controls", async ({ page }) => {
     await page.goto("/login");
     await expect(page.getByLabel("Authentication panel")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
-    await page.getByRole("button", { name: "Sign up" }).click();
     await expect(page.getByLabel("Name")).toBeVisible();
     await expect(page.getByLabel("Email")).toBeVisible();
-    await expect(page.getByLabel("Password")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Create account" })).toBeVisible();
+    await expect(page.getByLabel("Code")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Send code" })).toBeVisible();
   });
 });

@@ -22,6 +22,7 @@ The foundation proves:
 - Astra opens locally on port `3011`.
 - Journey, Allies, Self, Library, and Gifts render from typed seed data.
 - Better Auth is wired through a clean route boundary and a small visible `/login` panel.
+- The preferred user login flow is email code first: send code, verify code, continue without a password prompt.
 - Database schema is Drizzle-owned and contains Better Auth plus Astra-owned tables.
 - Seed/reset commands are explicit: dry-run by default, executable only with `--execute`, and destructive reset is local-host guarded.
 - Composer is visible as a boundary but not implemented.
@@ -49,3 +50,7 @@ npm run db:reset:local -- --execute
 The local database defaults to `postgresql://astra:astra@127.0.0.1:5432/astra_clean_start`, but any disposable local Postgres URL can be supplied with `ASTRA_DATABASE_URL`. Runtime code never performs DDL; schema changes go through Drizzle migrations.
 
 Local auth email uses Mailpit by default: SMTP `127.0.0.1:1025`, inbox `http://localhost:8025`. If `MAILPIT_SMTP_HOST` and Resend keys are unset, Astra falls back to `.astra-email/outbox.jsonl`.
+
+## Future Delivery Posture
+
+For published stream artifacts, prefer edge-first caching with origin fallback. Keep this out of the first foundation until the publishing contract exists, but do not design future retrieval paths around request-time origin dependency only.
