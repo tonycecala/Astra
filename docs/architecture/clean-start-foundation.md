@@ -38,6 +38,7 @@ The foundation proves:
 - `apps/astra-web/lib/i18n.ts` owns app UI handles and route chrome copy.
 - `packages/testkit` owns seed fixtures and test factories.
 - Composer and astrology do not leak into Astra runtime.
+- `npm run check:boundaries` enforces the charter rule that Astra and Composer do not import each other and packages do not import app code.
 
 ## Local Database Loop
 

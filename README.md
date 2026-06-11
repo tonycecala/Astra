@@ -16,6 +16,7 @@ npm run lint
 npm run typecheck
 npm run test
 npm run test:auth-code
+npm run check:boundaries
 npm run check:no-supabase
 npm run build
 npm run test:e2e
