@@ -1,2 +1,4 @@
-export { db, resolveDatabaseUrl, type AstraDb } from "./client";
+export { db, type AstraDb } from "./client";
+export { resolveDatabaseUrl } from "./env";
+export * from "./repositories";
 export * from "./schema";

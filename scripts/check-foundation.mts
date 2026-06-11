@@ -20,4 +20,14 @@ for (const file of runtimeFiles) {
   }
 }
 
+const repository = await readFile("packages/db/src/repositories.ts", "utf8");
+for (const expected of ["seedFoundationData", "resetFoundationData", "readFoundationSnapshot", "assertResetAllowed"]) {
+  if (!repository.includes(expected)) throw new Error(`Missing database repository helper: ${expected}`);
+}
+
+const seedScript = await readFile("scripts/seed-db.mts", "utf8");
+const resetScript = await readFile("scripts/reset-local-db.mts", "utf8");
+if (!seedScript.includes("--execute")) throw new Error("Seed script must be dry-run by default and require --execute.");
+if (!resetScript.includes("assertResetAllowed")) throw new Error("Local reset script must guard destructive resets.");
+
 console.log("Foundation contracts, seed data, schema, and runtime DDL checks passed.");
