@@ -29,4 +29,4 @@ UI handles and route chrome live in `apps/astra-web/lib/i18n.ts`; route componen
 
 Database commands are dry-run by default where destructive or mutating behavior is involved. Point `ASTRA_DATABASE_URL` at a disposable local Postgres database before running mutating commands. `db:reset:local -- --execute` refuses non-local database hosts unless `ASTRA_ALLOW_DB_RESET=1` is set for a disposable database.
 
-Local auth email is captured to `.astra-email/outbox.jsonl` unless `MAILPIT_SMTP_HOST` or a Resend key is configured.
+Local auth email uses Mailpit by default: SMTP `127.0.0.1:1025`, inbox `http://localhost:8025`. If `MAILPIT_SMTP_HOST` and Resend keys are unset, Astra falls back to `.astra-email/outbox.jsonl`.

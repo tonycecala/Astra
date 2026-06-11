@@ -48,4 +48,4 @@ npm run db:reset:local -- --execute
 
 The local database defaults to `postgresql://astra:astra@127.0.0.1:5432/astra_clean_start`, but any disposable local Postgres URL can be supplied with `ASTRA_DATABASE_URL`. Runtime code never performs DDL; schema changes go through Drizzle migrations.
 
-Local auth email is captured to `.astra-email/outbox.jsonl` unless an SMTP host or Resend key is configured.
+Local auth email uses Mailpit by default: SMTP `127.0.0.1:1025`, inbox `http://localhost:8025`. If `MAILPIT_SMTP_HOST` and Resend keys are unset, Astra falls back to `.astra-email/outbox.jsonl`.
