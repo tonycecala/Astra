@@ -1,0 +1,13 @@
+[hooks]
+SessionStart = [
+  { matcher = "startup|resume|clear|compact", hooks = [{ type = "command", command = "AKASHIC_HOOK_EVENT=SessionStart python3 .codex/hooks/akashic_preflight.py" }] },
+]
+SubagentStart = [
+  { hooks = [{ type = "command", command = "AKASHIC_HOOK_EVENT=SubagentStart python3 .codex/hooks/akashic_preflight.py" }] },
+]
+PreToolUse = [
+  { matcher = "Bash|Read|Edit|Write|MultiEdit|Glob|Grep|LS", hooks = [{ type = "command", command = "AKASHIC_HOOK_EVENT=PreToolUse python3 .codex/hooks/akashic_preflight.py" }] },
+]
+Stop = [
+  { hooks = [{ type = "command", command = "AKASHIC_HOOK_EVENT=Stop python3 .codex/hooks/akashic_preflight.py" }] },
+]
