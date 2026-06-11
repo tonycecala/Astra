@@ -33,6 +33,7 @@ tsconfig.json
 ```
 
 ## Major Systems
+- `akashic/decisions` knowledge artifacts
 - `akashic/templates` knowledge artifacts
 
 ## Entry Points
@@ -81,18 +82,20 @@ tsconfig.json
 - `akashic/templates/mission-template.md` - 8 headings
 - `akashic/templates/repomap-template.md` - 8 headings
 - `akashic/templates/skill-template.md` - 8 headings
+- `akashic/decisions/ADR-20260610-astra-clean-start-local-posture.md` - 7 headings
 - `akashic/templates/adr-template.md` - 7 headings
 - `akashic/templates/playbook-template.md` - 5 headings
 - `apps/astra-web/app/layout.tsx` - 1 exports, 5 imports
 - `ASTRA_CLEAN_START_INAUGURAL_CHARTER.md` - 8 headings
 - `akashic/templates/warning-template.md` - 4 headings
-- `apps/astra-web/components/AuthPanel.tsx` - 1 exports, 4 imports
 
 ## Critical Routes
 - No route files detected.
 
 ## Data Model
-Akashic stores knowledge as Markdown files with lightweight frontmatter. Artifact relationships are represented by relative links and `related` frontmatter entries.
+Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.
+Auth ownership is present and should be validated through the repo's local auth policy and tests.
+Local Akashic artifacts preserve repo-specific decisions, skills, warnings, missions, and REPOMAPs.
 
 ## Deployment
 This is a Next.js app. Confirm the production build with the repo's build script before launch or deploy readiness.
@@ -112,10 +115,11 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - `apps/astra-web/app/api/auth/[...all]/route.ts` needs extra care because it is large or touches auth/data/schema concerns.
 
 ## Current Priorities
-- Keep Astra lean, light, modular, and stream-reader first.
-- Preserve the clean architecture stack: Next.js, React, TypeScript, Drizzle, Postgres/Neon, Better Auth, Mailpit, and Playwright.
-- Keep the preferred auth path email-code first, with Mailpit as the local email default.
-- Keep Composer as a placeholder boundary until Astra can consume published stream artifacts through explicit contracts.
-- Keep Supabase-era code, env vars, policies, and compatibility shims out of this repo.
+- Honor this repo's own AGENTS.md, ADRs, REPOMAP, and local Akashic artifacts before applying central guidance.
+- Do not inherit Akashic CLI implementation constraints unless this repo is Akashic itself.
+- Capture repo-local lessons with `ak capture` or `ak learn`, then ingest them into central Akashic when they should become shared memory.
+- For Next.js changes, prove production readiness with typecheck, lint, build, and route/browser verification.
+- Treat auth as a first-class product concern and verify the repo's documented local auth flow.
+- Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 71 local files in `/Users/tony/Documents/Projects/Astra`.
+Generated from 72 local files in `/Users/tony/Documents/Projects/Astra`.
