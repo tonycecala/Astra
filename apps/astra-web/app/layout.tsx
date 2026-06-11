@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BookMarked, Gift, Home, Sparkles, UserRound, UsersRound } from "lucide-react";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { ui } from "../lib/i18n";
 import "./globals.css";
 
@@ -32,18 +33,42 @@ function Navigation({ mobile = false }: { mobile?: boolean }) {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+try {
+  var storedTheme = window.localStorage && window.localStorage.getItem("astra:theme:v1");
+  var cookieMatch = document.cookie.match(/(?:^|; )astra_theme=([^;]+)/);
+  var cookieTheme = cookieMatch ? decodeURIComponent(cookieMatch[1]) : null;
+  var systemTheme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  var theme = storedTheme === "light" || storedTheme === "dark" ? storedTheme : cookieTheme === "light" || cookieTheme === "dark" ? cookieTheme : systemTheme;
+  document.documentElement.dataset.astraTheme = theme;
+} catch {
+  document.documentElement.dataset.astraTheme = "light";
+}
+            `.trim()
+          }}
+        />
+      </head>
       <body>
         <div className="shell">
           <aside className="sidebar">
-            <Link className="brand" href="/journey">
-              <Home size={24} aria-hidden="true" />
-              <strong>{ui.shell.brand}</strong>
-              <span>{ui.shell.tagline}</span>
-            </Link>
+            <div className="brand-row">
+              <Link className="brand" href="/journey">
+                <Home size={24} aria-hidden="true" />
+                <strong>{ui.shell.brand}</strong>
+                <span>{ui.shell.tagline}</span>
+              </Link>
+              <ThemeToggle />
+            </div>
             <Navigation />
           </aside>
           <main className="main">{children}</main>
+          <div className="mobile-theme-toggle">
+            <ThemeToggle />
+          </div>
           <Navigation mobile />
         </div>
       </body>

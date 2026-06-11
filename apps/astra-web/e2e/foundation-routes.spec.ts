@@ -40,4 +40,14 @@ test.describe("clean-start routes", () => {
     await page.locator('a[href="/self"]:visible').click();
     await expect(page.getByRole("heading", { name: "Astra Founder" })).toBeVisible();
   });
+
+  test("theme toggle switches and persists the Astra theme", async ({ page }) => {
+    await page.goto("/journey");
+    await page.getByRole("button", { name: "Switch to dark mode" }).first().click();
+    await expect(page.locator("html")).toHaveAttribute("data-astra-theme", "dark");
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-astra-theme", "dark");
+    await page.getByRole("button", { name: "Switch to light mode" }).first().click();
+    await expect(page.locator("html")).toHaveAttribute("data-astra-theme", "light");
+  });
 });

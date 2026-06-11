@@ -16,6 +16,10 @@ export const ui = {
     brand: "Astra",
     tagline: "Clean start foundation"
   },
+  theme: {
+    switchToLight: "Switch to light mode",
+    switchToDark: "Switch to dark mode"
+  },
   journey: {
     eyebrow: "Journey",
     title: "A living stream",

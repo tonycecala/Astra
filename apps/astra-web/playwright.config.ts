@@ -8,6 +8,7 @@ export default defineConfig({
   },
   use: {
     baseURL: "http://localhost:3011",
+    colorScheme: "light",
     trace: "on-first-retry",
     screenshot: "only-on-failure"
   },
