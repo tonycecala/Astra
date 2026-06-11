@@ -11,6 +11,10 @@
   - `/Users/tony/Documents/Projects/Akashic/akashic/skills/playwright-route-smoke-checks.md`
   - `/Users/tony/Documents/Projects/Akashic/akashic/playbooks/nextjs-platform-change-validation.md`
 - If Akashic contains a relevant warning, treat it as a hard-earned prior unless current repo evidence proves otherwise.
+- For new repo-local learning, run `ak capture ...` or `ak learn ...` in the repo where the lesson was discovered.
+- Central Akashic does not learn automatically from local captures. After meaningful local learning, run `ak ingest <repo-path>` from `/Users/tony/Documents/Projects/Akashic` so central Akashic gains the knowledge with provenance.
+- Direct-edit central Akashic only when deliberately promoting a lesson into canonical cross-project guidance; then run `ak repomap build && ak validate`.
+- When unsure, capture locally first, ingest centrally second, and promote canonically only after the lesson proves reusable.
 - Preserve local repo instructions first when they are stricter or more specific.
 
 ## Composer Context
