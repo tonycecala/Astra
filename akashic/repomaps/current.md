@@ -1,8 +1,8 @@
 ---
 title: "Current REPOMAP"
 status: "current"
-date: "2026-06-10"
-updated: "2026-06-10"
+date: "2026-06-11"
+updated: "2026-06-11"
 tags: ["repomap", "onboarding"]
 related: []
 ---
@@ -12,9 +12,16 @@ related: []
 ## Purpose
 This repository contains `astra-clean-start`. No package description found.
 
+## Version
+- REPOMAP version: `2.0.0`
+- Generator: `ak`
+- Machine manifest: `akashic/repomaps/current.json`
+- Meta index: `akashic/repomaps/meta.json`
+- Estimated token footprint: `107574`
+
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
-- Package scripts expose: `build`, `check`, `check:no-supabase`, `composer:dev`, `db:generate`, `db:migrate`, `db:reset:local`, `db:seed`, `dev`, `lint`, `start`, `test`, `test:auth-code`, `test:e2e`, `typecheck`.
+- Package scripts expose: `build`, `check`, `check:boundaries`, `check:no-supabase`, `composer:dev`, `db:generate`, `db:migrate`, `db:reset:local`, `db:seed`, `dev`, `lint`, `start`, `test`, `test:auth-code`, `test:e2e`, `typecheck`.
 
 ## Directory Structure
 ```txt
@@ -33,39 +40,20 @@ tsconfig.json
 ```
 
 ## Major Systems
+- `akashic/agent-inbox` knowledge artifacts
 - `akashic/decisions` knowledge artifacts
 - `akashic/templates` knowledge artifacts
+- `akashic/warnings` knowledge artifacts
 
 ## Entry Points
-- `package.json`
+- `package.json` - ~515 tokens
 
 ## External Integrations
-- `@astra/contracts`
-- `@astra/db`
-- `@astra/testkit`
-- `@better-auth/drizzle-adapter`
-- `@playwright/test`
-- `better-auth`
-- `better-auth/client/plugins`
-- `better-auth/next-js`
-- `better-auth/plugins`
-- `better-auth/react`
-- `drizzle-kit`
-- `drizzle-orm`
-- `drizzle-orm/pg-core`
-- `drizzle-orm/postgres-js`
-- `eslint-config-next/core-web-vitals`
-- `eslint-config-next/typescript`
-- `lucide-react`
-- `next`
-- `next/headers`
-- `next/link`
-- `next/navigation`
-- `nodemailer`
-- `postgres`
-- `react`
-- `resend`
-- `zod`
+- Auth provider/library
+- Drizzle
+- Next.js
+- Postgres
+- React
 
 ## Data Flow
 1. Source files define local behavior.
@@ -73,24 +61,29 @@ tsconfig.json
 3. Akashic artifacts preserve durable repo knowledge.
 
 ## Critical Files
-- `packages/contracts/src/index.ts` - 18 exports, 1 imports
-- `packages/db/src/schema.ts` - 12 exports, 2 imports
-- `packages/db/src/repositories.ts` - 10 exports, 5 imports
-- `package.json` - 1955 bytes
-- `packages/db/src/client.ts` - 3 exports, 4 imports
-- `apps/astra-web/lib/auth/server.ts` - 2 exports, 6 imports
-- `akashic/templates/mission-template.md` - 8 headings
-- `akashic/templates/repomap-template.md` - 8 headings
-- `akashic/templates/skill-template.md` - 8 headings
-- `akashic/decisions/ADR-20260610-astra-clean-start-local-posture.md` - 7 headings
-- `akashic/templates/adr-template.md` - 7 headings
-- `akashic/templates/playbook-template.md` - 5 headings
-- `apps/astra-web/app/layout.tsx` - 1 exports, 5 imports
-- `ASTRA_CLEAN_START_INAUGURAL_CHARTER.md` - 8 headings
-- `akashic/templates/warning-template.md` - 4 headings
+- `packages/db/src/repositories.ts` - weight 115.34, ~2850 tokens, 24 symbols, in:1/out:2
+- `ASTRA_CLEAN_START_INAUGURAL_CHARTER.md` - weight 106.32, ~3449 tokens, 34 symbols, in:0/out:0
+- `apps/astra-web/components/ThemeToggle.tsx` - weight 103.44, ~687 tokens, 20 symbols, in:1/out:1
+- `apps/astra-web/lib/email/send-email.ts` - weight 60.29, ~444 tokens, 10 symbols, in:1/out:0
+- `apps/astra-web/lib/auth/server.ts` - weight 58.36, ~564 tokens, 8 symbols, in:2/out:1
+- `packages/contracts/src/index.ts` - weight 55.44, ~852 tokens, 20 symbols, in:0/out:0
+- `apps/astra-web/components/StreamReader.tsx` - weight 54.39, ~1453 tokens, 11 symbols, in:1/out:1
+- `apps/astra-web/components/AuthPanel.tsx` - weight 50.42, ~1058 tokens, 7 symbols, in:1/out:2
+- `apps/astra-web/app/layout.tsx` - weight 44.39, ~688 tokens, 8 symbols, in:0/out:2
+- `packages/db/src/schema.ts` - weight 44.37, ~1983 tokens, 12 symbols, in:2/out:0
+- `packages/db/src/env.ts` - weight 37.45, ~206 tokens, 5 symbols, in:2/out:0
+- `packages/db/drizzle.config.ts` - weight 37.01, ~291 tokens, 6 symbols, in:0/out:0
+- `akashic/templates/repomap-template.md` - weight 35.89, ~126 tokens, 10 symbols, in:0/out:0
+- `apps/astra-web/lib/foundation.ts` - weight 33.29, ~131 tokens, 5 symbols, in:5/out:0
+- `akashic/templates/skill-template.md` - weight 32.83, ~118 tokens, 9 symbols, in:0/out:0
 
 ## Critical Routes
 - No route files detected.
+
+## Pareto Profiles
+- `32000` tokens -> 57 files, 296 symbols, ~35438 estimated tokens.
+- `64000` tokens -> 58 files, 296 symbols, ~105901 estimated tokens.
+- `128000` tokens -> 78 files, 296 symbols, ~107574 estimated tokens.
 
 ## Data Model
 Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.
@@ -101,18 +94,18 @@ Local Akashic artifacts preserve repo-specific decisions, skills, warnings, miss
 This is a Next.js app. Confirm the production build with the repo's build script before launch or deploy readiness.
 
 ## Known Risks
-- `packages/db/src/schema.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `packages/db/src/repositories.ts` needs extra care because it is large or touches auth/data/schema concerns.
-- `packages/db/src/client.ts` needs extra care because it is large or touches auth/data/schema concerns.
-- `apps/astra-web/lib/auth/server.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `ASTRA_CLEAN_START_INAUGURAL_CHARTER.md` needs extra care because it is large or touches auth/data/schema concerns.
-- `apps/astra-web/lib/auth/client.ts` needs extra care because it is large or touches auth/data/schema concerns.
+- `apps/astra-web/lib/auth/server.ts` needs extra care because it is large or touches auth/data/schema concerns.
+- `packages/db/src/schema.ts` needs extra care because it is large or touches auth/data/schema concerns.
+- `packages/db/src/env.ts` needs extra care because it is large or touches auth/data/schema concerns.
+- `packages/db/drizzle.config.ts` needs extra care because it is large or touches auth/data/schema concerns.
+- `packages/db/src/client.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `apps/astra-web/lib/auth/profile.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `docs/decisions/0001-next-neon-drizzle-better-auth.md` needs extra care because it is large or touches auth/data/schema concerns.
-- `packages/db/src/index.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `packages/db/src/seed.ts` needs extra care because it is large or touches auth/data/schema concerns.
-- `packages/db/src/env.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `apps/astra-web/app/api/auth/[...all]/route.ts` needs extra care because it is large or touches auth/data/schema concerns.
+- `apps/astra-web/lib/auth/client.ts` needs extra care because it is large or touches auth/data/schema concerns.
 
 ## Current Priorities
 - Honor this repo's own AGENTS.md, ADRs, REPOMAP, and local Akashic artifacts before applying central guidance.
@@ -122,4 +115,4 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - Treat auth as a first-class product concern and verify the repo's documented local auth flow.
 - Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 72 local files in `/Users/tony/Documents/Projects/Astra`.
+Generated from 78 local files in `/Users/tony/Documents/Projects/Astra`.

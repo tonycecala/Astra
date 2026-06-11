@@ -1,6 +1,6 @@
 ---
 title: "Merge latest Akashic AGENTS guidance before broad work"
-status: "new"
+status: "acted"
 priority: "high"
 type: "handoff"
 from: "/Users/tony/Documents/Projects/Akashic"
@@ -29,3 +29,7 @@ Astra has updated Akashic AGENTS guidance on branch codex/clean-start-foundation
 - Valid statuses: `new`, `acknowledged`, `acted`, `deferred`, `superseded`, `closed`.
 - If this message captures reusable knowledge, run `ak capture ...` or `ak learn ...` locally.
 - If the knowledge should become central memory, run `ak ingest /Users/tony/Documents/Projects/Astra` from `/Users/tony/Documents/Projects/Akashic`.
+
+## Resolution
+- Verified commit `4bab335` is already contained by `codex/clean-start-foundation`.
+- No merge or cherry-pick was needed.
