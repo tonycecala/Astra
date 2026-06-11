@@ -41,6 +41,23 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("heading", { name: "Astra Founder" })).toBeVisible();
   });
 
+  test("reader filters lanes and opens card detail", async ({ page }) => {
+    await page.goto("/journey");
+    await page.getByRole("tab", { name: "Practice" }).click();
+    await expect(page.getByRole("button", { name: /Three Quiet Breaths/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /The River Keeps Moving/ })).toHaveCount(0);
+    await page.getByRole("button", { name: /Three Quiet Breaths/ }).click();
+    await expect(page.getByLabel("Card detail")).toContainText("Three Quiet Breaths");
+  });
+
+  test("reader save and reflect actions update state", async ({ page }) => {
+    await page.goto("/journey");
+    await page.getByRole("button", { name: /^Save$/ }).first().click();
+    await expect(page.getByText("1 saved")).toBeVisible();
+    await page.getByRole("button", { name: /^Reflect$/ }).first().click();
+    await expect(page.getByText("1 reflected")).toBeVisible();
+  });
+
   test("theme toggle switches and persists the Astra theme", async ({ page }) => {
     await page.goto("/journey");
     await page.getByRole("button", { name: "Switch to dark mode" }).first().click();

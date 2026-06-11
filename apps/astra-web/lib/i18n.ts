@@ -27,7 +27,27 @@ export const ui = {
     seededStream: "Seeded stream",
     noLegacyData: "No legacy data",
     cardCount: (count: number) => `${count} cards`,
-    streamCardsLabel: "Stream cards"
+    streamCardsLabel: "Stream cards",
+    laneFilterLabel: "Stream lanes",
+    allLanes: "All",
+    savedCount: (count: number) => `${count} saved`,
+    reflectedCount: (count: number) => `${count} reflected`,
+    openCard: "Open card",
+    saveCard: "Save",
+    savedCard: "Saved",
+    reflectCard: "Reflect",
+    reflectedCard: "Reflected",
+    closeDetail: "Close detail",
+    detailLabel: "Card detail",
+    emptyTitle: "No cards in this lane",
+    emptyBody: "Choose another lane to keep reading.",
+    lanes: {
+      today: "Today",
+      know_yourself: "Know yourself",
+      myth_and_symbol: "Myth and symbol",
+      practice: "Practice",
+      gift: "Gift"
+    }
   },
   allies: {
     eyebrow: "Allies",

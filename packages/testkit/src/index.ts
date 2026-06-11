@@ -48,12 +48,38 @@ export const foundationSeed: FoundationSeed = foundationSeedSchema.parse({
       ctaAction: "claim",
       imageUrl: "/stream/stars.svg",
       publishedAt: now
+    },
+    {
+      id: "card_breath_practice",
+      title: "Three Quiet Breaths",
+      subtitle: "A practical pause for returning to yourself.",
+      body: "Before the next task, take three quiet breaths and notice what changed. Small practices count when they are repeatable.",
+      lane: "practice",
+      tone: "ceremonial",
+      ctaLabel: "Mark complete",
+      ctaAction: "reflect",
+      imageUrl: "/stream/breath.svg",
+      publishedAt: now
+    },
+    {
+      id: "card_today_signal",
+      title: "Today Has One Clean Signal",
+      subtitle: "Choose the useful thread.",
+      body: "Not every signal deserves the same attention. Let one useful thread become visible, then let the rest stay quiet.",
+      lane: "today",
+      tone: "grounded",
+      ctaLabel: "Open",
+      ctaAction: "open",
+      imageUrl: "/stream/today.svg",
+      publishedAt: now
     }
   ],
   streamItems: [
     { id: "stream_001", cardId: "card_river", kind: "card", position: 0, status: "published", audience: "all" },
     { id: "stream_002", cardId: "card_mirror", kind: "card", position: 1, status: "published", audience: "all" },
-    { id: "stream_003", cardId: "card_star_gift", kind: "card", position: 2, status: "published", audience: "all" }
+    { id: "stream_003", cardId: "card_star_gift", kind: "card", position: 2, status: "published", audience: "all" },
+    { id: "stream_004", cardId: "card_breath_practice", kind: "card", position: 3, status: "published", audience: "all" },
+    { id: "stream_005", cardId: "card_today_signal", kind: "card", position: 4, status: "published", audience: "all" }
   ],
   achievements: [
     {
