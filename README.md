@@ -21,3 +21,5 @@ npm run test:e2e
 ```
 
 The first foundation intentionally uses seeded data and clean boundaries before extracting old Astria machinery.
+
+UI handles and route chrome live in `apps/astra-web/lib/i18n.ts`; route components should consume that dictionary instead of hardcoding navigation labels, headings, aria labels, or button text.

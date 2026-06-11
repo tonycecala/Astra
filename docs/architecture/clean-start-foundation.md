@@ -31,5 +31,6 @@ The foundation proves:
 - `packages/contracts` defines public nouns.
 - `packages/db` owns schema/client.
 - `apps/astra-web` renders product routes and owns auth integration.
+- `apps/astra-web/lib/i18n.ts` owns app UI handles and route chrome copy.
 - `packages/testkit` owns seed fixtures and test factories.
 - Composer and astrology do not leak into Astra runtime.

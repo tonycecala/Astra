@@ -1,27 +1,28 @@
 import { PageHeader } from "../../components/PageHeader";
 import { getFoundationViewModel } from "../../lib/foundation";
+import { ui } from "../../lib/i18n";
 
 export default function SelfPage() {
   const view = getFoundationViewModel();
 
   return (
     <>
-      <PageHeader eyebrow="Self" title={view.user.displayName}>
-        The account home is small on purpose: identity, onboarding state, achievements, and star balance.
+      <PageHeader eyebrow={ui.self.eyebrow} title={view.user.displayName}>
+        {ui.self.intro}
       </PageHeader>
-      <section className="grid" aria-label="Self summary">
+      <section className="grid" aria-label={ui.self.summaryLabel}>
         <article className="card">
-          <div className="eyebrow">Stars</div>
+          <div className="eyebrow">{ui.self.stars}</div>
           <div className="metric">{view.user.starBalance}</div>
-          <p>Seed balance for value-flow testing.</p>
+          <p>{ui.self.starsDescription}</p>
         </article>
         <article className="card">
-          <div className="eyebrow">Onboarding</div>
+          <div className="eyebrow">{ui.self.onboarding}</div>
           <h2>{view.user.onboardingStatus}</h2>
-          <p>Clean account state without legacy migration requirements.</p>
+          <p>{ui.self.onboardingDescription}</p>
         </article>
         <article className="card">
-          <div className="eyebrow">Achievement</div>
+          <div className="eyebrow">{ui.self.achievement}</div>
           <h2>{view.achievements[0]?.title}</h2>
           <p>{view.achievements[0]?.description}</p>
         </article>
