@@ -19,6 +19,10 @@ function resendKey() {
   return clean(process.env.RESEND_DEV);
 }
 
+function shouldCaptureEmailToFile() {
+  return clean(process.env.ASTRA_EMAIL_DELIVERY) === "file";
+}
+
 async function captureLocalEmail(input: SendEmailInput) {
   const outboxDir = clean(process.env.ASTRA_EMAIL_CAPTURE_DIR) || ".astra-email";
   await mkdir(outboxDir, { recursive: true });
@@ -30,6 +34,11 @@ async function captureLocalEmail(input: SendEmailInput) {
 }
 
 export async function sendEmail(input: SendEmailInput) {
+  if (shouldCaptureEmailToFile()) {
+    await captureLocalEmail(input);
+    return;
+  }
+
   const apiKey = resendKey();
   if (apiKey) {
     const resend = new Resend(apiKey);
@@ -42,14 +51,8 @@ export async function sendEmail(input: SendEmailInput) {
     return;
   }
 
-  const smtpHost = clean(process.env.MAILPIT_SMTP_HOST);
-  if (!smtpHost) {
-    await captureLocalEmail(input);
-    return;
-  }
-
   const transport = nodemailer.createTransport({
-    host: smtpHost,
+    host: clean(process.env.MAILPIT_SMTP_HOST) || "127.0.0.1",
     port: Number(clean(process.env.MAILPIT_SMTP_PORT) || 1025),
     secure: false
   });
