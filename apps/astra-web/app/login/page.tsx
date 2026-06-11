@@ -1,3 +1,4 @@
+import { AuthPanel } from "../../components/AuthPanel";
 import { PageHeader } from "../../components/PageHeader";
 import { ui } from "../../lib/i18n";
 
@@ -7,6 +8,7 @@ export default function LoginPage() {
       <PageHeader eyebrow={ui.login.eyebrow} title={ui.login.title}>
         {ui.login.intro}
       </PageHeader>
+      <AuthPanel />
       <section className="card">
         <h2>{ui.login.infrastructureTitle}</h2>
         <p>{ui.login.infrastructureDescription}</p>

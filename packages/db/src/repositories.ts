@@ -34,6 +34,12 @@ export type FoundationResetResult = {
   cleared: true;
 };
 
+export type AuthUserProfileInput = {
+  userId: string;
+  email: string;
+  displayName: string;
+};
+
 function toDate(value: string) {
   return new Date(value);
 }
@@ -356,6 +362,35 @@ export async function resetFoundationData(database: AstraDb): Promise<Foundation
   await database.delete(user);
 
   return { cleared: true };
+}
+
+export async function upsertAuthUserProfile(database: AstraDb, input: AuthUserProfileInput) {
+  const now = new Date();
+
+  const [profile] = await database
+    .insert(appUserProfiles)
+    .values({
+      id: `${input.userId}:profile`,
+      userId: input.userId,
+      email: input.email,
+      displayName: input.displayName,
+      role: "customer",
+      onboardingStatus: "pending",
+      starBalance: 0,
+      createdAt: now,
+      updatedAt: now
+    })
+    .onConflictDoUpdate({
+      target: appUserProfiles.userId,
+      set: {
+        email: input.email,
+        displayName: input.displayName,
+        updatedAt: now
+      }
+    })
+    .returning();
+
+  return profile;
 }
 
 export function assertResetAllowed(databaseUrl: string, override = process.env.ASTRA_ALLOW_DB_RESET === "1") {

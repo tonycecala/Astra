@@ -84,6 +84,23 @@ export const ui = {
     title: "Better Auth boundary",
     intro: "The clean-start foundation exposes the Better Auth route and keeps UI auth flows ready for the next authenticated slice.",
     infrastructureTitle: "Authentication is wired as infrastructure",
-    infrastructureDescription: "Email/password, verification codes, and reset delivery route through Better Auth and the shared email boundary."
+    infrastructureDescription: "Email/password, verification codes, and reset delivery route through Better Auth and the shared email boundary.",
+    authPanelLabel: "Authentication panel",
+    authModeLabel: "Authentication mode",
+    signIn: "Sign in",
+    signUp: "Sign up",
+    signOut: "Sign out",
+    createAccount: "Create account",
+    continue: "Continue",
+    currentSession: "Current session",
+    loadingSession: "Checking session",
+    nameLabel: "Name",
+    emailLabel: "Email",
+    passwordLabel: "Password",
+    working: "Working",
+    authError: "Authentication failed",
+    checkEmail: "Check email for the verification code",
+    signedIn: "Signed in",
+    signedOut: "Signed out"
   }
 } as const;
