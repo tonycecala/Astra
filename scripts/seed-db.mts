@@ -11,8 +11,12 @@ if (!shouldExecute) {
   process.exit(0);
 }
 
-const { db, seedFoundationData } = await import("@astra/db");
-const result = await seedFoundationData(db, seed);
-console.log(
-  `Seed applied: ${result.cards} cards, ${result.streamItems} stream items, ${result.gifts} gifts, ${result.starTransactions} star transactions.`
-);
+const { closeDatabaseConnection, db, seedFoundationData } = await import("@astra/db");
+try {
+  const result = await seedFoundationData(db, seed);
+  console.log(
+    `Seed applied: ${result.cards} cards, ${result.streamItems} stream items, ${result.gifts} gifts, ${result.starTransactions} star transactions.`
+  );
+} finally {
+  await closeDatabaseConnection();
+}

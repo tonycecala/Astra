@@ -12,6 +12,10 @@ if (!shouldExecute) {
 }
 
 assertResetAllowed(databaseUrl);
-const { db, resetFoundationData } = await import("@astra/db");
-await resetFoundationData(db);
-console.log("Local foundation data reset complete. Run npm run db:migrate && npm run db:seed -- --execute next.");
+const { closeDatabaseConnection, db, resetFoundationData } = await import("@astra/db");
+try {
+  await resetFoundationData(db);
+  console.log("Local foundation data reset complete. Run npm run db:migrate && npm run db:seed -- --execute next.");
+} finally {
+  await closeDatabaseConnection();
+}

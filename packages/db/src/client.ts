@@ -10,3 +10,7 @@ const queryClient = postgres(resolveDatabaseUrl(), {
 
 export const db = drizzle(queryClient, { schema });
 export type AstraDb = typeof db;
+
+export async function closeDatabaseConnection() {
+  await queryClient.end();
+}
