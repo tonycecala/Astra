@@ -1,3 +1,5 @@
+import { mkdir, appendFile } from "node:fs/promises";
+import { join } from "node:path";
 import nodemailer from "nodemailer";
 import { Resend } from "resend";
 
@@ -17,6 +19,16 @@ function resendKey() {
   return clean(process.env.RESEND_DEV);
 }
 
+async function captureLocalEmail(input: SendEmailInput) {
+  const outboxDir = clean(process.env.ASTRA_EMAIL_CAPTURE_DIR) || ".astra-email";
+  await mkdir(outboxDir, { recursive: true });
+  await appendFile(
+    join(outboxDir, "outbox.jsonl"),
+    `${JSON.stringify({ ...input, capturedAt: new Date().toISOString() })}\n`,
+    "utf8"
+  );
+}
+
 export async function sendEmail(input: SendEmailInput) {
   const apiKey = resendKey();
   if (apiKey) {
@@ -30,8 +42,14 @@ export async function sendEmail(input: SendEmailInput) {
     return;
   }
 
+  const smtpHost = clean(process.env.MAILPIT_SMTP_HOST);
+  if (!smtpHost) {
+    await captureLocalEmail(input);
+    return;
+  }
+
   const transport = nodemailer.createTransport({
-    host: clean(process.env.MAILPIT_SMTP_HOST) || "127.0.0.1",
+    host: smtpHost,
     port: Number(clean(process.env.MAILPIT_SMTP_PORT) || 1025),
     secure: false
   });

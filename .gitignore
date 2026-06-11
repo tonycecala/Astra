@@ -8,5 +8,6 @@ test-results/
 .env.local
 .env.*.local
 !.env.example
+.astra-email/
 *.tsbuildinfo
 .DS_Store

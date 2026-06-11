@@ -33,6 +33,7 @@ The foundation proves:
 - `packages/db` owns schema/client.
 - `packages/db/src/repositories.ts` owns typed seed, reset, snapshot, and profile bootstrap helpers.
 - `apps/astra-web` renders product routes and owns auth integration.
+- `apps/astra-web/lib/email/send-email.ts` owns email delivery and local email capture.
 - `apps/astra-web/lib/i18n.ts` owns app UI handles and route chrome copy.
 - `packages/testkit` owns seed fixtures and test factories.
 - Composer and astrology do not leak into Astra runtime.
@@ -46,3 +47,5 @@ npm run db:reset:local -- --execute
 ```
 
 The local database defaults to `postgresql://astra:astra@127.0.0.1:5432/astra_clean_start`, but any disposable local Postgres URL can be supplied with `ASTRA_DATABASE_URL`. Runtime code never performs DDL; schema changes go through Drizzle migrations.
+
+Local auth email is captured to `.astra-email/outbox.jsonl` unless an SMTP host or Resend key is configured.
