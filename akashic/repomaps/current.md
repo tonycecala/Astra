@@ -1,8 +1,8 @@
 ---
 title: "Current REPOMAP"
 status: "current"
-date: "2026-06-11"
-updated: "2026-06-11"
+date: "2026-06-12"
+updated: "2026-06-12"
 tags: ["repomap", "onboarding"]
 related: []
 ---
@@ -17,7 +17,7 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `108520`
+- Estimated token footprint: `110469`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
@@ -42,6 +42,7 @@ tsconfig.json
 ## Major Systems
 - `akashic/agent-inbox` knowledge artifacts
 - `akashic/decisions` knowledge artifacts
+- `akashic/missions` knowledge artifacts
 - `akashic/templates` knowledge artifacts
 - `akashic/warnings` knowledge artifacts
 
@@ -75,15 +76,15 @@ tsconfig.json
 - `packages/db/drizzle.config.ts` - weight 37.01, ~291 tokens, 6 symbols, in:0/out:0
 - `akashic/templates/repomap-template.md` - weight 35.89, ~126 tokens, 10 symbols, in:0/out:0
 - `apps/astra-web/lib/foundation.ts` - weight 33.29, ~131 tokens, 5 symbols, in:5/out:0
-- `akashic/templates/skill-template.md` - weight 32.83, ~118 tokens, 9 symbols, in:0/out:0
+- `akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md` - weight 33.23, ~1207 tokens, 9 symbols, in:0/out:0
 
 ## Critical Routes
 - No route files detected.
 
 ## Pareto Profiles
-- `32000` tokens -> 59 files, 304 symbols, ~36385 estimated tokens.
-- `64000` tokens -> 60 files, 304 symbols, ~106848 estimated tokens.
-- `128000` tokens -> 80 files, 304 symbols, ~108520 estimated tokens.
+- `32000` tokens -> 61 files, 319 symbols, ~38334 estimated tokens.
+- `64000` tokens -> 62 files, 319 symbols, ~108797 estimated tokens.
+- `128000` tokens -> 82 files, 319 symbols, ~110469 estimated tokens.
 
 ## Data Model
 Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.
@@ -115,4 +116,4 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - Treat auth as a first-class product concern and verify the repo's documented local auth flow.
 - Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 80 local files in `/Users/tony/Documents/Projects/Astra`.
+Generated from 82 local files in `/Users/tony/Documents/Projects/Astra`.
