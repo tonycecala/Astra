@@ -1,0 +1,283 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { eq } from "drizzle-orm";
+import {
+  createComposerOperatorDraftFixture,
+  prepareComposerOperatorPrivateFeedWrite,
+  previewComposerOperatorDraft
+} from "../apps/composer-web/src/index";
+import {
+  closeDatabaseConnection,
+  db,
+  getUserFeedItemById,
+  listUserFeedItems,
+  sourceCards,
+  user,
+  userFeedItems
+} from "@astra/db";
+
+type JsonObject = Record<string, unknown>;
+
+const appBaseUrl = clean(process.env.ASTRA_APP_SMOKE_BASE_URL) || "http://localhost:3011";
+const authBaseUrl = `${appBaseUrl}/api/auth`;
+const mailpitUrl = clean(process.env.MAILPIT_API_URL) || "http://localhost:8025";
+const internalToken = clean(process.env.ASTRA_INTERNAL_API_TOKEN);
+const runId = `composer_operator_${Date.now()}`;
+const email = clean(process.env.ASTRA_COMPOSER_OPERATOR_SMOKE_EMAIL) || `${runId}@example.com`;
+const name = clean(process.env.ASTRA_COMPOSER_OPERATOR_SMOKE_NAME) || "Composer Operator Smoke";
+const now = new Date().toISOString();
+const targetUserB = `${runId}_user_b`;
+const feedItemId = `${runId}_feed_item`;
+
+let cookieHeader = "";
+
+function clean(value: string | undefined) {
+  return value?.trim().replace(/^['"]|['"]$/g, "") || "";
+}
+
+if (!internalToken) {
+  throw new Error("ASTRA_INTERNAL_API_TOKEN is required for the Composer operator workflow smoke.");
+}
+
+function appendCookies(headers: Headers) {
+  const raw = headers.get("set-cookie");
+  if (!raw) return;
+
+  const cookies = raw
+    .split(/,(?=[^;,]+=)/)
+    .map((cookie) => cookie.split(";")[0]?.trim())
+    .filter(Boolean);
+
+  const existing = new Map(
+    cookieHeader
+      .split(";")
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .map((part) => {
+        const [key, ...rest] = part.split("=");
+        return [key, rest.join("=")] as const;
+      })
+  );
+
+  for (const cookie of cookies) {
+    const [key, ...rest] = cookie.split("=");
+    if (key) existing.set(key, rest.join("="));
+  }
+
+  cookieHeader = [...existing.entries()].map(([key, value]) => `${key}=${value}`).join("; ");
+}
+
+async function requestJson(url: string, init?: RequestInit) {
+  const headers = new Headers(init?.headers);
+  headers.set("origin", appBaseUrl);
+  if (cookieHeader) headers.set("cookie", cookieHeader);
+  if (init?.body && !headers.has("content-type")) headers.set("content-type", "application/json");
+
+  const response = await fetch(url, { ...init, headers });
+  appendCookies(response.headers);
+
+  const text = await response.text();
+  if (!response.ok) {
+    throw new Error(`${url} failed with ${response.status}: ${text}`);
+  }
+
+  return text ? (JSON.parse(text) as JsonObject) : {};
+}
+
+async function requestText(url: string, cookie = cookieHeader) {
+  const headers = new Headers();
+  if (cookie) headers.set("cookie", cookie);
+  const response = await fetch(url, { headers });
+  const text = await response.text();
+  if (!response.ok) {
+    throw new Error(`${url} failed with ${response.status}: ${text}`);
+  }
+  return text;
+}
+
+function findOtp(value: unknown): string | null {
+  if (typeof value === "string") return value.match(/\b\d{6}\b/)?.[0] ?? null;
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const otp = findOtp(item);
+      if (otp) return otp;
+    }
+  }
+  if (value && typeof value === "object") {
+    for (const item of Object.values(value as JsonObject)) {
+      const otp = findOtp(item);
+      if (otp) return otp;
+    }
+  }
+  return null;
+}
+
+async function readOtpFromFileCapture() {
+  const outboxDir = clean(process.env.ASTRA_EMAIL_CAPTURE_DIR) || ".astra-email";
+  const text = await readFile(join(outboxDir, "outbox.jsonl"), "utf8");
+  const rows = text
+    .trim()
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => JSON.parse(line) as JsonObject)
+    .reverse();
+
+  const row = rows.find((candidate) => candidate.to === email);
+  const otp = findOtp(row);
+  if (!otp) throw new Error(`No OTP found in file capture for ${email}.`);
+  return otp;
+}
+
+async function readOtpFromMailpit() {
+  const deadline = Date.now() + 5_000;
+  while (Date.now() < deadline) {
+    const searchUrl = new URL("/api/v1/search", mailpitUrl);
+    searchUrl.searchParams.set("query", email);
+    searchUrl.searchParams.set("limit", "10");
+
+    const searchResponse = await fetch(searchUrl);
+    if (!searchResponse.ok) {
+      throw new Error(`Mailpit search failed with ${searchResponse.status}. Is Mailpit running at ${mailpitUrl}?`);
+    }
+
+    const search = (await searchResponse.json()) as JsonObject;
+    const messages = Array.isArray(search.messages)
+      ? search.messages
+      : Array.isArray(search.Messages)
+        ? search.Messages
+        : [];
+
+    for (const summary of messages as JsonObject[]) {
+      const id = String(summary.ID ?? summary.Id ?? summary.id ?? "");
+      if (!id) continue;
+
+      const messageResponse = await fetch(new URL(`/api/v1/message/${id}`, mailpitUrl));
+      if (!messageResponse.ok) continue;
+      const message = (await messageResponse.json()) as JsonObject;
+      const otp = findOtp(message);
+      if (otp) return otp;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+
+  throw new Error(`No OTP found in Mailpit for ${email}.`);
+}
+
+async function readOtp() {
+  if (clean(process.env.ASTRA_EMAIL_DELIVERY) === "file") return readOtpFromFileCapture();
+  return readOtpFromMailpit();
+}
+
+async function signInSmokeUser() {
+  await requestJson(`${authBaseUrl}/email-otp/send-verification-otp`, {
+    method: "POST",
+    body: JSON.stringify({ email, type: "sign-in" })
+  });
+
+  await requestJson(`${authBaseUrl}/sign-in/email-otp`, {
+    method: "POST",
+    body: JSON.stringify({ email, otp: await readOtp(), name })
+  });
+
+  const session = await requestJson(`${authBaseUrl}/get-session`);
+  const sessionUser = session.user as JsonObject | undefined;
+  const userId = typeof sessionUser?.id === "string" ? sessionUser.id : "";
+  if (!userId) throw new Error("Composer operator smoke did not create an authenticated user.");
+  return userId;
+}
+
+async function insertUser(id: string, userEmail: string) {
+  await db.insert(user).values({
+    id,
+    name: id,
+    email: userEmail,
+    emailVerified: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  });
+}
+
+try {
+  const targetUserA = await signInSmokeUser();
+  await insertUser(targetUserB, `${targetUserB}@example.com`);
+
+  const draft = createComposerOperatorDraftFixture(now);
+  const preview = previewComposerOperatorDraft({
+    ...draft,
+    draftId: `${draft.draftId}_${runId}`,
+    sourceCard: {
+      ...draft.sourceCard,
+      id: `${draft.sourceCard.id}:${runId}`,
+      slug: `${draft.sourceCard.slug}-${runId}`,
+      createdAt: now,
+      updatedAt: now
+    },
+    voiceCard: {
+      voice: { id: "guide" },
+      header: `Operator card ${runId}`,
+      body: "A reviewed Composer source card now belongs to the signed-in smoke user only."
+    },
+    createdAt: now
+  });
+  if (!preview.ok) {
+    throw new Error(`Operator preview rejected valid draft: ${JSON.stringify(preview.issues)}`);
+  }
+  if (!preview.preview.targetUserRequired) {
+    throw new Error("Operator preview must require an explicit target user before publish.");
+  }
+
+  const publish = prepareComposerOperatorPrivateFeedWrite({
+    preview: preview.preview,
+    targetUserId: targetUserA,
+    feedItemId,
+    createdAt: now
+  });
+  if (!publish.ok) {
+    throw new Error(`Operator publish review failed: ${JSON.stringify(publish.issues)}`);
+  }
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const response = await requestJson(`${appBaseUrl}/api/composer/private-feed-items`, {
+      method: "POST",
+      headers: { "x-astra-internal-token": internalToken },
+      body: JSON.stringify(publish.write)
+    });
+    const write = response.write as JsonObject | undefined;
+    const feedItem = write?.feedItem as JsonObject | undefined;
+    if (feedItem?.id !== feedItemId || feedItem.userId !== targetUserA) {
+      throw new Error("Operator publish API did not return the expected user-owned feed item.");
+    }
+  }
+
+  const feedA = await listUserFeedItems(db, { userId: targetUserA, state: "available", limit: 20 });
+  if (!feedA.items.some((item) => item.id === feedItemId && item.title === publish.write.feedItem.title)) {
+    throw new Error("Target user private feed did not include the operator-published card.");
+  }
+
+  const forgedRead = await getUserFeedItemById(db, { userId: targetUserB, feedItemId });
+  if (forgedRead) throw new Error("Another user could read the operator-published private card.");
+
+  const feedB = await listUserFeedItems(db, { userId: targetUserB, state: "available", limit: 20 });
+  if (feedB.items.some((item) => item.id === feedItemId || item.title === publish.write.feedItem.title)) {
+    throw new Error("Another user's private feed listed the operator-published card.");
+  }
+
+  const publicHtml = await requestText(`${appBaseUrl}/journey`, "");
+  if (publicHtml.includes(publish.write.feedItem.title)) {
+    throw new Error("Signed-out public Journey leaked the operator-published private card.");
+  }
+
+  const privateHtml = await requestText(`${appBaseUrl}/journey`);
+  if (!privateHtml.includes("Private journey") || !privateHtml.includes(publish.write.feedItem.title)) {
+    throw new Error("Signed-in Journey did not render the operator-published private card.");
+  }
+} finally {
+  await db.delete(userFeedItems).where(eq(userFeedItems.id, feedItemId));
+  await db.delete(sourceCards).where(eq(sourceCards.id, `${createComposerOperatorDraftFixture(now).sourceCard.id}:${runId}`));
+  await db.delete(user).where(eq(user.id, targetUserB));
+  await db.delete(user).where(eq(user.email, email));
+  await closeDatabaseConnection();
+}
+
+console.log(`Composer operator workflow smoke passed: ${runId}.`);

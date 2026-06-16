@@ -55,6 +55,8 @@ The first private-feed boundary now exists in shared contracts, Drizzle schema, 
 - Publishing a completed report signal creates a deterministic user-owned `report_signal` feed item for the signed-in user instead of making the global stream the product feed.
 - `ComposerPrivateFeedWrite` is the trusted Composer-to-Astra write contract. `POST /api/composer/private-feed-items` accepts it behind `x-astra-internal-token`, persists an optional `SourceCard`, creates the user-owned `UserFeedItem`, and records optional `ComposerDecision` metadata.
 - `apps/composer-web/src/publishPrivateFeedItem.ts` creates validated private feed writes from Composer voice cards and source/report-signal inputs without importing Astra app internals.
+- `apps/composer-web/src/operatorWorkflow.ts` is the first operator/review workflow: it validates a Composer-owned source-card draft and voice card, produces a target-user-required preview, then emits a `ComposerPrivateFeedWrite` only after the operator supplies the target user.
+- `scripts/smoke-composer-operator-workflow.mts` proves the workflow can publish through the trusted API, repeat the same publish idempotently, keep the card out of another user's feed, keep it out of signed-out `/journey`, and render it in signed-in `/journey`.
 
 ## v0 Access Rules
 
@@ -64,6 +66,7 @@ The first private-feed boundary now exists in shared contracts, Drizzle schema, 
 - Astra reads private feed rows through server-side accessors.
 - Composer writes through explicit contracts and trusted service/admin routes.
 - Composer decisions are not returned by default to the user-facing feed endpoint.
+- Operator preview material is not a feed item until it is reviewed with an explicit target user.
 - `/api/composer/stream-artifacts` is retained only for public fallback/source-layer ingestion; it is not the core signed-in Journey write path.
 
 ## Testing Bar

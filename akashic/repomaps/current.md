@@ -17,11 +17,11 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `220157`
+- Estimated token footprint: `222783`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
-- Package scripts expose: `build`, `check`, `check:boundaries`, `check:no-supabase`, `composer:dev`, `db:generate`, `db:migrate`, `db:reset:local`, `db:seed`, `db:seed:private-card`, `dev`, `dev:restart`, `dev:status`, `dev:stop`, `dev:up`, `lint`, `start`, `test`, `test:astrology-engine`, `test:auth-code`, `test:chart-boundary`, `test:chart-maker`, `test:chart-request-api`, `test:composer-ingest-api`, `test:composer-private-feed-api`, `test:composer-stream`, `test:e2e`, `test:place-search-api`, `test:private-feed`, `test:report-api`, `typecheck`.
+- Package scripts expose: `build`, `check`, `check:boundaries`, `check:no-supabase`, `composer:dev`, `db:generate`, `db:migrate`, `db:reset:local`, `db:seed`, `db:seed:private-card`, `dev`, `dev:restart`, `dev:status`, `dev:stop`, `dev:up`, `lint`, `start`, `test`, `test:astrology-engine`, `test:auth-code`, `test:chart-boundary`, `test:chart-maker`, `test:chart-request-api`, `test:composer-ingest-api`, `test:composer-operator-workflow`, `test:composer-private-feed-api`, `test:composer-stream`, `test:e2e`, `test:place-search-api`, `test:private-feed`, `test:report-api`, `typecheck`.
 
 ## Directory Structure
 ```txt
@@ -57,7 +57,7 @@ tsconfig.json
 - `apps/astra-web/app/api/chart-results/route.ts` - 1 route handler(s), 1 export(s), 4 symbol(s), 4 import(s), ~255 tokens
 - `apps/astra-web/app/api/report-results/route.ts` - 1 route handler(s), 1 export(s), 4 symbol(s), 4 import(s), ~265 tokens
 - `apps/astra-web/app/api/composer/stream-artifacts/route.ts` - 1 route handler(s), 1 export(s), 4 symbol(s), 4 import(s), ~234 tokens
-- `package.json` - ~813 tokens
+- `package.json` - ~839 tokens
 
 ## External Integrations
 - Auth provider/library
@@ -84,9 +84,9 @@ tsconfig.json
 - `ASTRA_CLEAN_START_INAUGURAL_CHARTER.md` - weight 106.32, ~3531 tokens, 34 symbols, in:0/out:0
 - `apps/astra-web/components/ThemeToggle.tsx` - weight 103.44, ~687 tokens, 20 symbols, in:1/out:1
 - `apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts` - weight 90.43, ~896 tokens, 9 symbols, in:0/out:2
+- `apps/composer-web/src/operatorWorkflow.ts` - weight 87.38, ~1724 tokens, 22 symbols, in:0/out:2
 - `apps/astra-web/app/api/reports/[requestId]/generate/route.ts` - weight 85.84, ~313 tokens, 8 symbols, in:0/out:1
 - `apps/astra-web/e2e/foundation-routes.spec.ts` - weight 85.34, ~2872 tokens, 24 symbols, in:0/out:0
-- `apps/astra-web/app/api/places/search/route.ts` - weight 80.92, ~356 tokens, 6 symbols, in:0/out:1
 
 ## Critical Routes
 - `GET /api/chart-requests` in `apps/astra-web/app/api/chart-requests/route.ts:10`
@@ -103,8 +103,8 @@ tsconfig.json
 
 ## Pareto Profiles
 - `32000` tokens -> 6 files, 448 symbols, ~33278 estimated tokens.
-- `64000` tokens -> 39 files, 793 symbols, ~68369 estimated tokens.
-- `128000` tokens -> 108 files, 1035 symbols, ~129681 estimated tokens.
+- `64000` tokens -> 39 files, 810 symbols, ~66026 estimated tokens.
+- `128000` tokens -> 109 files, 1062 symbols, ~132307 estimated tokens.
 
 ## Data Model
 Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.
@@ -136,4 +136,4 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - Treat auth as a first-class product concern and verify the repo's documented local auth flow.
 - Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 135 local files in `/Users/tony/Documents/Projects/Astra`.
+Generated from 136 local files in `/Users/tony/Documents/Projects/Astra`.

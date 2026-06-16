@@ -13,6 +13,40 @@ summary: "Durable session-by-session memory for Astra repo work."
 
 ## Entries
 
+### 2026-06-16 - Composer Operator Review Workflow
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** composer operator workflow
+**Status:** complete
+
+#### What Changed
+
+- Added the first Composer-owned operator workflow for source-card draft -> preview -> target user -> private feed publish.
+- Kept Composer independent from Astra internals by emitting `ComposerPrivateFeedWrite` through the existing trusted API contract.
+- Added a deterministic operator draft fixture and validation for source cards, voice cards, explicit target user, preview payload, and decision trace.
+- Added a smoke that proves repeat publish/idempotency, User A/User B ownership isolation, signed-out public fallback privacy, and signed-in `/journey` visibility.
+- Fixed a tablet-width horizontal overflow found during rendered `/journey` QA.
+
+#### Tests Run
+
+- `npm run typecheck`
+- `npm run lint`
+- `npm run test`
+- `npm run check:boundaries`
+- `npm run check:no-supabase`
+- `npm run build`
+- `npm run check`
+- `npm run test:private-feed`
+- `npm run test:composer-private-feed-api`
+- `npm run test:composer-operator-workflow`
+- `npm run test:e2e`
+- In-app browser `/journey` QA at desktop/tablet/mobile with the operator QA card visible, no console errors, and no horizontal overflow.
+
+#### Risks / Follow-ups
+
+- Composer is still a library/operator workflow surface, not a visible admin UI. Add a rendered Composer route only when the operator tool needs human editing controls beyond deterministic draft/review helpers.
+
 ### 2026-06-16 - Composer Private Feed Write Edge
 
 **Report Level:** 3 - Workflow & QA View

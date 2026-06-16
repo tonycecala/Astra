@@ -308,6 +308,7 @@ const reportSignalPublishRoute = await readFile("apps/astra-web/app/api/reports/
 const internalTokenHelper = await readFile("apps/astra-web/lib/internal-token.ts", "utf8");
 const composerPublisher = await readFile("apps/composer-web/src/publishStreamArtifact.ts", "utf8");
 const composerPrivateFeedPublisher = await readFile("apps/composer-web/src/publishPrivateFeedItem.ts", "utf8");
+const composerOperatorWorkflow = await readFile("apps/composer-web/src/operatorWorkflow.ts", "utf8");
 if (!chartRequestRoute.includes("getAstraAuthContext")) throw new Error("Chart request API must use Astra auth context.");
 if (!chartResultRoute.includes("hasValidInternalApiToken")) throw new Error("Chart result API must require the internal token helper.");
 if (!journeyRoute.includes("getAstraAuthContext") || !journeyRoute.includes("getJourneyViewModel")) {
@@ -341,6 +342,13 @@ if (!composerPublisher.includes("composerStreamArtifactSchema")) {
 }
 if (!composerPrivateFeedPublisher.includes("composerPrivateFeedWriteSchema")) {
   throw new Error("Composer private-feed publisher must validate the shared private feed write contract.");
+}
+if (
+  !composerOperatorWorkflow.includes("previewComposerOperatorDraft") ||
+  !composerOperatorWorkflow.includes("prepareComposerOperatorPrivateFeedWrite") ||
+  !composerOperatorWorkflow.includes("targetUserRequired")
+) {
+  throw new Error("Composer operator workflow must preview source-card drafts before emitting target-user private feed writes.");
 }
 
 console.log("Foundation contracts, seed data, schema, and runtime DDL checks passed.");

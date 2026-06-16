@@ -4,7 +4,7 @@ project: "Astra"
 repo: "Astra"
 area: "composer-private-feed"
 type: "handoff"
-status: "acknowledged"
+status: "acted"
 priority: "high"
 from: "Codex"
 to: "next Astra thread"
@@ -55,3 +55,13 @@ Build the first Composer operator/review workflow on top of the private-feed wri
 - Keep Composer decisions private; do not return them through the user-facing feed.
 - Treat `/api/composer/stream-artifacts` as fallback/source-layer only.
 - Browser-visible QA is required for any route/UI work.
+
+## Resolution
+
+Completed on `codex/astra-composer-operator-workflow`.
+
+- Added `apps/composer-web/src/operatorWorkflow.ts` for source-card draft validation, preview, explicit target-user review, and `ComposerPrivateFeedWrite` emission.
+- Added `scripts/smoke-composer-operator-workflow.mts` and `npm run test:composer-operator-workflow`.
+- Updated architecture/progress docs and the foundation invariant check.
+- Verified the workflow through the trusted private-feed API, repeated publish/idempotency, User A/User B privacy, signed-out public fallback privacy, and signed-in `/journey` visibility.
+- Browser QA found and fixed tablet horizontal overflow on `/journey`.
