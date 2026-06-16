@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { listUserChartMakerRequests, db } from "@astra/db";
-import { ChartRequestPanel } from "../../components/ChartRequestPanel";
+import { db, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests } from "@astra/db";
+import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
 import { PageHeader } from "../../components/PageHeader";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
@@ -28,7 +28,11 @@ export default async function SelfPage() {
     );
   }
 
-  const chartRequests = await listUserChartMakerRequests(db, profile.userId);
+  const [chartRequests, reportRequests, reportResults] = await Promise.all([
+    listUserChartMakerRequests(db, profile.userId),
+    listUserAstrologyReportRequests(db, profile.userId),
+    listUserAstrologyReportResults(db, profile.userId)
+  ]);
 
   return (
     <>
@@ -52,7 +56,40 @@ export default async function SelfPage() {
           <p>{ui.self.noAchievementDescription}</p>
         </article>
       </section>
-      <ChartRequestPanel displayName={profile.displayName} initialRequests={chartRequests} />
+      <section className="grid" aria-label={ui.self.reportRequestsLabel}>
+        <article className="card">
+          <div className="eyebrow">{ui.self.reportRequestsEyebrow}</div>
+          <h2>{ui.self.reportRequestsTitle}</h2>
+          <p>{ui.self.reportRequestsIntro}</p>
+        </article>
+        <article className="card">
+          <div className="eyebrow">{ui.self.reportRequestsStatusEyebrow}</div>
+          <h2>{ui.self.reportRequestsStatusTitle}</h2>
+          {reportRequests.length ? (
+            <ul className="compact-list">
+              {reportRequests.slice(0, 4).map((request) => (
+                <li key={request.id}>
+                  <span>{request.subjectName}</span>
+                  <strong>{request.status}</strong>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>{ui.self.reportRequestsEmpty}</p>
+          )}
+        </article>
+        <article className="card">
+          <div className="eyebrow">{ui.self.reportBoundaryEyebrow}</div>
+          <h2>{ui.self.reportBoundaryTitle}</h2>
+          <p>{ui.self.reportBoundaryBody}</p>
+        </article>
+      </section>
+      <BirthOnboardingPanel
+        displayName={profile.displayName}
+        initialRequests={chartRequests}
+        initialReportRequests={reportRequests}
+        initialReportResults={reportResults}
+      />
     </>
   );
 }

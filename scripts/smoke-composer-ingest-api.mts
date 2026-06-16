@@ -1,4 +1,5 @@
 import { composerStreamArtifactSchema } from "@astra/contracts";
+import { publishAstrologyReportSignalArtifact } from "../apps/composer-web/src/index";
 
 type JsonObject = Record<string, unknown>;
 
@@ -74,10 +75,52 @@ if ((response.artifact as JsonObject | undefined)?.id !== artifact.id) {
   throw new Error("Composer stream artifact ingest API did not return the stored artifact.");
 }
 
+const reportSignalArtifact = publishAstrologyReportSignalArtifact({
+  id: "composer_report_signal_ingest_smoke",
+  cardId: "composer_report_signal_card_ingest_smoke",
+  streamItemId: "composer_report_signal_stream_item_ingest_smoke",
+  signal: {
+    reportId: "report_signal_ingest_smoke",
+    requestId: "report_request_signal_ingest_smoke",
+    reportType: "core_self",
+    headline: "Report Signal Card",
+    summary: "Astra rendered this stream card from a Composer report signal without exposing raw private report payloads.",
+    tone: "grounded",
+    boundary: "public_signal",
+    provenanceSummary: "Shown because a private report exposed an approved public signal."
+  },
+  voiceCard: {
+    voice: { id: "guide" },
+    header: "Report Signal Card",
+    body: "Astra rendered this stream card from a Composer report signal without exposing raw private report payloads."
+  },
+  position: 100,
+  createdAt
+});
+
+if (!reportSignalArtifact.ok) {
+  throw new Error("Composer report-signal artifact fixture did not validate.");
+}
+
+const signalResponse = await requestJson(`${appBaseUrl}/api/composer/stream-artifacts`, {
+  method: "POST",
+  headers: {
+    "x-astra-internal-token": internalToken
+  },
+  body: JSON.stringify(reportSignalArtifact.artifact)
+});
+
+if ((signalResponse.artifact as JsonObject | undefined)?.id !== reportSignalArtifact.artifact.id) {
+  throw new Error("Composer report-signal ingest API did not return the stored artifact.");
+}
+
 const journey = await fetch(`${appBaseUrl}/journey`);
 const html = await journey.text();
 if (!journey.ok || !html.includes("Composer Handshake Card")) {
   throw new Error(`/journey did not render the Composer-ingested stream card. Status: ${journey.status}`);
 }
+if (!html.includes("Report Signal Card")) {
+  throw new Error("/journey did not render the Composer-ingested report signal card.");
+}
 
-console.log(`Composer stream ingest API smoke passed: ${artifact.id}.`);
+console.log(`Composer stream ingest API smoke passed: ${artifact.id}, ${reportSignalArtifact.artifact.id}.`);

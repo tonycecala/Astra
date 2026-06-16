@@ -21,6 +21,7 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - `packages/contracts/` defines typed core nouns.
 - `packages/db/` owns Drizzle schema, migrations, client, repository helpers, seed/reset support, and Better Auth tables.
 - `packages/chart-maker/` owns the independent chart-maker contract adapter.
+- `packages/astrology/` owns the astrology report generation boundary, explicit engine-unavailable result adapter, and first local `astronomy-engine` backed report adapter.
 - `packages/testkit/` owns typed seed fixtures.
 - `scripts/` contains foundation checks, no-Supabase checks, boundary checks, seed/reset scripts, auth-code smoke support, and durable local server controls.
 - `docs/architecture/clean-start-foundation.md` documents the foundation shape and local database/auth loop.
@@ -62,17 +63,20 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - Mailpit is running at `http://localhost:8025`, and the email-code auth smoke passed through send-code, Mailpit OTP read, verify-code, session check, and sign-out.
 - Browser verification proved `/login` can send and verify an email code and then display the authenticated session for the browser-smoke user.
 - `/self` now reads authenticated app profile state through `getAstraAuthContext`; logged-out visitors see a sign-in CTA, while signed-in users see their own display name, onboarding state, and private star balance.
-- Chart-maker contracts now require birth date only; birth time, location, and timezone form one optional precision bundle, while coordinates, question, intent, and context remain optional until onboarding defines stronger requirements.
+- Chart-maker contracts now require birth date only; birth time, location, timezone, and coordinates form an optional precision bundle once provider-backed place lookup supplies them. Question, intent, and context can travel with the request when supplied.
 - `@astra/chart-maker` now consumes `ChartMakerRequest` and emits `RecordChartMakerResult` without importing Astra app or database internals.
 - `ChartMakerChartData` defines the first deterministic chart-maker payload shape with precision metadata, date-derived symbolic fields, interpretation, and explicit limits.
 - Drizzle owns `chart_requests` and `chart_results` tables with user ownership and request/result indexes.
 - `npm run test:chart-boundary` proves the local request/result lifecycle against Postgres.
 - `/api/chart-requests` now lets an authenticated user create and list their own chart requests.
 - `/api/chart-results` lets an internal chart-maker caller record a result behind `x-astra-internal-token`.
-- `/self` now includes a modular chart request panel that queues user-owned requests for an independent chart maker.
+- `/self` now includes a multi-step birth-data onboarding panel that queues a user-owned chart request and a linked private astrology report request after a final review step.
 - `npm run test:chart-maker` proves Tony's `1961-05-23` fixture through the independent chart-maker module, including date-only and timed/location precision paths.
 - `npm run test:chart-request-api` proves request creation through Better Auth/Mailpit and result recording through the internal chart-maker token using the independent chart-maker module.
-- The current `/self` chart request panel is intentionally a foundation smoke surface; future user-facing birth data capture should become a multi-step onboarding flow before real product use.
+- The current `/self` onboarding flow captures subject, birth date, optional time/place precision bundle, optional question/intent/context, and review/confirmation state before queuing chart and report lifecycle records.
+- `/api/places/search` now provides an authenticated birth-place search boundary with typed place results and fail-clear provider configuration.
+- `@astra/astrology` now owns the place-search provider boundary; local verification uses `ASTRA_PLACE_SEARCH_PROVIDER=local-fixture` and missing/unknown providers fail explicitly.
+- `BirthOnboardingPanel` can search/select a birth place, auto-fill IANA timezone plus coordinates, and still allows editable manual confirmation.
 - Composer's first publish target is now a shared stream artifact contract.
 - Composer now has a minimal independent implementation for voice registry, deterministic validation, and stream artifact publishing under `apps/composer-web/src`.
 - `npm run test:composer-stream` proves valid voice fixtures, invalid voice fixtures, and stream artifact publishing through the shared contract.
@@ -81,10 +85,40 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - `upsertComposerStreamArtifact` persists Composer cards and stream items into Astra's existing public stream tables without importing Composer internals.
 - Journey, Allies, Library, and Gifts now read the persisted local database snapshot instead of seed-only in-memory fixtures.
 - `npm run test:composer-ingest-api` proves a Composer-style caller can publish a stream artifact and `/journey` renders the consumed card.
+- Shared contracts now define the astrology report lifecycle: report requests, results, sections, provenance, status, cost placeholder, and explicit private/public signal boundaries.
+- Drizzle owns `astrology_report_requests` and `astrology_report_results` tables with user ownership, optional chart-request linking, status indexes, engine/version metadata, timestamps, and result uniqueness by request.
+- `/api/reports` lets an authenticated user create and list private astrology report requests.
+- `/api/report-results` lets an internal report writer record a result behind `x-astra-internal-token`.
+- `@astra/astrology` now fails explicitly when no `ASTRA_EPHEMERIS_ENGINE` is configured instead of fabricating production astrology.
+- Composer can consume `AstrologyReportPublicSignal` through `publishAstrologyReportSignalArtifact`, keeping raw private report payloads out of the public stream.
+- `/journey` now labels the persisted stream as DB-backed and report-signal ready.
+- `/self` now shows compact report lifecycle/private-boundary status for signed-in users.
+- `npm run test:report-api` proves auth-required report access, authenticated create/list, user-owned report generation, missing-token rejection, wrong-token rejection, configured local-engine result recording, and public-signal preservation.
+- Composer report-signal artifacts now publish as `artifact` stream items so `/journey` can distinguish report-derived cards from ordinary cards.
+- `npm run test:composer-ingest-api` now proves both a generic Composer card and a report-signal card can be token-ingested and rendered by `/journey`.
+- `/journey` now shows stream-item metadata in cards and detail, including item kind, status, audience, and published date.
+- `/journey` now has explicit loading and DB-read error states instead of relying only on a successful happy path.
+- `docs/architecture/stream-read-model-cache-boundary.md` defines the public stream read model, cache tags, invalidation rule, and origin-failure behavior while keeping private reports auth-gated.
+- `npm run test:place-search-api` proves unauthenticated place search is rejected and authenticated local-fixture search returns New York with timezone/coordinates.
+- Browser QA on `/self` proved the signed-in onboarding journey can search `New`, select `New York, NY, USA`, review `08:30, America/New_York, New York, NY, USA`, queue linked chart/report records, and render desktop/tablet/phone with no console errors or horizontal overflow.
+- `@astra/astrology` can now run `ASTRA_EPHEMERIS_ENGINE=local-astronomy-engine` through the MIT `astronomy-engine` package, calculating Sun, Moon, visible-planet ecliptic longitudes and moon phase before writing completed private report sections plus a Composer-safe public signal.
+- `npm run test:astrology-engine` proves unconfigured engine failure still names `ASTRA_EPHEMERIS_ENGINE`, while configured local engine completion emits Gemini report evidence for Tony's `1961-05-23` fixture.
+- `/api/reports/[requestId]/generate` now lets a signed-in user generate their own queued report through the configured engine without exposing raw private sections publicly or using the internal writer token.
+- `/self` now shows a compact Generate action for queued reports, then updates the side rail to completed status with the Composer-safe public headline after generation.
+- `/self` now includes a private report reader for generated sections and provenance, keeping raw report content in the authenticated self surface instead of the public stream.
+- Completed report generation now upserts a deterministic user-owned report artifact, and `/library` shows signed-in users their private artifacts while signed-out visitors keep the foundation artifact view.
+- `/library` also merges older completed report results as report artifacts when no persisted artifact row exists yet, so existing local generated reports remain reviewable.
+- `/api/reports/[requestId]/publish-signal` now lets a signed-in user publish only their completed report's explicit public signal into `/journey`; private sections and detailed provenance stay in `/self` and report result storage.
+- Browser QA on `/self` proved the visible Generate action can complete a queued browser-smoke report, and desktop/tablet/phone reloads show completed report status with no new console errors or horizontal overflow.
+- Browser QA also proved the private report reader renders `Core pattern` and `Provenance` on desktop/tablet/phone with no new console errors or horizontal overflow.
+- Browser QA on `/library` proved signed-in report artifacts render on desktop/tablet/phone with no console errors or horizontal overflow.
+- Browser QA on `/journey` proved the published report signal renders as report-signal metadata on desktop/tablet/phone with no console errors or horizontal overflow.
 
 ## Follow-Ups
-- Replace the single chart request form with multi-step birth-data onboarding: subject, date, time certainty, place/timezone, intent/context, review, and confirmation.
+- Select the production birth-place provider and replace/extend the local fixture adapter without changing the `/api/places/search` contract.
 - Replace the deterministic chart-maker contract adapter with or behind a real ephemeris-backed module when the chart computation engine is selected.
+- Decide whether the local `astronomy-engine` adapter is the production v1 report engine or should remain a local proof behind a later production ephemeris/report provider.
 - Design Composer artifact and future public/read-model retrieval/caching for production, including edge-first caching with explicit origin failure.
+- Implement the production cache/invalidation mechanism described in `docs/architecture/stream-read-model-cache-boundary.md` when the deployment target is ready.
 - Continue polishing reader density, card states, gifts/stars presentation, self/profile usefulness, and i18n-backed empty/error/loading states.
 - Update this mission after each non-trivial dev/debug session.

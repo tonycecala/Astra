@@ -111,6 +111,25 @@ export const chartBirthDataSchema = z
     }
   });
 
+export const birthPlaceSearchQuerySchema = z.object({
+  query: z.string().trim().min(2).max(120),
+  limit: z.number().int().min(1).max(10).default(5)
+});
+
+export const birthPlaceSearchResultSchema = z.object({
+  id: idSchema,
+  label: z.string().min(1),
+  timezone: z.string().min(1),
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  provider: z.string().min(1)
+});
+
+export const birthPlaceSearchResponseSchema = z.object({
+  provider: z.string().min(1),
+  results: z.array(birthPlaceSearchResultSchema)
+});
+
 export const chartMakerRequestSchema = z.object({
   id: idSchema,
   userId: idSchema,
@@ -182,6 +201,96 @@ export const recordChartMakerResultSchema = z.object({
   error: z.string().min(1).optional()
 });
 
+export const astrologyReportStatusSchema = z.enum(["queued", "processing", "completed", "failed", "cancelled"]);
+export const astrologyReportTypeSchema = z.enum(["core_self", "chart_interpretation", "daily_stream", "question_intention"]);
+export const reportBoundarySchema = z.enum(["private", "public_signal"]);
+
+export const astrologyReportSectionSchema = z.object({
+  id: idSchema,
+  title: z.string().min(1),
+  body: z.string().min(1),
+  emphasis: z.enum(["primary", "supporting", "practice"]).default("supporting")
+});
+
+export const astrologyReportProvenanceSchema = z.object({
+  id: idSchema,
+  kind: z.enum(["birth_data", "chart_result", "user_intent", "engine", "composer_signal", "manual"]),
+  label: z.string().min(1),
+  summary: z.string().min(1),
+  boundary: reportBoundarySchema.default("private"),
+  sourceId: idSchema.optional()
+});
+
+export const astrologyReportPublicSignalSchema = z.object({
+  reportId: idSchema,
+  requestId: idSchema,
+  reportType: astrologyReportTypeSchema,
+  headline: z.string().min(1),
+  summary: z.string().min(1),
+  tone: cardSchema.shape.tone,
+  boundary: z.literal("public_signal"),
+  provenanceSummary: z.string().min(1)
+});
+
+export const astrologyReportRequestSchema = z.object({
+  id: idSchema,
+  userId: idSchema,
+  chartRequestId: idSchema.optional(),
+  reportType: astrologyReportTypeSchema,
+  subjectName: z.string().min(1),
+  birthData: chartBirthDataSchema,
+  question: z.string().min(1).optional(),
+  intent: z.string().min(1).optional(),
+  context: jsonObjectSchema.optional(),
+  source: z.enum(["self", "ally", "composer", "import"]).default("self"),
+  boundary: z.literal("private").default("private"),
+  status: astrologyReportStatusSchema.default("queued"),
+  engine: z.string().min(1).optional(),
+  engineVersion: z.string().min(1).optional(),
+  costCredits: z.number().int().nonnegative().default(0),
+  createdAt: isoDateSchema,
+  updatedAt: isoDateSchema
+});
+
+export const createAstrologyReportRequestSchema = z.object({
+  chartRequestId: idSchema.optional(),
+  reportType: astrologyReportTypeSchema.default("core_self"),
+  subjectName: z.string().min(1),
+  birthData: chartBirthDataSchema,
+  question: z.string().min(1).optional(),
+  intent: z.string().min(1).optional(),
+  context: jsonObjectSchema.optional(),
+  source: z.enum(["self", "ally", "composer", "import"]).default("self")
+});
+
+export const astrologyReportResultSchema = z.object({
+  id: idSchema,
+  requestId: idSchema,
+  userId: idSchema,
+  engine: z.string().min(1),
+  engineVersion: z.string().min(1),
+  status: z.enum(["completed", "failed"]),
+  summary: z.string().min(1).optional(),
+  sections: z.array(astrologyReportSectionSchema).default([]),
+  provenance: z.array(astrologyReportProvenanceSchema).default([]),
+  publicSignal: astrologyReportPublicSignalSchema.optional(),
+  error: z.string().min(1).optional(),
+  createdAt: isoDateSchema
+});
+
+export const recordAstrologyReportResultSchema = z.object({
+  requestId: idSchema,
+  userId: idSchema,
+  engine: z.string().min(1),
+  engineVersion: z.string().min(1),
+  status: z.enum(["completed", "failed"]),
+  summary: z.string().min(1).optional(),
+  sections: z.array(astrologyReportSectionSchema).default([]),
+  provenance: z.array(astrologyReportProvenanceSchema).default([]),
+  publicSignal: astrologyReportPublicSignalSchema.optional(),
+  error: z.string().min(1).optional()
+});
+
 export const composerVoiceIdSchema = z.enum(["guide", "companion", "prompt"]);
 
 export const composerVoiceCardSchema = z.object({
@@ -237,12 +346,25 @@ export type Artifact = z.infer<typeof artifactSchema>;
 export type Gift = z.infer<typeof giftSchema>;
 export type StarTransaction = z.infer<typeof starTransactionSchema>;
 export type ChartBirthData = z.infer<typeof chartBirthDataSchema>;
+export type BirthPlaceSearchQuery = z.infer<typeof birthPlaceSearchQuerySchema>;
+export type BirthPlaceSearchResult = z.infer<typeof birthPlaceSearchResultSchema>;
+export type BirthPlaceSearchResponse = z.infer<typeof birthPlaceSearchResponseSchema>;
 export type ChartMakerRequest = z.infer<typeof chartMakerRequestSchema>;
 export type CreateChartMakerRequest = z.infer<typeof createChartMakerRequestSchema>;
 export type ChartMakerResult = z.infer<typeof chartMakerResultSchema>;
 export type ChartMakerPrecision = z.infer<typeof chartMakerPrecisionSchema>;
 export type ChartMakerChartData = z.infer<typeof chartMakerChartDataSchema>;
 export type RecordChartMakerResult = z.infer<typeof recordChartMakerResultSchema>;
+export type AstrologyReportStatus = z.infer<typeof astrologyReportStatusSchema>;
+export type AstrologyReportType = z.infer<typeof astrologyReportTypeSchema>;
+export type ReportBoundary = z.infer<typeof reportBoundarySchema>;
+export type AstrologyReportSection = z.infer<typeof astrologyReportSectionSchema>;
+export type AstrologyReportProvenance = z.infer<typeof astrologyReportProvenanceSchema>;
+export type AstrologyReportPublicSignal = z.infer<typeof astrologyReportPublicSignalSchema>;
+export type AstrologyReportRequest = z.infer<typeof astrologyReportRequestSchema>;
+export type CreateAstrologyReportRequest = z.infer<typeof createAstrologyReportRequestSchema>;
+export type AstrologyReportResult = z.infer<typeof astrologyReportResultSchema>;
+export type RecordAstrologyReportResult = z.infer<typeof recordAstrologyReportResultSchema>;
 export type ComposerVoiceId = z.infer<typeof composerVoiceIdSchema>;
 export type ComposerVoiceCard = z.infer<typeof composerVoiceCardSchema>;
 export type ComposerVoiceValidationError = z.infer<typeof composerVoiceValidationErrorSchema>;

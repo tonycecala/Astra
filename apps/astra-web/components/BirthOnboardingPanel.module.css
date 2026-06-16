@@ -1,0 +1,288 @@
+.panel {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+  align-items: start;
+}
+
+.form {
+  margin-top: 16px;
+}
+
+.stepper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 11px 0 7px;
+  background: var(--panel);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.step span {
+  display: inline-grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.step[aria-current="step"],
+.step:hover,
+.step:focus-visible {
+  border-color: color-mix(in srgb, var(--gold) 50%, var(--line));
+  color: var(--ink);
+  outline: none;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.placeSearch {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.placeResults {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.placeResults button {
+  display: grid;
+  width: 100%;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--soft);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.placeResults button:hover,
+.placeResults button:focus-visible {
+  border-color: color-mix(in srgb, var(--gold) 50%, var(--line));
+  outline: none;
+}
+
+.placeResults span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.optionGroup {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.optionGroup legend {
+  padding: 0 6px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.option {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--muted);
+}
+
+.option input {
+  margin-top: 3px;
+}
+
+.option strong {
+  display: block;
+  color: var(--ink);
+}
+
+.review {
+  display: grid;
+  gap: 10px;
+}
+
+.review div {
+  display: grid;
+  gap: 4px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.review span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.review strong {
+  overflow-wrap: anywhere;
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.summaryRail {
+  display: grid;
+  gap: 14px;
+}
+
+.requestList {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: 16px 0 0;
+  list-style: none;
+}
+
+.requestList li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.requestList span,
+.requestList small {
+  display: block;
+}
+
+.requestList small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.requestList strong {
+  color: var(--green);
+}
+
+.statusActions {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.statusActions button {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+.reportReader {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.reportReader > strong {
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.reportSections {
+  display: grid;
+  gap: 10px;
+}
+
+.reportSections section {
+  display: grid;
+  gap: 6px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.reportSections span {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.reportSections h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.reportSections p {
+  margin: 0;
+}
+
+.provenanceList {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  margin: 10px 0 0;
+  list-style: none;
+}
+
+.provenanceList li {
+  display: grid;
+  gap: 3px;
+}
+
+.provenanceList span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .panel,
+  .formGrid,
+  .placeSearch {
+    grid-template-columns: 1fr;
+  }
+
+  .formActions {
+    justify-content: stretch;
+  }
+
+  .formActions button {
+    flex: 1 1 160px;
+  }
+
+  .requestList li {
+    grid-template-columns: 1fr;
+  }
+
+  .statusActions {
+    justify-items: start;
+  }
+}

@@ -20,6 +20,18 @@ function laneLabel(lane: LaneFilter) {
   return ui.journey.lanes[lane];
 }
 
+function itemKindLabel(kind: StreamItem["kind"]) {
+  return ui.journey.itemKinds[kind];
+}
+
+function audienceLabel(audience: StreamItem["audience"]) {
+  return ui.journey.audiences[audience];
+}
+
+function publishedDate(value: string) {
+  return new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(value));
+}
+
 export function StreamReader({ streamCards }: { streamCards: StreamCardView[] }) {
   const [activeLane, setActiveLane] = useState<LaneFilter>("all");
   const [activeCardId, setActiveCardId] = useState(streamCards[0]?.card.id ?? "");
@@ -31,7 +43,8 @@ export function StreamReader({ streamCards }: { streamCards: StreamCardView[] })
     return streamCards.filter(({ card }) => card.lane === activeLane);
   }, [activeLane, streamCards]);
 
-  const activeCard = streamCards.find(({ card }) => card.id === activeCardId)?.card ?? visibleCards[0]?.card ?? streamCards[0]?.card;
+  const activeView = streamCards.find(({ card }) => card.id === activeCardId) ?? visibleCards[0] ?? streamCards[0];
+  const activeCard = activeView?.card;
 
   function toggleSet(cardId: string, setter: (next: Set<string>) => void, current: Set<string>) {
     const next = new Set(current);
@@ -73,6 +86,11 @@ export function StreamReader({ streamCards }: { streamCards: StreamCardView[] })
                       <span className="eyebrow">{laneLabel(card.lane)}</span>
                       <span className="stream-card-title">{card.title}</span>
                       <span className="stream-card-body">{card.body}</span>
+                      <span className="stream-card-meta">
+                        <span>{itemKindLabel(item.kind)}</span>
+                        <span>{audienceLabel(item.audience)}</span>
+                        <span>{publishedDate(card.publishedAt)}</span>
+                      </span>
                     </span>
                   </button>
                   <div className="card-actions">
@@ -105,6 +123,22 @@ export function StreamReader({ streamCards }: { streamCards: StreamCardView[] })
             <h2>{activeCard.title}</h2>
             {activeCard.subtitle ? <p className="detail-subtitle">{activeCard.subtitle}</p> : null}
             <p>{activeCard.body}</p>
+            {activeView ? (
+              <dl className="detail-meta" aria-label={ui.journey.detailMetaLabel}>
+                <div>
+                  <dt>{ui.journey.detailKind}</dt>
+                  <dd>{itemKindLabel(activeView.item.kind)}</dd>
+                </div>
+                <div>
+                  <dt>{ui.journey.detailStatus}</dt>
+                  <dd>{ui.journey.statuses[activeView.item.status]}</dd>
+                </div>
+                <div>
+                  <dt>{ui.journey.detailAudience}</dt>
+                  <dd>{audienceLabel(activeView.item.audience)}</dd>
+                </div>
+              </dl>
+            ) : null}
             <div className="card-actions detail-actions">
               <button aria-pressed={savedCardIds.has(activeCard.id)} className="icon-action" onClick={() => toggleSet(activeCard.id, setSavedCardIds, savedCardIds)} type="button">
                 <Bookmark size={16} aria-hidden="true" />

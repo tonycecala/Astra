@@ -15,7 +15,7 @@ const forbidden = [
   /alter policy/i
 ];
 const ignored = new Set([".git", "node_modules", ".next", "dist", "playwright-report", "test-results"]);
-const documentationPrefixes = ["docs/", "README.md", "AGENTS.md", "ASTRA_CLEAN_START_INAUGURAL_CHARTER.md"];
+const documentationPrefixes = ["akashic/", "docs/", "README.md", "AGENTS.md", "ASTRA_CLEAN_START_INAUGURAL_CHARTER.md"];
 const allowedFiles = new Set(["scripts/check-no-supabase.mts", "scripts/check-foundation.mts"]);
 
 async function collectFiles(dir: string): Promise<string[]> {

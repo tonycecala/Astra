@@ -13,7 +13,7 @@ export default defineConfig({
     screenshot: "only-on-failure"
   },
   webServer: {
-    command: "npm run dev",
+    command: "ASTRA_PLACE_SEARCH_PROVIDER=local-fixture npm run dev",
     url: "http://localhost:3011/journey",
     reuseExistingServer: true,
     timeout: 120_000

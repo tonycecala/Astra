@@ -1,13 +1,21 @@
 import { and, asc, desc, eq } from "drizzle-orm";
 import {
+  type Artifact,
+  type AstrologyReportRequest,
+  type AstrologyReportResult,
   type ComposerStreamArtifact,
   type ChartBirthData,
   type ChartMakerRequest,
   type ChartMakerResult,
   type RecordChartMakerResult,
+  type RecordAstrologyReportResult,
+  artifactSchema,
+  astrologyReportRequestSchema,
+  astrologyReportResultSchema,
   chartBirthDataSchema,
   chartMakerRequestSchema,
   chartMakerResultSchema,
+  createAstrologyReportRequestSchema,
   composerStreamArtifactSchema,
   type FoundationSeed,
   foundationSeedSchema
@@ -18,6 +26,8 @@ import {
   achievements,
   allies,
   appUserProfiles,
+  astrologyReportRequests,
+  astrologyReportResults,
   artifacts,
   cards,
   chartRequests,
@@ -61,7 +71,20 @@ export type CreateChartMakerRequestInput = {
   source?: ChartMakerRequest["source"];
 };
 
+export type CreateAstrologyReportRequestInput = {
+  userId: string;
+  chartRequestId?: string;
+  reportType?: AstrologyReportRequest["reportType"];
+  subjectName: string;
+  birthData: ChartBirthData;
+  question?: string;
+  intent?: string;
+  context?: Record<string, unknown>;
+  source?: AstrologyReportRequest["source"];
+};
+
 export type RecordChartMakerResultInput = RecordChartMakerResult;
+export type RecordAstrologyReportResultInput = RecordAstrologyReportResult;
 export type UpsertComposerStreamArtifactInput = ComposerStreamArtifact;
 
 function toDate(value: string) {
@@ -102,6 +125,56 @@ function chartResultFromRow(row: typeof chartResults.$inferSelect): ChartMakerRe
   });
 }
 
+function astrologyReportRequestFromRow(row: typeof astrologyReportRequests.$inferSelect): AstrologyReportRequest {
+  return astrologyReportRequestSchema.parse({
+    id: row.id,
+    userId: row.userId,
+    chartRequestId: row.chartRequestId ?? undefined,
+    reportType: row.reportType,
+    subjectName: row.subjectName,
+    birthData: row.birthData,
+    question: row.question ?? undefined,
+    intent: row.intent ?? undefined,
+    context: row.context,
+    source: row.source,
+    boundary: row.boundary,
+    status: row.status,
+    engine: row.engine ?? undefined,
+    engineVersion: row.engineVersion ?? undefined,
+    costCredits: row.costCredits,
+    createdAt: toIsoDate(row.createdAt),
+    updatedAt: toIsoDate(row.updatedAt)
+  });
+}
+
+function astrologyReportResultFromRow(row: typeof astrologyReportResults.$inferSelect): AstrologyReportResult {
+  return astrologyReportResultSchema.parse({
+    id: row.id,
+    requestId: row.requestId,
+    userId: row.userId,
+    engine: row.engine,
+    engineVersion: row.engineVersion,
+    status: row.status,
+    summary: row.summary ?? undefined,
+    sections: row.sections,
+    provenance: row.provenance,
+    publicSignal: row.publicSignal ?? undefined,
+    error: row.error ?? undefined,
+    createdAt: toIsoDate(row.createdAt)
+  });
+}
+
+function artifactFromRow(row: typeof artifacts.$inferSelect): Artifact {
+  return artifactSchema.parse({
+    id: row.id,
+    userId: row.userId,
+    title: row.title,
+    kind: row.kind,
+    summary: row.summary,
+    createdAt: toIsoDate(row.createdAt)
+  });
+}
+
 function cardFromRow(row: typeof cards.$inferSelect) {
   return {
     id: row.id,
@@ -138,13 +211,18 @@ export async function readFoundationSnapshot(database: AstraDb): Promise<Foundat
   const streamRows = await database.select().from(streamItems).where(eq(streamItems.status, "published")).orderBy(asc(streamItems.position));
   const achievementRows = await database.select().from(achievements).orderBy(asc(achievements.createdAt));
   const allyRows = await database.select().from(allies).orderBy(asc(allies.createdAt));
-  const artifactRows = await database.select().from(artifacts).orderBy(asc(artifacts.createdAt));
   const giftRows = await database.select().from(gifts).orderBy(asc(gifts.createdAt));
   const starRows = await database.select().from(starTransactions).orderBy(asc(starTransactions.createdAt));
 
   if (!profile) {
     throw new Error("No Astra profile found. Run npm run db:seed -- --execute against a migrated local database.");
   }
+
+  const artifactRows = await database
+    .select()
+    .from(artifacts)
+    .where(eq(artifacts.userId, profile.userId))
+    .orderBy(asc(artifacts.createdAt));
 
   return foundationSeedSchema.parse({
     user: {
@@ -181,17 +259,7 @@ export async function readFoundationSnapshot(database: AstraDb): Promise<Foundat
           createdAt: toIsoDate(ally.createdAt)
         })
     ),
-    artifacts: artifactRows.map(
-      (artifact) =>
-        ({
-          id: artifact.id,
-          userId: artifact.userId,
-          title: artifact.title,
-          kind: artifact.kind,
-          summary: artifact.summary,
-          createdAt: toIsoDate(artifact.createdAt)
-        })
-    ),
+    artifacts: artifactRows.map(artifactFromRow),
     gifts: giftRows.map(
       (gift) =>
         ({
@@ -407,6 +475,8 @@ export async function seedFoundationData(
 }
 
 export async function resetFoundationData(database: AstraDb): Promise<FoundationResetResult> {
+  await database.delete(astrologyReportResults);
+  await database.delete(astrologyReportRequests);
   await database.delete(chartResults);
   await database.delete(chartRequests);
   await database.delete(starTransactions);
@@ -535,6 +605,199 @@ export async function recordChartMakerResult(
       .where(and(eq(chartRequests.id, input.requestId), eq(chartRequests.userId, input.userId)));
 
     return chartResultFromRow(result);
+  });
+}
+
+export async function createAstrologyReportRequest(
+  database: AstraDb,
+  input: CreateAstrologyReportRequestInput
+): Promise<AstrologyReportRequest> {
+  const parsed = createAstrologyReportRequestSchema.parse({
+    chartRequestId: input.chartRequestId,
+    reportType: input.reportType ?? "core_self",
+    subjectName: input.subjectName,
+    birthData: input.birthData,
+    question: input.question,
+    intent: input.intent,
+    context: input.context,
+    source: input.source ?? "self"
+  });
+  const now = new Date();
+
+  const [request] = await database
+    .insert(astrologyReportRequests)
+    .values({
+      userId: input.userId,
+      chartRequestId: parsed.chartRequestId ?? null,
+      reportType: parsed.reportType,
+      subjectName: parsed.subjectName,
+      birthData: parsed.birthData,
+      question: parsed.question ?? null,
+      intent: parsed.intent ?? null,
+      context: parsed.context ?? {},
+      source: parsed.source,
+      boundary: "private",
+      status: "queued",
+      costCredits: 0,
+      createdAt: now,
+      updatedAt: now
+    })
+    .returning();
+
+  return astrologyReportRequestFromRow(request);
+}
+
+export async function listUserAstrologyReportRequests(
+  database: AstraDb,
+  userId: string
+): Promise<AstrologyReportRequest[]> {
+  const rows = await database
+    .select()
+    .from(astrologyReportRequests)
+    .where(eq(astrologyReportRequests.userId, userId))
+    .orderBy(desc(astrologyReportRequests.createdAt));
+
+  return rows.map(astrologyReportRequestFromRow);
+}
+
+export async function getUserAstrologyReportRequest(
+  database: AstraDb,
+  input: { requestId: string; userId: string }
+): Promise<AstrologyReportRequest | null> {
+  const [row] = await database
+    .select()
+    .from(astrologyReportRequests)
+    .where(and(eq(astrologyReportRequests.id, input.requestId), eq(astrologyReportRequests.userId, input.userId)))
+    .limit(1);
+
+  return row ? astrologyReportRequestFromRow(row) : null;
+}
+
+export async function listUserAstrologyReportResults(
+  database: AstraDb,
+  userId: string
+): Promise<AstrologyReportResult[]> {
+  const rows = await database
+    .select()
+    .from(astrologyReportResults)
+    .where(eq(astrologyReportResults.userId, userId))
+    .orderBy(desc(astrologyReportResults.createdAt));
+
+  return rows.map(astrologyReportResultFromRow);
+}
+
+export async function getUserAstrologyReportResult(
+  database: AstraDb,
+  input: { requestId: string; userId: string }
+): Promise<AstrologyReportResult | null> {
+  const [row] = await database
+    .select()
+    .from(astrologyReportResults)
+    .where(and(eq(astrologyReportResults.requestId, input.requestId), eq(astrologyReportResults.userId, input.userId)))
+    .limit(1);
+
+  return row ? astrologyReportResultFromRow(row) : null;
+}
+
+export async function listUserArtifacts(database: AstraDb, userId: string): Promise<Artifact[]> {
+  const rows = await database
+    .select()
+    .from(artifacts)
+    .where(eq(artifacts.userId, userId))
+    .orderBy(desc(artifacts.createdAt));
+
+  return rows.map(artifactFromRow);
+}
+
+export async function recordAstrologyReportResult(
+  database: AstraDb,
+  input: RecordAstrologyReportResultInput
+): Promise<AstrologyReportResult> {
+  const now = new Date();
+
+  return database.transaction(async (tx) => {
+    const [request] = await tx
+      .select({ id: astrologyReportRequests.id })
+      .from(astrologyReportRequests)
+      .where(and(eq(astrologyReportRequests.id, input.requestId), eq(astrologyReportRequests.userId, input.userId)))
+      .limit(1);
+
+    if (!request) {
+      throw new Error("Astrology report request was not found for the supplied user.");
+    }
+
+    const [result] = await tx
+      .insert(astrologyReportResults)
+      .values({
+        requestId: input.requestId,
+        userId: input.userId,
+        engine: input.engine,
+        engineVersion: input.engineVersion,
+        status: input.status,
+        summary: input.summary ?? null,
+        sections: input.sections,
+        provenance: input.provenance,
+        publicSignal: input.publicSignal ?? null,
+        error: input.error ?? null,
+        createdAt: now
+      })
+      .onConflictDoUpdate({
+        target: astrologyReportResults.requestId,
+        set: {
+          engine: input.engine,
+          engineVersion: input.engineVersion,
+          status: input.status,
+          summary: input.summary ?? null,
+          sections: input.sections,
+          provenance: input.provenance,
+          publicSignal: input.publicSignal ?? null,
+          error: input.error ?? null,
+          createdAt: now
+        }
+      })
+      .returning();
+
+    await tx
+      .update(astrologyReportRequests)
+      .set({
+        status: input.status,
+        engine: input.engine,
+        engineVersion: input.engineVersion,
+        updatedAt: now
+      })
+      .where(and(eq(astrologyReportRequests.id, input.requestId), eq(astrologyReportRequests.userId, input.userId)));
+
+    if (input.status === "completed") {
+      await tx
+        .insert(artifacts)
+        .values({
+          id: `report:${input.requestId}`,
+          userId: input.userId,
+          title: input.publicSignal?.headline ?? "Astrology report",
+          kind: "report",
+          summary: input.summary ?? "Completed astrology report.",
+          payload: {
+            reportResultId: result.id,
+            requestId: input.requestId,
+            publicSignal: input.publicSignal ?? null
+          },
+          createdAt: now
+        })
+        .onConflictDoUpdate({
+          target: artifacts.id,
+          set: {
+            title: input.publicSignal?.headline ?? "Astrology report",
+            summary: input.summary ?? "Completed astrology report.",
+            payload: {
+              reportResultId: result.id,
+              requestId: input.requestId,
+              publicSignal: input.publicSignal ?? null
+            }
+          }
+        });
+    }
+
+    return astrologyReportResultFromRow(result);
   });
 }
 

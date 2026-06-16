@@ -1,5 +1,9 @@
 import { composerStreamArtifactSchema } from "@astra/contracts";
-import { publishComposerStreamArtifact, validateComposerVoiceCard } from "../apps/composer-web/src/index";
+import {
+  publishAstrologyReportSignalArtifact,
+  publishComposerStreamArtifact,
+  validateComposerVoiceCard
+} from "../apps/composer-web/src/index";
 
 const validFixtures = [
   {
@@ -77,4 +81,39 @@ if (published.artifact.card.subtitle !== published.artifact.rationale.reason) {
   throw new Error("Composer stream publisher must carry the rationale into the card subtitle.");
 }
 
-console.log(`Composer stream smoke passed: ${published.artifact.id}.`);
+const reportSignalPublished = publishAstrologyReportSignalArtifact({
+  id: "composer_report_signal_artifact_smoke",
+  cardId: "composer_report_signal_card_smoke",
+  streamItemId: "composer_report_signal_stream_item_smoke",
+  signal: {
+    reportId: "report_smoke",
+    requestId: "report_request_smoke",
+    reportType: "core_self",
+    headline: "A report signal is ready",
+    summary: "Composer received a report-safe public signal without raw private report payloads.",
+    tone: "grounded",
+    boundary: "public_signal",
+    provenanceSummary: "Shown because an astrology report exposed a public signal."
+  },
+  voiceCard: {
+    voice: { id: "guide" },
+    header: "A report signal is ready",
+    body: "Composer can publish this card without loading raw private report sections."
+  },
+  position: 1,
+  createdAt: "2026-06-16T00:00:00.000Z"
+});
+
+if (!reportSignalPublished.ok) {
+  throw new Error("Expected Composer report-signal artifact publish to pass validation.");
+}
+
+composerStreamArtifactSchema.parse(reportSignalPublished.artifact);
+if (reportSignalPublished.artifact.rationale.source !== "chart_result") {
+  throw new Error("Composer report-signal artifacts must identify chart/report provenance.");
+}
+if (reportSignalPublished.artifact.streamItem.kind !== "artifact") {
+  throw new Error("Composer report-signal artifacts must publish as artifact stream items.");
+}
+
+console.log(`Composer stream smoke passed: ${published.artifact.id}, ${reportSignalPublished.artifact.id}.`);

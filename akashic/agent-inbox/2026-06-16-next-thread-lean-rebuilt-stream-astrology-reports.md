@@ -35,7 +35,7 @@ Read these first:
 ## Current State
 
 - `main` now includes the local DB, Better Auth email-code login, Mailpit auth-code smoke, chart request/result persistence, Composer stream artifact publishing, Astra stream ingestion, native timezone picker, and no-Supabase boundary checks.
-- `/self` is an authenticated foundation route with profile and chart-request smoke behavior. It is not the final onboarding surface.
+- `/self` is an authenticated profile and birth-data onboarding route. It now queues linked chart/private report requests after review, supports provider-backed local place search, and exposes a private user-owned Generate action for queued reports.
 - `/journey` renders DB-backed Composer stream items.
 - `@astra/chart-maker` is an independent module boundary that accepts `ChartMakerRequest` and returns typed chart-maker results. It is still deterministic contract behavior, not the final ephemeris-backed astrology engine.
 - Composer has a voice registry and publishes typed stream artifacts. Astra ingests those artifacts through an API contract rather than app-to-app imports.
@@ -77,8 +77,8 @@ Read these first:
 
 ## Likely Blockers
 
-- Choose the ephemeris/chart engine or approve an interface-first slice with explicit not-configured failure.
-- Choose the geocoding/timezone provider for birth place lookup.
+- Decide whether the local `astronomy-engine` adapter is production v1 or should remain a local proof behind a later production provider.
+- Choose the production geocoding/timezone provider for birth place lookup.
 - Decide the first report product: core self report, chart interpretation report, daily/stream report, or question/intention report.
 - Define the private/public split for stream cards derived from personal reports.
 - Define cache invalidation before edge caching Composer/read-model data.
@@ -93,3 +93,21 @@ Pick the next implementation slice:
 - **Stream first:** retune `/journey` around DB-backed stream cards and report placeholders.
 
 Recommended next slice: **Contracts first**, because it fixes the shape of stream, reports, persistence, and module boundaries before UI complexity grows.
+
+## Progress Note
+
+2026-06-16: Contracts-first slice is underway on `codex/astra-report-contracts`. Completed report contracts, Drizzle persistence, authenticated `/api/reports`, token-guarded `/api/report-results`, fail-hard `@astra/astrology` engine-unavailable adapter, Composer public report-signal publisher, `/self` report lifecycle status, `/journey` report-signal status, generated/applied migration `0002_large_black_tom`, and `npm run test:report-api`. Also replaced the single `/self` chart-smoke form with `BirthOnboardingPanel`, a multi-step subject/date/precision/intent/review flow that queues linked chart and private report requests. Keep this handoff active because the broader ten-step plan still needs provider-backed place search, real ephemeris/report engine selection, production read-model/cache design, and deeper stream product work.
+
+2026-06-16: Stream/read-model slice added report-signal ingestion proof and `/journey` product-surface metadata. Composer report signals now publish as `artifact` stream items; `npm run test:composer-ingest-api` proves generic Composer card plus report-signal card ingestion and `/journey` rendering. `/journey` now shows item kind/status/audience/date metadata plus explicit loading/error states. `docs/architecture/stream-read-model-cache-boundary.md` records public stream cache tags, invalidation rules, and origin-failure behavior. Remaining large blockers: provider-backed place search and real ephemeris/report engine selection/configuration.
+
+2026-06-16: Birth-place provider boundary added. Shared contracts now define typed place search results; `@astra/astrology` owns `searchBirthPlaces`; `/api/places/search` is authenticated and fails clearly when no provider is configured. Local verification uses non-secret `ASTRA_PLACE_SEARCH_PROVIDER=local-fixture`; `BirthOnboardingPanel` can search/select a place, fill timezone and coordinates, and keep manual confirmation editable. `npm run test:place-search-api` and the signed-in `/self` E2E cover this path. Final browser QA also proved `/self` at desktop/tablet/phone with New York place selection, linked chart/report queueing, no console errors, and no horizontal overflow.
+
+2026-06-16: First configured report engine slice added. `@astra/astrology` now supports `ASTRA_EPHEMERIS_ENGINE=local-astronomy-engine` through the MIT `astronomy-engine` package, calculating Sun, Moon, visible-planet ecliptic longitudes and moon phase before emitting completed private report sections/provenance plus a Composer-safe public signal. `npm run test:astrology-engine` proves both unconfigured fail-clear behavior and configured local-engine completion; `npm run test:report-api` now proves completed result recording and public-signal preservation. Remaining product decision: confirm whether this local adapter is production v1 or should be replaced behind the same boundary.
+
+2026-06-16: User-visible report generation slice added. `/api/reports/[requestId]/generate` lets a signed-in user generate only their own queued report with the configured engine, records the result through the same Drizzle transaction, and returns the updated request/result. `/self` now shows Generate on queued reports and updates to completed status plus the public-signal headline after generation. `npm run test:report-api` covers user-owned generation; the signed-in `/self` Playwright journey clicks Generate and asserts completed/Gemini output; in-app browser QA verified desktop/tablet/phone `/self` completed status with no new console errors or horizontal overflow.
+
+2026-06-16: Private report reader slice added. `/self` now lets the signed-in user open generated report detail in-place, showing private sections such as `Core pattern` and report provenance while keeping only the explicit public signal available for Composer/public stream use. The signed-in `/self` E2E now clicks `Read report` and asserts private reader content; in-app browser QA verified desktop/tablet/phone private report detail with no new console errors or horizontal overflow.
+
+2026-06-16: Library artifact slice added. Completed report generation now upserts a deterministic user-owned `report:<requestId>` artifact, and `/library` switches to signed-in private artifacts instead of the public foundation snapshot. Older completed report results without artifact rows are merged into the signed-in library view as report artifacts so existing local generations stay visible. The signed-in `/self` E2E now verifies the generated report appears in `/library`; browser QA verified signed-in `/library` report artifacts on desktop/tablet/phone with no console errors or horizontal overflow.
+
+2026-06-16: Explicit public-signal publish slice added. `/api/reports/[requestId]/publish-signal` authorizes the signed-in owner, requires a completed report result with `publicSignal`, and upserts only the Composer-shaped public stream artifact into `/journey`. `/self` exposes this as `Publish signal` in the private report reader. `npm run test:report-api` covers the route, the signed-in `/self` E2E verifies the published card appears in `/journey`, and in-app browser QA verified desktop/tablet/phone `/journey` report-signal rendering with no console errors or horizontal overflow.

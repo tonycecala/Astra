@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+type JsonObject = Record<string, unknown>;
+
 const routes = [
   { path: "/", heading: "A living stream" },
   { path: "/journey", heading: "A living stream" },
@@ -9,6 +11,61 @@ const routes = [
   { path: "/gifts", heading: "Stars stay accountable" },
   { path: "/login", heading: "Email code sign-in" }
 ];
+
+function findOtp(value: unknown): string | null {
+  if (typeof value === "string") return value.match(/\b\d{6}\b/)?.[0] ?? null;
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const otp = findOtp(item);
+      if (otp) return otp;
+    }
+  }
+  if (value && typeof value === "object") {
+    for (const item of Object.values(value as JsonObject)) {
+      const otp = findOtp(item);
+      if (otp) return otp;
+    }
+  }
+  return null;
+}
+
+async function readOtpFromMailpit(email: string) {
+  const mailpitUrl = process.env.MAILPIT_API_URL?.trim() || "http://localhost:8025";
+  const deadline = Date.now() + 5_000;
+
+  while (Date.now() < deadline) {
+    const searchUrl = new URL("/api/v1/search", mailpitUrl);
+    searchUrl.searchParams.set("query", email);
+    searchUrl.searchParams.set("limit", "10");
+
+    const searchResponse = await fetch(searchUrl);
+    if (!searchResponse.ok) {
+      throw new Error(`Mailpit search failed with ${searchResponse.status}. Is Mailpit running at ${mailpitUrl}?`);
+    }
+
+    const search = (await searchResponse.json()) as JsonObject;
+    const messages = Array.isArray(search.messages)
+      ? search.messages
+      : Array.isArray(search.Messages)
+        ? search.Messages
+        : [];
+
+    for (const summary of messages as JsonObject[]) {
+      const id = String(summary.ID ?? summary.Id ?? summary.id ?? "");
+      if (!id) continue;
+
+      const messageResponse = await fetch(new URL(`/api/v1/message/${id}`, mailpitUrl));
+      if (!messageResponse.ok) continue;
+      const message = (await messageResponse.json()) as JsonObject;
+      const otp = findOtp(message);
+      if (otp) return otp;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+
+  throw new Error(`No OTP found in Mailpit for ${email}.`);
+}
 
 test.describe("clean-start routes", () => {
   for (const route of routes) {
@@ -50,6 +107,15 @@ test.describe("clean-start routes", () => {
     await expect(page.getByLabel("Card detail")).toContainText("Three Quiet Breaths");
   });
 
+  test("reader surfaces report-signal metadata", async ({ page }) => {
+    await page.goto("/journey");
+    await page.getByRole("tab", { name: "Know yourself" }).click();
+    await page.getByRole("button", { name: /Report Signal Card/ }).click();
+    await expect(page.getByLabel("Card detail")).toContainText("Report Signal Card");
+    await expect(page.getByLabel("Card metadata")).toContainText("Report signal");
+    await expect(page.getByLabel("Card metadata")).toContainText("Published");
+  });
+
   test("reader save and reflect actions update state", async ({ page }) => {
     await page.goto("/journey");
     await page.getByRole("button", { name: /^Save$/ }).first().click();
@@ -75,5 +141,69 @@ test.describe("clean-start routes", () => {
     await expect(page.getByLabel("Email")).toBeVisible();
     await expect(page.getByLabel("Code")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Send code" })).toBeVisible();
+  });
+
+  test("signed-in self onboarding queues chart and report requests", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "The auth-backed onboarding journey is covered once; route layout is covered on every viewport.");
+
+    const email = `self-onboarding-${Date.now()}@example.com`;
+    const name = "Astra Onboarding Smoke";
+
+    await page.goto("/login");
+    await page.getByLabel("Name").fill(name);
+    await page.getByLabel("Email").fill(email);
+    await page.getByRole("button", { name: "Send code" }).click();
+    await expect(page.getByText("Check email for the sign-in code")).toBeVisible();
+
+    await page.getByLabel("Code").fill(await readOtpFromMailpit(email));
+    await page.getByRole("button", { name: "Verify code" }).click();
+    await expect(page.getByText("Signed in")).toBeVisible();
+
+    await page.goto("/self");
+    await expect(page.getByRole("heading", { name })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
+
+    const nextButton = page.getByRole("button", { exact: true, name: "Next" });
+    await nextButton.click();
+    await page.getByLabel("Birth date").fill("1961-05-23");
+    await nextButton.click();
+    await page.getByLabel("Time and place").check();
+    await page.getByLabel("Search birth place").fill("New");
+    await page.getByRole("button", { exact: true, name: "Search" }).click();
+    await page.getByRole("button", { name: /New York, NY, USA/ }).click();
+    await page.getByLabel("Birth time (optional)").fill("09:30");
+    await nextButton.click();
+    await page.getByLabel("Question (optional)").fill("What pattern should Astra preserve?");
+    await page.getByLabel("Intent (optional)").fill("self-onboarding-e2e");
+    await page.getByLabel("Context (optional)").fill("Desktop e2e onboarding proof.");
+    await nextButton.click();
+
+    await expect(page.getByLabel("Review birth data")).toContainText("1961-05-23");
+    await expect(page.getByLabel("Review birth data")).toContainText("New York, NY, USA");
+    await page.locator('section[aria-label="Birth data onboarding"] form button[type="submit"]').click();
+    const onboarding = page.locator('section[aria-label="Birth data onboarding"]');
+    await expect(onboarding.getByRole("heading", { name: "Recent chart requests" })).toBeVisible();
+    await expect(onboarding.getByRole("heading", { name: "Report status" })).toBeVisible();
+    await expect(onboarding).toContainText(name);
+    await expect(onboarding).toContainText("queued");
+    await onboarding.getByRole("button", { exact: true, name: "Generate" }).click();
+    await expect(onboarding).toContainText("Report generated");
+    await expect(onboarding).toContainText("completed");
+    await expect(onboarding).toContainText("Gemini Sun");
+    await onboarding.getByRole("button", { exact: true, name: "Read report" }).click();
+    await expect(onboarding.getByLabel("Private report reader")).toContainText("Core pattern");
+    await expect(onboarding.getByLabel("Private report reader")).toContainText("Provenance");
+    await onboarding.getByRole("button", { exact: true, name: "Publish signal" }).click();
+    await expect(onboarding).toContainText("Report signal published to Journey");
+
+    await page.goto("/library");
+    await expect(page.getByRole("heading", { name: "Artifacts worth keeping" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Gemini Sun/ })).toBeVisible();
+    await expect(page.getByText("report", { exact: true })).toBeVisible();
+
+    await page.goto("/journey");
+    await page.getByRole("tab", { name: "Know yourself" }).click();
+    const generatedSignals = page.locator(".stream-card-open").filter({ hasText: "Gemini Sun" });
+    expect(await generatedSignals.count()).toBeGreaterThan(0);
   });
 });

@@ -325,6 +325,26 @@ textarea {
   font-size: 14px;
 }
 
+.compact-list {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: 16px 0 0;
+  list-style: none;
+}
+
+.compact-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.compact-list strong {
+  color: var(--green);
+}
+
 .stream-card {
   min-height: 280px;
   display: grid;
@@ -367,6 +387,22 @@ textarea {
   margin-top: 10px;
   color: var(--muted);
   line-height: 1.5;
+}
+
+.stream-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.stream-card-meta span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: var(--muted);
+  background: var(--soft);
+  font-size: 12px;
 }
 
 .art {
@@ -440,6 +476,31 @@ textarea {
 
 .detail-subtitle {
   color: var(--ink);
+  font-weight: 700;
+}
+
+.detail-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 18px 0 0;
+}
+
+.detail-meta div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--soft);
+}
+
+.detail-meta dt {
+  margin: 0 0 5px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.detail-meta dd {
+  margin: 0;
   font-weight: 700;
 }
 
@@ -546,6 +607,10 @@ textarea {
     position: static;
     order: -1;
     min-height: 0;
+  }
+
+  .detail-meta {
+    grid-template-columns: 1fr;
   }
 
   .bottom-nav {

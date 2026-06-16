@@ -1,5 +1,6 @@
 import {
   type AstraCard,
+  type AstrologyReportPublicSignal,
   type ComposerArtifactRationale,
   type ComposerStreamArtifact,
   type ComposerVoiceCard,
@@ -19,6 +20,7 @@ export type ComposerStreamPublishInput = {
   rationale: ComposerArtifactRationale;
   ctaLabel?: string;
   ctaAction?: AstraCard["ctaAction"];
+  kind?: StreamItem["kind"];
   position?: number;
   status?: StreamItem["status"];
   audience?: StreamItem["audience"];
@@ -48,7 +50,7 @@ export function publishComposerStreamArtifact(input: ComposerStreamPublishInput)
   const streamItem: StreamItem = {
     id: input.streamItemId,
     cardId: input.cardId,
-    kind: "card",
+    kind: input.kind ?? "card",
     position: input.position ?? 0,
     status: input.status ?? "published",
     audience: input.audience ?? "all"
@@ -67,4 +69,40 @@ export function publishComposerStreamArtifact(input: ComposerStreamPublishInput)
       createdAt
     })
   };
+}
+
+export type ComposerReportSignalPublishInput = {
+  id: string;
+  cardId: string;
+  streamItemId: string;
+  signal: AstrologyReportPublicSignal;
+  voiceCard: ComposerVoiceCard;
+  position?: number;
+  status?: StreamItem["status"];
+  audience?: StreamItem["audience"];
+  createdAt?: string;
+};
+
+export function publishAstrologyReportSignalArtifact(
+  input: ComposerReportSignalPublishInput
+): ComposerStreamPublishResult {
+  return publishComposerStreamArtifact({
+    id: input.id,
+    cardId: input.cardId,
+    streamItemId: input.streamItemId,
+    voiceCard: input.voiceCard,
+    lane: "know_yourself",
+    tone: input.signal.tone,
+    rationale: {
+      reason: input.signal.provenanceSummary,
+      source: "chart_result"
+    },
+    ctaLabel: "Open",
+    ctaAction: "open",
+    kind: "artifact",
+    position: input.position,
+    status: input.status,
+    audience: input.audience,
+    createdAt: input.createdAt
+  });
 }

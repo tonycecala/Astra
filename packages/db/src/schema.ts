@@ -232,6 +232,62 @@ export const chartResults = pgTable(
   })
 );
 
+export const astrologyReportRequests = pgTable(
+  "astrology_report_requests",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    chartRequestId: text("chart_request_id").references(() => chartRequests.id, { onDelete: "set null" }),
+    reportType: text("report_type").notNull(),
+    subjectName: text("subject_name").notNull(),
+    birthData: jsonb("birth_data").notNull(),
+    question: text("question"),
+    intent: text("intent"),
+    context: jsonb("context").notNull().default(sql`'{}'::jsonb`),
+    source: text("source").notNull().default("self"),
+    boundary: text("boundary").notNull().default("private"),
+    status: text("status").notNull().default("queued"),
+    engine: text("engine"),
+    engineVersion: text("engine_version"),
+    costCredits: integer("cost_credits").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    userIdx: index("astrology_report_requests_user_idx").on(table.userId, table.createdAt),
+    chartRequestIdx: index("astrology_report_requests_chart_request_idx").on(table.chartRequestId),
+    statusIdx: index("astrology_report_requests_status_idx").on(table.status, table.createdAt)
+  })
+);
+
+export const astrologyReportResults = pgTable(
+  "astrology_report_results",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+    requestId: text("request_id")
+      .notNull()
+      .references(() => astrologyReportRequests.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    engine: text("engine").notNull(),
+    engineVersion: text("engine_version").notNull(),
+    status: text("status").notNull(),
+    summary: text("summary"),
+    sections: jsonb("sections").notNull().default(sql`'[]'::jsonb`),
+    provenance: jsonb("provenance").notNull().default(sql`'[]'::jsonb`),
+    publicSignal: jsonb("public_signal"),
+    error: text("error"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    requestIdx: uniqueIndex("astrology_report_results_request_idx").on(table.requestId),
+    userIdx: index("astrology_report_results_user_idx").on(table.userId, table.createdAt)
+  })
+);
+
 export const gifts = pgTable(
   "gifts",
   {
