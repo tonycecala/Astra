@@ -9,6 +9,7 @@ apps/
 packages/
   contracts/       Zod schemas and TypeScript nouns
   db/              Drizzle schema and database client
+  chart-maker/     independent chart request/result engine boundary
   ui/              shared visual tokens and future atoms
   config/          shared constants
   testkit/         typed seed fixtures
@@ -25,6 +26,7 @@ The foundation proves:
 - The preferred user login flow is email code first: send code, verify code, continue without a password prompt.
 - Database schema is Drizzle-owned and contains Better Auth plus Astra-owned tables.
 - Chart-maker communication starts as explicit request/result contracts with user-owned persistence.
+- `@astra/chart-maker` consumes `ChartMakerRequest` and emits `RecordChartMakerResult` without importing Astra app or database internals.
 - Composer's first publishing target is a stream artifact contract that Astra can ingest without importing Composer internals.
 - Seed/reset commands are explicit: dry-run by default, executable only with `--execute`, and destructive reset is local-host guarded.
 - Composer is visible as a boundary but not implemented.
@@ -36,6 +38,7 @@ The foundation proves:
 - `packages/db` owns schema/client.
 - `packages/db/src/repositories.ts` owns typed seed, reset, snapshot, Composer stream ingest, and profile bootstrap helpers.
 - `packages/db/src/repositories.ts` also owns the local chart-maker request/result lifecycle boundary.
+- `packages/chart-maker` owns deterministic chart-maker computation and speaks only through shared contracts.
 - `apps/astra-web` renders product routes and owns auth integration.
 - `apps/astra-web/lib/email/send-email.ts` owns email delivery and local email capture.
 - `apps/astra-web/lib/i18n.ts` owns app UI handles and route chrome copy.
@@ -63,7 +66,9 @@ Run `npm run test:chart-request-api` with the local app and Mailpit running to p
 
 ## Chart Maker And Composer Boundary
 
-Chart-maker v1 requires birth date only. Birth time, birth location, and timezone form one optional precision bundle: provide all three, or leave all three blank for date-only intake. Coordinates, question, intent, and context are optional until onboarding defines stronger requirements. Astra stores the request and result as user-owned records, while an independent chart engine can speak through the shared `ChartMakerRequest` and `ChartMakerResult` contracts without importing Astra app code. Result writes use `/api/chart-results` with `x-astra-internal-token`; local development defaults to `astra-local-internal-token`, while deployed environments require `ASTRA_INTERNAL_API_TOKEN`.
+Chart-maker v1 requires birth date only. Birth time, birth location, and timezone form one optional precision bundle: provide all three, or leave all three blank for date-only intake. Coordinates, question, intent, and context are optional until onboarding defines stronger requirements. Astra stores the request and result as user-owned records, while an independent chart engine can speak through the shared `ChartMakerRequest` and `ChartMakerResult` contracts without importing Astra app code. Result writes use `/api/chart-results` with `x-astra-internal-token`; all environments require `ASTRA_INTERNAL_API_TOKEN`, including local development.
+
+The first independent chart-maker package is `@astra/chart-maker`. It is a deterministic contract adapter: it derives safe date-based symbolic fields, preserves the birth precision bundle, emits `ChartMakerChartData`, and builds a `RecordChartMakerResult` payload for `/api/chart-results`. It does not claim to be a full ephemeris or astrology engine. Run `npm run test:chart-maker` to prove Tony's `1961-05-23` fixture derives Gemini, supports date-only intake, supports the timed/location precision bundle, and produces the result contract.
 
 `/self` is the first visible chart-maker handoff surface. Signed-in users can queue a chart request; logged-out visitors see the email-code sign-in path instead. The form uses explicit text formats for birth date and time so the handoff payload stays clear and testable.
 
@@ -93,4 +98,4 @@ Run `npm run test:composer-ingest-api` with the local app running to prove an in
 
 ## Future Delivery Posture
 
-For published stream artifacts, prefer edge-first caching with origin fallback. Keep this out of the first foundation until the publishing contract exists, but do not design future retrieval paths around request-time origin dependency only.
+For published Composer stream artifacts and future public/read-model data, expect edge-first caching with explicit origin failure. Keep this out of the first foundation until production retrieval is designed, and do not silently substitute stale or placeholder content when the origin path is broken.

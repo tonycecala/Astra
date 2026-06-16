@@ -1,5 +1,11 @@
 import { readFile } from "node:fs/promises";
-import { chartMakerRequestSchema, chartMakerResultSchema, composerStreamArtifactSchema, foundationSeedSchema } from "@astra/contracts";
+import {
+  chartMakerChartDataSchema,
+  chartMakerRequestSchema,
+  chartMakerResultSchema,
+  composerStreamArtifactSchema,
+  foundationSeedSchema
+} from "@astra/contracts";
 import { getFoundationSeed } from "@astra/testkit";
 
 const seed = foundationSeedSchema.parse(getFoundationSeed());
@@ -70,6 +76,37 @@ chartMakerResultSchema.parse({
   createdAt: now
 });
 
+chartMakerChartDataSchema.parse({
+  schemaVersion: 1,
+  engine: "astra-chart-maker-local-v1",
+  requestId: "chart_request_smoke",
+  subjectName: "Tony C",
+  precision: "timed_location",
+  birthData: {
+    date: "1961-05-23",
+    time: "09:30",
+    timezone: "America/New_York",
+    location: "New York, NY, USA",
+    latitude: 40.7128,
+    longitude: -74.006
+  },
+  derived: {
+    sunSign: "Gemini",
+    season: "spring",
+    dayOfYear: 143
+  },
+  interpretation: {
+    headline: "Tony C carries a Gemini solar signal",
+    summary: "Contract smoke chart-maker payload.",
+    limits: ["This deterministic module is a contract adapter, not a full ephemeris engine."]
+  },
+  requestContext: {
+    question: "What should the chart maker answer?",
+    intent: "foundation contract smoke",
+    source: "self"
+  }
+});
+
 composerStreamArtifactSchema.parse({
   id: "composer_stream_smoke",
   target: "stream",
@@ -117,6 +154,7 @@ for (const file of runtimeFiles) {
 }
 
 const repository = await readFile("packages/db/src/repositories.ts", "utf8");
+const chartMaker = await readFile("packages/chart-maker/src/index.ts", "utf8");
 for (const expected of [
   "seedFoundationData",
   "resetFoundationData",
@@ -127,6 +165,9 @@ for (const expected of [
   "assertResetAllowed"
 ]) {
   if (!repository.includes(expected)) throw new Error(`Missing database repository helper: ${expected}`);
+}
+for (const expected of ["buildChartMakerChartData", "buildChartMakerRecordResult", "chartMakerChartDataSchema"]) {
+  if (!chartMaker.includes(expected)) throw new Error(`Missing chart-maker module helper: ${expected}`);
 }
 
 const seedScript = await readFile("scripts/seed-db.mts", "utf8");

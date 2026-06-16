@@ -3,10 +3,14 @@ import { composerStreamArtifactSchema } from "@astra/contracts";
 type JsonObject = Record<string, unknown>;
 
 const appBaseUrl = clean(process.env.ASTRA_APP_SMOKE_BASE_URL) || "http://localhost:3011";
-const internalToken = clean(process.env.ASTRA_INTERNAL_API_TOKEN) || "astra-local-internal-token";
+const internalToken = clean(process.env.ASTRA_INTERNAL_API_TOKEN);
 
 function clean(value: string | undefined) {
   return value?.trim().replace(/^['"]|['"]$/g, "") || "";
+}
+
+if (!internalToken) {
+  throw new Error("ASTRA_INTERNAL_API_TOKEN is required for the Composer ingest API smoke.");
 }
 
 async function requestJson(url: string, init?: RequestInit) {

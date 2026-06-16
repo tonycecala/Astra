@@ -20,6 +20,7 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - `apps/composer-web/` exists as a separate subassembly with voice validation and stream artifact publishing, but no Astra runtime coupling.
 - `packages/contracts/` defines typed core nouns.
 - `packages/db/` owns Drizzle schema, migrations, client, repository helpers, seed/reset support, and Better Auth tables.
+- `packages/chart-maker/` owns the independent chart-maker contract adapter.
 - `packages/testkit/` owns typed seed fixtures.
 - `scripts/` contains foundation checks, no-Supabase checks, boundary checks, seed/reset scripts, auth-code smoke support, and durable local server controls.
 - `docs/architecture/clean-start-foundation.md` documents the foundation shape and local database/auth loop.
@@ -62,12 +63,15 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - Browser verification proved `/login` can send and verify an email code and then display the authenticated session for the browser-smoke user.
 - `/self` now reads authenticated app profile state through `getAstraAuthContext`; logged-out visitors see a sign-in CTA, while signed-in users see their own display name, onboarding state, and private star balance.
 - Chart-maker contracts now require birth date only; birth time, location, and timezone form one optional precision bundle, while coordinates, question, intent, and context remain optional until onboarding defines stronger requirements.
+- `@astra/chart-maker` now consumes `ChartMakerRequest` and emits `RecordChartMakerResult` without importing Astra app or database internals.
+- `ChartMakerChartData` defines the first deterministic chart-maker payload shape with precision metadata, date-derived symbolic fields, interpretation, and explicit limits.
 - Drizzle owns `chart_requests` and `chart_results` tables with user ownership and request/result indexes.
 - `npm run test:chart-boundary` proves the local request/result lifecycle against Postgres.
 - `/api/chart-requests` now lets an authenticated user create and list their own chart requests.
 - `/api/chart-results` lets an internal chart-maker caller record a result behind `x-astra-internal-token`.
 - `/self` now includes a modular chart request panel that queues user-owned requests for an independent chart maker.
-- `npm run test:chart-request-api` proves request creation through Better Auth/Mailpit and result recording through the internal chart-maker token.
+- `npm run test:chart-maker` proves Tony's `1961-05-23` fixture through the independent chart-maker module, including date-only and timed/location precision paths.
+- `npm run test:chart-request-api` proves request creation through Better Auth/Mailpit and result recording through the internal chart-maker token using the independent chart-maker module.
 - The current `/self` chart request panel is intentionally a foundation smoke surface; future user-facing birth data capture should become a multi-step onboarding flow before real product use.
 - Composer's first publish target is now a shared stream artifact contract.
 - Composer now has a minimal independent implementation for voice registry, deterministic validation, and stream artifact publishing under `apps/composer-web/src`.
@@ -80,7 +84,7 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 
 ## Follow-Ups
 - Replace the single chart request form with multi-step birth-data onboarding: subject, date, time certainty, place/timezone, intent/context, review, and confirmation.
-- Implement the independent chart-maker module behind the `ChartMakerRequest` and `ChartMakerResult` contracts.
-- Design Composer artifact retrieval/caching for production, including edge-first caching with origin fallback.
+- Replace the deterministic chart-maker contract adapter with or behind a real ephemeris-backed module when the chart computation engine is selected.
+- Design Composer artifact and future public/read-model retrieval/caching for production, including edge-first caching with explicit origin failure.
 - Continue polishing reader density, card states, gifts/stars presentation, self/profile usefulness, and i18n-backed empty/error/loading states.
 - Update this mission after each non-trivial dev/debug session.

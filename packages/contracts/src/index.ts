@@ -146,6 +146,32 @@ export const chartMakerResultSchema = z.object({
   createdAt: isoDateSchema
 });
 
+export const chartMakerPrecisionSchema = z.enum(["date_only", "timed_location"]);
+
+export const chartMakerChartDataSchema = z.object({
+  schemaVersion: z.literal(1),
+  engine: z.string().min(1),
+  requestId: idSchema,
+  subjectName: z.string().min(1),
+  precision: chartMakerPrecisionSchema,
+  birthData: chartBirthDataSchema,
+  derived: z.object({
+    sunSign: z.string().min(1),
+    season: z.string().min(1),
+    dayOfYear: z.number().int().min(1).max(366)
+  }),
+  interpretation: z.object({
+    headline: z.string().min(1),
+    summary: z.string().min(1),
+    limits: z.array(z.string().min(1)).min(1)
+  }),
+  requestContext: z.object({
+    question: z.string().min(1).optional(),
+    intent: z.string().min(1).optional(),
+    source: z.enum(["self", "ally", "composer", "import"])
+  })
+});
+
 export const recordChartMakerResultSchema = z.object({
   requestId: idSchema,
   userId: idSchema,
@@ -214,6 +240,8 @@ export type ChartBirthData = z.infer<typeof chartBirthDataSchema>;
 export type ChartMakerRequest = z.infer<typeof chartMakerRequestSchema>;
 export type CreateChartMakerRequest = z.infer<typeof createChartMakerRequestSchema>;
 export type ChartMakerResult = z.infer<typeof chartMakerResultSchema>;
+export type ChartMakerPrecision = z.infer<typeof chartMakerPrecisionSchema>;
+export type ChartMakerChartData = z.infer<typeof chartMakerChartDataSchema>;
 export type RecordChartMakerResult = z.infer<typeof recordChartMakerResultSchema>;
 export type ComposerVoiceId = z.infer<typeof composerVoiceIdSchema>;
 export type ComposerVoiceCard = z.infer<typeof composerVoiceCardSchema>;

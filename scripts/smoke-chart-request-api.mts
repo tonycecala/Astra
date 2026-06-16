@@ -1,12 +1,14 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { buildChartMakerRecordResult } from "@astra/chart-maker";
+import { chartMakerRequestSchema } from "@astra/contracts";
 
 type JsonObject = Record<string, unknown>;
 
 const appBaseUrl = clean(process.env.ASTRA_APP_SMOKE_BASE_URL) || "http://localhost:3011";
 const authBaseUrl = `${appBaseUrl}/api/auth`;
 const mailpitUrl = clean(process.env.MAILPIT_API_URL) || "http://localhost:8025";
-const internalToken = clean(process.env.ASTRA_INTERNAL_API_TOKEN) || "astra-local-internal-token";
+const internalToken = clean(process.env.ASTRA_INTERNAL_API_TOKEN);
 const email = clean(process.env.ASTRA_CHART_REQUEST_SMOKE_EMAIL) || `chart-request-smoke-${Date.now()}@example.com`;
 const name = clean(process.env.ASTRA_CHART_REQUEST_SMOKE_NAME) || "Tony C";
 
@@ -14,6 +16,10 @@ let cookieHeader = "";
 
 function clean(value: string | undefined) {
   return value?.trim().replace(/^['"]|['"]$/g, "") || "";
+}
+
+if (!internalToken) {
+  throw new Error("ASTRA_INTERNAL_API_TOKEN is required for the chart request API smoke.");
 }
 
 function appendCookies(headers: Headers) {
@@ -165,6 +171,7 @@ const requestId = (created.request as JsonObject | undefined)?.id;
 if (!requestId) throw new Error("Chart request API did not return a request id.");
 const userId = (created.request as JsonObject | undefined)?.userId;
 if (typeof userId !== "string" || !userId) throw new Error("Chart request API did not return a user id.");
+const chartMakerRequest = chartMakerRequestSchema.parse(created.request);
 
 const listed = await requestJson(`${appBaseUrl}/api/chart-requests`);
 const requests = Array.isArray(listed.requests) ? listed.requests : [];
@@ -177,18 +184,7 @@ const result = await requestJson(`${appBaseUrl}/api/chart-results`, {
   headers: {
     "x-astra-internal-token": internalToken
   },
-  body: JSON.stringify({
-    requestId,
-    userId,
-    engine: "astra-api-contract-smoke",
-    status: "completed",
-    summary: "Tony chart request API smoke completed.",
-    chartData: {
-      sun: "gemini",
-      rising: "cancer",
-      source: "tony-chart-api-smoke"
-    }
-  })
+  body: JSON.stringify(buildChartMakerRecordResult(chartMakerRequest))
 });
 
 if (!(result.result as JsonObject | undefined)?.id) {

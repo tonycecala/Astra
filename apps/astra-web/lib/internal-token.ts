@@ -7,8 +7,7 @@ function clean(value: string | undefined) {
 export function resolveInternalApiToken() {
   const token = clean(process.env.ASTRA_INTERNAL_API_TOKEN);
   if (token) return token;
-  if (!process.env.VERCEL_ENV) return "astra-local-internal-token";
-  throw new Error("ASTRA_INTERNAL_API_TOKEN is required outside local development.");
+  throw new Error("ASTRA_INTERNAL_API_TOKEN is required for internal API calls.");
 }
 
 export function hasValidInternalApiToken(request: Request) {
