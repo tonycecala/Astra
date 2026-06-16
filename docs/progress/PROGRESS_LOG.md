@@ -13,6 +13,33 @@ summary: "Durable session-by-session memory for Astra repo work."
 
 ## Entries
 
+### 2026-06-16 - Composer Onboarding Cards
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** Composer onboarding private-feed implementation
+**Status:** complete
+
+#### What Changed
+
+- Added a Composer onboarding batch contract and `POST /api/composer/onboarding-cards` behind the internal API token.
+- Added Composer-side onboarding card preparation from the working Astria onboarding set, projected as user-owned private Journey cards through the existing private-feed write contract.
+- Replaced signed-out `/journey` sample data with a 12-card subset from Astria's 200 published Composer public cards and capped anonymous Journey to the current public preview.
+- Kept signed-in first-run Journey private and empty until Composer publishes onboarding cards; no public preview cards are copied into private feeds.
+- Added mobile-first Composer onboarding smokes using Mailpit, real auth, the trusted API route, privacy checks, console/page-error checks, and horizontal-overflow checks.
+
+#### Tests Run
+
+- `npm run check`
+- `npm run test:e2e`
+- `ASTRA_INTERNAL_API_TOKEN=astra-local-internal-token npm run test:composer-onboarding-cards`
+- `ASTRA_INTERNAL_API_TOKEN=astra-local-internal-token npm run test:composer-onboarding-mobile`
+- Mobile route proof uses Playwright as the durable evidence per Akashic guidance; in-app browser was used only as a light visual sanity check.
+
+#### Risks / Follow-ups
+
+- Composer onboarding is still a deterministic workflow/helper plus trusted API route, not a rendered operator UI. Add visible Composer controls only when human editing of onboarding cards is needed.
+
 ### 2026-06-16 - Chart Generation Flow UX
 
 **Report Level:** 3 - Workflow & QA View

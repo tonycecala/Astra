@@ -115,20 +115,22 @@ test.describe("clean-start routes", () => {
   test("reader filters lanes and opens card detail", async ({ page }) => {
     await page.goto("/journey");
     await expect(page.locator(".status-strip").getByText("Public fallback")).toBeVisible();
+    await expect(page.locator(".status-strip")).toContainText("12 cards");
     await expect(page.getByLabel("Journey state")).toContainText("A public sample, not your private Journey");
     await page.getByRole("tab", { name: "Practice" }).click();
-    await expect(page.getByRole("button", { name: /Three Quiet Breaths/ })).toBeVisible();
-    await expect(page.getByRole("button", { name: /The River Keeps Moving/ })).toHaveCount(0);
-    await page.getByRole("button", { name: /Three Quiet Breaths/ }).click();
-    await expect(page.getByLabel("Card detail")).toContainText("Three Quiet Breaths");
+    await expect(page.getByRole("button", { name: /Aries is ignition/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Cleopatra: image/ })).toHaveCount(0);
+    await page.getByRole("button", { name: /Aries is ignition/ }).click();
+    await expect(page.getByLabel("Card detail")).toContainText("Aries is ignition");
   });
 
-  test("reader surfaces report-signal metadata", async ({ page }) => {
+  test("reader surfaces public fallback metadata", async ({ page }) => {
     await page.goto("/journey");
-    await page.getByRole("tab", { name: "Know yourself" }).click();
-    await page.getByRole("button", { name: /Report Signal Card/ }).click();
-    await expect(page.getByLabel("Card detail")).toContainText("Report Signal Card");
-    await expect(page.getByLabel("Card metadata")).toContainText("Report signal");
+    await page.getByRole("tab", { name: "Myth and symbol" }).click();
+    await page.getByRole("button", { name: /Cleopatra: image/ }).click();
+    await expect(page.getByLabel("Card detail")).toContainText("Cleopatra: image, strategy, and survival");
+    await expect(page.getByLabel("Card metadata")).toContainText("Card");
+    await expect(page.getByLabel("Card metadata")).toContainText("Public fallback");
     await expect(page.getByLabel("Card metadata")).toContainText("Published");
   });
 

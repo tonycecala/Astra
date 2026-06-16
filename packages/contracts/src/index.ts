@@ -220,6 +220,40 @@ export const composerPrivateFeedWriteResponseSchema = z.object({
   createdAt: isoDateSchema
 });
 
+export const composerOnboardingCardsWriteSchema = z
+  .object({
+    id: idSchema,
+    publisher: z.literal("composer"),
+    targetUserId: idSchema,
+    cards: z.array(composerPrivateFeedWriteSchema).min(1).max(12),
+    createdAt: isoDateSchema
+  })
+  .superRefine((batch, context) => {
+    batch.cards.forEach((card, index) => {
+      if (card.feedItem.userId !== batch.targetUserId) {
+        context.addIssue({
+          code: "custom",
+          path: ["cards", index, "feedItem", "userId"],
+          message: "Onboarding card writes must target the batch user."
+        });
+      }
+      if (card.publisher !== batch.publisher) {
+        context.addIssue({
+          code: "custom",
+          path: ["cards", index, "publisher"],
+          message: "Onboarding card writes must be published by Composer."
+        });
+      }
+    });
+  });
+
+export const composerOnboardingCardsWriteResponseSchema = z.object({
+  id: idSchema,
+  targetUserId: idSchema,
+  writes: z.array(composerPrivateFeedWriteResponseSchema),
+  createdAt: isoDateSchema
+});
+
 export const chartBirthDataSchema = z
   .object({
     date: dateOnlySchema,
@@ -492,6 +526,8 @@ export type CreateComposerDecision = z.infer<typeof createComposerDecisionSchema
 export type ComposerPrivateFeedDecisionInput = z.infer<typeof composerPrivateFeedDecisionInputSchema>;
 export type ComposerPrivateFeedWrite = z.infer<typeof composerPrivateFeedWriteSchema>;
 export type ComposerPrivateFeedWriteResponse = z.infer<typeof composerPrivateFeedWriteResponseSchema>;
+export type ComposerOnboardingCardsWrite = z.infer<typeof composerOnboardingCardsWriteSchema>;
+export type ComposerOnboardingCardsWriteResponse = z.infer<typeof composerOnboardingCardsWriteResponseSchema>;
 export type ChartBirthData = z.infer<typeof chartBirthDataSchema>;
 export type BirthPlaceSearchQuery = z.infer<typeof birthPlaceSearchQuerySchema>;
 export type BirthPlaceSearchResult = z.infer<typeof birthPlaceSearchResultSchema>;

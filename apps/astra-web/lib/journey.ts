@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { AstraCard, StreamItem, UserFeedItem } from "@astra/contracts";
-import { db, listUserFeedItems, readFoundationSnapshot } from "@astra/db";
+import { db, listUserFeedItems, readFoundationSnapshot, seedSnapshot } from "@astra/db";
 
 type JourneyKind = StreamItem["kind"] | "source_card" | "report_signal" | "manual";
 type JourneyStatus = StreamItem["status"] | UserFeedItem["state"];
@@ -103,9 +103,14 @@ function publicFallbackStreamCard(item: LegacyStreamItem, card: LegacyCard): Jou
 async function getPublicFallbackJourney(): Promise<JourneyStreamCard[]> {
   const snapshot = await readFoundationSnapshot(db);
   const cardsById = new Map(snapshot.cards.map((card) => [card.id, card]));
+  const publicPreviewIds = new Set(seedSnapshot().streamItems.map((item) => item.id));
 
-  return [...snapshot.streamItems]
+  const currentPublicPreview = snapshot.streamItems.filter((item) => publicPreviewIds.has(item.id));
+  const streamItems = currentPublicPreview.length ? currentPublicPreview : snapshot.streamItems;
+
+  return [...streamItems]
     .sort((a, b) => a.position - b.position)
+    .slice(0, 12)
     .map((item) => {
       const card = cardsById.get(item.cardId);
       if (!card) throw new Error(`Missing card for stream item ${item.id}`);
