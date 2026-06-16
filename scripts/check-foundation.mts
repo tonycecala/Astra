@@ -4,6 +4,7 @@ import {
   chartMakerRequestSchema,
   chartMakerResultSchema,
   composerDecisionSchema,
+  composerPrivateFeedWriteSchema,
   composerStreamArtifactSchema,
   foundationSeedSchema,
   privateFeedRequestSchema,
@@ -193,6 +194,48 @@ privateFeedRequestSchema.parse({
   limit: 10
 });
 
+composerPrivateFeedWriteSchema.parse({
+  id: "composer_private_feed_write_smoke",
+  publisher: "composer",
+  sourceCard: {
+    id: "source_card_smoke",
+    slug: "source-card-smoke",
+    title: "Reusable source material",
+    bodyTemplate: "Public-safe source material becomes personal only after Composer creates a user feed item.",
+    cardType: "reflection",
+    topicTags: ["feed"],
+    symbolicTags: ["threshold"],
+    eligibilityRules: { requiresAuthenticatedUser: true },
+    safetyFlags: [],
+    status: "active",
+    createdAt: now,
+    updatedAt: now
+  },
+  feedItem: {
+    id: "user_feed_smoke",
+    userId: seed.user.id,
+    sourceCardId: "source_card_smoke",
+    feedKind: "source_card",
+    title: "Private next meaningful card",
+    body: "This projection belongs to one authenticated user.",
+    displayPayload: { note: "private" },
+    rankScore: 10,
+    reasonCode: "foundation_private_feed_smoke",
+    state: "available",
+    availableAt: now
+  },
+  decision: {
+    decisionVersion: "foundation-v1",
+    inputContextHash: "hash:private-context",
+    candidateIds: ["source_card_smoke"],
+    selectedCandidateId: "source_card_smoke",
+    rankFeatures: { timing: "now" },
+    suppressionReasons: [],
+    safetyNotes: ["Decision audit stays private."]
+  },
+  createdAt: now
+});
+
 const schema = await readFile("packages/db/src/schema.ts", "utf8");
 for (const table of [
   "user",
@@ -257,11 +300,14 @@ if (!resetScript.includes("assertResetAllowed")) throw new Error("Local reset sc
 const chartRequestRoute = await readFile("apps/astra-web/app/api/chart-requests/route.ts", "utf8");
 const chartResultRoute = await readFile("apps/astra-web/app/api/chart-results/route.ts", "utf8");
 const composerIngestRoute = await readFile("apps/astra-web/app/api/composer/stream-artifacts/route.ts", "utf8");
+const composerPrivateFeedRoute = await readFile("apps/astra-web/app/api/composer/private-feed-items/route.ts", "utf8");
+const composerPrivateFeedService = await readFile("apps/astra-web/lib/composer-private-feed.ts", "utf8");
 const journeyRoute = await readFile("apps/astra-web/app/journey/page.tsx", "utf8");
 const journeyModel = await readFile("apps/astra-web/lib/journey.ts", "utf8");
 const reportSignalPublishRoute = await readFile("apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts", "utf8");
 const internalTokenHelper = await readFile("apps/astra-web/lib/internal-token.ts", "utf8");
 const composerPublisher = await readFile("apps/composer-web/src/publishStreamArtifact.ts", "utf8");
+const composerPrivateFeedPublisher = await readFile("apps/composer-web/src/publishPrivateFeedItem.ts", "utf8");
 if (!chartRequestRoute.includes("getAstraAuthContext")) throw new Error("Chart request API must use Astra auth context.");
 if (!chartResultRoute.includes("hasValidInternalApiToken")) throw new Error("Chart result API must require the internal token helper.");
 if (!journeyRoute.includes("getAstraAuthContext") || !journeyRoute.includes("getJourneyViewModel")) {
@@ -270,8 +316,18 @@ if (!journeyRoute.includes("getAstraAuthContext") || !journeyRoute.includes("get
 if (!journeyModel.includes("listUserFeedItems") || !journeyModel.includes("public_fallback")) {
   throw new Error("Journey view model must split authenticated private feed reads from public fallback content.");
 }
-if (!reportSignalPublishRoute.includes("createUserFeedItem") || reportSignalPublishRoute.includes("upsertComposerStreamArtifact")) {
-  throw new Error("Report signal publishing must create a user-owned feed item, not publish to the global stream reader.");
+if (
+  !reportSignalPublishRoute.includes("composerPrivateFeedWriteSchema") ||
+  !reportSignalPublishRoute.includes("persistComposerPrivateFeedWrite") ||
+  reportSignalPublishRoute.includes("upsertComposerStreamArtifact")
+) {
+  throw new Error("Report signal publishing must use the Composer private-feed contract, not the global stream reader.");
+}
+if (!composerPrivateFeedRoute.includes("composerPrivateFeedWriteSchema") || !composerPrivateFeedRoute.includes("hasValidInternalApiToken")) {
+  throw new Error("Composer private-feed API must validate the shared write contract behind the internal token.");
+}
+if (!composerPrivateFeedService.includes("upsertSourceCard") || !composerPrivateFeedService.includes("createComposerDecision")) {
+  throw new Error("Composer private-feed service must persist source cards, private feed items, and decision traces.");
 }
 if (!internalTokenHelper.includes("x-astra-internal-token")) throw new Error("Internal token helper must check the shared internal token header.");
 if (!composerIngestRoute.includes("composerStreamArtifactSchema")) {
@@ -282,6 +338,9 @@ if (!composerIngestRoute.includes("upsertComposerStreamArtifact")) {
 }
 if (!composerPublisher.includes("composerStreamArtifactSchema")) {
   throw new Error("Composer stream publisher must validate the shared stream artifact contract.");
+}
+if (!composerPrivateFeedPublisher.includes("composerPrivateFeedWriteSchema")) {
+  throw new Error("Composer private-feed publisher must validate the shared private feed write contract.");
 }
 
 console.log("Foundation contracts, seed data, schema, and runtime DDL checks passed.");

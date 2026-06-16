@@ -193,6 +193,33 @@ export const createComposerDecisionSchema = z.object({
   safetyNotes: z.array(z.string().min(1)).default([])
 });
 
+export const composerPrivateFeedDecisionInputSchema = z.object({
+  decisionVersion: z.string().min(1),
+  inputContextHash: z.string().min(1),
+  candidateIds: z.array(idSchema).default([]),
+  selectedCandidateId: idSchema,
+  rankFeatures: jsonObjectSchema.default({}),
+  suppressionReasons: z.array(z.string().min(1)).default([]),
+  safetyNotes: z.array(z.string().min(1)).default([])
+});
+
+export const composerPrivateFeedWriteSchema = z.object({
+  id: idSchema,
+  publisher: z.literal("composer"),
+  sourceCard: sourceCardSchema.optional(),
+  feedItem: createUserFeedItemSchema,
+  decision: composerPrivateFeedDecisionInputSchema.optional(),
+  createdAt: isoDateSchema
+});
+
+export const composerPrivateFeedWriteResponseSchema = z.object({
+  id: idSchema,
+  sourceCard: sourceCardSchema.optional(),
+  feedItem: userFeedItemSchema,
+  decision: composerDecisionSchema.optional(),
+  createdAt: isoDateSchema
+});
+
 export const chartBirthDataSchema = z
   .object({
     date: dateOnlySchema,
@@ -462,6 +489,9 @@ export type PrivateFeedRequest = z.infer<typeof privateFeedRequestSchema>;
 export type PrivateFeedResponse = z.infer<typeof privateFeedResponseSchema>;
 export type CreateUserFeedItem = z.infer<typeof createUserFeedItemSchema>;
 export type CreateComposerDecision = z.infer<typeof createComposerDecisionSchema>;
+export type ComposerPrivateFeedDecisionInput = z.infer<typeof composerPrivateFeedDecisionInputSchema>;
+export type ComposerPrivateFeedWrite = z.infer<typeof composerPrivateFeedWriteSchema>;
+export type ComposerPrivateFeedWriteResponse = z.infer<typeof composerPrivateFeedWriteResponseSchema>;
 export type ChartBirthData = z.infer<typeof chartBirthDataSchema>;
 export type BirthPlaceSearchQuery = z.infer<typeof birthPlaceSearchQuerySchema>;
 export type BirthPlaceSearchResult = z.infer<typeof birthPlaceSearchResultSchema>;

@@ -18,11 +18,11 @@ not:
 published card -> everyone sees the same stream
 ```
 
-## Current Transitional Boundary
+## Current Boundary
 
-The clean-start implementation still reads from Astra-owned Postgres tables through `readFoundationSnapshot` and stores Composer-shaped cards in `cards` / `stream_items`. Treat that as a transitional foundation, not the final feed architecture.
+Signed-in `/journey` reads `UserFeedItem` projections from Astra-owned Postgres through authenticated server-side accessors. Signed-out `/journey` reads public fallback/source content from the foundation stream.
 
-Composer artifacts remain explicit contract payloads. A report-derived artifact may be created from `AstrologyReportPublicSignal`, but the actual stream projection shown to a user should become a user-owned `UserFeedItem` selected from public source material plus private user context. Raw private report sections, full provenance, birth data, engine payloads, navigation history, preferences, and progress must not be stored in public fallback rows.
+Composer private feed writes travel through `ComposerPrivateFeedWrite` and the trusted `POST /api/composer/private-feed-items` edge. A report-derived card may be created from `AstrologyReportPublicSignal`, but the actual stream projection shown to a signed-in user is a user-owned `UserFeedItem` selected from public source material plus private user context. Raw private report sections, full provenance, birth data, engine payloads, navigation history, preferences, and progress must not be stored in public fallback rows.
 
 ## Caching Rule
 
@@ -61,7 +61,7 @@ The private feed implementation should add or evolve these first-class objects:
 - `ComposerDecision`: private internal decision trace.
 - `PrivateFeedRequest` / `PrivateFeedResponse`: authenticated feed read contracts.
 
-These objects now exist as v0 shared contracts and database tables. `/journey` now uses the authenticated `UserFeedItem` read model for signed-in users and labels signed-out content as public fallback. The remaining product work is to move Composer's active composition/write path fully onto private feed projections instead of transitional source/fallback records.
+These objects now exist as v0 shared contracts and database tables. `/journey` now uses the authenticated `UserFeedItem` read model for signed-in users and labels signed-out content as public fallback. Composer now has a trusted private-feed write edge; the remaining product work is to build out Composer's operator UI/review workflow on top of that edge and retire any product dependence on the transitional global stream publish path.
 
 Mandatory access rules:
 

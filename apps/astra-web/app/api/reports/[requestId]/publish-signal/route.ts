@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { type ComposerStreamArtifact, composerStreamArtifactSchema } from "@astra/contracts";
-import { createUserFeedItem, db, getUserAstrologyReportResult } from "@astra/db";
+import { composerPrivateFeedWriteSchema } from "@astra/contracts";
+import { db, getUserAstrologyReportResult } from "@astra/db";
+import { persistComposerPrivateFeedWrite } from "../../../../../lib/composer-private-feed";
 import { getAstraAuthContext } from "../../../../../lib/auth/profile";
 
 type RouteContext = {
@@ -31,64 +32,64 @@ export async function POST(_request: Request, context: RouteContext) {
   }
 
   const publishedAt = new Date().toISOString();
-  const cardId = `report_signal_card:${requestId}`;
-  const artifact = composerStreamArtifactSchema.parse({
+  const sourceCardId = `source_card:${reportResult.publicSignal.reportId}`;
+  const composerWrite = composerPrivateFeedWriteSchema.parse({
     id: `report_signal:${requestId}`,
-    target: "stream",
     publisher: "composer",
-    rationale: {
-      reason: reportResult.publicSignal.provenanceSummary,
-      source: "chart_result"
-    },
-    voiceCard: {
-      voice: { id: "guide" },
-      header: reportResult.publicSignal.headline,
-      body: reportResult.publicSignal.summary
-    },
-    card: {
-      id: cardId,
+    sourceCard: {
+      id: sourceCardId,
+      slug: `report-signal-${requestId}`,
       title: reportResult.publicSignal.headline,
-      subtitle: reportResult.publicSignal.provenanceSummary,
-      body: reportResult.publicSignal.summary,
-      lane: "know_yourself",
-      tone: reportResult.publicSignal.tone,
-      ctaLabel: "Open",
-      ctaAction: "open",
-      publishedAt
+      bodyTemplate: reportResult.publicSignal.summary,
+      cardType: "report_signal",
+      topicTags: ["report", reportResult.publicSignal.reportType],
+      symbolicTags: [],
+      eligibilityRules: { requiresAuthenticatedUser: true, reportId: reportResult.publicSignal.reportId },
+      safetyFlags: [],
+      status: "active",
+      createdAt: publishedAt,
+      updatedAt: publishedAt
     },
-    streamItem: {
-      id: `report_signal_stream:${requestId}`,
-      cardId,
-      kind: "artifact",
-      position: Math.floor(Date.now() / 1000),
-      status: "published",
-      audience: "all"
-    },
-    createdAt: publishedAt
-  } satisfies ComposerStreamArtifact);
-
-  try {
-    const feedItem = await createUserFeedItem(db, {
+    feedItem: {
       id: `report_signal_feed:${profile.userId}:${requestId}`,
       userId: profile.userId,
+      sourceCardId,
       feedKind: "report_signal",
-      title: artifact.card.title,
-      body: artifact.card.body,
+      title: reportResult.publicSignal.headline,
+      body: reportResult.publicSignal.summary,
       displayPayload: {
-        subtitle: artifact.card.subtitle,
-        lane: artifact.card.lane,
-        tone: artifact.card.tone,
-        ctaLabel: artifact.card.ctaLabel,
-        ctaAction: artifact.card.ctaAction,
+        subtitle: reportResult.publicSignal.provenanceSummary,
+        lane: "know_yourself",
+        tone: reportResult.publicSignal.tone,
+        ctaLabel: "Open",
+        ctaAction: "open",
         publicSignal: reportResult.publicSignal,
-        composerArtifactId: artifact.id
+        composerArtifactId: `report_signal:${requestId}`
       },
-      rankScore: artifact.streamItem.position,
+      rankScore: Math.floor(Date.now() / 1000),
       reasonCode: "explicit_report_signal_publish",
       state: "available",
       availableAt: publishedAt
-    });
-    return NextResponse.json({ artifact, feedItem }, { status: 201 });
+    },
+    decision: {
+      decisionVersion: "report-signal-private-feed-v1",
+      inputContextHash: `report:${reportResult.publicSignal.reportId}`,
+      candidateIds: [sourceCardId],
+      selectedCandidateId: sourceCardId,
+      rankFeatures: {
+        reportType: reportResult.publicSignal.reportType,
+        boundary: reportResult.publicSignal.boundary,
+        provenanceSummary: reportResult.publicSignal.provenanceSummary
+      },
+      suppressionReasons: [],
+      safetyNotes: ["Raw private report sections are not included in this feed write."]
+    },
+    createdAt: publishedAt
+  });
+
+  try {
+    const write = await persistComposerPrivateFeedWrite(composerWrite);
+    return NextResponse.json({ artifact: composerWrite, feedItem: write.feedItem, write }, { status: 201 });
   } catch {
     return NextResponse.json({ error: "ASTROLOGY_REPORT_PUBLIC_SIGNAL_NOT_PUBLISHED" }, { status: 502 });
   }

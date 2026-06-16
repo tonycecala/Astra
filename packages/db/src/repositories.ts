@@ -760,6 +760,19 @@ export async function createComposerDecision(
         safetyNotes: parsed.safetyNotes,
         createdAt: now
       })
+      .onConflictDoUpdate({
+        target: composerDecisions.userFeedItemId,
+        set: {
+          decisionVersion: parsed.decisionVersion,
+          inputContextHash: parsed.inputContextHash,
+          candidateIds: parsed.candidateIds,
+          selectedCandidateId: parsed.selectedCandidateId,
+          rankFeatures: parsed.rankFeatures,
+          suppressionReasons: parsed.suppressionReasons,
+          safetyNotes: parsed.safetyNotes,
+          createdAt: now
+        }
+      })
       .returning();
 
     return composerDecisionFromRow(row);
