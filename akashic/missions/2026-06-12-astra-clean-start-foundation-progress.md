@@ -60,10 +60,10 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - Drizzle migration, seed, local guarded reset, remigration, and reseed have been exercised against the disposable local database.
 - Mailpit is running at `http://localhost:8025`, and the email-code auth smoke passed through send-code, Mailpit OTP read, verify-code, session check, and sign-out.
 - Browser verification proved `/login` can send and verify an email code and then display the authenticated session for the browser-smoke user.
-- `/self` currently remains seed-backed and does not yet personalize to the signed-in user's app profile.
+- `/self` now reads authenticated app profile state through `getAstraAuthContext`; logged-out visitors see a sign-in CTA, while signed-in users see their own display name, onboarding state, and private star balance.
 
 ## Follow-Ups
-- Bind authenticated app routes to `getAstraAuthContext` where product intent requires user-specific profile state.
+- Define chart-maker request/result contracts and ownership tables so private chart work can attach to the authenticated app profile.
 - Keep Composer placeholder-only until an explicit publishing artifact contract exists.
 - Define Composer-to-Astra publishing contracts before implementing Composer internals.
 - Keep astrology placeholder-only until the reader shell, contracts, auth, and database loop are stable.

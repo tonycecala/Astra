@@ -58,12 +58,17 @@ export const ui = {
   self: {
     eyebrow: "Self",
     intro: "The account home is small on purpose: identity, onboarding state, achievements, and star balance.",
+    signedOutTitle: "Sign in to see your Astra",
+    signedOutIntro: "Your profile, stars, and private chart work stay behind the email-code session boundary.",
+    signInCta: "Sign in",
     summaryLabel: "Self summary",
     stars: "Stars",
-    starsDescription: "Seed balance for value-flow testing.",
+    starsDescription: "Private balance for value-flow testing.",
     onboarding: "Onboarding",
     onboardingDescription: "Clean account state without legacy migration requirements.",
-    achievement: "Achievement"
+    achievement: "Achievement",
+    noAchievementTitle: "First arrival pending",
+    noAchievementDescription: "New account milestones will appear here after Astra starts writing user-owned activity."
   },
   library: {
     eyebrow: "Library",

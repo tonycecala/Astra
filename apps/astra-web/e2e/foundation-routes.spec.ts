@@ -4,7 +4,7 @@ const routes = [
   { path: "/", heading: "A living stream" },
   { path: "/journey", heading: "A living stream" },
   { path: "/allies", heading: "Companions with clear names" },
-  { path: "/self", heading: "Astra Founder" },
+  { path: "/self", heading: "Sign in to see your Astra" },
   { path: "/library", heading: "Artifacts worth keeping" },
   { path: "/gifts", heading: "Stars stay accountable" },
   { path: "/login", heading: "Email code sign-in" }
@@ -38,7 +38,7 @@ test.describe("clean-start routes", () => {
     await page.locator('a[href="/allies"]:visible').click();
     await expect(page.getByRole("heading", { name: "Companions with clear names" })).toBeVisible();
     await page.locator('a[href="/self"]:visible').click();
-    await expect(page.getByRole("heading", { name: "Astra Founder" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Sign in to see your Astra" })).toBeVisible();
   });
 
   test("reader filters lanes and opens card detail", async ({ page }) => {
