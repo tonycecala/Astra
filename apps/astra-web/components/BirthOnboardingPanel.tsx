@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send } from "lucide-react";
 import type { AstrologyReportRequest, AstrologyReportResult, BirthPlaceSearchResult, ChartMakerRequest } from "@astra/contracts";
 import { ui } from "../lib/i18n";
 import styles from "./BirthOnboardingPanel.module.css";
@@ -16,7 +15,7 @@ function supportedTimeZones() {
 }
 
 const timeZones = supportedTimeZones();
-const steps = ["subject", "birth_date", "precision", "intent", "review"] as const;
+const steps = ["subject", "birth_date", "precision", "review"] as const;
 
 type Step = (typeof steps)[number];
 type PrecisionMode = "date_only" | "timed_location";
@@ -30,34 +29,20 @@ type BirthOnboardingPanelProps = {
 
 type FormState = {
   subjectName: string;
-  relationship: string;
-  reason: string;
   date: string;
   precisionMode: PrecisionMode;
   time: string;
   timezone: string;
   location: string;
-  latitude: string;
-  longitude: string;
-  question: string;
-  intent: string;
-  context: string;
 };
 
 const defaultForm = (displayName: string): FormState => ({
   subjectName: displayName,
-  relationship: "self",
-  reason: "",
   date: "",
   precisionMode: "date_only",
   time: "",
   timezone: "",
-  location: "",
-  latitude: "",
-  longitude: "",
-  question: "",
-  intent: "",
-  context: ""
+  location: ""
 });
 
 function optional(value: string) {
@@ -65,32 +50,38 @@ function optional(value: string) {
   return clean ? clean : undefined;
 }
 
-function parseContext(form: FormState) {
-  const context: Record<string, string> = {};
-  const relationship = optional(form.relationship);
-  const reason = optional(form.reason);
-  const note = optional(form.context);
-  if (relationship) context.relationship = relationship;
-  if (reason) context.reason = reason;
-  if (note) context.note = note;
-  return Object.keys(context).length ? context : undefined;
-}
-
 function birthDataFor(form: FormState) {
   const birthData = {
     date: form.date,
     time: form.precisionMode === "timed_location" ? optional(form.time) : undefined,
     timezone: form.precisionMode === "timed_location" ? optional(form.timezone) : undefined,
-    location: form.precisionMode === "timed_location" ? optional(form.location) : undefined,
-    latitude: form.precisionMode === "timed_location" && optional(form.latitude) ? Number(form.latitude) : undefined,
-    longitude: form.precisionMode === "timed_location" && optional(form.longitude) ? Number(form.longitude) : undefined
+    location: form.precisionMode === "timed_location" ? optional(form.location) : undefined
   };
-
   return Object.fromEntries(Object.entries(birthData).filter(([, value]) => value !== undefined));
 }
 
 function stepIndex(step: Step) {
   return steps.indexOf(step);
+}
+
+function reportStatusLabel(status: string) {
+  if (status === "queued" || status === "processing") {
+    return ui.self.reportStatusGenerating;
+  }
+
+  if (status === "completed") {
+    return ui.self.reportStatusReady;
+  }
+
+  if (status === "failed") {
+    return ui.self.reportStatusFailed;
+  }
+
+  if (status === "cancelled") {
+    return ui.self.reportStatusCancelled;
+  }
+
+  return status;
 }
 
 export function BirthOnboardingPanel({
@@ -104,18 +95,19 @@ export function BirthOnboardingPanel({
   const [requests, setRequests] = useState(initialRequests);
   const [reportRequests, setReportRequests] = useState(initialReportRequests);
   const [reportResults, setReportResults] = useState(initialReportResults);
-  const [selectedReportRequestId, setSelectedReportRequestId] = useState(initialReportResults[0]?.requestId ?? "");
   const [message, setMessage] = useState("");
   const [placeQuery, setPlaceQuery] = useState("");
   const [placeResults, setPlaceResults] = useState<BirthPlaceSearchResult[]>([]);
   const [placeMessage, setPlaceMessage] = useState("");
   const [isSearchingPlaces, setIsSearchingPlaces] = useState(false);
+  const [hasSelectedPlace, setHasSelectedPlace] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [generatingReportId, setGeneratingReportId] = useState("");
-  const [publishingReportId, setPublishingReportId] = useState("");
+  const [isSubmissionComplete, setIsSubmissionComplete] = useState(false);
 
   const activeStepIndex = stepIndex(activeStep);
-  const canSubmit = activeStep === "review";
+  const isWizardComplete = isSubmissionComplete;
+  const canSubmit = activeStep === "review" && !isWizardComplete;
+  const progressPercent = isWizardComplete ? 100 : Math.round(((activeStepIndex + 1) / steps.length) * 100);
   const reviewRows = useMemo(
     () => [
       [ui.self.onboardingReviewSubject, form.subjectName || ui.self.onboardingReviewMissing],
@@ -125,10 +117,7 @@ export function BirthOnboardingPanel({
         form.precisionMode === "timed_location"
           ? `${form.time || ui.self.onboardingReviewMissing}, ${form.timezone || ui.self.onboardingReviewMissing}, ${form.location || ui.self.onboardingReviewMissing}`
           : ui.self.onboardingDateOnlyPrecision
-      ],
-      [ui.self.onboardingReviewQuestion, form.question || ui.self.onboardingReviewNone],
-      [ui.self.onboardingReviewIntent, form.intent || ui.self.onboardingReviewNone],
-      [ui.self.onboardingReviewContext, form.context || form.reason || ui.self.onboardingReviewNone]
+      ]
     ],
     [form]
   );
@@ -136,7 +125,6 @@ export function BirthOnboardingPanel({
     () => new Map(reportResults.map((result) => [result.requestId, result])),
     [reportResults]
   );
-  const selectedReportResult = selectedReportRequestId ? reportResultsByRequestId.get(selectedReportRequestId) : undefined;
   const hasCompletedReport = reportResults.some((result) => result.status === "completed");
   const flowStages = [
     { label: ui.self.chartFlowBirthData, isDone: requests.length > 0 },
@@ -154,10 +142,10 @@ export function BirthOnboardingPanel({
     setForm((current) => ({
       ...current,
       location: place.label,
-      timezone: place.timezone,
-      latitude: String(place.latitude),
-      longitude: String(place.longitude)
+      timezone: place.timezone
     }));
+    setHasSelectedPlace(true);
+    setPlaceResults([]);
     setPlaceMessage(ui.self.placeSearchSelected(place.label));
   }
 
@@ -199,14 +187,12 @@ export function BirthOnboardingPanel({
         return ui.self.onboardingPrecisionRequired;
       }
       if (!/^\d{2}:\d{2}$/.test(form.time)) return ui.self.onboardingTimeRequired;
-      if ((optional(form.latitude) && Number.isNaN(Number(form.latitude))) || (optional(form.longitude) && Number.isNaN(Number(form.longitude)))) {
-        return ui.self.onboardingCoordinatesRequired;
-      }
     }
     return "";
   }
 
   function goToStep(nextStep: Step) {
+    if (isWizardComplete) return;
     const currentError = stepError(activeStep);
     if (stepIndex(nextStep) > activeStepIndex && currentError) {
       setMessage(currentError);
@@ -217,6 +203,7 @@ export function BirthOnboardingPanel({
   }
 
   function goNext() {
+    if (isWizardComplete) return;
     const currentError = stepError(activeStep);
     if (currentError) {
       setMessage(currentError);
@@ -231,6 +218,7 @@ export function BirthOnboardingPanel({
   }
 
   function goBack() {
+    if (isWizardComplete) return;
     const previous = steps[activeStepIndex - 1];
     if (previous) {
       setActiveStep(previous);
@@ -261,6 +249,7 @@ export function BirthOnboardingPanel({
 
   async function submitChartRequest(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isWizardComplete) return;
     const currentError = stepError(activeStep);
     if (currentError) {
       setMessage(currentError);
@@ -272,15 +261,13 @@ export function BirthOnboardingPanel({
     }
 
     setIsSubmitting(true);
+    setIsSubmissionComplete(false);
     setMessage(ui.self.chartRequestWorking);
 
     try {
       const body = {
         subjectName: form.subjectName.trim(),
         birthData: birthDataFor(form),
-        question: optional(form.question),
-        intent: optional(form.intent),
-        context: parseContext(form),
         source: "self"
       };
       const chartPayload = await requestJson<{ request: ChartMakerRequest }>("/api/chart-requests", {
@@ -298,9 +285,10 @@ export function BirthOnboardingPanel({
 
       setRequests((current) => [chartPayload.request, ...current]);
       setReportRequests((current) => [reportPayload.request, ...current]);
-      setForm(defaultForm(displayName));
-      setActiveStep("subject");
+      setActiveStep("review");
+      setIsSubmissionComplete(true);
       setMessage(ui.self.chartRequestQueued);
+      await generateReport(reportPayload.request.id);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : ui.self.chartRequestError);
     } finally {
@@ -308,8 +296,22 @@ export function BirthOnboardingPanel({
     }
   }
 
+  function startAnotherOnboarding() {
+    setIsSubmissionComplete(false);
+    setActiveStep("subject");
+    setMessage("");
+    setPlaceResults([]);
+    setPlaceMessage("");
+    setPlaceQuery("");
+    setHasSelectedPlace(false);
+    setForm(defaultForm(displayName));
+  }
+
+  function openReportArtifact(requestId: string) {
+    window.location.assign(`/library?reportId=${encodeURIComponent(requestId)}`);
+  }
+
   async function generateReport(requestId: string) {
-    setGeneratingReportId(requestId);
     setMessage(ui.self.reportGenerateWorking);
 
     try {
@@ -324,28 +326,10 @@ export function BirthOnboardingPanel({
         setReportRequests((current) => current.map((request) => (request.id === payload.request?.id ? payload.request : request)));
       }
       setReportResults((current) => [payload.result, ...current.filter((result) => result.requestId !== payload.result.requestId)]);
-      setSelectedReportRequestId(payload.result.requestId);
       setMessage(payload.result.status === "completed" ? ui.self.reportGenerateCompleted : ui.self.reportGenerateFailed);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : ui.self.reportGenerateError);
     } finally {
-      setGeneratingReportId("");
-    }
-  }
-
-  async function publishReportSignal(requestId: string) {
-    setPublishingReportId(requestId);
-    setMessage(ui.self.reportPublishWorking);
-
-    try {
-      await requestJson<{ artifact: unknown }>(`/api/reports/${encodeURIComponent(requestId)}/publish-signal`, {
-        method: "POST"
-      });
-      setMessage(ui.self.reportPublishCompleted);
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : ui.self.reportPublishError);
-    } finally {
-      setPublishingReportId("");
     }
   }
 
@@ -366,6 +350,7 @@ export function BirthOnboardingPanel({
               aria-current={activeStep === step ? "step" : undefined}
               className={styles.step}
               key={step}
+              disabled={isWizardComplete}
               onClick={() => goToStep(step)}
               type="button"
             >
@@ -374,8 +359,13 @@ export function BirthOnboardingPanel({
             </button>
           ))}
         </div>
+        <div className={styles.progressTrack} role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={progressPercent} aria-label={ui.self.onboardingStepsLabel}>
+          <span className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
+        </div>
         <p className={styles.progressText} aria-live="polite">
-          {ui.self.onboardingProgress(activeStepIndex + 1, steps.length, ui.self.onboardingSteps[activeStep])}
+          {isWizardComplete
+            ? ui.self.onboardingProgressQueued
+            : ui.self.onboardingProgress(activeStepIndex + 1, steps.length, ui.self.onboardingSteps[activeStep])}
         </p>
         <ol className={styles.flowMap} aria-label={ui.self.chartFlowLabel}>
           {flowStages.map((stage, index) => (
@@ -388,22 +378,10 @@ export function BirthOnboardingPanel({
 
         <form className={`auth-form ${styles.form}`} onSubmit={submitChartRequest}>
           {activeStep === "subject" ? (
-            <>
-              <label>
-                <span>{ui.self.chartSubjectLabel}</span>
-                <input value={form.subjectName} onChange={(event) => updateField("subjectName", event.target.value)} required />
-              </label>
-              <div className={styles.formGrid}>
-                <label>
-                  <span>{ui.self.onboardingRelationshipLabel}</span>
-                  <input value={form.relationship} onChange={(event) => updateField("relationship", event.target.value)} />
-                </label>
-                <label>
-                  <span>{ui.self.onboardingReasonLabel}</span>
-                  <input value={form.reason} onChange={(event) => updateField("reason", event.target.value)} />
-                </label>
-              </div>
-            </>
+            <label>
+              <span>{ui.self.chartSubjectLabel}</span>
+              <input value={form.subjectName} onChange={(event) => updateField("subjectName", event.target.value)} required />
+            </label>
           ) : null}
 
           {activeStep === "birth_date" ? (
@@ -431,7 +409,10 @@ export function BirthOnboardingPanel({
                   <input
                     checked={form.precisionMode === "date_only"}
                     name="precisionMode"
-                    onChange={() => updateField("precisionMode", "date_only")}
+                    onChange={() => {
+                      setHasSelectedPlace(false);
+                      updateField("precisionMode", "date_only");
+                    }}
                     type="radio"
                   />
                   <span>
@@ -443,7 +424,10 @@ export function BirthOnboardingPanel({
                   <input
                     checked={form.precisionMode === "timed_location"}
                     name="precisionMode"
-                    onChange={() => updateField("precisionMode", "timed_location")}
+                    onChange={() => {
+                      setHasSelectedPlace(false);
+                      updateField("precisionMode", "timed_location");
+                    }}
                     type="radio"
                   />
                   <span>
@@ -459,7 +443,10 @@ export function BirthOnboardingPanel({
                       <span>{ui.self.placeSearchLabel}</span>
                       <input
                         value={placeQuery}
-                        onChange={(event) => setPlaceQuery(event.target.value)}
+                        onChange={(event) => {
+                          setHasSelectedPlace(false);
+                          setPlaceQuery(event.target.value);
+                        }}
                         placeholder={ui.self.placeSearchPlaceholder}
                       />
                     </label>
@@ -469,7 +456,7 @@ export function BirthOnboardingPanel({
                     </button>
                   </div>
                   {placeMessage ? <p className="form-status" aria-live="polite">{placeMessage}</p> : null}
-                  {placeResults.length ? (
+                  {placeResults.length > 0 && !hasSelectedPlace ? (
                     <ul className={styles.placeResults} aria-label={ui.self.placeSearchResultsLabel}>
                       {placeResults.map((place) => (
                         <li key={place.id}>
@@ -480,6 +467,11 @@ export function BirthOnboardingPanel({
                         </li>
                       ))}
                     </ul>
+                  ) : null}
+                  {hasSelectedPlace && form.location && form.timezone ? (
+                    <p className="form-status" aria-live="polite">
+                      {ui.self.placeSearchSelected(form.location)} ({form.timezone.replaceAll("_", " ")})
+                    </p>
                   ) : null}
                   <div className={styles.formGrid}>
                     <label>
@@ -505,38 +497,17 @@ export function BirthOnboardingPanel({
                   </div>
                   <label>
                     <span>{ui.self.chartLocationLabel}</span>
-                    <input value={form.location} onChange={(event) => updateField("location", event.target.value)} />
+                    <input
+                      value={form.location}
+                      onChange={(event) => {
+                        setHasSelectedPlace(false);
+                        updateField("location", event.target.value);
+                      }}
+                    />
                   </label>
-                  <div className={styles.formGrid}>
-                    <label>
-                      <span>{ui.self.placeLatitudeLabel}</span>
-                      <input value={form.latitude} onChange={(event) => updateField("latitude", event.target.value)} inputMode="decimal" />
-                    </label>
-                    <label>
-                      <span>{ui.self.placeLongitudeLabel}</span>
-                      <input value={form.longitude} onChange={(event) => updateField("longitude", event.target.value)} inputMode="decimal" />
-                    </label>
-                  </div>
                 </>
               ) : null}
               <p className="form-status">{ui.self.chartPrecisionHint}</p>
-            </>
-          ) : null}
-
-          {activeStep === "intent" ? (
-            <>
-              <label>
-                <span>{ui.self.chartQuestionLabel}</span>
-                <textarea value={form.question} onChange={(event) => updateField("question", event.target.value)} />
-              </label>
-              <label>
-                <span>{ui.self.chartIntentLabel}</span>
-                <input value={form.intent} onChange={(event) => updateField("intent", event.target.value)} />
-              </label>
-              <label>
-                <span>{ui.self.chartContextLabel}</span>
-                <textarea value={form.context} onChange={(event) => updateField("context", event.target.value)} />
-              </label>
             </>
           ) : null}
 
@@ -552,7 +523,12 @@ export function BirthOnboardingPanel({
           ) : null}
 
           <div className={styles.formActions}>
-            <button className="button secondary" disabled={activeStepIndex === 0 || isSubmitting} onClick={goBack} type="button">
+            <button
+              className="button secondary"
+              disabled={activeStepIndex === 0 || isSubmitting || isWizardComplete}
+              onClick={goBack}
+              type="button"
+            >
               <ArrowLeft aria-hidden="true" size={18} />
               {ui.self.onboardingBack}
             </button>
@@ -561,6 +537,16 @@ export function BirthOnboardingPanel({
                 {isSubmitting ? <Send aria-hidden="true" size={18} /> : <Check aria-hidden="true" size={18} />}
                 {isSubmitting ? ui.self.chartRequestWorking : ui.self.chartRequestSubmit}
               </button>
+            ) : isWizardComplete ? (
+              <div className={styles.completionActions}>
+                <button className={`${styles.buttonDone} button`} type="button" disabled>
+                  <Check aria-hidden="true" size={18} />
+                  {ui.self.chartRequestQueued}
+                </button>
+                <button className="button secondary" onClick={startAnotherOnboarding} type="button">
+                  {ui.self.chartRequestStartOver}
+                </button>
+              </div>
             ) : (
               <button className="button" onClick={goNext} type="button">
                 {ui.self.onboardingNext}
@@ -581,7 +567,7 @@ export function BirthOnboardingPanel({
               {requests.slice(0, 5).map((request) => (
                 <li key={request.id}>
                   <span>{request.subjectName}</span>
-                  <strong>{request.status}</strong>
+                  <strong>{reportStatusLabel(request.status)}</strong>
                 </li>
               ))}
             </ul>
@@ -603,26 +589,11 @@ export function BirthOnboardingPanel({
                       {result?.publicSignal ? <small>{result.publicSignal.headline}</small> : null}
                     </div>
                     <div className={styles.statusActions}>
-                      <strong>{request.status}</strong>
+                      <strong>{reportStatusLabel(request.status)}</strong>
                       {result ? (
-                        <button
-                          className="button secondary"
-                          onClick={() => setSelectedReportRequestId(result.requestId)}
-                          type="button"
-                        >
+                        <button className="button secondary" onClick={() => openReportArtifact(request.id)} type="button">
                           <BookOpenText aria-hidden="true" size={16} />
                           {ui.self.reportReadCta}
-                        </button>
-                      ) : null}
-                      {request.status === "queued" ? (
-                        <button
-                          className="button secondary"
-                          disabled={generatingReportId === request.id}
-                          onClick={() => generateReport(request.id)}
-                          type="button"
-                        >
-                          <Sparkles aria-hidden="true" size={16} />
-                          {generatingReportId === request.id ? ui.self.reportGenerateWorking : ui.self.reportGenerateCta}
                         </button>
                       ) : null}
                     </div>
@@ -634,61 +605,6 @@ export function BirthOnboardingPanel({
             <p>{ui.self.reportRequestsEmpty}</p>
           )}
         </article>
-        <article className="card">
-          <div className="eyebrow">{ui.self.reportReaderEyebrow}</div>
-          <h2>{ui.self.reportLibraryTitle}</h2>
-          <p>{hasCompletedReport ? ui.self.reportLibraryReady : ui.self.reportReaderEmpty}</p>
-          <Link className="button secondary" href="/library">
-            <BookOpenText aria-hidden="true" size={16} />
-            {ui.self.reportLibraryCta}
-          </Link>
-        </article>
-        {selectedReportResult ? (
-          <article className="card" aria-label={ui.self.reportReaderLabel}>
-            <div className="eyebrow">{ui.self.reportReaderEyebrow}</div>
-            <h2>{ui.self.reportReaderTitle}</h2>
-            <p>{ui.self.reportSavedToLibrary}</p>
-            <div className={styles.reportReader}>
-              {selectedReportResult.publicSignal ? <strong>{selectedReportResult.publicSignal.headline}</strong> : null}
-              {selectedReportResult.summary ? <p>{selectedReportResult.summary}</p> : null}
-              <Link className="button secondary" href="/library">
-                <BookOpenText aria-hidden="true" size={16} />
-                {ui.self.reportLibraryCta}
-              </Link>
-              {selectedReportResult.publicSignal ? (
-                <button
-                  className="button secondary"
-                  disabled={publishingReportId === selectedReportResult.requestId}
-                  onClick={() => publishReportSignal(selectedReportResult.requestId)}
-                  type="button"
-                >
-                  <Send aria-hidden="true" size={16} />
-                  {publishingReportId === selectedReportResult.requestId ? ui.self.reportPublishWorking : ui.self.reportPublishCta}
-                </button>
-              ) : null}
-              <div className={styles.reportSections}>
-                {selectedReportResult.sections.map((section) => (
-                  <section key={section.id}>
-                    <span>{ui.self.reportSectionEmphasis(section.emphasis)}</span>
-                    <h3>{section.title}</h3>
-                    <p>{section.body}</p>
-                  </section>
-                ))}
-              </div>
-              <details>
-                <summary>{ui.self.reportProvenanceTitle}</summary>
-                <ul className={styles.provenanceList}>
-                  {selectedReportResult.provenance.map((entry) => (
-                    <li key={entry.id}>
-                      <strong>{entry.label}</strong>
-                      <span>{entry.summary}</span>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            </div>
-          </article>
-        ) : null}
       </aside>
     </section>
   );

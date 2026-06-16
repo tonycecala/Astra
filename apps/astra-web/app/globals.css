@@ -284,6 +284,31 @@ textarea {
   box-shadow: var(--shadow);
 }
 
+.card-link,
+a.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.card-link:hover,
+.card-link:focus-visible,
+a.card-link:hover,
+a.card-link:focus-visible {
+  border-color: var(--ink);
+  outline: none;
+}
+
+.report-reader-content {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.report-reader-content .card {
+  margin: 0;
+}
+
 .auth-panel {
   display: grid;
   gap: 1rem;

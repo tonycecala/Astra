@@ -49,6 +49,11 @@
   cursor: pointer;
 }
 
+.step[disabled] {
+  cursor: default;
+  opacity: 0.6;
+}
+
 .step span {
   display: inline-grid;
   width: 22px;
@@ -67,6 +72,25 @@
   border-color: color-mix(in srgb, var(--gold) 50%, var(--line));
   color: var(--ink);
   outline: none;
+}
+
+.progressTrack {
+  position: relative;
+  margin-top: 10px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.progressFill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--blue) 75%, var(--paper));
+  transition: width 200ms ease;
 }
 
 .progressText {
@@ -222,6 +246,20 @@
   gap: 10px;
 }
 
+.completionActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.buttonDone[disabled] {
+  cursor: default;
+  background: var(--soft);
+  border-color: var(--line);
+  color: var(--muted);
+}
+
 .summaryRail {
   display: grid;
   gap: 14px;
@@ -269,62 +307,6 @@
 .statusActions button {
   min-height: 34px;
   padding: 0 10px;
-  font-size: 13px;
-}
-
-.reportReader {
-  display: grid;
-  gap: 12px;
-  margin-top: 14px;
-}
-
-.reportReader > strong {
-  color: var(--ink);
-  font-size: 18px;
-}
-
-.reportSections {
-  display: grid;
-  gap: 10px;
-}
-
-.reportSections section {
-  display: grid;
-  gap: 6px;
-  border-top: 1px solid var(--line);
-  padding-top: 10px;
-}
-
-.reportSections span {
-  color: var(--muted);
-  font-size: 12px;
-  text-transform: uppercase;
-}
-
-.reportSections h3 {
-  margin: 0;
-  font-size: 16px;
-}
-
-.reportSections p {
-  margin: 0;
-}
-
-.provenanceList {
-  display: grid;
-  gap: 8px;
-  padding: 0;
-  margin: 10px 0 0;
-  list-style: none;
-}
-
-.provenanceList li {
-  display: grid;
-  gap: 3px;
-}
-
-.provenanceList span {
-  color: var(--muted);
   font-size: 13px;
 }
 
