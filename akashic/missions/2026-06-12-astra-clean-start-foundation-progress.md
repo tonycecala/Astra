@@ -114,6 +114,7 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - Browser QA also proved the private report reader renders `Core pattern` and `Provenance` on desktop/tablet/phone with no new console errors or horizontal overflow.
 - Browser QA on `/library` proved signed-in report artifacts render on desktop/tablet/phone with no console errors or horizontal overflow.
 - Browser QA on `/journey` proved the published report signal renders as report-signal metadata on desktop/tablet/phone with no console errors or horizontal overflow.
+- `akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md` now captures the clean next-thread start point for the lower-debug model-backed report writer route.
 
 ## Follow-Ups
 - Select the production birth-place provider and replace/extend the local fixture adapter without changing the `/api/places/search` contract.
