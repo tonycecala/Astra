@@ -59,9 +59,23 @@ Run `npm run test:auth-code` when a local app server, migrated local database, a
 
 Run `npm run test:chart-boundary` after migrations to prove Astra can create a user-owned chart-maker request, record an independent engine result, and list the completed request for that user.
 
+Run `npm run test:chart-request-api` with the local app and Mailpit running to prove a signed-in user can create/list chart requests through `/api/chart-requests`, and that an internal chart-maker caller can record a result through `/api/chart-results`.
+
 ## Chart Maker And Composer Boundary
 
-Chart-maker v1 accepts birth data plus optional question, intent, and context. Astra stores the request and result as user-owned records, while an independent chart engine can speak through the shared `ChartMakerRequest` and `ChartMakerResult` contracts without importing Astra app code.
+Chart-maker v1 requires birth date only. Birth time, birth location, and timezone form one optional precision bundle: provide all three, or leave all three blank for date-only intake. Coordinates, question, intent, and context are optional until onboarding defines stronger requirements. Astra stores the request and result as user-owned records, while an independent chart engine can speak through the shared `ChartMakerRequest` and `ChartMakerResult` contracts without importing Astra app code. Result writes use `/api/chart-results` with `x-astra-internal-token`; local development defaults to `astra-local-internal-token`, while deployed environments require `ASTRA_INTERNAL_API_TOKEN`.
+
+`/self` is the first visible chart-maker handoff surface. Signed-in users can queue a chart request; logged-out visitors see the email-code sign-in path instead. The form uses explicit text formats for birth date and time so the handoff payload stays clear and testable.
+
+The current `/self` chart request form is a foundation smoke surface, not the final user onboarding. Before this becomes a primary product path, replace it with a multi-step birth-data onboarding flow:
+
+1. Subject and relationship: self or ally, display name, and reason for creating the chart.
+2. Birth date: guided date entry with validation and confirmation.
+3. Birth time: known time, approximate time, or unknown time, with plain-language consequences.
+4. Birth place: city search/geocoding, timezone resolution, and editable confirmation.
+5. Intent/question/context: optional user prompt that travels with the chart-maker request.
+6. Review: show the normalized payload before queuing the chart-maker request.
+7. Confirmation: show queued/processing/completed state and explain what happens next.
 
 Composer's first publishing target is `ComposerStreamArtifact`: a voice card plus a stream card and stream item whose IDs must match. Composer remains implementation-free in the foundation, but the publish contract is available before internals are built.
 

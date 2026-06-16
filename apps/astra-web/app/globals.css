@@ -62,7 +62,8 @@ a {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -299,7 +300,8 @@ input {
   font-size: 14px;
 }
 
-.auth-form input {
+.auth-form input,
+.auth-form textarea {
   width: 100%;
   min-height: 44px;
   border: 1px solid var(--line);
@@ -307,6 +309,12 @@ input {
   color: var(--ink);
   background: var(--paper);
   padding: 0 12px;
+}
+
+.auth-form textarea {
+  min-height: 88px;
+  padding: 10px 12px;
+  resize: vertical;
 }
 
 .form-status {

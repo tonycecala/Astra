@@ -12,17 +12,17 @@ try {
 
   const request = await createChartMakerRequest(db, {
     userId: profile.userId,
-    subjectName: profile.displayName,
+    subjectName: "Tony C",
     birthData: {
-      date: "1990-01-01",
-      time: "12:00",
-      timezone: "America/Chicago",
-      location: "Chicago, IL",
-      latitude: 41.8781,
-      longitude: -87.6298
+      date: "1961-05-23",
+      time: "09:30",
+      timezone: "America/New_York",
+      location: "New York, NY, USA",
+      latitude: 40.7128,
+      longitude: -74.006
     },
     question: "What pattern should Astra hold for this user?",
-    intent: "foundation-smoke",
+    intent: "tony-chart-boundary-smoke",
     context: {
       source: "test:chart-boundary"
     },

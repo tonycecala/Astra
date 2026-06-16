@@ -1,8 +1,9 @@
-import { asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import {
   type ChartBirthData,
   type ChartMakerRequest,
   type ChartMakerResult,
+  type RecordChartMakerResult,
   chartBirthDataSchema,
   chartMakerRequestSchema,
   chartMakerResultSchema,
@@ -58,15 +59,7 @@ export type CreateChartMakerRequestInput = {
   source?: ChartMakerRequest["source"];
 };
 
-export type RecordChartMakerResultInput = {
-  requestId: string;
-  userId: string;
-  engine: string;
-  status: ChartMakerResult["status"];
-  summary?: string;
-  chartData?: Record<string, unknown>;
-  error?: string;
-};
+export type RecordChartMakerResultInput = RecordChartMakerResult;
 
 function toDate(value: string) {
   return new Date(value);
@@ -496,6 +489,16 @@ export async function recordChartMakerResult(
   const now = new Date();
 
   return database.transaction(async (tx) => {
+    const [request] = await tx
+      .select({ id: chartRequests.id })
+      .from(chartRequests)
+      .where(and(eq(chartRequests.id, input.requestId), eq(chartRequests.userId, input.userId)))
+      .limit(1);
+
+    if (!request) {
+      throw new Error("Chart request was not found for the supplied user.");
+    }
+
     const [result] = await tx
       .insert(chartResults)
       .values({
@@ -524,7 +527,7 @@ export async function recordChartMakerResult(
     await tx
       .update(chartRequests)
       .set({ status: input.status, updatedAt: now })
-      .where(eq(chartRequests.id, input.requestId));
+      .where(and(eq(chartRequests.id, input.requestId), eq(chartRequests.userId, input.userId)));
 
     return chartResultFromRow(result);
   });

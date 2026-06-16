@@ -11,12 +11,14 @@ const now = new Date().toISOString();
 chartMakerRequestSchema.parse({
   id: "chart_request_smoke",
   userId: seed.user.id,
-  subjectName: seed.user.displayName,
+  subjectName: "Tony C",
   birthData: {
-    date: "1990-01-01",
-    time: "12:00",
-    timezone: "America/Chicago",
-    location: "Chicago, IL"
+    date: "1961-05-23",
+    time: "09:30",
+    timezone: "America/New_York",
+    location: "New York, NY, USA",
+    latitude: 40.7128,
+    longitude: -74.006
   },
   question: "What should the chart maker answer?",
   intent: "foundation contract smoke",
@@ -26,6 +28,36 @@ chartMakerRequestSchema.parse({
   createdAt: now,
   updatedAt: now
 });
+
+chartMakerRequestSchema.parse({
+  id: "chart_request_date_only_smoke",
+  userId: seed.user.id,
+  subjectName: "Tony C",
+  birthData: {
+    date: "1961-05-23"
+  },
+  source: "self",
+  status: "queued",
+  createdAt: now,
+  updatedAt: now
+});
+
+const partialBirthPrecision = chartMakerRequestSchema.safeParse({
+  id: "chart_request_partial_precision_smoke",
+  userId: seed.user.id,
+  subjectName: "Tony C",
+  birthData: {
+    date: "1961-05-23",
+    time: "09:30"
+  },
+  source: "self",
+  status: "queued",
+  createdAt: now,
+  updatedAt: now
+});
+if (partialBirthPrecision.success) {
+  throw new Error("Chart request contract must reject partial birth time precision without timezone and location.");
+}
 
 chartMakerResultSchema.parse({
   id: "chart_result_smoke",
@@ -97,5 +129,10 @@ const seedScript = await readFile("scripts/seed-db.mts", "utf8");
 const resetScript = await readFile("scripts/reset-local-db.mts", "utf8");
 if (!seedScript.includes("--execute")) throw new Error("Seed script must be dry-run by default and require --execute.");
 if (!resetScript.includes("assertResetAllowed")) throw new Error("Local reset script must guard destructive resets.");
+
+const chartRequestRoute = await readFile("apps/astra-web/app/api/chart-requests/route.ts", "utf8");
+const chartResultRoute = await readFile("apps/astra-web/app/api/chart-results/route.ts", "utf8");
+if (!chartRequestRoute.includes("getAstraAuthContext")) throw new Error("Chart request API must use Astra auth context.");
+if (!chartResultRoute.includes("x-astra-internal-token")) throw new Error("Chart result API must require the internal token.");
 
 console.log("Foundation contracts, seed data, schema, and runtime DDL checks passed.");

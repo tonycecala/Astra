@@ -84,14 +84,32 @@ export const starTransactionSchema = z.object({
   createdAt: isoDateSchema
 });
 
-export const chartBirthDataSchema = z.object({
-  date: dateOnlySchema,
-  time: timeOnlySchema.optional(),
-  timezone: z.string().min(1).optional(),
-  location: z.string().min(1),
-  latitude: z.number().min(-90).max(90).optional(),
-  longitude: z.number().min(-180).max(180).optional()
-});
+export const chartBirthDataSchema = z
+  .object({
+    date: dateOnlySchema,
+    time: timeOnlySchema.optional(),
+    timezone: z.string().min(1).optional(),
+    location: z.string().min(1).optional(),
+    latitude: z.number().min(-90).max(90).optional(),
+    longitude: z.number().min(-180).max(180).optional()
+  })
+  .superRefine((birthData, context) => {
+    const hasPrecisionBundle = Boolean(
+      birthData.time || birthData.timezone || birthData.location || birthData.latitude !== undefined || birthData.longitude !== undefined
+    );
+
+    if (!hasPrecisionBundle) return;
+
+    for (const field of ["time", "timezone", "location"] as const) {
+      if (!birthData[field]) {
+        context.addIssue({
+          code: "custom",
+          path: [field],
+          message: "Birth time, timezone, and location travel together; provide all three or leave all three blank."
+        });
+      }
+    }
+  });
 
 export const chartMakerRequestSchema = z.object({
   id: idSchema,
@@ -107,6 +125,15 @@ export const chartMakerRequestSchema = z.object({
   updatedAt: isoDateSchema
 });
 
+export const createChartMakerRequestSchema = z.object({
+  subjectName: z.string().min(1),
+  birthData: chartBirthDataSchema,
+  question: z.string().min(1).optional(),
+  intent: z.string().min(1).optional(),
+  context: jsonObjectSchema.optional(),
+  source: z.enum(["self", "ally", "composer", "import"]).default("self")
+});
+
 export const chartMakerResultSchema = z.object({
   id: idSchema,
   requestId: idSchema,
@@ -117,6 +144,16 @@ export const chartMakerResultSchema = z.object({
   chartData: jsonObjectSchema,
   error: z.string().min(1).optional(),
   createdAt: isoDateSchema
+});
+
+export const recordChartMakerResultSchema = z.object({
+  requestId: idSchema,
+  userId: idSchema,
+  engine: z.string().min(1),
+  status: z.enum(["completed", "failed"]),
+  summary: z.string().min(1).optional(),
+  chartData: jsonObjectSchema.optional(),
+  error: z.string().min(1).optional()
 });
 
 export const composerVoiceIdSchema = z.enum(["guide", "companion", "prompt"]);
@@ -169,7 +206,9 @@ export type Gift = z.infer<typeof giftSchema>;
 export type StarTransaction = z.infer<typeof starTransactionSchema>;
 export type ChartBirthData = z.infer<typeof chartBirthDataSchema>;
 export type ChartMakerRequest = z.infer<typeof chartMakerRequestSchema>;
+export type CreateChartMakerRequest = z.infer<typeof createChartMakerRequestSchema>;
 export type ChartMakerResult = z.infer<typeof chartMakerResultSchema>;
+export type RecordChartMakerResult = z.infer<typeof recordChartMakerResultSchema>;
 export type ComposerVoiceId = z.infer<typeof composerVoiceIdSchema>;
 export type ComposerVoiceCard = z.infer<typeof composerVoiceCardSchema>;
 export type ComposerVoiceValidationError = z.infer<typeof composerVoiceValidationErrorSchema>;

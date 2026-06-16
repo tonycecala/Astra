@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { listUserChartMakerRequests, db } from "@astra/db";
+import { ChartRequestPanel } from "../../components/ChartRequestPanel";
 import { PageHeader } from "../../components/PageHeader";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
@@ -26,6 +28,8 @@ export default async function SelfPage() {
     );
   }
 
+  const chartRequests = await listUserChartMakerRequests(db, profile.userId);
+
   return (
     <>
       <PageHeader eyebrow={ui.self.eyebrow} title={profile.displayName}>
@@ -48,6 +52,7 @@ export default async function SelfPage() {
           <p>{ui.self.noAchievementDescription}</p>
         </article>
       </section>
+      <ChartRequestPanel displayName={profile.displayName} initialRequests={chartRequests} />
     </>
   );
 }
