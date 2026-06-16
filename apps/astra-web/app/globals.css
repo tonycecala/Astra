@@ -113,6 +113,7 @@ textarea {
 }
 
 .nav a {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -125,6 +126,21 @@ textarea {
 .nav a:hover,
 .nav a[aria-current="page"] {
   background: var(--nav-hover);
+}
+
+.nav a[aria-current="page"] {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.nav a[aria-current="page"]::before {
+  position: absolute;
+  left: 0;
+  width: 3px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--gold);
+  content: "";
 }
 
 .main {
@@ -628,6 +644,7 @@ textarea {
   }
 
   .bottom-nav a {
+    position: relative;
     display: grid;
     justify-items: center;
     gap: 3px;
@@ -641,6 +658,17 @@ textarea {
   .bottom-nav a[aria-current="page"] {
     background: var(--nav-hover);
     color: var(--ink);
+    font-weight: 700;
+  }
+
+  .bottom-nav a[aria-current="page"]::before {
+    position: absolute;
+    top: 3px;
+    width: 18px;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--gold);
+    content: "";
   }
 
   .mobile-theme-toggle {

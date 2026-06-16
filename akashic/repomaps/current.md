@@ -17,7 +17,7 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `172404`
+- Estimated token footprint: `174239`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
@@ -71,8 +71,8 @@ tsconfig.json
 
 ## Critical Files
 - `packages/db/src/repositories.ts` - weight 323.27, ~6313 tokens, 68 symbols, in:1/out:2
+- `packages/astrology/src/index.ts` - weight 281.32, ~3661 tokens, 70 symbols, in:0/out:0
 - `apps/astra-web/components/BirthOnboardingPanel.tsx` - weight 235.27, ~6424 tokens, 50 symbols, in:1/out:1
-- `packages/astrology/src/index.ts` - weight 220.34, ~2658 tokens, 51 symbols, in:0/out:0
 - `packages/contracts/src/index.ts` - weight 192.32, ~3534 tokens, 74 symbols, in:0/out:0
 - `packages/chart-maker/src/index.ts` - weight 132.4, ~1309 tokens, 28 symbols, in:0/out:0
 - `apps/astra-web/app/api/chart-requests/route.ts` - weight 130.92, ~323 tokens, 8 symbols, in:0/out:1
@@ -81,9 +81,9 @@ tsconfig.json
 - `apps/astra-web/components/ThemeToggle.tsx` - weight 103.44, ~687 tokens, 20 symbols, in:1/out:1
 - `apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts` - weight 89.38, ~626 tokens, 9 symbols, in:0/out:1
 - `apps/astra-web/app/api/reports/[requestId]/generate/route.ts` - weight 85.84, ~309 tokens, 8 symbols, in:0/out:1
+- `apps/astra-web/e2e/foundation-routes.spec.ts` - weight 85.34, ~2717 tokens, 24 symbols, in:0/out:0
 - `apps/astra-web/components/StreamReader.tsx` - weight 81.38, ~1776 tokens, 15 symbols, in:1/out:1
 - `apps/astra-web/app/api/places/search/route.ts` - weight 80.92, ~356 tokens, 6 symbols, in:0/out:1
-- `apps/astra-web/e2e/foundation-routes.spec.ts` - weight 79.35, ~2497 tokens, 22 symbols, in:0/out:0
 - `apps/composer-web/src/voices/validateVoiceCard.ts` - weight 70.45, ~653 tokens, 13 symbols, in:2/out:1
 
 ## Critical Routes
@@ -99,9 +99,9 @@ tsconfig.json
 - `POST /api/reports` in `apps/astra-web/app/api/reports/route.ts:18`
 
 ## Pareto Profiles
-- `32000` tokens -> 18 files, 426 symbols, ~32002 estimated tokens.
-- `64000` tokens -> 64 files, 698 symbols, ~64951 estimated tokens.
-- `128000` tokens -> 88 files, 720 symbols, ~169254 estimated tokens.
+- `32000` tokens -> 15 files, 435 symbols, ~32471 estimated tokens.
+- `64000` tokens -> 59 files, 703 symbols, ~64052 estimated tokens.
+- `128000` tokens -> 89 files, 744 symbols, ~171087 estimated tokens.
 
 ## Data Model
 Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.
@@ -113,6 +113,7 @@ This is a Next.js app. Confirm the production build with the repo's build script
 
 ## Known Risks
 - `packages/db/src/repositories.ts` needs extra care because it is large or touches auth/data/schema concerns.
+- `packages/astrology/src/index.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `apps/astra-web/components/BirthOnboardingPanel.tsx` needs extra care because it is large or touches auth/data/schema concerns.
 - `packages/contracts/src/index.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `ASTRA_CLEAN_START_INAUGURAL_CHARTER.md` needs extra care because it is large or touches auth/data/schema concerns.
@@ -123,7 +124,6 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - `akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md` needs extra care because it is large or touches auth/data/schema concerns.
 - `apps/astra-web/lib/auth/profile.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `docs/architecture/clean-start-foundation.md` needs extra care because it is large or touches auth/data/schema concerns.
-- `akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md` needs extra care because it is large or touches auth/data/schema concerns.
 
 ## Current Priorities
 - Honor this repo's own AGENTS.md, ADRs, REPOMAP, and local Akashic artifacts before applying central guidance.
@@ -133,4 +133,4 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - Treat auth as a first-class product concern and verify the repo's documented local auth flow.
 - Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 113 local files in `/Users/tony/Documents/Projects/Astra`.
+Generated from 114 local files in `/Users/tony/Documents/Projects/Astra`.

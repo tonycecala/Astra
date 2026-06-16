@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { ASTRA_EPHEMERIS_ENGINE_ENV, LOCAL_ASTRONOMY_ENGINE, buildAstrologyReportResult } from "@astra/astrology";
+import { ASTRA_EPHEMERIS_ENGINE_ENV, LOCAL_CHART_ROUTINE_ENGINE, buildAstrologyReportResult } from "@astra/astrology";
 import { astrologyReportRequestSchema } from "@astra/contracts";
 
 type JsonObject = Record<string, unknown>;
@@ -180,8 +180,34 @@ const created = await requestJson(`${appBaseUrl}/api/reports`, {
   })
 });
 
+const publicCreated = await requestJson(`${appBaseUrl}/api/reports`, {
+  method: "POST",
+  body: JSON.stringify({
+    reportType: "core_self",
+    subjectName: "Albert Einstein",
+    birthData: {
+      date: "1879-03-14",
+      time: "11:30",
+      timezone: "Europe/Berlin",
+      location: "Ulm, Germany",
+      latitude: 48.4011,
+      longitude: 9.9876
+    },
+    question: "What should this public sample preserve?",
+    intent: "public-sample-report-api-smoke",
+    context: {
+      source: "Astria public data",
+      sourceUrl: "https://www.astro.com/astro-databank/Einstein,_Albert",
+      roddenRating: "AA"
+    },
+    source: "import"
+  })
+});
+
 const requestId = (created.request as JsonObject | undefined)?.id;
 if (!requestId) throw new Error("Report API did not return a request id.");
+const publicRequestId = (publicCreated.request as JsonObject | undefined)?.id;
+if (!publicRequestId) throw new Error("Report API did not return a public sample request id.");
 const reportRequest = astrologyReportRequestSchema.parse(created.request);
 const previousEngine = process.env[ASTRA_EPHEMERIS_ENGINE_ENV];
 
@@ -200,8 +226,25 @@ if ((generated.result as JsonObject | undefined)?.status !== "completed") {
 if (!((generated.result as JsonObject).publicSignal as JsonObject | undefined)?.headline) {
   throw new Error("User report generation route did not return a public signal.");
 }
+if (((generated.result as JsonObject).publicSignal as JsonObject).headline !== "Gemini Sun, Virgo Moon, Cancer rising") {
+  throw new Error(
+    `User report generation route returned the wrong Tony signature: ${((generated.result as JsonObject).publicSignal as JsonObject).headline}`
+  );
+}
+if (!String(((generated.result as JsonObject).publicSignal as JsonObject).provenanceSummary).includes("tropical, whole-sign")) {
+  throw new Error("User report generation route did not preserve tropical + whole-sign provenance.");
+}
 if ((generated.request as JsonObject | undefined)?.status !== "completed") {
   throw new Error("User report generation route did not return the completed report request.");
+}
+
+const publicGenerated = await requestJson(`${appBaseUrl}/api/reports/${publicRequestId}/generate`, {
+  method: "POST"
+});
+if (((publicGenerated.result as JsonObject).publicSignal as JsonObject | undefined)?.headline !== "Pisces Sun, Sagittarius Moon, Cancer rising") {
+  throw new Error(
+    `User report generation route returned the wrong Einstein public signature: ${((publicGenerated.result as JsonObject).publicSignal as JsonObject | undefined)?.headline ?? "missing"}`
+  );
 }
 
 const publishedSignal = await requestJson(`${appBaseUrl}/api/reports/${requestId}/publish-signal`, {
@@ -229,7 +272,7 @@ await expectStatus(`${appBaseUrl}/api/report-results`, 401, {
   body: JSON.stringify(recordPayload)
 });
 
-process.env[ASTRA_EPHEMERIS_ENGINE_ENV] = LOCAL_ASTRONOMY_ENGINE;
+process.env[ASTRA_EPHEMERIS_ENGINE_ENV] = LOCAL_CHART_ROUTINE_ENGINE;
 const completedRecordPayload = buildAstrologyReportResult(reportRequest);
 const result = await requestJson(`${appBaseUrl}/api/report-results`, {
   method: "POST",
@@ -245,11 +288,16 @@ if (!(result.result as JsonObject | undefined)?.id) {
 if ((result.result as JsonObject).status !== "completed") {
   throw new Error(`Report result smoke expected configured engine completion, got ${(result.result as JsonObject).status}.`);
 }
-if ((result.result as JsonObject).engine !== LOCAL_ASTRONOMY_ENGINE) {
-  throw new Error(`Report result smoke expected ${LOCAL_ASTRONOMY_ENGINE}, got ${(result.result as JsonObject).engine}.`);
+if ((result.result as JsonObject).engine !== LOCAL_CHART_ROUTINE_ENGINE) {
+  throw new Error(`Report result smoke expected ${LOCAL_CHART_ROUTINE_ENGINE}, got ${(result.result as JsonObject).engine}.`);
 }
 if (!((result.result as JsonObject).publicSignal as JsonObject | undefined)?.headline) {
   throw new Error("Report result API did not preserve the public report signal.");
+}
+if (((result.result as JsonObject).publicSignal as JsonObject).headline !== "Gemini Sun, Virgo Moon, Cancer rising") {
+  throw new Error(
+    `Report result API preserved the wrong Tony signature: ${((result.result as JsonObject).publicSignal as JsonObject).headline}`
+  );
 }
 
 if (previousEngine === undefined) {

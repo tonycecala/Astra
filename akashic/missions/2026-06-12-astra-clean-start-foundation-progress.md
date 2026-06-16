@@ -21,7 +21,7 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - `packages/contracts/` defines typed core nouns.
 - `packages/db/` owns Drizzle schema, migrations, client, repository helpers, seed/reset support, and Better Auth tables.
 - `packages/chart-maker/` owns the independent chart-maker contract adapter.
-- `packages/astrology/` owns the astrology report generation boundary, explicit engine-unavailable result adapter, and first local `astronomy-engine` backed report adapter.
+- `packages/astrology/` owns the astrology report generation boundary, explicit engine-unavailable result adapter, and migrated local `circular-natal-horoscope-js` chart routine adapter.
 - `packages/testkit/` owns typed seed fixtures.
 - `scripts/` contains foundation checks, no-Supabase checks, boundary checks, seed/reset scripts, auth-code smoke support, and durable local server controls.
 - `docs/architecture/clean-start-foundation.md` documents the foundation shape and local database/auth loop.
@@ -101,8 +101,8 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - `docs/architecture/stream-read-model-cache-boundary.md` defines the public stream read model, cache tags, invalidation rule, and origin-failure behavior while keeping private reports auth-gated.
 - `npm run test:place-search-api` proves unauthenticated place search is rejected and authenticated local-fixture search returns New York with timezone/coordinates.
 - Browser QA on `/self` proved the signed-in onboarding journey can search `New`, select `New York, NY, USA`, review `08:30, America/New_York, New York, NY, USA`, queue linked chart/report records, and render desktop/tablet/phone with no console errors or horizontal overflow.
-- `@astra/astrology` can now run `ASTRA_EPHEMERIS_ENGINE=local-astronomy-engine` through the MIT `astronomy-engine` package, calculating Sun, Moon, visible-planet ecliptic longitudes and moon phase before writing completed private report sections plus a Composer-safe public signal.
-- `npm run test:astrology-engine` proves unconfigured engine failure still names `ASTRA_EPHEMERIS_ENGINE`, while configured local engine completion emits Gemini report evidence for Tony's `1961-05-23` fixture.
+- `@astra/astrology` can now run `ASTRA_EPHEMERIS_ENGINE=local-chart-routine` through the migrated `circular-natal-horoscope-js` routine from Astria, preserving tropical + Whole Sign chart signatures before writing completed private report sections plus a Composer-safe public signal.
+- `npm run test:astrology-engine` proves unconfigured engine failure still names `ASTRA_EPHEMERIS_ENGINE`, while configured local engine completion emits Tony's Gemini Sun, Virgo Moon, Cancer rising fixture and Einstein's public AA Pisces Sun, Sagittarius Moon, Cancer rising fixture.
 - `/api/reports/[requestId]/generate` now lets a signed-in user generate their own queued report through the configured engine without exposing raw private sections publicly or using the internal writer token.
 - `/self` now shows a compact Generate action for queued reports, then updates the side rail to completed status with the Composer-safe public headline after generation.
 - `/self` now includes a private report reader for generated sections and provenance, keeping raw report content in the authenticated self surface instead of the public stream.
@@ -117,7 +117,7 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 ## Follow-Ups
 - Select the production birth-place provider and replace/extend the local fixture adapter without changing the `/api/places/search` contract.
 - Replace the deterministic chart-maker contract adapter with or behind a real ephemeris-backed module when the chart computation engine is selected.
-- Decide whether the local `astronomy-engine` adapter is the production v1 report engine or should remain a local proof behind a later production ephemeris/report provider.
+- Decide whether the migrated `circular-natal-horoscope-js` adapter is the production v1 report engine or should remain a local proof behind a later production ephemeris/report provider.
 - Design Composer artifact and future public/read-model retrieval/caching for production, including edge-first caching with explicit origin failure.
 - Implement the production cache/invalidation mechanism described in `docs/architecture/stream-read-model-cache-boundary.md` when the deployment target is ready.
 - Continue polishing reader density, card states, gifts/stars presentation, self/profile usefulness, and i18n-backed empty/error/loading states.

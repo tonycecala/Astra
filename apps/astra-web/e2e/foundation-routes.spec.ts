@@ -90,6 +90,20 @@ test.describe("clean-start routes", () => {
     expect(hasOverflow).toBe(false);
   });
 
+  test("active navigation is visible on desktop and mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/self");
+    const desktopSelf = page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Self" });
+    await expect(desktopSelf).toHaveAttribute("aria-current", "page");
+    await expect(desktopSelf).toHaveCSS("font-weight", "700");
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/library");
+    const mobileLibrary = page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("link", { name: "Library" });
+    await expect(mobileLibrary).toHaveAttribute("aria-current", "page");
+    await expect(mobileLibrary).toHaveCSS("font-weight", "700");
+  });
+
   test("primary journey reaches adjacent clean-start areas", async ({ page }) => {
     await page.goto("/journey");
     await page.locator('a[href="/allies"]:visible').click();
@@ -189,7 +203,7 @@ test.describe("clean-start routes", () => {
     await onboarding.getByRole("button", { exact: true, name: "Generate" }).click();
     await expect(onboarding).toContainText("Report generated");
     await expect(onboarding).toContainText("completed");
-    await expect(onboarding).toContainText("Gemini Sun");
+    await expect(onboarding).toContainText("Gemini Sun, Virgo Moon, Cancer rising");
     await onboarding.getByRole("button", { exact: true, name: "Read report" }).click();
     await expect(onboarding.getByLabel("Private report reader")).toContainText("Core pattern");
     await expect(onboarding.getByLabel("Private report reader")).toContainText("Provenance");
@@ -198,12 +212,12 @@ test.describe("clean-start routes", () => {
 
     await page.goto("/library");
     await expect(page.getByRole("heading", { name: "Artifacts worth keeping" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Gemini Sun/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Gemini Sun, Virgo Moon, Cancer rising/ })).toBeVisible();
     await expect(page.getByText("report", { exact: true })).toBeVisible();
 
     await page.goto("/journey");
     await page.getByRole("tab", { name: "Know yourself" }).click();
-    const generatedSignals = page.locator(".stream-card-open").filter({ hasText: "Gemini Sun" });
+    const generatedSignals = page.locator(".stream-card-open").filter({ hasText: "Gemini Sun, Virgo Moon, Cancer rising" });
     expect(await generatedSignals.count()).toBeGreaterThan(0);
   });
 });
