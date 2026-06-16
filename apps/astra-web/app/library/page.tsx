@@ -32,17 +32,20 @@ export default async function LibraryPage({ searchParams }: LibraryPageParams) {
           userId: profile.userId
         })
       : null;
+  const shouldShowList = !normalizedReportId;
 
   return (
     <>
       <PageHeader eyebrow={ui.library.eyebrow} title={ui.library.title}>
         {ui.library.intro}
       </PageHeader>
-      <section className="list" aria-label={ui.library.listLabel}>
-        {view.artifacts.map((artifact) => (
-          <ArtifactCard artifact={artifact} key={artifact.id} />
-        ))}
-      </section>
+      {shouldShowList ? (
+        <section className="list" aria-label={ui.library.listLabel}>
+          {view.artifacts.map((artifact) => (
+            <ArtifactCard artifact={artifact} key={artifact.id} />
+          ))}
+        </section>
+      ) : null}
       {selectedReport ? <SelectedReportCard report={selectedReport} onCloseHref="/library" /> : normalizedReportId ? <SelectedReportMissingCard reportId={normalizedReportId} /> : null}
     </>
   );
@@ -59,7 +62,6 @@ function ArtifactCard({ artifact }: { artifact: LibraryArtifact }) {
         <div className="eyebrow">{artifact.kind}</div>
         <h2>{artifact.title}</h2>
         <p>{artifact.summary}</p>
-        <p>{ui.library.openReportAction}</p>
       </Link>
     );
   }
@@ -85,7 +87,7 @@ function SelectedReportCard({
       <p>
         <a href={onCloseHref}>{ui.library.selectedReportBack}</a>
       </p>
-      <div className="eyebrow">{ui.library.selectedReportEyebrow}</div>
+      {ui.library.selectedReportEyebrow ? <div className="eyebrow">{ui.library.selectedReportEyebrow}</div> : null}
       <h2>{report.publicSignal?.headline ?? "Report details"}</h2>
       {report.summary ? <p>{report.summary}</p> : <p>{ui.library.selectedReportNoSummary}</p>}
 
@@ -109,6 +111,9 @@ function SelectedReportCard({
 function SelectedReportMissingCard({ reportId }: { reportId: string }) {
   return (
     <section className="card" aria-label={ui.library.selectedReportLabel}>
+      <p>
+        <a href="/library">{ui.library.selectedReportBack}</a>
+      </p>
       <p>{ui.library.selectedReportMissing}</p>
       <p>{ui.library.selectedReportMissingId}</p>
       <pre>{reportId}</pre>

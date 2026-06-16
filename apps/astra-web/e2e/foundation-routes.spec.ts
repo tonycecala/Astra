@@ -222,17 +222,17 @@ test.describe("clean-start routes", () => {
     await expect(onboarding.getByLabel("Chart generation flow")).toContainText("Saved in Library");
     await page.getByRole("button", { name: "Read report" }).click();
     await expect(page).toHaveURL(/\/library\?reportId=/);
-    await expect(page.getByRole("link", { name: "Back to library list" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Click/Tap to Close Report" })).toBeVisible();
 
     await page.goto("/library");
     await expect(page.getByRole("heading", { name: "Artifacts worth keeping" })).toBeVisible();
-    const libraryReportCards = page.getByRole("link", { name: /Open report:/ });
+    const libraryReportCards = page.getByRole("link", { name: /View report:/ });
     await expect(libraryReportCards.first()).toBeVisible();
     await expect(libraryReportCards.first()).toContainText("report");
-    await libraryReportCards.first().getByText("Open report").click();
+    await libraryReportCards.first().click();
     await expect(page).toHaveURL(/\/library\?reportId=/);
-    await expect(page.getByRole("link", { name: "Back to library list" })).toBeVisible();
-    await page.getByRole("link", { name: "Back to library list" }).click();
+    await expect(page.getByRole("link", { name: "Click/Tap to Close Report" })).toBeVisible();
+    await page.getByRole("link", { name: "Click/Tap to Close Report" }).click();
     await expect(page).toHaveURL(/\/library$/);
 
     await page.goto("/journey");
