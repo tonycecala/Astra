@@ -9,7 +9,7 @@ type: "handoff"
 from: "/Users/tony/Documents/Projects/Astra"
 to: "/Users/tony/Documents/Projects/Astra"
 tags: ["agent-message", "handoff", "fresh-thread", "astra", "stream", "astrology-reports", "lean-modular", "high"]
-related: ["../missions/2026-06-12-astra-clean-start-foundation-progress.md", "../../docs/architecture/clean-start-foundation.md", "2026-06-15-fresh-thread-astra-foundation-next-step.md"]
+related: ["../../../akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md", "../../architecture/clean-start-foundation.md", "../../../akashic/agent-inbox/2026-06-15-fresh-thread-astra-foundation-next-step.md"]
 ---
 
 # Next Thread Handoff: Lean Rebuilt Stream and Astrology Reports

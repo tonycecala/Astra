@@ -116,7 +116,7 @@ The production journey must be a private, authenticated, user-owned feed; public
 - Browser QA also proved the private report reader renders `Core pattern` and `Provenance` on desktop/tablet/phone with no new console errors or horizontal overflow.
 - Browser QA on `/library` proved signed-in report artifacts render on desktop/tablet/phone with no console errors or horizontal overflow.
 - Browser QA on `/journey` proved the published report signal renders as report-signal metadata on desktop/tablet/phone with no console errors or horizontal overflow.
-- `akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md` now captures the clean next-thread start point for the lower-debug model-backed report writer route.
+- `docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md` captures the completed lower-debug model-backed report writer route handoff.
 - `ASTRA_REPORT_WRITER=debug-model-writer` now exists as an opt-in async writer route behind `ASTRA_REPORT_MODEL_PROVIDER=openai`, `ASTRA_REPORT_MODEL`, and `ASTRA_OPENAI_API_KEY`. Missing config and unsupported providers fail closed as private failed report results before any model call, while `local-deterministic-writer` remains the default baseline and public-signal oracle.
 - `npm run test:astrology-engine` now proves the mocked OpenAI Responses API success path, malformed model-output failure, provider/model provenance, and the rule that model output cannot rewrite the deterministic public signal.
 - Astra's private personal feed boundary now has v0 shared contracts, Drizzle tables, migration, and repository helpers for `SourceCard`, `PublicStreamItem`, `UserFeedItem`, `ComposerDecision`, `PrivateFeedRequest`, and `PrivateFeedResponse`.

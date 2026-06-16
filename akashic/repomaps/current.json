@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-06-16T19:29:47.271Z",
+  "generated_at": "2026-06-16T20:26:49.711Z",
   "root_name": "Astra",
-  "files_indexed": 130,
-  "total_symbols": 993,
-  "total_estimated_tokens": 215760,
+  "files_indexed": 135,
+  "total_symbols": 1035,
+  "total_estimated_tokens": 220157,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -650,9 +650,9 @@
     {
       "file": "packages/db/src/repositories.ts",
       "lang": "typescript",
-      "size": 34132,
-      "lines": 1141,
-      "estimated_tokens": 8533,
+      "size": 34622,
+      "lines": 1154,
+      "estimated_tokens": 8656,
       "symbols": [
         {
           "name": "Artifact",
@@ -1016,142 +1016,142 @@
         },
         {
           "name": "upsertAuthUserProfile",
-          "line": 769,
+          "line": 782,
           "type": "function"
         },
         {
           "name": "now",
-          "line": 770,
+          "line": 783,
           "type": "constant"
         },
         {
           "name": "createChartMakerRequest",
-          "line": 798,
+          "line": 811,
           "type": "function"
         },
         {
           "name": "birthData",
-          "line": 802,
+          "line": 815,
           "type": "constant"
         },
         {
           "name": "now",
-          "line": 803,
+          "line": 816,
           "type": "constant"
         },
         {
           "name": "listUserChartMakerRequests",
-          "line": 824,
+          "line": 837,
           "type": "function"
         },
         {
           "name": "rows",
-          "line": 825,
-          "type": "constant"
-        },
-        {
-          "name": "recordChartMakerResult",
-          "line": 834,
-          "type": "function"
-        },
-        {
-          "name": "now",
           "line": 838,
           "type": "constant"
         },
         {
+          "name": "recordChartMakerResult",
+          "line": 847,
+          "type": "function"
+        },
+        {
+          "name": "now",
+          "line": 851,
+          "type": "constant"
+        },
+        {
           "name": "createAstrologyReportRequest",
-          "line": 885,
+          "line": 898,
           "type": "function"
         },
         {
           "name": "parsed",
-          "line": 889,
+          "line": 902,
           "type": "constant"
         },
         {
           "name": "now",
-          "line": 899,
+          "line": 912,
           "type": "constant"
         },
         {
           "name": "listUserAstrologyReportRequests",
-          "line": 924,
-          "type": "function"
-        },
-        {
-          "name": "rows",
-          "line": 928,
-          "type": "constant"
-        },
-        {
-          "name": "getUserAstrologyReportRequest",
           "line": 937,
           "type": "function"
         },
         {
-          "name": "listUserAstrologyReportResults",
+          "name": "rows",
+          "line": 941,
+          "type": "constant"
+        },
+        {
+          "name": "getUserAstrologyReportRequest",
           "line": 950,
           "type": "function"
         },
         {
-          "name": "rows",
-          "line": 954,
-          "type": "constant"
-        },
-        {
-          "name": "getUserAstrologyReportResult",
+          "name": "listUserAstrologyReportResults",
           "line": 963,
           "type": "function"
         },
         {
-          "name": "listUserArtifacts",
+          "name": "rows",
+          "line": 967,
+          "type": "constant"
+        },
+        {
+          "name": "getUserAstrologyReportResult",
           "line": 976,
           "type": "function"
         },
         {
-          "name": "rows",
-          "line": 977,
-          "type": "constant"
-        },
-        {
-          "name": "recordAstrologyReportResult",
-          "line": 986,
+          "name": "listUserArtifacts",
+          "line": 989,
           "type": "function"
         },
         {
-          "name": "now",
+          "name": "rows",
           "line": 990,
           "type": "constant"
         },
         {
+          "name": "recordAstrologyReportResult",
+          "line": 999,
+          "type": "function"
+        },
+        {
+          "name": "now",
+          "line": 1003,
+          "type": "constant"
+        },
+        {
           "name": "upsertComposerStreamArtifact",
-          "line": 1078,
+          "line": 1091,
           "type": "function"
         },
         {
           "name": "artifact",
-          "line": 1082,
+          "line": 1095,
           "type": "constant"
         },
         {
           "name": "now",
-          "line": 1083,
+          "line": 1096,
           "type": "constant"
         },
         {
           "name": "assertResetAllowed",
-          "line": 1131,
+          "line": 1144,
           "type": "function"
         },
         {
           "name": "parsed",
-          "line": 1132,
+          "line": 1145,
           "type": "constant"
         },
         {
           "name": "localHosts",
-          "line": 1133,
+          "line": 1146,
           "type": "constant"
         }
       ],
@@ -1202,7 +1202,598 @@
       "headings": [],
       "dependency_in": 1,
       "dependency_out": 2,
-      "importance_weight": 464.25,
+      "importance_weight": 464.24,
+      "importance_bucket": "other"
+    },
+    {
+      "file": "packages/contracts/src/index.ts",
+      "lang": "typescript",
+      "size": 19744,
+      "lines": 533,
+      "estimated_tokens": 4936,
+      "symbols": [
+        {
+          "name": "idSchema",
+          "line": 3,
+          "type": "constant"
+        },
+        {
+          "name": "isoDateSchema",
+          "line": 4,
+          "type": "constant"
+        },
+        {
+          "name": "dateOnlySchema",
+          "line": 5,
+          "type": "constant"
+        },
+        {
+          "name": "timeOnlySchema",
+          "line": 6,
+          "type": "constant"
+        },
+        {
+          "name": "jsonObjectSchema",
+          "line": 7,
+          "type": "constant"
+        },
+        {
+          "name": "userSchema",
+          "line": 9,
+          "type": "constant"
+        },
+        {
+          "name": "cardSchema",
+          "line": 19,
+          "type": "constant"
+        },
+        {
+          "name": "streamItemSchema",
+          "line": 32,
+          "type": "constant"
+        },
+        {
+          "name": "achievementSchema",
+          "line": 41,
+          "type": "constant"
+        },
+        {
+          "name": "allySchema",
+          "line": 50,
+          "type": "constant"
+        },
+        {
+          "name": "artifactSchema",
+          "line": 60,
+          "type": "constant"
+        },
+        {
+          "name": "giftSchema",
+          "line": 69,
+          "type": "constant"
+        },
+        {
+          "name": "starTransactionSchema",
+          "line": 78,
+          "type": "constant"
+        },
+        {
+          "name": "sourceCardSchema",
+          "line": 87,
+          "type": "constant"
+        },
+        {
+          "name": "publicStreamItemSchema",
+          "line": 102,
+          "type": "constant"
+        },
+        {
+          "name": "userFeedItemSchema",
+          "line": 115,
+          "type": "constant"
+        },
+        {
+          "name": "composerDecisionSchema",
+          "line": 139,
+          "type": "constant"
+        },
+        {
+          "name": "privateFeedRequestSchema",
+          "line": 153,
+          "type": "constant"
+        },
+        {
+          "name": "privateFeedResponseSchema",
+          "line": 159,
+          "type": "constant"
+        },
+        {
+          "name": "createUserFeedItemSchema",
+          "line": 165,
+          "type": "constant"
+        },
+        {
+          "name": "createComposerDecisionSchema",
+          "line": 184,
+          "type": "constant"
+        },
+        {
+          "name": "composerPrivateFeedDecisionInputSchema",
+          "line": 196,
+          "type": "constant"
+        },
+        {
+          "name": "composerPrivateFeedWriteSchema",
+          "line": 206,
+          "type": "constant"
+        },
+        {
+          "name": "composerPrivateFeedWriteResponseSchema",
+          "line": 215,
+          "type": "constant"
+        },
+        {
+          "name": "chartBirthDataSchema",
+          "line": 223,
+          "type": "constant"
+        },
+        {
+          "name": "hasPrecisionBundle",
+          "line": 233,
+          "type": "constant"
+        },
+        {
+          "name": "birthPlaceSearchQuerySchema",
+          "line": 250,
+          "type": "constant"
+        },
+        {
+          "name": "birthPlaceSearchResultSchema",
+          "line": 255,
+          "type": "constant"
+        },
+        {
+          "name": "birthPlaceSearchResponseSchema",
+          "line": 264,
+          "type": "constant"
+        },
+        {
+          "name": "chartMakerRequestSchema",
+          "line": 269,
+          "type": "constant"
+        },
+        {
+          "name": "createChartMakerRequestSchema",
+          "line": 283,
+          "type": "constant"
+        },
+        {
+          "name": "chartMakerResultSchema",
+          "line": 292,
+          "type": "constant"
+        },
+        {
+          "name": "chartMakerPrecisionSchema",
+          "line": 304,
+          "type": "constant"
+        },
+        {
+          "name": "chartMakerChartDataSchema",
+          "line": 306,
+          "type": "constant"
+        },
+        {
+          "name": "recordChartMakerResultSchema",
+          "line": 330,
+          "type": "constant"
+        },
+        {
+          "name": "astrologyReportStatusSchema",
+          "line": 340,
+          "type": "constant"
+        },
+        {
+          "name": "astrologyReportTypeSchema",
+          "line": 341,
+          "type": "constant"
+        },
+        {
+          "name": "reportBoundarySchema",
+          "line": 342,
+          "type": "constant"
+        },
+        {
+          "name": "astrologyReportSectionSchema",
+          "line": 344,
+          "type": "constant"
+        },
+        {
+          "name": "astrologyReportProvenanceSchema",
+          "line": 351,
+          "type": "constant"
+        },
+        {
+          "name": "astrologyReportPublicSignalSchema",
+          "line": 360,
+          "type": "constant"
+        },
+        {
+          "name": "astrologyReportRequestSchema",
+          "line": 371,
+          "type": "constant"
+        },
+        {
+          "name": "createAstrologyReportRequestSchema",
+          "line": 391,
+          "type": "constant"
+        },
+        {
+          "name": "astrologyReportResultSchema",
+          "line": 402,
+          "type": "constant"
+        },
+        {
+          "name": "recordAstrologyReportResultSchema",
+          "line": 417,
+          "type": "constant"
+        },
+        {
+          "name": "composerVoiceIdSchema",
+          "line": 430,
+          "type": "constant"
+        },
+        {
+          "name": "composerVoiceCardSchema",
+          "line": 432,
+          "type": "constant"
+        },
+        {
+          "name": "composerVoiceValidationErrorSchema",
+          "line": 440,
+          "type": "constant"
+        },
+        {
+          "name": "composerArtifactRationaleSchema",
+          "line": 455,
+          "type": "constant"
+        },
+        {
+          "name": "composerStreamArtifactSchema",
+          "line": 460,
+          "type": "constant"
+        },
+        {
+          "name": "AstraUser",
+          "line": 476,
+          "type": "type"
+        },
+        {
+          "name": "AstraCard",
+          "line": 477,
+          "type": "type"
+        },
+        {
+          "name": "StreamItem",
+          "line": 478,
+          "type": "type"
+        },
+        {
+          "name": "Achievement",
+          "line": 479,
+          "type": "type"
+        },
+        {
+          "name": "Ally",
+          "line": 480,
+          "type": "type"
+        },
+        {
+          "name": "Artifact",
+          "line": 481,
+          "type": "type"
+        },
+        {
+          "name": "Gift",
+          "line": 482,
+          "type": "type"
+        },
+        {
+          "name": "StarTransaction",
+          "line": 483,
+          "type": "type"
+        },
+        {
+          "name": "SourceCard",
+          "line": 484,
+          "type": "type"
+        },
+        {
+          "name": "PublicStreamItem",
+          "line": 485,
+          "type": "type"
+        },
+        {
+          "name": "UserFeedItem",
+          "line": 486,
+          "type": "type"
+        },
+        {
+          "name": "ComposerDecision",
+          "line": 487,
+          "type": "type"
+        },
+        {
+          "name": "PrivateFeedRequest",
+          "line": 488,
+          "type": "type"
+        },
+        {
+          "name": "PrivateFeedResponse",
+          "line": 489,
+          "type": "type"
+        },
+        {
+          "name": "CreateUserFeedItem",
+          "line": 490,
+          "type": "type"
+        },
+        {
+          "name": "CreateComposerDecision",
+          "line": 491,
+          "type": "type"
+        },
+        {
+          "name": "ComposerPrivateFeedDecisionInput",
+          "line": 492,
+          "type": "type"
+        },
+        {
+          "name": "ComposerPrivateFeedWrite",
+          "line": 493,
+          "type": "type"
+        },
+        {
+          "name": "ComposerPrivateFeedWriteResponse",
+          "line": 494,
+          "type": "type"
+        },
+        {
+          "name": "ChartBirthData",
+          "line": 495,
+          "type": "type"
+        },
+        {
+          "name": "BirthPlaceSearchQuery",
+          "line": 496,
+          "type": "type"
+        },
+        {
+          "name": "BirthPlaceSearchResult",
+          "line": 497,
+          "type": "type"
+        },
+        {
+          "name": "BirthPlaceSearchResponse",
+          "line": 498,
+          "type": "type"
+        },
+        {
+          "name": "ChartMakerRequest",
+          "line": 499,
+          "type": "type"
+        },
+        {
+          "name": "CreateChartMakerRequest",
+          "line": 500,
+          "type": "type"
+        },
+        {
+          "name": "ChartMakerResult",
+          "line": 501,
+          "type": "type"
+        },
+        {
+          "name": "ChartMakerPrecision",
+          "line": 502,
+          "type": "type"
+        },
+        {
+          "name": "ChartMakerChartData",
+          "line": 503,
+          "type": "type"
+        },
+        {
+          "name": "RecordChartMakerResult",
+          "line": 504,
+          "type": "type"
+        },
+        {
+          "name": "AstrologyReportStatus",
+          "line": 505,
+          "type": "type"
+        },
+        {
+          "name": "AstrologyReportType",
+          "line": 506,
+          "type": "type"
+        },
+        {
+          "name": "ReportBoundary",
+          "line": 507,
+          "type": "type"
+        },
+        {
+          "name": "AstrologyReportSection",
+          "line": 508,
+          "type": "type"
+        },
+        {
+          "name": "AstrologyReportProvenance",
+          "line": 509,
+          "type": "type"
+        },
+        {
+          "name": "AstrologyReportPublicSignal",
+          "line": 510,
+          "type": "type"
+        },
+        {
+          "name": "AstrologyReportRequest",
+          "line": 511,
+          "type": "type"
+        },
+        {
+          "name": "CreateAstrologyReportRequest",
+          "line": 512,
+          "type": "type"
+        },
+        {
+          "name": "AstrologyReportResult",
+          "line": 513,
+          "type": "type"
+        },
+        {
+          "name": "RecordAstrologyReportResult",
+          "line": 514,
+          "type": "type"
+        },
+        {
+          "name": "ComposerVoiceId",
+          "line": 515,
+          "type": "type"
+        },
+        {
+          "name": "ComposerVoiceCard",
+          "line": 516,
+          "type": "type"
+        },
+        {
+          "name": "ComposerVoiceValidationError",
+          "line": 517,
+          "type": "type"
+        },
+        {
+          "name": "ComposerArtifactRationale",
+          "line": 518,
+          "type": "type"
+        },
+        {
+          "name": "ComposerStreamArtifact",
+          "line": 519,
+          "type": "type"
+        },
+        {
+          "name": "foundationSeedSchema",
+          "line": 521,
+          "type": "constant"
+        },
+        {
+          "name": "FoundationSeed",
+          "line": 532,
+          "type": "type"
+        }
+      ],
+      "imports": [
+        "zod"
+      ],
+      "exports": [
+        "Achievement",
+        "Ally",
+        "Artifact",
+        "AstraCard",
+        "AstraUser",
+        "AstrologyReportProvenance",
+        "AstrologyReportPublicSignal",
+        "AstrologyReportRequest",
+        "AstrologyReportResult",
+        "AstrologyReportSection",
+        "AstrologyReportStatus",
+        "AstrologyReportType",
+        "BirthPlaceSearchQuery",
+        "BirthPlaceSearchResponse",
+        "BirthPlaceSearchResult",
+        "ChartBirthData",
+        "ChartMakerChartData",
+        "ChartMakerPrecision",
+        "ChartMakerRequest",
+        "ChartMakerResult",
+        "ComposerArtifactRationale",
+        "ComposerDecision",
+        "ComposerPrivateFeedDecisionInput",
+        "ComposerPrivateFeedWrite",
+        "ComposerPrivateFeedWriteResponse",
+        "ComposerStreamArtifact",
+        "ComposerVoiceCard",
+        "ComposerVoiceId",
+        "ComposerVoiceValidationError",
+        "CreateAstrologyReportRequest",
+        "CreateChartMakerRequest",
+        "CreateComposerDecision",
+        "CreateUserFeedItem",
+        "FoundationSeed",
+        "Gift",
+        "PrivateFeedRequest",
+        "PrivateFeedResponse",
+        "PublicStreamItem",
+        "RecordAstrologyReportResult",
+        "RecordChartMakerResult",
+        "ReportBoundary",
+        "SourceCard",
+        "StarTransaction",
+        "StreamItem",
+        "UserFeedItem",
+        "achievementSchema",
+        "allySchema",
+        "artifactSchema",
+        "astrologyReportProvenanceSchema",
+        "astrologyReportPublicSignalSchema",
+        "astrologyReportRequestSchema",
+        "astrologyReportResultSchema",
+        "astrologyReportSectionSchema",
+        "astrologyReportStatusSchema",
+        "astrologyReportTypeSchema",
+        "birthPlaceSearchQuerySchema",
+        "birthPlaceSearchResponseSchema",
+        "birthPlaceSearchResultSchema",
+        "cardSchema",
+        "chartBirthDataSchema",
+        "chartMakerChartDataSchema",
+        "chartMakerPrecisionSchema",
+        "chartMakerRequestSchema",
+        "chartMakerResultSchema",
+        "composerArtifactRationaleSchema",
+        "composerDecisionSchema",
+        "composerPrivateFeedDecisionInputSchema",
+        "composerPrivateFeedWriteResponseSchema",
+        "composerPrivateFeedWriteSchema",
+        "composerStreamArtifactSchema",
+        "composerVoiceCardSchema",
+        "composerVoiceIdSchema",
+        "composerVoiceValidationErrorSchema",
+        "createAstrologyReportRequestSchema",
+        "createChartMakerRequestSchema",
+        "createComposerDecisionSchema",
+        "createUserFeedItemSchema",
+        "foundationSeedSchema",
+        "giftSchema",
+        "privateFeedRequestSchema",
+        "privateFeedResponseSchema",
+        "publicStreamItemSchema",
+        "recordAstrologyReportResultSchema",
+        "recordChartMakerResultSchema",
+        "reportBoundarySchema",
+        "sourceCardSchema",
+        "starTransactionSchema",
+        "streamItemSchema",
+        "userFeedItemSchema",
+        "userSchema"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 247.29,
       "importance_bucket": "other"
     },
     {
@@ -1479,561 +2070,6 @@
       "dependency_in": 1,
       "dependency_out": 1,
       "importance_weight": 235.27,
-      "importance_bucket": "other"
-    },
-    {
-      "file": "packages/contracts/src/index.ts",
-      "lang": "typescript",
-      "size": 18542,
-      "lines": 503,
-      "estimated_tokens": 4636,
-      "symbols": [
-        {
-          "name": "idSchema",
-          "line": 3,
-          "type": "constant"
-        },
-        {
-          "name": "isoDateSchema",
-          "line": 4,
-          "type": "constant"
-        },
-        {
-          "name": "dateOnlySchema",
-          "line": 5,
-          "type": "constant"
-        },
-        {
-          "name": "timeOnlySchema",
-          "line": 6,
-          "type": "constant"
-        },
-        {
-          "name": "jsonObjectSchema",
-          "line": 7,
-          "type": "constant"
-        },
-        {
-          "name": "userSchema",
-          "line": 9,
-          "type": "constant"
-        },
-        {
-          "name": "cardSchema",
-          "line": 19,
-          "type": "constant"
-        },
-        {
-          "name": "streamItemSchema",
-          "line": 32,
-          "type": "constant"
-        },
-        {
-          "name": "achievementSchema",
-          "line": 41,
-          "type": "constant"
-        },
-        {
-          "name": "allySchema",
-          "line": 50,
-          "type": "constant"
-        },
-        {
-          "name": "artifactSchema",
-          "line": 60,
-          "type": "constant"
-        },
-        {
-          "name": "giftSchema",
-          "line": 69,
-          "type": "constant"
-        },
-        {
-          "name": "starTransactionSchema",
-          "line": 78,
-          "type": "constant"
-        },
-        {
-          "name": "sourceCardSchema",
-          "line": 87,
-          "type": "constant"
-        },
-        {
-          "name": "publicStreamItemSchema",
-          "line": 102,
-          "type": "constant"
-        },
-        {
-          "name": "userFeedItemSchema",
-          "line": 115,
-          "type": "constant"
-        },
-        {
-          "name": "composerDecisionSchema",
-          "line": 139,
-          "type": "constant"
-        },
-        {
-          "name": "privateFeedRequestSchema",
-          "line": 153,
-          "type": "constant"
-        },
-        {
-          "name": "privateFeedResponseSchema",
-          "line": 159,
-          "type": "constant"
-        },
-        {
-          "name": "createUserFeedItemSchema",
-          "line": 165,
-          "type": "constant"
-        },
-        {
-          "name": "createComposerDecisionSchema",
-          "line": 184,
-          "type": "constant"
-        },
-        {
-          "name": "chartBirthDataSchema",
-          "line": 196,
-          "type": "constant"
-        },
-        {
-          "name": "hasPrecisionBundle",
-          "line": 206,
-          "type": "constant"
-        },
-        {
-          "name": "birthPlaceSearchQuerySchema",
-          "line": 223,
-          "type": "constant"
-        },
-        {
-          "name": "birthPlaceSearchResultSchema",
-          "line": 228,
-          "type": "constant"
-        },
-        {
-          "name": "birthPlaceSearchResponseSchema",
-          "line": 237,
-          "type": "constant"
-        },
-        {
-          "name": "chartMakerRequestSchema",
-          "line": 242,
-          "type": "constant"
-        },
-        {
-          "name": "createChartMakerRequestSchema",
-          "line": 256,
-          "type": "constant"
-        },
-        {
-          "name": "chartMakerResultSchema",
-          "line": 265,
-          "type": "constant"
-        },
-        {
-          "name": "chartMakerPrecisionSchema",
-          "line": 277,
-          "type": "constant"
-        },
-        {
-          "name": "chartMakerChartDataSchema",
-          "line": 279,
-          "type": "constant"
-        },
-        {
-          "name": "recordChartMakerResultSchema",
-          "line": 303,
-          "type": "constant"
-        },
-        {
-          "name": "astrologyReportStatusSchema",
-          "line": 313,
-          "type": "constant"
-        },
-        {
-          "name": "astrologyReportTypeSchema",
-          "line": 314,
-          "type": "constant"
-        },
-        {
-          "name": "reportBoundarySchema",
-          "line": 315,
-          "type": "constant"
-        },
-        {
-          "name": "astrologyReportSectionSchema",
-          "line": 317,
-          "type": "constant"
-        },
-        {
-          "name": "astrologyReportProvenanceSchema",
-          "line": 324,
-          "type": "constant"
-        },
-        {
-          "name": "astrologyReportPublicSignalSchema",
-          "line": 333,
-          "type": "constant"
-        },
-        {
-          "name": "astrologyReportRequestSchema",
-          "line": 344,
-          "type": "constant"
-        },
-        {
-          "name": "createAstrologyReportRequestSchema",
-          "line": 364,
-          "type": "constant"
-        },
-        {
-          "name": "astrologyReportResultSchema",
-          "line": 375,
-          "type": "constant"
-        },
-        {
-          "name": "recordAstrologyReportResultSchema",
-          "line": 390,
-          "type": "constant"
-        },
-        {
-          "name": "composerVoiceIdSchema",
-          "line": 403,
-          "type": "constant"
-        },
-        {
-          "name": "composerVoiceCardSchema",
-          "line": 405,
-          "type": "constant"
-        },
-        {
-          "name": "composerVoiceValidationErrorSchema",
-          "line": 413,
-          "type": "constant"
-        },
-        {
-          "name": "composerArtifactRationaleSchema",
-          "line": 428,
-          "type": "constant"
-        },
-        {
-          "name": "composerStreamArtifactSchema",
-          "line": 433,
-          "type": "constant"
-        },
-        {
-          "name": "AstraUser",
-          "line": 449,
-          "type": "type"
-        },
-        {
-          "name": "AstraCard",
-          "line": 450,
-          "type": "type"
-        },
-        {
-          "name": "StreamItem",
-          "line": 451,
-          "type": "type"
-        },
-        {
-          "name": "Achievement",
-          "line": 452,
-          "type": "type"
-        },
-        {
-          "name": "Ally",
-          "line": 453,
-          "type": "type"
-        },
-        {
-          "name": "Artifact",
-          "line": 454,
-          "type": "type"
-        },
-        {
-          "name": "Gift",
-          "line": 455,
-          "type": "type"
-        },
-        {
-          "name": "StarTransaction",
-          "line": 456,
-          "type": "type"
-        },
-        {
-          "name": "SourceCard",
-          "line": 457,
-          "type": "type"
-        },
-        {
-          "name": "PublicStreamItem",
-          "line": 458,
-          "type": "type"
-        },
-        {
-          "name": "UserFeedItem",
-          "line": 459,
-          "type": "type"
-        },
-        {
-          "name": "ComposerDecision",
-          "line": 460,
-          "type": "type"
-        },
-        {
-          "name": "PrivateFeedRequest",
-          "line": 461,
-          "type": "type"
-        },
-        {
-          "name": "PrivateFeedResponse",
-          "line": 462,
-          "type": "type"
-        },
-        {
-          "name": "CreateUserFeedItem",
-          "line": 463,
-          "type": "type"
-        },
-        {
-          "name": "CreateComposerDecision",
-          "line": 464,
-          "type": "type"
-        },
-        {
-          "name": "ChartBirthData",
-          "line": 465,
-          "type": "type"
-        },
-        {
-          "name": "BirthPlaceSearchQuery",
-          "line": 466,
-          "type": "type"
-        },
-        {
-          "name": "BirthPlaceSearchResult",
-          "line": 467,
-          "type": "type"
-        },
-        {
-          "name": "BirthPlaceSearchResponse",
-          "line": 468,
-          "type": "type"
-        },
-        {
-          "name": "ChartMakerRequest",
-          "line": 469,
-          "type": "type"
-        },
-        {
-          "name": "CreateChartMakerRequest",
-          "line": 470,
-          "type": "type"
-        },
-        {
-          "name": "ChartMakerResult",
-          "line": 471,
-          "type": "type"
-        },
-        {
-          "name": "ChartMakerPrecision",
-          "line": 472,
-          "type": "type"
-        },
-        {
-          "name": "ChartMakerChartData",
-          "line": 473,
-          "type": "type"
-        },
-        {
-          "name": "RecordChartMakerResult",
-          "line": 474,
-          "type": "type"
-        },
-        {
-          "name": "AstrologyReportStatus",
-          "line": 475,
-          "type": "type"
-        },
-        {
-          "name": "AstrologyReportType",
-          "line": 476,
-          "type": "type"
-        },
-        {
-          "name": "ReportBoundary",
-          "line": 477,
-          "type": "type"
-        },
-        {
-          "name": "AstrologyReportSection",
-          "line": 478,
-          "type": "type"
-        },
-        {
-          "name": "AstrologyReportProvenance",
-          "line": 479,
-          "type": "type"
-        },
-        {
-          "name": "AstrologyReportPublicSignal",
-          "line": 480,
-          "type": "type"
-        },
-        {
-          "name": "AstrologyReportRequest",
-          "line": 481,
-          "type": "type"
-        },
-        {
-          "name": "CreateAstrologyReportRequest",
-          "line": 482,
-          "type": "type"
-        },
-        {
-          "name": "AstrologyReportResult",
-          "line": 483,
-          "type": "type"
-        },
-        {
-          "name": "RecordAstrologyReportResult",
-          "line": 484,
-          "type": "type"
-        },
-        {
-          "name": "ComposerVoiceId",
-          "line": 485,
-          "type": "type"
-        },
-        {
-          "name": "ComposerVoiceCard",
-          "line": 486,
-          "type": "type"
-        },
-        {
-          "name": "ComposerVoiceValidationError",
-          "line": 487,
-          "type": "type"
-        },
-        {
-          "name": "ComposerArtifactRationale",
-          "line": 488,
-          "type": "type"
-        },
-        {
-          "name": "ComposerStreamArtifact",
-          "line": 489,
-          "type": "type"
-        },
-        {
-          "name": "foundationSeedSchema",
-          "line": 491,
-          "type": "constant"
-        },
-        {
-          "name": "FoundationSeed",
-          "line": 502,
-          "type": "type"
-        }
-      ],
-      "imports": [
-        "zod"
-      ],
-      "exports": [
-        "Achievement",
-        "Ally",
-        "Artifact",
-        "AstraCard",
-        "AstraUser",
-        "AstrologyReportProvenance",
-        "AstrologyReportPublicSignal",
-        "AstrologyReportRequest",
-        "AstrologyReportResult",
-        "AstrologyReportSection",
-        "AstrologyReportStatus",
-        "AstrologyReportType",
-        "BirthPlaceSearchQuery",
-        "BirthPlaceSearchResponse",
-        "BirthPlaceSearchResult",
-        "ChartBirthData",
-        "ChartMakerChartData",
-        "ChartMakerPrecision",
-        "ChartMakerRequest",
-        "ChartMakerResult",
-        "ComposerArtifactRationale",
-        "ComposerDecision",
-        "ComposerStreamArtifact",
-        "ComposerVoiceCard",
-        "ComposerVoiceId",
-        "ComposerVoiceValidationError",
-        "CreateAstrologyReportRequest",
-        "CreateChartMakerRequest",
-        "CreateComposerDecision",
-        "CreateUserFeedItem",
-        "FoundationSeed",
-        "Gift",
-        "PrivateFeedRequest",
-        "PrivateFeedResponse",
-        "PublicStreamItem",
-        "RecordAstrologyReportResult",
-        "RecordChartMakerResult",
-        "ReportBoundary",
-        "SourceCard",
-        "StarTransaction",
-        "StreamItem",
-        "UserFeedItem",
-        "achievementSchema",
-        "allySchema",
-        "artifactSchema",
-        "astrologyReportProvenanceSchema",
-        "astrologyReportPublicSignalSchema",
-        "astrologyReportRequestSchema",
-        "astrologyReportResultSchema",
-        "astrologyReportSectionSchema",
-        "astrologyReportStatusSchema",
-        "astrologyReportTypeSchema",
-        "birthPlaceSearchQuerySchema",
-        "birthPlaceSearchResponseSchema",
-        "birthPlaceSearchResultSchema",
-        "cardSchema",
-        "chartBirthDataSchema",
-        "chartMakerChartDataSchema",
-        "chartMakerPrecisionSchema",
-        "chartMakerRequestSchema",
-        "chartMakerResultSchema",
-        "composerArtifactRationaleSchema",
-        "composerDecisionSchema",
-        "composerStreamArtifactSchema",
-        "composerVoiceCardSchema",
-        "composerVoiceIdSchema",
-        "composerVoiceValidationErrorSchema",
-        "createAstrologyReportRequestSchema",
-        "createChartMakerRequestSchema",
-        "createComposerDecisionSchema",
-        "createUserFeedItemSchema",
-        "foundationSeedSchema",
-        "giftSchema",
-        "privateFeedRequestSchema",
-        "privateFeedResponseSchema",
-        "publicStreamItemSchema",
-        "recordAstrologyReportResultSchema",
-        "recordChartMakerResultSchema",
-        "reportBoundarySchema",
-        "sourceCardSchema",
-        "starTransactionSchema",
-        "streamItemSchema",
-        "userFeedItemSchema",
-        "userSchema"
-      ],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 232.3,
       "importance_bucket": "other"
     },
     {
@@ -3151,58 +3187,59 @@
     {
       "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
       "lang": "typescript",
-      "size": 3135,
-      "lines": 96,
-      "estimated_tokens": 784,
+      "size": 3584,
+      "lines": 97,
+      "estimated_tokens": 896,
       "symbols": [
         {
           "name": "RouteContext",
-          "line": 6,
+          "line": 7,
           "type": "type"
         },
         {
           "name": "unauthorized",
-          "line": 12,
+          "line": 13,
           "type": "function"
         },
         {
           "name": "POST",
-          "line": 16,
+          "line": 17,
           "type": "component"
         },
         {
           "name": "reportResult",
-          "line": 21,
+          "line": 22,
           "type": "constant"
         },
         {
           "name": "publishedAt",
-          "line": 33,
-          "type": "constant"
-        },
-        {
-          "name": "cardId",
           "line": 34,
           "type": "constant"
         },
         {
-          "name": "artifact",
+          "name": "sourceCardId",
           "line": 35,
           "type": "constant"
         },
         {
-          "name": "feedItem",
-          "line": 71,
+          "name": "composerWrite",
+          "line": 36,
+          "type": "constant"
+        },
+        {
+          "name": "write",
+          "line": 91,
           "type": "constant"
         },
         {
           "name": "POST",
-          "line": 16,
+          "line": 17,
           "type": "route_handler"
         }
       ],
       "imports": [
         "../../../../../lib/auth/profile",
+        "../../../../../lib/composer-private-feed",
         "@astra/contracts",
         "@astra/db",
         "next/server"
@@ -3215,14 +3252,14 @@
           "route": "/api/reports/[requestId]/publish-signal",
           "method": "POST",
           "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-          "line": 16
+          "line": 17
         }
       ],
       "route_count": 1,
       "headings": [],
       "dependency_in": 0,
-      "dependency_out": 1,
-      "importance_weight": 89.44,
+      "dependency_out": 2,
+      "importance_weight": 90.43,
       "importance_bucket": "app/api"
     },
     {
@@ -3676,10 +3713,62 @@
       "routes": [],
       "route_count": 0,
       "headings": [],
-      "dependency_in": 2,
+      "dependency_in": 3,
       "dependency_out": 1,
-      "importance_weight": 70.45,
+      "importance_weight": 72.45,
       "importance_bucket": "other"
+    },
+    {
+      "file": "apps/astra-web/app/api/composer/private-feed-items/route.ts",
+      "lang": "typescript",
+      "size": 1085,
+      "lines": 32,
+      "estimated_tokens": 272,
+      "symbols": [
+        {
+          "name": "POST",
+          "line": 6,
+          "type": "component"
+        },
+        {
+          "name": "parsed",
+          "line": 11,
+          "type": "constant"
+        },
+        {
+          "name": "write",
+          "line": 26,
+          "type": "constant"
+        },
+        {
+          "name": "POST",
+          "line": 6,
+          "type": "route_handler"
+        }
+      ],
+      "imports": [
+        "../../../../lib/composer-private-feed",
+        "../../../../lib/internal-token",
+        "@astra/contracts",
+        "next/server"
+      ],
+      "exports": [
+        "POST"
+      ],
+      "routes": [
+        {
+          "route": "/api/composer/private-feed-items",
+          "method": "POST",
+          "file": "apps/astra-web/app/api/composer/private-feed-items/route.ts",
+          "line": 6
+        }
+      ],
+      "route_count": 1,
+      "headings": [],
+      "dependency_in": 0,
+      "dependency_out": 2,
+      "importance_weight": 70.68,
+      "importance_bucket": "app/api"
     },
     {
       "file": "apps/astra-web/app/api/chart-results/route.ts",
@@ -4123,6 +4212,102 @@
       "importance_bucket": "other"
     },
     {
+      "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+      "lang": "typescript",
+      "size": 3762,
+      "lines": 118,
+      "estimated_tokens": 941,
+      "symbols": [
+        {
+          "name": "AstrologyReportPublicSignal",
+          "line": 2,
+          "type": "type"
+        },
+        {
+          "name": "ComposerPrivateFeedWrite",
+          "line": 3,
+          "type": "type"
+        },
+        {
+          "name": "ComposerVoiceCard",
+          "line": 4,
+          "type": "type"
+        },
+        {
+          "name": "ComposerVoiceValidationError",
+          "line": 5,
+          "type": "type"
+        },
+        {
+          "name": "SourceCard",
+          "line": 6,
+          "type": "type"
+        },
+        {
+          "name": "UserFeedItem",
+          "line": 7,
+          "type": "type"
+        },
+        {
+          "name": "ComposerPrivateFeedPublishInput",
+          "line": 12,
+          "type": "type"
+        },
+        {
+          "name": "ComposerPrivateFeedPublishResult",
+          "line": 25,
+          "type": "type"
+        },
+        {
+          "name": "publishComposerPrivateFeedItem",
+          "line": 29,
+          "type": "function"
+        },
+        {
+          "name": "validation",
+          "line": 30,
+          "type": "constant"
+        },
+        {
+          "name": "createdAt",
+          "line": 33,
+          "type": "constant"
+        },
+        {
+          "name": "ComposerReportSignalPrivateFeedInput",
+          "line": 66,
+          "type": "type"
+        },
+        {
+          "name": "publishAstrologyReportSignalPrivateFeedItem",
+          "line": 76,
+          "type": "function"
+        },
+        {
+          "name": "createdAt",
+          "line": 79,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "./voices/validateVoiceCard"
+      ],
+      "exports": [
+        "ComposerPrivateFeedPublishInput",
+        "ComposerPrivateFeedPublishResult",
+        "ComposerReportSignalPrivateFeedInput",
+        "publishAstrologyReportSignalPrivateFeedItem",
+        "publishComposerPrivateFeedItem"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 1,
+      "dependency_out": 1,
+      "importance_weight": 50.43,
+      "importance_bucket": "other"
+    },
+    {
       "file": "apps/astra-web/components/AuthPanel.tsx",
       "lang": "typescript",
       "size": 4229,
@@ -4376,86 +4561,45 @@
       "importance_bucket": "other"
     },
     {
-      "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
-      "lang": "markdown",
-      "size": 6680,
-      "lines": 131,
-      "estimated_tokens": 1670,
+      "file": "apps/astra-web/lib/internal-token.ts",
+      "lang": "typescript",
+      "size": 495,
+      "lines": 16,
+      "estimated_tokens": 124,
       "symbols": [
         {
-          "name": "Next Clean Thread Handoff: Report Writer Model Route",
-          "line": 15,
-          "type": "heading"
+          "name": "clean",
+          "line": 3,
+          "type": "function"
         },
         {
-          "name": "Start Here",
-          "line": 17,
-          "type": "heading"
+          "name": "resolveInternalApiToken",
+          "line": 7,
+          "type": "function"
         },
         {
-          "name": "Current Branch State",
-          "line": 39,
-          "type": "heading"
+          "name": "token",
+          "line": 8,
+          "type": "constant"
         },
         {
-          "name": "What Is Proven",
-          "line": 50,
-          "type": "heading"
-        },
-        {
-          "name": "Commands Last Passed",
-          "line": 64,
-          "type": "heading"
-        },
-        {
-          "name": "User-Visible Browser Proof",
-          "line": 76,
-          "type": "heading"
-        },
-        {
-          "name": "Next Logical Slice",
-          "line": 91,
-          "type": "heading"
-        },
-        {
-          "name": "Model Notes From Latest Check",
-          "line": 107,
-          "type": "heading"
-        },
-        {
-          "name": "Guardrails",
-          "line": 113,
-          "type": "heading"
-        },
-        {
-          "name": "Recommended First Review Step For Tony",
-          "line": 122,
-          "type": "heading"
-        },
-        {
-          "name": "Progress Note",
-          "line": 126,
-          "type": "heading"
+          "name": "hasValidInternalApiToken",
+          "line": 13,
+          "type": "function"
         }
       ],
       "imports": [],
-      "exports": [],
+      "exports": [
+        "hasValidInternalApiToken",
+        "resolveInternalApiToken"
+      ],
       "routes": [],
       "route_count": 0,
-      "headings": [
-        "Next Clean Thread Handoff: Report Writer Model Route",
-        "Start Here",
-        "Current Branch State",
-        "What Is Proven",
-        "Commands Last Passed",
-        "User-Visible Browser Proof",
-        "Next Logical Slice",
-        "Model Notes From Latest Check"
-      ],
-      "dependency_in": 0,
+      "headings": [],
+      "dependency_in": 4,
       "dependency_out": 0,
-      "importance_weight": 39.38,
-      "importance_bucket": "akashic"
+      "importance_weight": 38.15,
+      "importance_bucket": "other"
     },
     {
       "file": "apps/astra-web/app/library/page.tsx",
@@ -4560,6 +4704,88 @@
       "importance_bucket": "other"
     },
     {
+      "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+      "lang": "markdown",
+      "size": 6684,
+      "lines": 131,
+      "estimated_tokens": 1671,
+      "symbols": [
+        {
+          "name": "Next Clean Thread Handoff: Report Writer Model Route",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "Start Here",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Current Branch State",
+          "line": 39,
+          "type": "heading"
+        },
+        {
+          "name": "What Is Proven",
+          "line": 50,
+          "type": "heading"
+        },
+        {
+          "name": "Commands Last Passed",
+          "line": 64,
+          "type": "heading"
+        },
+        {
+          "name": "User-Visible Browser Proof",
+          "line": 76,
+          "type": "heading"
+        },
+        {
+          "name": "Next Logical Slice",
+          "line": 91,
+          "type": "heading"
+        },
+        {
+          "name": "Model Notes From Latest Check",
+          "line": 107,
+          "type": "heading"
+        },
+        {
+          "name": "Guardrails",
+          "line": 113,
+          "type": "heading"
+        },
+        {
+          "name": "Recommended First Review Step For Tony",
+          "line": 122,
+          "type": "heading"
+        },
+        {
+          "name": "Progress Note",
+          "line": 126,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Next Clean Thread Handoff: Report Writer Model Route",
+        "Start Here",
+        "Current Branch State",
+        "What Is Proven",
+        "Commands Last Passed",
+        "User-Visible Browser Proof",
+        "Next Logical Slice",
+        "Model Notes From Latest Check"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 37.38,
+      "importance_bucket": "other"
+    },
+    {
       "file": "packages/db/drizzle.config.ts",
       "lang": "typescript",
       "size": 1163,
@@ -4607,47 +4833,6 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 37.01,
-      "importance_bucket": "other"
-    },
-    {
-      "file": "apps/astra-web/lib/internal-token.ts",
-      "lang": "typescript",
-      "size": 495,
-      "lines": 16,
-      "estimated_tokens": 124,
-      "symbols": [
-        {
-          "name": "clean",
-          "line": 3,
-          "type": "function"
-        },
-        {
-          "name": "resolveInternalApiToken",
-          "line": 7,
-          "type": "function"
-        },
-        {
-          "name": "token",
-          "line": 8,
-          "type": "constant"
-        },
-        {
-          "name": "hasValidInternalApiToken",
-          "line": 13,
-          "type": "function"
-        }
-      ],
-      "imports": [],
-      "exports": [
-        "hasValidInternalApiToken",
-        "resolveInternalApiToken"
-      ],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 3,
-      "dependency_out": 0,
-      "importance_weight": 36.15,
       "importance_bucket": "other"
     },
     {
@@ -4726,6 +4911,79 @@
       "dependency_out": 0,
       "importance_weight": 35.89,
       "importance_bucket": "akashic"
+    },
+    {
+      "file": "docs/progress/PROGRESS_LOG.md",
+      "lang": "markdown",
+      "size": 1912,
+      "lines": 67,
+      "estimated_tokens": 478,
+      "symbols": [
+        {
+          "name": "Astra Progress Log",
+          "line": 12,
+          "type": "heading"
+        },
+        {
+          "name": "Entries",
+          "line": 14,
+          "type": "heading"
+        },
+        {
+          "name": "2026-06-16 - Composer Private Feed Write Edge",
+          "line": 16,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
+          "line": 23,
+          "type": "heading"
+        },
+        {
+          "name": "Tests Run",
+          "line": 30,
+          "type": "heading"
+        },
+        {
+          "name": "Risks / Follow-ups",
+          "line": 41,
+          "type": "heading"
+        },
+        {
+          "name": "2026-06-16 - Stewardship v3 Install",
+          "line": 46,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
+          "line": 53,
+          "type": "heading"
+        },
+        {
+          "name": "Tests Run",
+          "line": 59,
+          "type": "heading"
+        },
+        {
+          "name": "Risks / Follow-ups",
+          "line": 63,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Astra Progress Log",
+        "Entries",
+        "2026-06-16 - Composer Private Feed Write Edge",
+        "2026-06-16 - Stewardship v3 Install"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 34.28,
+      "importance_bucket": "other"
     },
     {
       "file": "apps/astra-web/lib/auth/profile.ts",
@@ -4843,9 +5101,9 @@
     {
       "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
       "lang": "markdown",
-      "size": 17242,
-      "lines": 135,
-      "estimated_tokens": 4311,
+      "size": 17799,
+      "lines": 137,
+      "estimated_tokens": 4450,
       "symbols": [
         {
           "name": "Astra Clean Start Foundation Progress",
@@ -4889,7 +5147,7 @@
         },
         {
           "name": "Follow-Ups",
-          "line": 127,
+          "line": 129,
           "type": "heading"
         }
       ],
@@ -5115,11 +5373,68 @@
       "importance_bucket": "other"
     },
     {
+      "file": "apps/astra-web/lib/composer-private-feed.ts",
+      "lang": "typescript",
+      "size": 1026,
+      "lines": 33,
+      "estimated_tokens": 257,
+      "symbols": [
+        {
+          "name": "ComposerPrivateFeedWrite",
+          "line": 4,
+          "type": "type"
+        },
+        {
+          "name": "ComposerPrivateFeedWriteResponse",
+          "line": 5,
+          "type": "type"
+        },
+        {
+          "name": "persistComposerPrivateFeedWrite",
+          "line": 11,
+          "type": "function"
+        },
+        {
+          "name": "parsed",
+          "line": 14,
+          "type": "constant"
+        },
+        {
+          "name": "sourceCard",
+          "line": 15,
+          "type": "constant"
+        },
+        {
+          "name": "feedItem",
+          "line": 16,
+          "type": "constant"
+        },
+        {
+          "name": "decision",
+          "line": 17,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "@astra/db"
+      ],
+      "exports": [
+        "persistComposerPrivateFeedWrite"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 2,
+      "dependency_out": 0,
+      "importance_weight": 31.71,
+      "importance_bucket": "other"
+    },
+    {
       "file": "docs/architecture/composer-private-personal-feeds.md",
       "lang": "markdown",
-      "size": 4335,
-      "lines": 77,
-      "estimated_tokens": 1084,
+      "size": 4953,
+      "lines": 80,
+      "estimated_tokens": 1239,
       "symbols": [
         {
           "name": "Composer Private Personal Feeds",
@@ -5158,12 +5473,12 @@
         },
         {
           "name": "v0 Access Rules",
-          "line": 57,
+          "line": 59,
           "type": "heading"
         },
         {
           "name": "Testing Bar",
-          "line": 66,
+          "line": 69,
           "type": "heading"
         }
       ],
@@ -5183,15 +5498,15 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 31.34,
+      "importance_weight": 31.36,
       "importance_bucket": "other"
     },
     {
       "file": "docs/architecture/clean-start-foundation.md",
       "lang": "markdown",
-      "size": 14764,
-      "lines": 131,
-      "estimated_tokens": 3691,
+      "size": 15507,
+      "lines": 133,
+      "estimated_tokens": 3877,
       "symbols": [
         {
           "name": "Clean Start Foundation",
@@ -5235,7 +5550,7 @@
         },
         {
           "name": "Future Delivery Posture",
-          "line": 128,
+          "line": 130,
           "type": "heading"
         }
       ],
@@ -5255,75 +5570,8 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 31.32,
+      "importance_weight": 31.31,
       "importance_bucket": "other"
-    },
-    {
-      "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
-      "lang": "markdown",
-      "size": 13389,
-      "lines": 118,
-      "estimated_tokens": 3348,
-      "symbols": [
-        {
-          "name": "Next Thread Handoff: Lean Rebuilt Stream and Astrology Reports",
-          "line": 15,
-          "type": "heading"
-        },
-        {
-          "name": "Start Here",
-          "line": 17,
-          "type": "heading"
-        },
-        {
-          "name": "Current State",
-          "line": 35,
-          "type": "heading"
-        },
-        {
-          "name": "Architecture Laws To Preserve",
-          "line": 44,
-          "type": "heading"
-        },
-        {
-          "name": "Next 10 Steps",
-          "line": 56,
-          "type": "heading"
-        },
-        {
-          "name": "Likely Blockers",
-          "line": 78,
-          "type": "heading"
-        },
-        {
-          "name": "First Review Question For Tony",
-          "line": 87,
-          "type": "heading"
-        },
-        {
-          "name": "Progress Note",
-          "line": 97,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Next Thread Handoff: Lean Rebuilt Stream and Astrology Reports",
-        "Start Here",
-        "Current State",
-        "Architecture Laws To Preserve",
-        "Next 10 Steps",
-        "Likely Blockers",
-        "First Review Question For Tony",
-        "Progress Note"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 30.32,
-      "importance_bucket": "akashic"
     },
     {
       "file": "akashic/agent-inbox/2026-06-15-fresh-thread-astra-foundation-next-step.md",
@@ -5574,6 +5822,73 @@
       "importance_bucket": "other"
     },
     {
+      "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
+      "lang": "markdown",
+      "size": 13427,
+      "lines": 118,
+      "estimated_tokens": 3357,
+      "symbols": [
+        {
+          "name": "Next Thread Handoff: Lean Rebuilt Stream and Astrology Reports",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "Start Here",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Current State",
+          "line": 35,
+          "type": "heading"
+        },
+        {
+          "name": "Architecture Laws To Preserve",
+          "line": 44,
+          "type": "heading"
+        },
+        {
+          "name": "Next 10 Steps",
+          "line": 56,
+          "type": "heading"
+        },
+        {
+          "name": "Likely Blockers",
+          "line": 78,
+          "type": "heading"
+        },
+        {
+          "name": "First Review Question For Tony",
+          "line": 87,
+          "type": "heading"
+        },
+        {
+          "name": "Progress Note",
+          "line": 97,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Next Thread Handoff: Lean Rebuilt Stream and Astrology Reports",
+        "Start Here",
+        "Current State",
+        "Architecture Laws To Preserve",
+        "Next 10 Steps",
+        "Likely Blockers",
+        "First Review Question For Tony",
+        "Progress Note"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 28.32,
+      "importance_bucket": "other"
+    },
+    {
       "file": "docs/architecture/SYSTEM_MAP.md",
       "lang": "markdown",
       "size": 3147,
@@ -5790,9 +6105,9 @@
     {
       "file": "docs/architecture/stream-read-model-cache-boundary.md",
       "lang": "markdown",
-      "size": 4227,
+      "size": 4327,
       "lines": 73,
-      "estimated_tokens": 1057,
+      "estimated_tokens": 1082,
       "symbols": [
         {
           "name": "Private Personal Feed Read Model And Cache Boundary",
@@ -5805,7 +6120,7 @@
           "type": "heading"
         },
         {
-          "name": "Current Transitional Boundary",
+          "name": "Current Boundary",
           "line": 21,
           "type": "heading"
         },
@@ -5837,7 +6152,7 @@
       "headings": [
         "Private Personal Feed Read Model And Cache Boundary",
         "Foundational Correction",
-        "Current Transitional Boundary",
+        "Current Boundary",
         "Caching Rule",
         "Failure Rule",
         "Invalidation Rule",
@@ -5938,116 +6253,6 @@
       "importance_bucket": "other"
     },
     {
-      "file": "akashic/agent-inbox/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
-      "lang": "markdown",
-      "size": 1606,
-      "lines": 37,
-      "estimated_tokens": 402,
-      "symbols": [
-        {
-          "name": "Munch stack is live for repo navigation",
-          "line": 15,
-          "type": "heading"
-        },
-        {
-          "name": "Message",
-          "line": 17,
-          "type": "heading"
-        },
-        {
-          "name": "From",
-          "line": 20,
-          "type": "heading"
-        },
-        {
-          "name": "To",
-          "line": 23,
-          "type": "heading"
-        },
-        {
-          "name": "Handling",
-          "line": 26,
-          "type": "heading"
-        },
-        {
-          "name": "Resolution",
-          "line": 33,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Munch stack is live for repo navigation",
-        "Message",
-        "From",
-        "To",
-        "Handling",
-        "Resolution"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 23.77,
-      "importance_bucket": "akashic"
-    },
-    {
-      "file": "akashic/agent-inbox/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
-      "lang": "markdown",
-      "size": 1476,
-      "lines": 36,
-      "estimated_tokens": 369,
-      "symbols": [
-        {
-          "name": "Merge latest Akashic AGENTS guidance before broad work",
-          "line": 15,
-          "type": "heading"
-        },
-        {
-          "name": "Message",
-          "line": 17,
-          "type": "heading"
-        },
-        {
-          "name": "From",
-          "line": 20,
-          "type": "heading"
-        },
-        {
-          "name": "To",
-          "line": 23,
-          "type": "heading"
-        },
-        {
-          "name": "Handling",
-          "line": 26,
-          "type": "heading"
-        },
-        {
-          "name": "Resolution",
-          "line": 33,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Merge latest Akashic AGENTS guidance before broad work",
-        "Message",
-        "From",
-        "To",
-        "Handling",
-        "Resolution"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 23.76,
-      "importance_bucket": "akashic"
-    },
-    {
       "file": "apps/astra-web/app/gifts/page.tsx",
       "lang": "typescript",
       "size": 1136,
@@ -6128,39 +6333,39 @@
       "importance_bucket": "other"
     },
     {
-      "file": "docs/progress/PROGRESS_LOG.md",
+      "file": "docs/inbox-astra/completed/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
       "lang": "markdown",
-      "size": 870,
+      "size": 1606,
       "lines": 37,
-      "estimated_tokens": 218,
+      "estimated_tokens": 402,
       "symbols": [
         {
-          "name": "Astra Progress Log",
-          "line": 12,
+          "name": "Munch stack is live for repo navigation",
+          "line": 15,
           "type": "heading"
         },
         {
-          "name": "Entries",
-          "line": 14,
+          "name": "Message",
+          "line": 17,
           "type": "heading"
         },
         {
-          "name": "2026-06-16 - Stewardship v3 Install",
-          "line": 16,
+          "name": "From",
+          "line": 20,
           "type": "heading"
         },
         {
-          "name": "What Changed",
+          "name": "To",
           "line": 23,
           "type": "heading"
         },
         {
-          "name": "Tests Run",
-          "line": 29,
+          "name": "Handling",
+          "line": 26,
           "type": "heading"
         },
         {
-          "name": "Risks / Follow-ups",
+          "name": "Resolution",
           "line": 33,
           "type": "heading"
         }
@@ -6170,13 +6375,71 @@
       "routes": [],
       "route_count": 0,
       "headings": [
-        "Astra Progress Log",
-        "Entries",
-        "2026-06-16 - Stewardship v3 Install"
+        "Munch stack is live for repo navigation",
+        "Message",
+        "From",
+        "To",
+        "Handling",
+        "Resolution"
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 21.82,
+      "importance_weight": 21.77,
+      "importance_bucket": "other"
+    },
+    {
+      "file": "docs/inbox-astra/completed/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
+      "lang": "markdown",
+      "size": 1476,
+      "lines": 36,
+      "estimated_tokens": 369,
+      "symbols": [
+        {
+          "name": "Merge latest Akashic AGENTS guidance before broad work",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "Message",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "From",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "To",
+          "line": 23,
+          "type": "heading"
+        },
+        {
+          "name": "Handling",
+          "line": 26,
+          "type": "heading"
+        },
+        {
+          "name": "Resolution",
+          "line": 33,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Merge latest Akashic AGENTS guidance before broad work",
+        "Message",
+        "From",
+        "To",
+        "Handling",
+        "Resolution"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 21.76,
       "importance_bucket": "other"
     },
     {
@@ -6500,6 +6763,49 @@
       "dependency_out": 4,
       "importance_weight": 18.43,
       "importance_bucket": "other"
+    },
+    {
+      "file": "akashic/warnings/preventable-implementation-hiccups-from-composer-private-feed-workflow.md",
+      "lang": "markdown",
+      "size": 2602,
+      "lines": 35,
+      "estimated_tokens": 651,
+      "symbols": [
+        {
+          "name": "Preventable implementation hiccups from Composer private-feed workflow",
+          "line": 9,
+          "type": "heading"
+        },
+        {
+          "name": "What Happened",
+          "line": 11,
+          "type": "heading"
+        },
+        {
+          "name": "Why It Happened",
+          "line": 23,
+          "type": "heading"
+        },
+        {
+          "name": "How To Avoid It",
+          "line": 26,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Preventable implementation hiccups from Composer private-feed workflow",
+        "What Happened",
+        "Why It Happened",
+        "How To Avoid It"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 17.69,
+      "importance_bucket": "akashic"
     },
     {
       "file": "akashic/templates/warning-template.md",
@@ -6979,6 +7285,43 @@
       "importance_bucket": "other"
     },
     {
+      "file": "akashic/agent-inbox/2026-06-16-next-thread-composer-private-feed-operator-workflow.md",
+      "lang": "markdown",
+      "size": 3248,
+      "lines": 58,
+      "estimated_tokens": 812,
+      "symbols": [
+        {
+          "name": "Next Thread: Composer Private Feed Operator Workflow",
+          "line": 22,
+          "type": "heading"
+        },
+        {
+          "name": "Suggested Goal",
+          "line": 26,
+          "type": "heading"
+        },
+        {
+          "name": "Guardrails",
+          "line": 51,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Next Thread: Composer Private Feed Operator Workflow",
+        "Suggested Goal",
+        "Guardrails"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 15.11,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "docs/architecture/REVIEW_CHECKLIST.md",
       "lang": "markdown",
       "size": 1190,
@@ -7222,9 +7565,9 @@
     {
       "file": "package.json",
       "lang": "json",
-      "size": 3147,
-      "lines": 73,
-      "estimated_tokens": 787,
+      "size": 3250,
+      "lines": 74,
+      "estimated_tokens": 813,
       "symbols": [],
       "imports": [],
       "exports": [],
@@ -7233,7 +7576,7 @@
       "headings": [],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 9.32,
+      "importance_weight": 9.33,
       "importance_bucket": "manifest"
     },
     {
@@ -7265,6 +7608,28 @@
       "importance_bucket": "other"
     },
     {
+      "file": "apps/composer-web/src/index.ts",
+      "lang": "typescript",
+      "size": 731,
+      "lines": 16,
+      "estimated_tokens": 183,
+      "symbols": [],
+      "imports": [
+        "./publishPrivateFeedItem",
+        "./publishStreamArtifact",
+        "./voices/registry",
+        "./voices/validateVoiceCard"
+      ],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 0,
+      "dependency_out": 4,
+      "importance_weight": 7.12,
+      "importance_bucket": "other"
+    },
+    {
       "file": "README.md",
       "lang": "markdown",
       "size": 1517,
@@ -7290,6 +7655,31 @@
       "importance_bucket": "other"
     },
     {
+      "file": "docs/inbox-astra/README.md",
+      "lang": "markdown",
+      "size": 661,
+      "lines": 20,
+      "estimated_tokens": 166,
+      "symbols": [
+        {
+          "name": "inbox-astra",
+          "line": 1,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "inbox-astra"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 6.31,
+      "importance_bucket": "other"
+    },
+    {
       "file": "packages/db/src/index.ts",
       "lang": "typescript",
       "size": 172,
@@ -7309,31 +7699,6 @@
       "dependency_in": 0,
       "dependency_out": 4,
       "importance_weight": 6.3,
-      "importance_bucket": "other"
-    },
-    {
-      "file": "docs/inbox-astra/README.md",
-      "lang": "markdown",
-      "size": 432,
-      "lines": 14,
-      "estimated_tokens": 108,
-      "symbols": [
-        {
-          "name": "inbox-astra",
-          "line": 1,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "inbox-astra"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 6.05,
       "importance_bucket": "other"
     },
     {
@@ -7434,27 +7799,6 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 5.87,
-      "importance_bucket": "other"
-    },
-    {
-      "file": "apps/composer-web/src/index.ts",
-      "lang": "typescript",
-      "size": 452,
-      "lines": 10,
-      "estimated_tokens": 113,
-      "symbols": [],
-      "imports": [
-        "./publishStreamArtifact",
-        "./voices/registry",
-        "./voices/validateVoiceCard"
-      ],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 0,
-      "dependency_out": 3,
-      "importance_weight": 5.76,
       "importance_bucket": "other"
     },
     {
@@ -8384,10 +8728,17 @@
         "type": "heading"
       }
     ],
-    "2026-06-16 - Stewardship v3 Install": [
+    "2026-06-16 - Composer Private Feed Write Edge": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
         "line": 16,
+        "type": "heading"
+      }
+    ],
+    "2026-06-16 - Stewardship v3 Install": [
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 46,
         "type": "heading"
       }
     ],
@@ -8686,7 +9037,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 452,
+        "line": 479,
         "type": "type"
       }
     ],
@@ -8834,7 +9185,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 453,
+        "line": 480,
         "type": "type"
       }
     ],
@@ -8929,7 +9280,7 @@
     ],
     "Architecture Laws To Preserve": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
         "line": 44,
         "type": "heading"
       }
@@ -8948,13 +9299,8 @@
         "type": "constant"
       },
       {
-        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 35,
-        "type": "constant"
-      },
-      {
         "file": "packages/db/src/repositories.ts",
-        "line": 1082,
+        "line": 1095,
         "type": "constant"
       }
     ],
@@ -8966,7 +9312,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 454,
+        "line": 481,
         "type": "type"
       },
       {
@@ -9027,7 +9373,7 @@
     "assertResetAllowed": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1131,
+        "line": 1144,
         "type": "function"
       }
     ],
@@ -9228,7 +9574,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 450,
+        "line": 477,
         "type": "type"
       }
     ],
@@ -9256,7 +9602,7 @@
     "AstraUser": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 449,
+        "line": 476,
         "type": "type"
       }
     ],
@@ -9284,18 +9630,23 @@
     "AstrologyReportProvenance": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 479,
+        "line": 509,
         "type": "type"
       }
     ],
     "astrologyReportProvenanceSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 324,
+        "line": 351,
         "type": "constant"
       }
     ],
     "AstrologyReportPublicSignal": [
+      {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 2,
+        "type": "type"
+      },
       {
         "file": "apps/composer-web/src/publishStreamArtifact.ts",
         "line": 3,
@@ -9303,14 +9654,14 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 480,
+        "line": 510,
         "type": "type"
       }
     ],
     "astrologyReportPublicSignalSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 333,
+        "line": 360,
         "type": "constant"
       }
     ],
@@ -9322,7 +9673,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 481,
+        "line": 511,
         "type": "type"
       },
       {
@@ -9348,14 +9699,14 @@
     "astrologyReportRequestSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 344,
+        "line": 371,
         "type": "constant"
       }
     ],
     "AstrologyReportResult": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 483,
+        "line": 513,
         "type": "type"
       },
       {
@@ -9381,7 +9732,7 @@
     "astrologyReportResultSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 375,
+        "line": 402,
         "type": "constant"
       }
     ],
@@ -9393,42 +9744,42 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 478,
+        "line": 508,
         "type": "type"
       }
     ],
     "astrologyReportSectionSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 317,
+        "line": 344,
         "type": "constant"
       }
     ],
     "AstrologyReportStatus": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 475,
+        "line": 505,
         "type": "type"
       }
     ],
     "astrologyReportStatusSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 313,
+        "line": 340,
         "type": "constant"
       }
     ],
     "AstrologyReportType": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 476,
+        "line": 506,
         "type": "type"
       }
     ],
     "astrologyReportTypeSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 314,
+        "line": 341,
         "type": "constant"
       }
     ],
@@ -9529,7 +9880,7 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 802,
+        "line": 815,
         "type": "constant"
       }
     ],
@@ -9562,14 +9913,14 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 466,
+        "line": 496,
         "type": "type"
       }
     ],
     "birthPlaceSearchQuerySchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 223,
+        "line": 250,
         "type": "constant"
       }
     ],
@@ -9581,28 +9932,28 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 468,
+        "line": 498,
         "type": "type"
       }
     ],
     "birthPlaceSearchResponseSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 237,
+        "line": 264,
         "type": "constant"
       }
     ],
     "BirthPlaceSearchResult": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 467,
+        "line": 497,
         "type": "type"
       }
     ],
     "birthPlaceSearchResultSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 228,
+        "line": 255,
         "type": "constant"
       }
     ],
@@ -9831,13 +10182,6 @@
         "type": "function"
       }
     ],
-    "cardId": [
-      {
-        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 34,
-        "type": "constant"
-      }
-    ],
     "cardRows": [
       {
         "file": "packages/db/src/repositories.ts",
@@ -9886,7 +10230,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 465,
+        "line": 495,
         "type": "type"
       },
       {
@@ -9898,7 +10242,7 @@
     "chartBirthDataSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 196,
+        "line": 223,
         "type": "constant"
       }
     ],
@@ -9922,14 +10266,14 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 473,
+        "line": 503,
         "type": "type"
       }
     ],
     "chartMakerChartDataSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 279,
+        "line": 306,
         "type": "constant"
       }
     ],
@@ -9941,14 +10285,14 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 472,
+        "line": 502,
         "type": "type"
       }
     ],
     "chartMakerPrecisionSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 277,
+        "line": 304,
         "type": "constant"
       }
     ],
@@ -9960,7 +10304,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 469,
+        "line": 499,
         "type": "type"
       },
       {
@@ -9972,14 +10316,14 @@
     "chartMakerRequestSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 242,
+        "line": 269,
         "type": "constant"
       }
     ],
     "ChartMakerResult": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 471,
+        "line": 501,
         "type": "type"
       },
       {
@@ -9991,7 +10335,7 @@
     "chartMakerResultSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 265,
+        "line": 292,
         "type": "constant"
       }
     ],
@@ -10120,7 +10464,7 @@
     ],
     "Commands Last Passed": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 64,
         "type": "heading"
       }
@@ -10168,21 +10512,21 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 488,
+        "line": 518,
         "type": "type"
       }
     ],
     "composerArtifactRationaleSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 428,
+        "line": 455,
         "type": "constant"
       }
     ],
     "ComposerDecision": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 460,
+        "line": 487,
         "type": "type"
       },
       {
@@ -10212,6 +10556,84 @@
         "type": "constant"
       }
     ],
+    "ComposerPrivateFeedDecisionInput": [
+      {
+        "file": "packages/contracts/src/index.ts",
+        "line": 492,
+        "type": "type"
+      }
+    ],
+    "composerPrivateFeedDecisionInputSchema": [
+      {
+        "file": "packages/contracts/src/index.ts",
+        "line": 196,
+        "type": "constant"
+      }
+    ],
+    "ComposerPrivateFeedPublishInput": [
+      {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 12,
+        "type": "type"
+      }
+    ],
+    "ComposerPrivateFeedPublishResult": [
+      {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 25,
+        "type": "type"
+      }
+    ],
+    "ComposerPrivateFeedWrite": [
+      {
+        "file": "apps/astra-web/lib/composer-private-feed.ts",
+        "line": 4,
+        "type": "type"
+      },
+      {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 3,
+        "type": "type"
+      },
+      {
+        "file": "packages/contracts/src/index.ts",
+        "line": 493,
+        "type": "type"
+      }
+    ],
+    "ComposerPrivateFeedWriteResponse": [
+      {
+        "file": "apps/astra-web/lib/composer-private-feed.ts",
+        "line": 5,
+        "type": "type"
+      },
+      {
+        "file": "packages/contracts/src/index.ts",
+        "line": 494,
+        "type": "type"
+      }
+    ],
+    "composerPrivateFeedWriteResponseSchema": [
+      {
+        "file": "packages/contracts/src/index.ts",
+        "line": 215,
+        "type": "constant"
+      }
+    ],
+    "composerPrivateFeedWriteSchema": [
+      {
+        "file": "packages/contracts/src/index.ts",
+        "line": 206,
+        "type": "constant"
+      }
+    ],
+    "ComposerReportSignalPrivateFeedInput": [
+      {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 66,
+        "type": "type"
+      }
+    ],
     "ComposerReportSignalPublishInput": [
       {
         "file": "apps/composer-web/src/publishStreamArtifact.ts",
@@ -10227,7 +10649,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 489,
+        "line": 519,
         "type": "type"
       },
       {
@@ -10239,7 +10661,7 @@
     "composerStreamArtifactSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 433,
+        "line": 460,
         "type": "constant"
       }
     ],
@@ -10264,6 +10686,11 @@
         "type": "type"
       },
       {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 4,
+        "type": "type"
+      },
+      {
         "file": "apps/composer-web/src/publishStreamArtifact.ts",
         "line": 6,
         "type": "type"
@@ -10275,14 +10702,14 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 486,
+        "line": 516,
         "type": "type"
       }
     ],
     "composerVoiceCardSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 405,
+        "line": 432,
         "type": "constant"
       }
     ],
@@ -10301,14 +10728,14 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 485,
+        "line": 515,
         "type": "type"
       }
     ],
     "composerVoiceIdSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 403,
+        "line": 430,
         "type": "constant"
       }
     ],
@@ -10326,6 +10753,11 @@
         "type": "type"
       },
       {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 5,
+        "type": "type"
+      },
+      {
         "file": "apps/composer-web/src/publishStreamArtifact.ts",
         "line": 7,
         "type": "type"
@@ -10337,14 +10769,21 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 487,
+        "line": 517,
         "type": "type"
       }
     ],
     "composerVoiceValidationErrorSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 413,
+        "line": 440,
+        "type": "constant"
+      }
+    ],
+    "composerWrite": [
+      {
+        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
+        "line": 36,
         "type": "constant"
       }
     ],
@@ -10437,14 +10876,14 @@
     "createAstrologyReportRequest": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 885,
+        "line": 898,
         "type": "function"
       }
     ],
     "CreateAstrologyReportRequest": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 482,
+        "line": 512,
         "type": "type"
       }
     ],
@@ -10458,21 +10897,21 @@
     "createAstrologyReportRequestSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 364,
+        "line": 391,
         "type": "constant"
       }
     ],
     "createChartMakerRequest": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 798,
+        "line": 811,
         "type": "function"
       }
     ],
     "CreateChartMakerRequest": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 470,
+        "line": 500,
         "type": "type"
       }
     ],
@@ -10486,7 +10925,7 @@
     "createChartMakerRequestSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 256,
+        "line": 283,
         "type": "constant"
       }
     ],
@@ -10500,7 +10939,7 @@
     "CreateComposerDecision": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 464,
+        "line": 491,
         "type": "type"
       },
       {
@@ -10525,6 +10964,16 @@
     ],
     "createdAt": [
       {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 33,
+        "type": "constant"
+      },
+      {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 79,
+        "type": "constant"
+      },
+      {
         "file": "apps/composer-web/src/publishStreamArtifact.ts",
         "line": 38,
         "type": "constant"
@@ -10540,7 +10989,7 @@
     "CreateUserFeedItem": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 463,
+        "line": 490,
         "type": "type"
       },
       {
@@ -10582,6 +11031,13 @@
         "type": "constant"
       }
     ],
+    "Current Boundary": [
+      {
+        "file": "docs/architecture/stream-read-model-cache-boundary.md",
+        "line": 21,
+        "type": "heading"
+      }
+    ],
     "Current Boundary Risks": [
       {
         "file": "docs/architecture/BOUNDARIES.md",
@@ -10591,7 +11047,7 @@
     ],
     "Current Branch State": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 39,
         "type": "heading"
       }
@@ -10610,20 +11066,13 @@
         "type": "heading"
       },
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
-        "line": 35,
-        "type": "heading"
-      },
-      {
         "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
         "line": 56,
         "type": "heading"
-      }
-    ],
-    "Current Transitional Boundary": [
+      },
       {
-        "file": "docs/architecture/stream-read-model-cache-boundary.md",
-        "line": 21,
+        "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
+        "line": 35,
         "type": "heading"
       }
     ],
@@ -10723,6 +11172,13 @@
       {
         "file": "packages/astrology/src/index.ts",
         "line": 26,
+        "type": "constant"
+      }
+    ],
+    "decision": [
+      {
+        "file": "apps/astra-web/lib/composer-private-feed.ts",
+        "line": 17,
         "type": "constant"
       }
     ],
@@ -10933,8 +11389,8 @@
     ],
     "feedItem": [
       {
-        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 71,
+        "file": "apps/astra-web/lib/composer-private-feed.ts",
+        "line": 16,
         "type": "constant"
       }
     ],
@@ -10980,7 +11436,7 @@
     ],
     "First Review Question For Tony": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
         "line": 87,
         "type": "heading"
       }
@@ -11009,7 +11465,7 @@
     "Follow-Ups": [
       {
         "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
-        "line": 127,
+        "line": 129,
         "type": "heading"
       },
       {
@@ -11049,7 +11505,7 @@
     "FoundationSeed": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 502,
+        "line": 532,
         "type": "type"
       },
       {
@@ -11068,7 +11524,7 @@
     "foundationSeedSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 491,
+        "line": 521,
         "type": "constant"
       }
     ],
@@ -11088,17 +11544,17 @@
     ],
     "From": [
       {
-        "file": "akashic/agent-inbox/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
-        "line": 20,
-        "type": "heading"
-      },
-      {
-        "file": "akashic/agent-inbox/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
-        "line": 20,
-        "type": "heading"
-      },
-      {
         "file": "apps/composer-web/akashic/agent-inbox/2026-06-10-repomap-builder-fixed.md",
+        "line": 20,
+        "type": "heading"
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
+        "line": 20,
+        "type": "heading"
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
         "line": 20,
         "type": "heading"
       }
@@ -11106,7 +11562,7 @@
     "Future Delivery Posture": [
       {
         "file": "docs/architecture/clean-start-foundation.md",
-        "line": 128,
+        "line": 130,
         "type": "heading"
       }
     ],
@@ -11222,14 +11678,14 @@
     "getUserAstrologyReportRequest": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 937,
+        "line": 950,
         "type": "function"
       }
     ],
     "getUserAstrologyReportResult": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 963,
+        "line": 976,
         "type": "function"
       }
     ],
@@ -11255,7 +11711,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 455,
+        "line": 482,
         "type": "type"
       }
     ],
@@ -11346,22 +11802,17 @@
         "type": "heading"
       },
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+        "file": "akashic/agent-inbox/2026-06-16-next-thread-composer-private-feed-operator-workflow.md",
+        "line": 51,
+        "type": "heading"
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 113,
         "type": "heading"
       }
     ],
     "Handling": [
-      {
-        "file": "akashic/agent-inbox/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
-        "line": 26,
-        "type": "heading"
-      },
-      {
-        "file": "akashic/agent-inbox/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
-        "line": 26,
-        "type": "heading"
-      },
       {
         "file": "akashic/agent-inbox/2026-06-15-fresh-thread-astra-foundation-next-step.md",
         "line": 61,
@@ -11369,6 +11820,16 @@
       },
       {
         "file": "apps/composer-web/akashic/agent-inbox/2026-06-10-repomap-builder-fixed.md",
+        "line": 26,
+        "type": "heading"
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
+        "line": 26,
+        "type": "heading"
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
         "line": 26,
         "type": "heading"
       }
@@ -11390,7 +11851,7 @@
     "hasPrecisionBundle": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 206,
+        "line": 233,
         "type": "constant"
       }
     ],
@@ -11514,6 +11975,11 @@
       {
         "file": "akashic/warnings/no-supabase-scanner-should-ignore-akashic-knowledge-files.md",
         "line": 17,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/warnings/preventable-implementation-hiccups-from-composer-private-feed-workflow.md",
+        "line": 26,
         "type": "heading"
       },
       {
@@ -11835,7 +12301,7 @@
     ],
     "Likely Blockers": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
         "line": 78,
         "type": "heading"
       }
@@ -11850,28 +12316,28 @@
     "listUserArtifacts": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 976,
+        "line": 989,
         "type": "function"
       }
     ],
     "listUserAstrologyReportRequests": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 924,
+        "line": 937,
         "type": "function"
       }
     ],
     "listUserAstrologyReportResults": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 950,
+        "line": 963,
         "type": "function"
       }
     ],
     "listUserChartMakerRequests": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 824,
+        "line": 837,
         "type": "function"
       }
     ],
@@ -11934,7 +12400,7 @@
     "localHosts": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1133,
+        "line": 1146,
         "type": "constant"
       }
     ],
@@ -11975,7 +12441,7 @@
     ],
     "Merge latest Akashic AGENTS guidance before broad work": [
       {
-        "file": "akashic/agent-inbox/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
+        "file": "docs/inbox-astra/completed/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
         "line": 15,
         "type": "heading"
       }
@@ -11989,22 +12455,22 @@
     ],
     "Message": [
       {
-        "file": "akashic/agent-inbox/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
-        "line": 17,
-        "type": "heading"
-      },
-      {
-        "file": "akashic/agent-inbox/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
-        "line": 17,
-        "type": "heading"
-      },
-      {
         "file": "akashic/agent-inbox/2026-06-15-fresh-thread-astra-foundation-next-step.md",
         "line": 17,
         "type": "heading"
       },
       {
         "file": "apps/composer-web/akashic/agent-inbox/2026-06-10-repomap-builder-fixed.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
         "line": 17,
         "type": "heading"
       }
@@ -12065,7 +12531,7 @@
     ],
     "Model Notes From Latest Check": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 107,
         "type": "heading"
       }
@@ -12107,7 +12573,7 @@
     ],
     "Munch stack is live for repo navigation": [
       {
-        "file": "akashic/agent-inbox/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
+        "file": "docs/inbox-astra/completed/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
         "line": 15,
         "type": "heading"
       }
@@ -12147,29 +12613,36 @@
     ],
     "Next 10 Steps": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
         "line": 56,
         "type": "heading"
       }
     ],
     "Next Clean Thread Handoff: Report Writer Model Route": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 15,
         "type": "heading"
       }
     ],
     "Next Logical Slice": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 91,
         "type": "heading"
       }
     ],
     "Next Thread Handoff: Lean Rebuilt Stream and Astrology Reports": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
         "line": 15,
+        "type": "heading"
+      }
+    ],
+    "Next Thread: Composer Private Feed Operator Workflow": [
+      {
+        "file": "akashic/agent-inbox/2026-06-16-next-thread-composer-private-feed-operator-workflow.md",
+        "line": 22,
         "type": "heading"
       }
     ],
@@ -12233,32 +12706,32 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 770,
+        "line": 783,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 803,
+        "line": 816,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 838,
+        "line": 851,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 899,
+        "line": 912,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 990,
+        "line": 1003,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1083,
+        "line": 1096,
         "type": "constant"
       },
       {
@@ -12429,6 +12902,11 @@
         "type": "constant"
       },
       {
+        "file": "apps/astra-web/app/api/composer/private-feed-items/route.ts",
+        "line": 11,
+        "type": "constant"
+      },
+      {
         "file": "apps/astra-web/app/api/composer/stream-artifacts/route.ts",
         "line": 11,
         "type": "constant"
@@ -12446,6 +12924,11 @@
       {
         "file": "apps/astra-web/app/api/reports/route.ts",
         "line": 22,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/lib/composer-private-feed.ts",
+        "line": 14,
         "type": "constant"
       },
       {
@@ -12485,12 +12968,12 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 889,
+        "line": 902,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1132,
+        "line": 1145,
         "type": "constant"
       }
     ],
@@ -12556,6 +13039,13 @@
         "type": "function"
       }
     ],
+    "persistComposerPrivateFeedWrite": [
+      {
+        "file": "apps/astra-web/lib/composer-private-feed.ts",
+        "line": 11,
+        "type": "function"
+      }
+    ],
     "point": [
       {
         "file": "packages/astrology/src/index.ts",
@@ -12606,6 +13096,16 @@
         "type": "route_handler"
       },
       {
+        "file": "apps/astra-web/app/api/composer/private-feed-items/route.ts",
+        "line": 6,
+        "type": "component"
+      },
+      {
+        "file": "apps/astra-web/app/api/composer/private-feed-items/route.ts",
+        "line": 6,
+        "type": "route_handler"
+      },
+      {
         "file": "apps/astra-web/app/api/composer/stream-artifacts/route.ts",
         "line": 6,
         "type": "component"
@@ -12637,12 +13137,12 @@
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 16,
+        "line": 17,
         "type": "component"
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 16,
+        "line": 17,
         "type": "route_handler"
       },
       {
@@ -12684,6 +13184,13 @@
         "type": "heading"
       }
     ],
+    "Preventable implementation hiccups from Composer private-feed workflow": [
+      {
+        "file": "akashic/warnings/preventable-implementation-hiccups-from-composer-private-feed-workflow.md",
+        "line": 9,
+        "type": "heading"
+      }
+    ],
     "Prevention": [
       {
         "file": "akashic/skills/astra-stewardship-validation.md",
@@ -12713,7 +13220,7 @@
     "PrivateFeedRequest": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 461,
+        "line": 488,
         "type": "type"
       },
       {
@@ -12732,7 +13239,7 @@
     "PrivateFeedResponse": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 462,
+        "line": 489,
         "type": "type"
       },
       {
@@ -12795,12 +13302,12 @@
     ],
     "Progress Note": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 126,
         "type": "heading"
       },
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
         "line": 97,
         "type": "heading"
       }
@@ -12836,7 +13343,7 @@
     "PublicStreamItem": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 458,
+        "line": 485,
         "type": "type"
       },
       {
@@ -12873,6 +13380,20 @@
         "type": "function"
       }
     ],
+    "publishAstrologyReportSignalPrivateFeedItem": [
+      {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 76,
+        "type": "function"
+      }
+    ],
+    "publishComposerPrivateFeedItem": [
+      {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 29,
+        "type": "function"
+      }
+    ],
     "publishComposerStreamArtifact": [
       {
         "file": "apps/composer-web/src/publishStreamArtifact.ts",
@@ -12883,7 +13404,7 @@
     "publishedAt": [
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 33,
+        "line": 34,
         "type": "constant"
       }
     ],
@@ -12978,7 +13499,7 @@
     ],
     "Recommended First Review Step For Tony": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 122,
         "type": "heading"
       }
@@ -12986,7 +13507,7 @@
     "recordAstrologyReportResult": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 986,
+        "line": 999,
         "type": "function"
       }
     ],
@@ -12998,7 +13519,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 484,
+        "line": 514,
         "type": "type"
       },
       {
@@ -13017,14 +13538,14 @@
     "recordAstrologyReportResultSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 390,
+        "line": 417,
         "type": "constant"
       }
     ],
     "recordChartMakerResult": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 834,
+        "line": 847,
         "type": "function"
       }
     ],
@@ -13036,7 +13557,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 474,
+        "line": 504,
         "type": "type"
       },
       {
@@ -13055,7 +13576,7 @@
     "recordChartMakerResultSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 303,
+        "line": 330,
         "type": "constant"
       }
     ],
@@ -13128,14 +13649,14 @@
     "ReportBoundary": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 477,
+        "line": 507,
         "type": "type"
       }
     ],
     "reportBoundarySchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 315,
+        "line": 342,
         "type": "constant"
       }
     ],
@@ -13182,7 +13703,7 @@
     "reportResult": [
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 21,
+        "line": 22,
         "type": "constant"
       }
     ],
@@ -13311,16 +13832,6 @@
     ],
     "Resolution": [
       {
-        "file": "akashic/agent-inbox/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
-        "line": 33,
-        "type": "heading"
-      },
-      {
-        "file": "akashic/agent-inbox/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
-        "line": 33,
-        "type": "heading"
-      },
-      {
         "file": "akashic/skills/astra-stewardship-validation.md",
         "line": 38,
         "type": "heading"
@@ -13328,6 +13839,16 @@
       {
         "file": "akashic/templates/skill-template.md",
         "line": 24,
+        "type": "heading"
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
+        "line": 33,
+        "type": "heading"
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
+        "line": 33,
         "type": "heading"
       }
     ],
@@ -13461,7 +13982,12 @@
     "Risks / Follow-ups": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 33,
+        "line": 41,
+        "type": "heading"
+      },
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 63,
         "type": "heading"
       }
     ],
@@ -13499,7 +14025,7 @@
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 6,
+        "line": 7,
         "type": "type"
       }
     ],
@@ -13523,22 +14049,22 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 825,
+        "line": 838,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 928,
+        "line": 941,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 954,
+        "line": 967,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 977,
+        "line": 990,
         "type": "constant"
       }
     ],
@@ -13751,10 +14277,22 @@
         "type": "constant"
       }
     ],
+    "sourceCard": [
+      {
+        "file": "apps/astra-web/lib/composer-private-feed.ts",
+        "line": 15,
+        "type": "constant"
+      }
+    ],
     "SourceCard": [
       {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 6,
+        "type": "type"
+      },
+      {
         "file": "packages/contracts/src/index.ts",
-        "line": 457,
+        "line": 484,
         "type": "type"
       },
       {
@@ -13768,6 +14306,13 @@
         "file": "packages/db/src/repositories.ts",
         "line": 226,
         "type": "function"
+      }
+    ],
+    "sourceCardId": [
+      {
+        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
+        "line": 35,
+        "type": "constant"
       }
     ],
     "sourceCards": [
@@ -13800,12 +14345,12 @@
     ],
     "Start Here": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 17,
         "type": "heading"
       },
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
         "line": 17,
         "type": "heading"
       }
@@ -13818,7 +14363,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 456,
+        "line": 483,
         "type": "type"
       }
     ],
@@ -13945,7 +14490,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 451,
+        "line": 478,
         "type": "type"
       }
     ],
@@ -14005,6 +14550,13 @@
         "type": "function"
       }
     ],
+    "Suggested Goal": [
+      {
+        "file": "akashic/agent-inbox/2026-06-16-next-thread-composer-private-feed-operator-workflow.md",
+        "line": 26,
+        "type": "heading"
+      }
+    ],
     "summary": [
       {
         "file": "packages/astrology/src/index.ts",
@@ -14055,14 +14607,19 @@
     "Testing Bar": [
       {
         "file": "docs/architecture/composer-private-personal-feeds.md",
-        "line": 66,
+        "line": 69,
         "type": "heading"
       }
     ],
     "Tests Run": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 29,
+        "line": 30,
+        "type": "heading"
+      },
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 59,
         "type": "heading"
       }
     ],
@@ -14122,17 +14679,17 @@
     ],
     "To": [
       {
-        "file": "akashic/agent-inbox/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
-        "line": 23,
-        "type": "heading"
-      },
-      {
-        "file": "akashic/agent-inbox/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
-        "line": 23,
-        "type": "heading"
-      },
-      {
         "file": "apps/composer-web/akashic/agent-inbox/2026-06-10-repomap-builder-fixed.md",
+        "line": 23,
+        "type": "heading"
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
+        "line": 23,
+        "type": "heading"
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
         "line": 23,
         "type": "heading"
       }
@@ -14204,7 +14761,7 @@
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 12,
+        "line": 13,
         "type": "function"
       },
       {
@@ -14230,14 +14787,14 @@
     "upsertAuthUserProfile": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 769,
+        "line": 782,
         "type": "function"
       }
     ],
     "upsertComposerStreamArtifact": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1078,
+        "line": 1091,
         "type": "function"
       }
     ],
@@ -14288,15 +14845,20 @@
     ],
     "User-Visible Browser Proof": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 76,
         "type": "heading"
       }
     ],
     "UserFeedItem": [
       {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 7,
+        "type": "type"
+      },
+      {
         "file": "packages/contracts/src/index.ts",
-        "line": 459,
+        "line": 486,
         "type": "type"
       },
       {
@@ -14336,7 +14898,7 @@
     "v0 Access Rules": [
       {
         "file": "docs/architecture/composer-private-personal-feeds.md",
-        "line": 57,
+        "line": 59,
         "type": "heading"
       }
     ],
@@ -14348,6 +14910,11 @@
       }
     ],
     "validation": [
+      {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "line": 30,
+        "type": "constant"
+      },
       {
         "file": "apps/composer-web/src/publishStreamArtifact.ts",
         "line": 35,
@@ -14462,6 +15029,11 @@
         "file": "docs/progress/PROGRESS_LOG.md",
         "line": 23,
         "type": "heading"
+      },
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 53,
+        "type": "heading"
       }
     ],
     "What Happened": [
@@ -14491,6 +15063,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/warnings/preventable-implementation-hiccups-from-composer-private-feed-workflow.md",
+        "line": 11,
+        "type": "heading"
+      },
+      {
         "file": "akashic/warnings/timezone-fields-should-use-constrained-iana-selection.md",
         "line": 11,
         "type": "heading"
@@ -14498,7 +15075,7 @@
     ],
     "What Is Proven": [
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+        "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 50,
         "type": "heading"
       }
@@ -14537,6 +15114,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/warnings/preventable-implementation-hiccups-from-composer-private-feed-workflow.md",
+        "line": 23,
+        "type": "heading"
+      },
+      {
         "file": "akashic/warnings/timezone-fields-should-use-constrained-iana-selection.md",
         "line": 14,
         "type": "heading"
@@ -14554,6 +15136,18 @@
         "file": "apps/composer-web/src/voices/validateVoiceCard.ts",
         "line": 10,
         "type": "function"
+      }
+    ],
+    "write": [
+      {
+        "file": "apps/astra-web/app/api/composer/private-feed-items/route.ts",
+        "line": 26,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
+        "line": 91,
+        "type": "constant"
       }
     ],
     "writeDeterministicCoreReport": [
@@ -14598,6 +15192,12 @@
       "line": 6
     },
     {
+      "route": "/api/composer/private-feed-items",
+      "method": "POST",
+      "file": "apps/astra-web/app/api/composer/private-feed-items/route.ts",
+      "line": 6
+    },
+    {
       "route": "/api/composer/stream-artifacts",
       "method": "POST",
       "file": "apps/astra-web/app/api/composer/stream-artifacts/route.ts",
@@ -14625,7 +15225,7 @@
       "route": "/api/reports/[requestId]/publish-signal",
       "method": "POST",
       "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-      "line": 16
+      "line": 17
     },
     {
       "route": "/api/reports",
@@ -14669,10 +15269,10 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "weight": 464.25,
+        "weight": 464.24,
         "bucket": "other",
-        "estimated_tokens": 8533,
-        "lines": 1141,
+        "estimated_tokens": 8656,
+        "lines": 1154,
         "symbols": 100,
         "symbol_type_counts": {
           "constant": 34,
@@ -14681,6 +15281,21 @@
         },
         "dependency_in": 1,
         "dependency_out": 2,
+        "route_count": 0
+      },
+      {
+        "file": "packages/contracts/src/index.ts",
+        "weight": 247.29,
+        "bucket": "other",
+        "estimated_tokens": 4936,
+        "lines": 533,
+        "symbols": 96,
+        "symbol_type_counts": {
+          "constant": 51,
+          "type": 45
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -14698,21 +15313,6 @@
         },
         "dependency_in": 1,
         "dependency_out": 1,
-        "route_count": 0
-      },
-      {
-        "file": "packages/contracts/src/index.ts",
-        "weight": 232.3,
-        "bucket": "other",
-        "estimated_tokens": 4636,
-        "lines": 503,
-        "symbols": 90,
-        "symbol_type_counts": {
-          "constant": 48,
-          "type": 42
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -14828,10 +15428,10 @@
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "weight": 89.44,
+        "weight": 90.43,
         "bucket": "app/api",
-        "estimated_tokens": 784,
-        "lines": 96,
+        "estimated_tokens": 896,
+        "lines": 97,
         "symbols": 9,
         "symbol_type_counts": {
           "component": 1,
@@ -14841,7 +15441,7 @@
           "type": 1
         },
         "dependency_in": 0,
-        "dependency_out": 1,
+        "dependency_out": 2,
         "route_count": 1
       },
       {
@@ -14914,7 +15514,7 @@
       },
       {
         "file": "apps/composer-web/src/voices/validateVoiceCard.ts",
-        "weight": 70.45,
+        "weight": 72.45,
         "bucket": "other",
         "estimated_tokens": 653,
         "lines": 83,
@@ -14924,9 +15524,25 @@
           "function": 5,
           "type": 3
         },
-        "dependency_in": 2,
+        "dependency_in": 3,
         "dependency_out": 1,
         "route_count": 0
+      },
+      {
+        "file": "apps/astra-web/app/api/composer/private-feed-items/route.ts",
+        "weight": 70.68,
+        "bucket": "app/api",
+        "estimated_tokens": 272,
+        "lines": 32,
+        "symbols": 4,
+        "symbol_type_counts": {
+          "component": 1,
+          "constant": 2,
+          "route_handler": 1
+        },
+        "dependency_in": 0,
+        "dependency_out": 2,
+        "route_count": 1
       },
       {
         "file": "apps/astra-web/app/api/chart-results/route.ts",
@@ -15022,6 +15638,22 @@
         "route_count": 0
       },
       {
+        "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+        "weight": 50.43,
+        "bucket": "other",
+        "estimated_tokens": 941,
+        "lines": 118,
+        "symbols": 14,
+        "symbol_type_counts": {
+          "constant": 3,
+          "function": 2,
+          "type": 9
+        },
+        "dependency_in": 1,
+        "dependency_out": 1,
+        "route_count": 0
+      },
+      {
         "file": "apps/astra-web/components/AuthPanel.tsx",
         "weight": 50.42,
         "bucket": "other",
@@ -15070,16 +15702,17 @@
         "route_count": 0
       },
       {
-        "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
-        "weight": 39.38,
-        "bucket": "akashic",
-        "estimated_tokens": 1670,
-        "lines": 131,
-        "symbols": 11,
+        "file": "apps/astra-web/lib/internal-token.ts",
+        "weight": 38.15,
+        "bucket": "other",
+        "estimated_tokens": 124,
+        "lines": 16,
+        "symbols": 4,
         "symbol_type_counts": {
-          "heading": 11
+          "constant": 1,
+          "function": 3
         },
-        "dependency_in": 0,
+        "dependency_in": 4,
         "dependency_out": 0,
         "route_count": 0
       },
@@ -15115,6 +15748,20 @@
         "route_count": 0
       },
       {
+        "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+        "weight": 37.38,
+        "bucket": "other",
+        "estimated_tokens": 1671,
+        "lines": 131,
+        "symbols": 11,
+        "symbol_type_counts": {
+          "heading": 11
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "packages/db/drizzle.config.ts",
         "weight": 37.01,
         "bucket": "other",
@@ -15130,26 +15777,25 @@
         "route_count": 0
       },
       {
-        "file": "apps/astra-web/lib/internal-token.ts",
-        "weight": 36.15,
-        "bucket": "other",
-        "estimated_tokens": 124,
-        "lines": 16,
-        "symbols": 4,
-        "symbol_type_counts": {
-          "constant": 1,
-          "function": 3
-        },
-        "dependency_in": 3,
-        "dependency_out": 0,
-        "route_count": 0
-      },
-      {
         "file": "akashic/templates/repomap-template.md",
         "weight": 35.89,
         "bucket": "akashic",
         "estimated_tokens": 126,
         "lines": 38,
+        "symbols": 10,
+        "symbol_type_counts": {
+          "heading": 10
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "weight": 34.28,
+        "bucket": "other",
+        "estimated_tokens": 478,
+        "lines": 67,
         "symbols": 10,
         "symbol_type_counts": {
           "heading": 10
@@ -15207,8 +15853,8 @@
         "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
         "weight": 33.3,
         "bucket": "akashic",
-        "estimated_tokens": 4311,
-        "lines": 135,
+        "estimated_tokens": 4450,
+        "lines": 137,
         "symbols": 9,
         "symbol_type_counts": {
           "heading": 9
@@ -15261,11 +15907,27 @@
         "route_count": 0
       },
       {
-        "file": "docs/architecture/composer-private-personal-feeds.md",
-        "weight": 31.34,
+        "file": "apps/astra-web/lib/composer-private-feed.ts",
+        "weight": 31.71,
         "bucket": "other",
-        "estimated_tokens": 1084,
-        "lines": 77,
+        "estimated_tokens": 257,
+        "lines": 33,
+        "symbols": 7,
+        "symbol_type_counts": {
+          "constant": 4,
+          "function": 1,
+          "type": 2
+        },
+        "dependency_in": 2,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "docs/architecture/composer-private-personal-feeds.md",
+        "weight": 31.36,
+        "bucket": "other",
+        "estimated_tokens": 1239,
+        "lines": 80,
         "symbols": 9,
         "symbol_type_counts": {
           "heading": 9
@@ -15276,27 +15938,13 @@
       },
       {
         "file": "docs/architecture/clean-start-foundation.md",
-        "weight": 31.32,
+        "weight": 31.31,
         "bucket": "other",
-        "estimated_tokens": 3691,
-        "lines": 131,
+        "estimated_tokens": 3877,
+        "lines": 133,
         "symbols": 9,
         "symbol_type_counts": {
           "heading": 9
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
-        "route_count": 0
-      },
-      {
-        "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
-        "weight": 30.32,
-        "bucket": "akashic",
-        "estimated_tokens": 3348,
-        "lines": 118,
-        "symbols": 8,
-        "symbol_type_counts": {
-          "heading": 8
         },
         "dependency_in": 0,
         "dependency_out": 0,
@@ -15351,6 +15999,20 @@
         "bucket": "other",
         "estimated_tokens": 1570,
         "lines": 85,
+        "symbols": 8,
+        "symbol_type_counts": {
+          "heading": 8
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
+        "weight": 28.32,
+        "bucket": "other",
+        "estimated_tokens": 3357,
+        "lines": 118,
         "symbols": 8,
         "symbol_type_counts": {
           "heading": 8
@@ -15419,7 +16081,7 @@
         "file": "docs/architecture/stream-read-model-cache-boundary.md",
         "weight": 25.29,
         "bucket": "other",
-        "estimated_tokens": 1057,
+        "estimated_tokens": 1082,
         "lines": 73,
         "symbols": 7,
         "symbol_type_counts": {
@@ -15461,34 +16123,6 @@
         "route_count": 0
       },
       {
-        "file": "akashic/agent-inbox/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
-        "weight": 23.77,
-        "bucket": "akashic",
-        "estimated_tokens": 402,
-        "lines": 37,
-        "symbols": 6,
-        "symbol_type_counts": {
-          "heading": 6
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
-        "route_count": 0
-      },
-      {
-        "file": "akashic/agent-inbox/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
-        "weight": 23.76,
-        "bucket": "akashic",
-        "estimated_tokens": 369,
-        "lines": 36,
-        "symbols": 6,
-        "symbol_type_counts": {
-          "heading": 6
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
-        "route_count": 0
-      },
-      {
         "file": "apps/astra-web/app/gifts/page.tsx",
         "weight": 22.75,
         "bucket": "other",
@@ -15519,11 +16153,25 @@
         "route_count": 0
       },
       {
-        "file": "docs/progress/PROGRESS_LOG.md",
-        "weight": 21.82,
+        "file": "docs/inbox-astra/completed/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
+        "weight": 21.77,
         "bucket": "other",
-        "estimated_tokens": 218,
+        "estimated_tokens": 402,
         "lines": 37,
+        "symbols": 6,
+        "symbol_type_counts": {
+          "heading": 6
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "docs/inbox-astra/completed/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
+        "weight": 21.76,
+        "bucket": "other",
+        "estimated_tokens": 369,
+        "lines": 36,
         "symbols": 6,
         "symbol_type_counts": {
           "heading": 6
@@ -15629,6 +16277,20 @@
         },
         "dependency_in": 0,
         "dependency_out": 4,
+        "route_count": 0
+      },
+      {
+        "file": "akashic/warnings/preventable-implementation-hiccups-from-composer-private-feed-workflow.md",
+        "weight": 17.69,
+        "bucket": "akashic",
+        "estimated_tokens": 651,
+        "lines": 35,
+        "symbols": 4,
+        "symbol_type_counts": {
+          "heading": 4
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -15801,6 +16463,20 @@
         "route_count": 0
       },
       {
+        "file": "akashic/agent-inbox/2026-06-16-next-thread-composer-private-feed-operator-workflow.md",
+        "weight": 15.11,
+        "bucket": "akashic",
+        "estimated_tokens": 812,
+        "lines": 58,
+        "symbols": 3,
+        "symbol_type_counts": {
+          "heading": 3
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "docs/architecture/REVIEW_CHECKLIST.md",
         "weight": 12.67,
         "bucket": "other",
@@ -15912,10 +16588,10 @@
       },
       {
         "file": "package.json",
-        "weight": 9.32,
+        "weight": 9.33,
         "bucket": "manifest",
-        "estimated_tokens": 787,
-        "lines": 73,
+        "estimated_tokens": 813,
+        "lines": 74,
         "symbols": 0,
         "symbol_type_counts": {},
         "dependency_in": 0,
@@ -15937,11 +16613,37 @@
         "route_count": 0
       },
       {
+        "file": "apps/composer-web/src/index.ts",
+        "weight": 7.12,
+        "bucket": "other",
+        "estimated_tokens": 183,
+        "lines": 16,
+        "symbols": 0,
+        "symbol_type_counts": {},
+        "dependency_in": 0,
+        "dependency_out": 4,
+        "route_count": 0
+      },
+      {
         "file": "README.md",
         "weight": 6.78,
         "bucket": "other",
         "estimated_tokens": 380,
         "lines": 37,
+        "symbols": 1,
+        "symbol_type_counts": {
+          "heading": 1
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "docs/inbox-astra/README.md",
+        "weight": 6.31,
+        "bucket": "other",
+        "estimated_tokens": 166,
+        "lines": 20,
         "symbols": 1,
         "symbol_type_counts": {
           "heading": 1
@@ -15960,20 +16662,6 @@
         "symbol_type_counts": {},
         "dependency_in": 0,
         "dependency_out": 4,
-        "route_count": 0
-      },
-      {
-        "file": "docs/inbox-astra/README.md",
-        "weight": 6.05,
-        "bucket": "other",
-        "estimated_tokens": 108,
-        "lines": 14,
-        "symbols": 1,
-        "symbol_type_counts": {
-          "heading": 1
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -16030,18 +16718,6 @@
         },
         "dependency_in": 0,
         "dependency_out": 0,
-        "route_count": 0
-      },
-      {
-        "file": "apps/composer-web/src/index.ts",
-        "weight": 5.76,
-        "bucket": "other",
-        "estimated_tokens": 113,
-        "lines": 10,
-        "symbols": 0,
-        "symbol_type_counts": {},
-        "dependency_in": 0,
-        "dependency_out": 3,
         "route_count": 0
       },
       {
@@ -16475,9 +17151,9 @@
       {
         "name": "top-weighted",
         "budget_tokens": 32000,
-        "estimated_tokens": 32855,
+        "estimated_tokens": 33278,
         "file_count": 6,
-        "symbol_count": 442,
+        "symbol_count": 448,
         "files": [
           {
             "rank": 1,
@@ -16500,10 +17176,10 @@
           {
             "rank": 2,
             "file": "packages/db/src/repositories.ts",
-            "weight": 464.25,
+            "weight": 464.24,
             "bucket": "other",
-            "estimated_tokens": 8533,
-            "lines": 1141,
+            "estimated_tokens": 8656,
+            "lines": 1154,
             "symbols": 100,
             "symbol_type_counts": {
               "constant": 34,
@@ -16516,6 +17192,22 @@
           },
           {
             "rank": 3,
+            "file": "packages/contracts/src/index.ts",
+            "weight": 247.29,
+            "bucket": "other",
+            "estimated_tokens": 4936,
+            "lines": 533,
+            "symbols": 96,
+            "symbol_type_counts": {
+              "constant": 51,
+              "type": 45
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 4,
             "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
             "weight": 235.27,
             "bucket": "other",
@@ -16530,22 +17222,6 @@
             },
             "dependency_in": 1,
             "dependency_out": 1,
-            "route_count": 0
-          },
-          {
-            "rank": 4,
-            "file": "packages/contracts/src/index.ts",
-            "weight": 232.3,
-            "bucket": "other",
-            "estimated_tokens": 4636,
-            "lines": 503,
-            "symbols": 90,
-            "symbol_type_counts": {
-              "constant": 48,
-              "type": 42
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
             "route_count": 0
           },
           {
@@ -16585,9 +17261,9 @@
       {
         "name": "top-weighted",
         "budget_tokens": 64000,
-        "estimated_tokens": 66003,
-        "file_count": 36,
-        "symbol_count": 759,
+        "estimated_tokens": 68369,
+        "file_count": 39,
+        "symbol_count": 793,
         "files": [
           {
             "rank": 1,
@@ -16610,10 +17286,10 @@
           {
             "rank": 2,
             "file": "packages/db/src/repositories.ts",
-            "weight": 464.25,
+            "weight": 464.24,
             "bucket": "other",
-            "estimated_tokens": 8533,
-            "lines": 1141,
+            "estimated_tokens": 8656,
+            "lines": 1154,
             "symbols": 100,
             "symbol_type_counts": {
               "constant": 34,
@@ -16626,6 +17302,22 @@
           },
           {
             "rank": 3,
+            "file": "packages/contracts/src/index.ts",
+            "weight": 247.29,
+            "bucket": "other",
+            "estimated_tokens": 4936,
+            "lines": 533,
+            "symbols": 96,
+            "symbol_type_counts": {
+              "constant": 51,
+              "type": 45
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 4,
             "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
             "weight": 235.27,
             "bucket": "other",
@@ -16640,22 +17332,6 @@
             },
             "dependency_in": 1,
             "dependency_out": 1,
-            "route_count": 0
-          },
-          {
-            "rank": 4,
-            "file": "packages/contracts/src/index.ts",
-            "weight": 232.3,
-            "bucket": "other",
-            "estimated_tokens": 4636,
-            "lines": 503,
-            "symbols": 90,
-            "symbol_type_counts": {
-              "constant": 48,
-              "type": 42
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
             "route_count": 0
           },
           {
@@ -16779,10 +17455,10 @@
           {
             "rank": 12,
             "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-            "weight": 89.44,
+            "weight": 90.43,
             "bucket": "app/api",
-            "estimated_tokens": 784,
-            "lines": 96,
+            "estimated_tokens": 896,
+            "lines": 97,
             "symbols": 9,
             "symbol_type_counts": {
               "component": 1,
@@ -16792,7 +17468,7 @@
               "type": 1
             },
             "dependency_in": 0,
-            "dependency_out": 1,
+            "dependency_out": 2,
             "route_count": 1
           },
           {
@@ -16870,7 +17546,7 @@
           {
             "rank": 17,
             "file": "apps/composer-web/src/voices/validateVoiceCard.ts",
-            "weight": 70.45,
+            "weight": 72.45,
             "bucket": "other",
             "estimated_tokens": 653,
             "lines": 83,
@@ -16880,12 +17556,29 @@
               "function": 5,
               "type": 3
             },
-            "dependency_in": 2,
+            "dependency_in": 3,
             "dependency_out": 1,
             "route_count": 0
           },
           {
             "rank": 18,
+            "file": "apps/astra-web/app/api/composer/private-feed-items/route.ts",
+            "weight": 70.68,
+            "bucket": "app/api",
+            "estimated_tokens": 272,
+            "lines": 32,
+            "symbols": 4,
+            "symbol_type_counts": {
+              "component": 1,
+              "constant": 2,
+              "route_handler": 1
+            },
+            "dependency_in": 0,
+            "dependency_out": 2,
+            "route_count": 1
+          },
+          {
+            "rank": 19,
             "file": "apps/astra-web/app/api/chart-results/route.ts",
             "weight": 69.68,
             "bucket": "app/api",
@@ -16902,7 +17595,7 @@
             "route_count": 1
           },
           {
-            "rank": 19,
+            "rank": 20,
             "file": "apps/astra-web/app/api/report-results/route.ts",
             "weight": 69.68,
             "bucket": "app/api",
@@ -16919,7 +17612,7 @@
             "route_count": 1
           },
           {
-            "rank": 20,
+            "rank": 21,
             "file": "apps/astra-web/app/api/composer/stream-artifacts/route.ts",
             "weight": 69.58,
             "bucket": "app/api",
@@ -16936,7 +17629,7 @@
             "route_count": 1
           },
           {
-            "rank": 21,
+            "rank": 22,
             "file": "packages/db/src/schema.ts",
             "weight": 68.3,
             "bucket": "other",
@@ -16951,7 +17644,7 @@
             "route_count": 0
           },
           {
-            "rank": 22,
+            "rank": 23,
             "file": "apps/astra-web/lib/email/send-email.ts",
             "weight": 60.29,
             "bucket": "other",
@@ -16968,7 +17661,7 @@
             "route_count": 0
           },
           {
-            "rank": 23,
+            "rank": 24,
             "file": "apps/astra-web/lib/auth/server.ts",
             "weight": 58.36,
             "bucket": "other",
@@ -16984,7 +17677,24 @@
             "route_count": 0
           },
           {
-            "rank": 24,
+            "rank": 25,
+            "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+            "weight": 50.43,
+            "bucket": "other",
+            "estimated_tokens": 941,
+            "lines": 118,
+            "symbols": 14,
+            "symbol_type_counts": {
+              "constant": 3,
+              "function": 2,
+              "type": 9
+            },
+            "dependency_in": 1,
+            "dependency_out": 1,
+            "route_count": 0
+          },
+          {
+            "rank": 26,
             "file": "apps/astra-web/components/AuthPanel.tsx",
             "weight": 50.42,
             "bucket": "other",
@@ -17002,7 +17712,7 @@
             "route_count": 0
           },
           {
-            "rank": 25,
+            "rank": 27,
             "file": "apps/composer-web/src/publishStreamArtifact.ts",
             "weight": 49.45,
             "bucket": "other",
@@ -17019,7 +17729,7 @@
             "route_count": 0
           },
           {
-            "rank": 26,
+            "rank": 28,
             "file": "apps/composer-web/docs/inbox-astra-composer/COMPOSER_VOICE_TEMPLATES.md",
             "weight": 43.36,
             "bucket": "other",
@@ -17035,22 +17745,23 @@
             "route_count": 0
           },
           {
-            "rank": 27,
-            "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
-            "weight": 39.38,
-            "bucket": "akashic",
-            "estimated_tokens": 1670,
-            "lines": 131,
-            "symbols": 11,
+            "rank": 29,
+            "file": "apps/astra-web/lib/internal-token.ts",
+            "weight": 38.15,
+            "bucket": "other",
+            "estimated_tokens": 124,
+            "lines": 16,
+            "symbols": 4,
             "symbol_type_counts": {
-              "heading": 11
+              "constant": 1,
+              "function": 3
             },
-            "dependency_in": 0,
+            "dependency_in": 4,
             "dependency_out": 0,
             "route_count": 0
           },
           {
-            "rank": 28,
+            "rank": 30,
             "file": "apps/astra-web/app/library/page.tsx",
             "weight": 37.99,
             "bucket": "other",
@@ -17067,7 +17778,7 @@
             "route_count": 0
           },
           {
-            "rank": 29,
+            "rank": 31,
             "file": "packages/db/src/env.ts",
             "weight": 37.45,
             "bucket": "other",
@@ -17083,7 +17794,22 @@
             "route_count": 0
           },
           {
-            "rank": 30,
+            "rank": 32,
+            "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+            "weight": 37.38,
+            "bucket": "other",
+            "estimated_tokens": 1671,
+            "lines": 131,
+            "symbols": 11,
+            "symbol_type_counts": {
+              "heading": 11
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 33,
             "file": "packages/db/drizzle.config.ts",
             "weight": 37.01,
             "bucket": "other",
@@ -17099,23 +17825,7 @@
             "route_count": 0
           },
           {
-            "rank": 31,
-            "file": "apps/astra-web/lib/internal-token.ts",
-            "weight": 36.15,
-            "bucket": "other",
-            "estimated_tokens": 124,
-            "lines": 16,
-            "symbols": 4,
-            "symbol_type_counts": {
-              "constant": 1,
-              "function": 3
-            },
-            "dependency_in": 3,
-            "dependency_out": 0,
-            "route_count": 0
-          },
-          {
-            "rank": 32,
+            "rank": 34,
             "file": "akashic/templates/repomap-template.md",
             "weight": 35.89,
             "bucket": "akashic",
@@ -17130,7 +17840,22 @@
             "route_count": 0
           },
           {
-            "rank": 33,
+            "rank": 35,
+            "file": "docs/progress/PROGRESS_LOG.md",
+            "weight": 34.28,
+            "bucket": "other",
+            "estimated_tokens": 478,
+            "lines": 67,
+            "symbols": 10,
+            "symbol_type_counts": {
+              "heading": 10
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 36,
             "file": "apps/astra-web/lib/auth/profile.ts",
             "weight": 34.25,
             "bucket": "other",
@@ -17146,7 +17871,7 @@
             "route_count": 0
           },
           {
-            "rank": 34,
+            "rank": 37,
             "file": "apps/astra-web/components/AppNavigation.tsx",
             "weight": 33.82,
             "bucket": "other",
@@ -17163,7 +17888,7 @@
             "route_count": 0
           },
           {
-            "rank": 35,
+            "rank": 38,
             "file": "apps/astra-web/lib/i18n.ts",
             "weight": 33.35,
             "bucket": "other",
@@ -17178,12 +17903,12 @@
             "route_count": 0
           },
           {
-            "rank": 36,
+            "rank": 39,
             "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
             "weight": 33.3,
             "bucket": "akashic",
-            "estimated_tokens": 4311,
-            "lines": 135,
+            "estimated_tokens": 4450,
+            "lines": 137,
             "symbols": 9,
             "symbol_type_counts": {
               "heading": 9
@@ -17197,9 +17922,9 @@
       {
         "name": "top-weighted",
         "budget_tokens": 128000,
-        "estimated_tokens": 141590,
-        "file_count": 104,
-        "symbol_count": 993,
+        "estimated_tokens": 129681,
+        "file_count": 108,
+        "symbol_count": 1035,
         "files": [
           {
             "rank": 1,
@@ -17222,10 +17947,10 @@
           {
             "rank": 2,
             "file": "packages/db/src/repositories.ts",
-            "weight": 464.25,
+            "weight": 464.24,
             "bucket": "other",
-            "estimated_tokens": 8533,
-            "lines": 1141,
+            "estimated_tokens": 8656,
+            "lines": 1154,
             "symbols": 100,
             "symbol_type_counts": {
               "constant": 34,
@@ -17238,6 +17963,22 @@
           },
           {
             "rank": 3,
+            "file": "packages/contracts/src/index.ts",
+            "weight": 247.29,
+            "bucket": "other",
+            "estimated_tokens": 4936,
+            "lines": 533,
+            "symbols": 96,
+            "symbol_type_counts": {
+              "constant": 51,
+              "type": 45
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 4,
             "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
             "weight": 235.27,
             "bucket": "other",
@@ -17252,22 +17993,6 @@
             },
             "dependency_in": 1,
             "dependency_out": 1,
-            "route_count": 0
-          },
-          {
-            "rank": 4,
-            "file": "packages/contracts/src/index.ts",
-            "weight": 232.3,
-            "bucket": "other",
-            "estimated_tokens": 4636,
-            "lines": 503,
-            "symbols": 90,
-            "symbol_type_counts": {
-              "constant": 48,
-              "type": 42
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
             "route_count": 0
           },
           {
@@ -17391,10 +18116,10 @@
           {
             "rank": 12,
             "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-            "weight": 89.44,
+            "weight": 90.43,
             "bucket": "app/api",
-            "estimated_tokens": 784,
-            "lines": 96,
+            "estimated_tokens": 896,
+            "lines": 97,
             "symbols": 9,
             "symbol_type_counts": {
               "component": 1,
@@ -17404,7 +18129,7 @@
               "type": 1
             },
             "dependency_in": 0,
-            "dependency_out": 1,
+            "dependency_out": 2,
             "route_count": 1
           },
           {
@@ -17482,7 +18207,7 @@
           {
             "rank": 17,
             "file": "apps/composer-web/src/voices/validateVoiceCard.ts",
-            "weight": 70.45,
+            "weight": 72.45,
             "bucket": "other",
             "estimated_tokens": 653,
             "lines": 83,
@@ -17492,12 +18217,29 @@
               "function": 5,
               "type": 3
             },
-            "dependency_in": 2,
+            "dependency_in": 3,
             "dependency_out": 1,
             "route_count": 0
           },
           {
             "rank": 18,
+            "file": "apps/astra-web/app/api/composer/private-feed-items/route.ts",
+            "weight": 70.68,
+            "bucket": "app/api",
+            "estimated_tokens": 272,
+            "lines": 32,
+            "symbols": 4,
+            "symbol_type_counts": {
+              "component": 1,
+              "constant": 2,
+              "route_handler": 1
+            },
+            "dependency_in": 0,
+            "dependency_out": 2,
+            "route_count": 1
+          },
+          {
+            "rank": 19,
             "file": "apps/astra-web/app/api/chart-results/route.ts",
             "weight": 69.68,
             "bucket": "app/api",
@@ -17514,7 +18256,7 @@
             "route_count": 1
           },
           {
-            "rank": 19,
+            "rank": 20,
             "file": "apps/astra-web/app/api/report-results/route.ts",
             "weight": 69.68,
             "bucket": "app/api",
@@ -17531,7 +18273,7 @@
             "route_count": 1
           },
           {
-            "rank": 20,
+            "rank": 21,
             "file": "apps/astra-web/app/api/composer/stream-artifacts/route.ts",
             "weight": 69.58,
             "bucket": "app/api",
@@ -17548,7 +18290,7 @@
             "route_count": 1
           },
           {
-            "rank": 21,
+            "rank": 22,
             "file": "packages/db/src/schema.ts",
             "weight": 68.3,
             "bucket": "other",
@@ -17563,7 +18305,7 @@
             "route_count": 0
           },
           {
-            "rank": 22,
+            "rank": 23,
             "file": "apps/astra-web/lib/email/send-email.ts",
             "weight": 60.29,
             "bucket": "other",
@@ -17580,7 +18322,7 @@
             "route_count": 0
           },
           {
-            "rank": 23,
+            "rank": 24,
             "file": "apps/astra-web/lib/auth/server.ts",
             "weight": 58.36,
             "bucket": "other",
@@ -17596,7 +18338,24 @@
             "route_count": 0
           },
           {
-            "rank": 24,
+            "rank": 25,
+            "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
+            "weight": 50.43,
+            "bucket": "other",
+            "estimated_tokens": 941,
+            "lines": 118,
+            "symbols": 14,
+            "symbol_type_counts": {
+              "constant": 3,
+              "function": 2,
+              "type": 9
+            },
+            "dependency_in": 1,
+            "dependency_out": 1,
+            "route_count": 0
+          },
+          {
+            "rank": 26,
             "file": "apps/astra-web/components/AuthPanel.tsx",
             "weight": 50.42,
             "bucket": "other",
@@ -17614,7 +18373,7 @@
             "route_count": 0
           },
           {
-            "rank": 25,
+            "rank": 27,
             "file": "apps/composer-web/src/publishStreamArtifact.ts",
             "weight": 49.45,
             "bucket": "other",
@@ -17631,7 +18390,7 @@
             "route_count": 0
           },
           {
-            "rank": 26,
+            "rank": 28,
             "file": "apps/composer-web/docs/inbox-astra-composer/COMPOSER_VOICE_TEMPLATES.md",
             "weight": 43.36,
             "bucket": "other",
@@ -17647,22 +18406,23 @@
             "route_count": 0
           },
           {
-            "rank": 27,
-            "file": "akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
-            "weight": 39.38,
-            "bucket": "akashic",
-            "estimated_tokens": 1670,
-            "lines": 131,
-            "symbols": 11,
+            "rank": 29,
+            "file": "apps/astra-web/lib/internal-token.ts",
+            "weight": 38.15,
+            "bucket": "other",
+            "estimated_tokens": 124,
+            "lines": 16,
+            "symbols": 4,
             "symbol_type_counts": {
-              "heading": 11
+              "constant": 1,
+              "function": 3
             },
-            "dependency_in": 0,
+            "dependency_in": 4,
             "dependency_out": 0,
             "route_count": 0
           },
           {
-            "rank": 28,
+            "rank": 30,
             "file": "apps/astra-web/app/library/page.tsx",
             "weight": 37.99,
             "bucket": "other",
@@ -17679,7 +18439,7 @@
             "route_count": 0
           },
           {
-            "rank": 29,
+            "rank": 31,
             "file": "packages/db/src/env.ts",
             "weight": 37.45,
             "bucket": "other",
@@ -17695,7 +18455,22 @@
             "route_count": 0
           },
           {
-            "rank": 30,
+            "rank": 32,
+            "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
+            "weight": 37.38,
+            "bucket": "other",
+            "estimated_tokens": 1671,
+            "lines": 131,
+            "symbols": 11,
+            "symbol_type_counts": {
+              "heading": 11
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 33,
             "file": "packages/db/drizzle.config.ts",
             "weight": 37.01,
             "bucket": "other",
@@ -17711,23 +18486,7 @@
             "route_count": 0
           },
           {
-            "rank": 31,
-            "file": "apps/astra-web/lib/internal-token.ts",
-            "weight": 36.15,
-            "bucket": "other",
-            "estimated_tokens": 124,
-            "lines": 16,
-            "symbols": 4,
-            "symbol_type_counts": {
-              "constant": 1,
-              "function": 3
-            },
-            "dependency_in": 3,
-            "dependency_out": 0,
-            "route_count": 0
-          },
-          {
-            "rank": 32,
+            "rank": 34,
             "file": "akashic/templates/repomap-template.md",
             "weight": 35.89,
             "bucket": "akashic",
@@ -17742,7 +18501,22 @@
             "route_count": 0
           },
           {
-            "rank": 33,
+            "rank": 35,
+            "file": "docs/progress/PROGRESS_LOG.md",
+            "weight": 34.28,
+            "bucket": "other",
+            "estimated_tokens": 478,
+            "lines": 67,
+            "symbols": 10,
+            "symbol_type_counts": {
+              "heading": 10
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 36,
             "file": "apps/astra-web/lib/auth/profile.ts",
             "weight": 34.25,
             "bucket": "other",
@@ -17758,7 +18532,7 @@
             "route_count": 0
           },
           {
-            "rank": 34,
+            "rank": 37,
             "file": "apps/astra-web/components/AppNavigation.tsx",
             "weight": 33.82,
             "bucket": "other",
@@ -17775,7 +18549,7 @@
             "route_count": 0
           },
           {
-            "rank": 35,
+            "rank": 38,
             "file": "apps/astra-web/lib/i18n.ts",
             "weight": 33.35,
             "bucket": "other",
@@ -17790,12 +18564,12 @@
             "route_count": 0
           },
           {
-            "rank": 36,
+            "rank": 39,
             "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
             "weight": 33.3,
             "bucket": "akashic",
-            "estimated_tokens": 4311,
-            "lines": 135,
+            "estimated_tokens": 4450,
+            "lines": 137,
             "symbols": 9,
             "symbol_type_counts": {
               "heading": 9
@@ -17805,7 +18579,7 @@
             "route_count": 0
           },
           {
-            "rank": 37,
+            "rank": 40,
             "file": "akashic/skills/astra-stewardship-validation.md",
             "weight": 33.22,
             "bucket": "akashic",
@@ -17820,7 +18594,7 @@
             "route_count": 0
           },
           {
-            "rank": 38,
+            "rank": 41,
             "file": "akashic/templates/skill-template.md",
             "weight": 32.83,
             "bucket": "akashic",
@@ -17835,7 +18609,7 @@
             "route_count": 0
           },
           {
-            "rank": 39,
+            "rank": 42,
             "file": "apps/astra-web/app/layout.tsx",
             "weight": 32.15,
             "bucket": "other",
@@ -17851,52 +18625,54 @@
             "route_count": 0
           },
           {
-            "rank": 40,
-            "file": "docs/architecture/composer-private-personal-feeds.md",
-            "weight": 31.34,
-            "bucket": "other",
-            "estimated_tokens": 1084,
-            "lines": 77,
-            "symbols": 9,
-            "symbol_type_counts": {
-              "heading": 9
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
-            "route_count": 0
-          },
-          {
-            "rank": 41,
-            "file": "docs/architecture/clean-start-foundation.md",
-            "weight": 31.32,
-            "bucket": "other",
-            "estimated_tokens": 3691,
-            "lines": 131,
-            "symbols": 9,
-            "symbol_type_counts": {
-              "heading": 9
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
-            "route_count": 0
-          },
-          {
-            "rank": 42,
-            "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
-            "weight": 30.32,
-            "bucket": "akashic",
-            "estimated_tokens": 3348,
-            "lines": 118,
-            "symbols": 8,
-            "symbol_type_counts": {
-              "heading": 8
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
-            "route_count": 0
-          },
-          {
             "rank": 43,
+            "file": "apps/astra-web/lib/composer-private-feed.ts",
+            "weight": 31.71,
+            "bucket": "other",
+            "estimated_tokens": 257,
+            "lines": 33,
+            "symbols": 7,
+            "symbol_type_counts": {
+              "constant": 4,
+              "function": 1,
+              "type": 2
+            },
+            "dependency_in": 2,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 44,
+            "file": "docs/architecture/composer-private-personal-feeds.md",
+            "weight": 31.36,
+            "bucket": "other",
+            "estimated_tokens": 1239,
+            "lines": 80,
+            "symbols": 9,
+            "symbol_type_counts": {
+              "heading": 9
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 45,
+            "file": "docs/architecture/clean-start-foundation.md",
+            "weight": 31.31,
+            "bucket": "other",
+            "estimated_tokens": 3877,
+            "lines": 133,
+            "symbols": 9,
+            "symbol_type_counts": {
+              "heading": 9
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 46,
             "file": "akashic/agent-inbox/2026-06-15-fresh-thread-astra-foundation-next-step.md",
             "weight": 30.26,
             "bucket": "akashic",
@@ -17911,7 +18687,7 @@
             "route_count": 0
           },
           {
-            "rank": 44,
+            "rank": 47,
             "file": "akashic/templates/mission-template.md",
             "weight": 29.77,
             "bucket": "akashic",
@@ -17926,7 +18702,7 @@
             "route_count": 0
           },
           {
-            "rank": 45,
+            "rank": 48,
             "file": "apps/astra-web/lib/foundation.ts",
             "weight": 29.37,
             "bucket": "other",
@@ -17942,7 +18718,7 @@
             "route_count": 0
           },
           {
-            "rank": 46,
+            "rank": 49,
             "file": "AGENTS.md",
             "weight": 28.39,
             "bucket": "other",
@@ -17957,7 +18733,22 @@
             "route_count": 0
           },
           {
-            "rank": 47,
+            "rank": 50,
+            "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
+            "weight": 28.32,
+            "bucket": "other",
+            "estimated_tokens": 3357,
+            "lines": 118,
+            "symbols": 8,
+            "symbol_type_counts": {
+              "heading": 8
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 51,
             "file": "docs/architecture/SYSTEM_MAP.md",
             "weight": 28.27,
             "bucket": "other",
@@ -17972,7 +18763,7 @@
             "route_count": 0
           },
           {
-            "rank": 48,
+            "rank": 52,
             "file": "apps/astra-web/components/PageHeader.tsx",
             "weight": 26.94,
             "bucket": "other",
@@ -17987,7 +18778,7 @@
             "route_count": 0
           },
           {
-            "rank": 49,
+            "rank": 53,
             "file": "akashic/templates/adr-template.md",
             "weight": 26.68,
             "bucket": "akashic",
@@ -18002,7 +18793,7 @@
             "route_count": 0
           },
           {
-            "rank": 50,
+            "rank": 54,
             "file": "akashic/decisions/ADR-20260610-astra-clean-start-local-posture.md",
             "weight": 26.65,
             "bucket": "akashic",
@@ -18017,11 +18808,11 @@
             "route_count": 0
           },
           {
-            "rank": 51,
+            "rank": 55,
             "file": "docs/architecture/stream-read-model-cache-boundary.md",
             "weight": 25.29,
             "bucket": "other",
-            "estimated_tokens": 1057,
+            "estimated_tokens": 1082,
             "lines": 73,
             "symbols": 7,
             "symbol_type_counts": {
@@ -18032,7 +18823,7 @@
             "route_count": 0
           },
           {
-            "rank": 52,
+            "rank": 56,
             "file": "packages/db/src/client.ts",
             "weight": 25.21,
             "bucket": "other",
@@ -18049,7 +18840,7 @@
             "route_count": 0
           },
           {
-            "rank": 53,
+            "rank": 57,
             "file": "apps/astra-web/app/journey/page.tsx",
             "weight": 24.93,
             "bucket": "other",
@@ -18065,37 +18856,7 @@
             "route_count": 0
           },
           {
-            "rank": 54,
-            "file": "akashic/agent-inbox/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
-            "weight": 23.77,
-            "bucket": "akashic",
-            "estimated_tokens": 402,
-            "lines": 37,
-            "symbols": 6,
-            "symbol_type_counts": {
-              "heading": 6
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
-            "route_count": 0
-          },
-          {
-            "rank": 55,
-            "file": "akashic/agent-inbox/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
-            "weight": 23.76,
-            "bucket": "akashic",
-            "estimated_tokens": 369,
-            "lines": 36,
-            "symbols": 6,
-            "symbol_type_counts": {
-              "heading": 6
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
-            "route_count": 0
-          },
-          {
-            "rank": 56,
+            "rank": 58,
             "file": "apps/astra-web/app/gifts/page.tsx",
             "weight": 22.75,
             "bucket": "other",
@@ -18111,7 +18872,7 @@
             "route_count": 0
           },
           {
-            "rank": 57,
+            "rank": 59,
             "file": "apps/astra-web/app/allies/page.tsx",
             "weight": 22.59,
             "bucket": "other",
@@ -18127,11 +18888,11 @@
             "route_count": 0
           },
           {
-            "rank": 58,
-            "file": "docs/progress/PROGRESS_LOG.md",
-            "weight": 21.82,
+            "rank": 60,
+            "file": "docs/inbox-astra/completed/2026-06-11-munch-stack-is-live-for-repo-navigation.md",
+            "weight": 21.77,
             "bucket": "other",
-            "estimated_tokens": 218,
+            "estimated_tokens": 402,
             "lines": 37,
             "symbols": 6,
             "symbol_type_counts": {
@@ -18142,7 +18903,22 @@
             "route_count": 0
           },
           {
-            "rank": 59,
+            "rank": 61,
+            "file": "docs/inbox-astra/completed/2026-06-11-merge-latest-akashic-agents-guidance-before-broad-work.md",
+            "weight": 21.76,
+            "bucket": "other",
+            "estimated_tokens": 369,
+            "lines": 36,
+            "symbols": 6,
+            "symbol_type_counts": {
+              "heading": 6
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 62,
             "file": "akashic/templates/playbook-template.md",
             "weight": 20.49,
             "bucket": "akashic",
@@ -18157,7 +18933,7 @@
             "route_count": 0
           },
           {
-            "rank": 60,
+            "rank": 63,
             "file": "docs/akashic-governance.md",
             "weight": 19.4,
             "bucket": "other",
@@ -18172,7 +18948,7 @@
             "route_count": 0
           },
           {
-            "rank": 61,
+            "rank": 64,
             "file": "apps/composer-web/src/voices/registry.ts",
             "weight": 19.15,
             "bucket": "other",
@@ -18188,7 +18964,7 @@
             "route_count": 0
           },
           {
-            "rank": 62,
+            "rank": 65,
             "file": "docs/architecture/REPO_STEWARDSHIP.md",
             "weight": 18.97,
             "bucket": "other",
@@ -18203,7 +18979,7 @@
             "route_count": 0
           },
           {
-            "rank": 63,
+            "rank": 66,
             "file": "apps/composer-web/akashic/agent-inbox/2026-06-10-repomap-builder-fixed.md",
             "weight": 18.67,
             "bucket": "other",
@@ -18218,7 +18994,7 @@
             "route_count": 0
           },
           {
-            "rank": 64,
+            "rank": 67,
             "file": "docs/inventory/astra-quarry-inventory.md",
             "weight": 18.48,
             "bucket": "other",
@@ -18233,7 +19009,7 @@
             "route_count": 0
           },
           {
-            "rank": 65,
+            "rank": 68,
             "file": "apps/astra-web/app/self/page.tsx",
             "weight": 18.43,
             "bucket": "other",
@@ -18248,7 +19024,22 @@
             "route_count": 0
           },
           {
-            "rank": 66,
+            "rank": 69,
+            "file": "akashic/warnings/preventable-implementation-hiccups-from-composer-private-feed-workflow.md",
+            "weight": 17.69,
+            "bucket": "akashic",
+            "estimated_tokens": 651,
+            "lines": 35,
+            "symbols": 4,
+            "symbol_type_counts": {
+              "heading": 4
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 70,
             "file": "akashic/templates/warning-template.md",
             "weight": 17.37,
             "bucket": "akashic",
@@ -18263,7 +19054,7 @@
             "route_count": 0
           },
           {
-            "rank": 67,
+            "rank": 71,
             "file": "akashic/warnings/browser-bridge-networkidle-wait-is-not-reliable.md",
             "weight": 17.32,
             "bucket": "akashic",
@@ -18278,7 +19069,7 @@
             "route_count": 0
           },
           {
-            "rank": 68,
+            "rank": 72,
             "file": "akashic/warnings/local-dev-server-tab-is-not-server-proof.md",
             "weight": 17.32,
             "bucket": "akashic",
@@ -18293,7 +19084,7 @@
             "route_count": 0
           },
           {
-            "rank": 69,
+            "rank": 73,
             "file": "akashic/warnings/no-supabase-scanner-should-ignore-akashic-knowledge-files.md",
             "weight": 17.27,
             "bucket": "akashic",
@@ -18308,7 +19099,7 @@
             "route_count": 0
           },
           {
-            "rank": 70,
+            "rank": 74,
             "file": "akashic/warnings/internal-machine-tokens-must-fail-hard-when-missing.md",
             "weight": 17.22,
             "bucket": "akashic",
@@ -18323,7 +19114,7 @@
             "route_count": 0
           },
           {
-            "rank": 71,
+            "rank": 75,
             "file": "akashic/warnings/timezone-fields-should-use-constrained-iana-selection.md",
             "weight": 17.22,
             "bucket": "akashic",
@@ -18338,7 +19129,7 @@
             "route_count": 0
           },
           {
-            "rank": 72,
+            "rank": 76,
             "file": "apps/astra-web/app/login/page.tsx",
             "weight": 16.29,
             "bucket": "other",
@@ -18353,7 +19144,7 @@
             "route_count": 0
           },
           {
-            "rank": 73,
+            "rank": 77,
             "file": "docs/architecture/BOUNDARIES.md",
             "weight": 15.8,
             "bucket": "other",
@@ -18368,7 +19159,7 @@
             "route_count": 0
           },
           {
-            "rank": 74,
+            "rank": 78,
             "file": "docs/architecture/RISK_REGISTER.md",
             "weight": 15.74,
             "bucket": "other",
@@ -18383,7 +19174,7 @@
             "route_count": 0
           },
           {
-            "rank": 75,
+            "rank": 79,
             "file": "packages/testkit/src/index.ts",
             "weight": 15.42,
             "bucket": "other",
@@ -18399,7 +19190,7 @@
             "route_count": 0
           },
           {
-            "rank": 76,
+            "rank": 80,
             "file": "docs/decisions/0001-next-neon-drizzle-better-auth.md",
             "weight": 15.31,
             "bucket": "other",
@@ -18414,7 +19205,7 @@
             "route_count": 0
           },
           {
-            "rank": 77,
+            "rank": 81,
             "file": "apps/astra-web/app/journey/loading.tsx",
             "weight": 15.29,
             "bucket": "other",
@@ -18429,7 +19220,22 @@
             "route_count": 0
           },
           {
-            "rank": 78,
+            "rank": 82,
+            "file": "akashic/agent-inbox/2026-06-16-next-thread-composer-private-feed-operator-workflow.md",
+            "weight": 15.11,
+            "bucket": "akashic",
+            "estimated_tokens": 812,
+            "lines": 58,
+            "symbols": 3,
+            "symbol_type_counts": {
+              "heading": 3
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 83,
             "file": "docs/architecture/REVIEW_CHECKLIST.md",
             "weight": 12.67,
             "bucket": "other",
@@ -18444,7 +19250,7 @@
             "route_count": 0
           },
           {
-            "rank": 79,
+            "rank": 84,
             "file": "apps/composer-web/AGENTS.md",
             "weight": 12.61,
             "bucket": "other",
@@ -18459,7 +19265,7 @@
             "route_count": 0
           },
           {
-            "rank": 80,
+            "rank": 85,
             "file": "apps/astra-web/app/page.tsx",
             "weight": 12.47,
             "bucket": "other",
@@ -18474,7 +19280,7 @@
             "route_count": 0
           },
           {
-            "rank": 81,
+            "rank": 86,
             "file": "packages/db/src/seed.ts",
             "weight": 12.46,
             "bucket": "other",
@@ -18489,7 +19295,7 @@
             "route_count": 0
           },
           {
-            "rank": 82,
+            "rank": 87,
             "file": "apps/astra-web/app/api/auth/[...all]/route.ts",
             "weight": 12.3,
             "bucket": "app/api",
@@ -18502,7 +19308,7 @@
             "route_count": 0
           },
           {
-            "rank": 83,
+            "rank": 88,
             "file": "akashic/agent-inbox/2026-06-16-first-steward-review-astra.md",
             "weight": 11.6,
             "bucket": "akashic",
@@ -18517,7 +19323,7 @@
             "route_count": 0
           },
           {
-            "rank": 84,
+            "rank": 89,
             "file": "eslint.config.mjs",
             "weight": 9.68,
             "bucket": "other",
@@ -18532,7 +19338,7 @@
             "route_count": 0
           },
           {
-            "rank": 85,
+            "rank": 90,
             "file": "docs/architecture/local-dev-server.md",
             "weight": 9.54,
             "bucket": "other",
@@ -18547,12 +19353,12 @@
             "route_count": 0
           },
           {
-            "rank": 86,
+            "rank": 91,
             "file": "package.json",
-            "weight": 9.32,
+            "weight": 9.33,
             "bucket": "manifest",
-            "estimated_tokens": 787,
-            "lines": 73,
+            "estimated_tokens": 813,
+            "lines": 74,
             "symbols": 0,
             "symbol_type_counts": {},
             "dependency_in": 0,
@@ -18560,7 +19366,7 @@
             "route_count": 0
           },
           {
-            "rank": 87,
+            "rank": 92,
             "file": "apps/astra-web/lib/auth/client.ts",
             "weight": 7.74,
             "bucket": "other",
@@ -18575,7 +19381,20 @@
             "route_count": 0
           },
           {
-            "rank": 88,
+            "rank": 93,
+            "file": "apps/composer-web/src/index.ts",
+            "weight": 7.12,
+            "bucket": "other",
+            "estimated_tokens": 183,
+            "lines": 16,
+            "symbols": 0,
+            "symbol_type_counts": {},
+            "dependency_in": 0,
+            "dependency_out": 4,
+            "route_count": 0
+          },
+          {
+            "rank": 94,
             "file": "README.md",
             "weight": 6.78,
             "bucket": "other",
@@ -18590,7 +19409,22 @@
             "route_count": 0
           },
           {
-            "rank": 89,
+            "rank": 95,
+            "file": "docs/inbox-astra/README.md",
+            "weight": 6.31,
+            "bucket": "other",
+            "estimated_tokens": 166,
+            "lines": 20,
+            "symbols": 1,
+            "symbol_type_counts": {
+              "heading": 1
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 96,
             "file": "packages/db/src/index.ts",
             "weight": 6.3,
             "bucket": "other",
@@ -18603,22 +19437,7 @@
             "route_count": 0
           },
           {
-            "rank": 90,
-            "file": "docs/inbox-astra/README.md",
-            "weight": 6.05,
-            "bucket": "other",
-            "estimated_tokens": 108,
-            "lines": 14,
-            "symbols": 1,
-            "symbol_type_counts": {
-              "heading": 1
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
-            "route_count": 0
-          },
-          {
-            "rank": 91,
+            "rank": 97,
             "file": "apps/composer-web/docs/inbox-astra-composer/README.md",
             "weight": 6.04,
             "bucket": "other",
@@ -18633,7 +19452,7 @@
             "route_count": 0
           },
           {
-            "rank": 92,
+            "rank": 98,
             "file": "apps/composer-web/docs/inbox-composer-web/README.md",
             "weight": 6.04,
             "bucket": "other",
@@ -18648,7 +19467,7 @@
             "route_count": 0
           },
           {
-            "rank": 93,
+            "rank": 99,
             "file": "packages/ui/src/index.ts",
             "weight": 6.04,
             "bucket": "other",
@@ -18663,7 +19482,7 @@
             "route_count": 0
           },
           {
-            "rank": 94,
+            "rank": 100,
             "file": "docs/architecture/README.md",
             "weight": 5.87,
             "bucket": "other",
@@ -18678,20 +19497,7 @@
             "route_count": 0
           },
           {
-            "rank": 95,
-            "file": "apps/composer-web/src/index.ts",
-            "weight": 5.76,
-            "bucket": "other",
-            "estimated_tokens": 113,
-            "lines": 10,
-            "symbols": 0,
-            "symbol_type_counts": {},
-            "dependency_in": 0,
-            "dependency_out": 3,
-            "route_count": 0
-          },
-          {
-            "rank": 96,
+            "rank": 101,
             "file": "docs/README.md",
             "weight": 5.74,
             "bucket": "other",
@@ -18706,7 +19512,7 @@
             "route_count": 0
           },
           {
-            "rank": 97,
+            "rank": 102,
             "file": "apps/composer-web/README.md",
             "weight": 5.58,
             "bucket": "other",
@@ -18721,7 +19527,7 @@
             "route_count": 0
           },
           {
-            "rank": 98,
+            "rank": 103,
             "file": "packages/config/src/index.ts",
             "weight": 5.45,
             "bucket": "other",
@@ -18736,7 +19542,7 @@
             "route_count": 0
           },
           {
-            "rank": 99,
+            "rank": 104,
             "file": "packages/db/drizzle/0003_round_hellcat.sql",
             "weight": 4.39,
             "bucket": "other",
@@ -18749,7 +19555,7 @@
             "route_count": 0
           },
           {
-            "rank": 100,
+            "rank": 105,
             "file": "packages/db/drizzle/0000_clean_start_foundation.sql",
             "weight": 4.37,
             "bucket": "other",
@@ -18762,7 +19568,7 @@
             "route_count": 0
           },
           {
-            "rank": 101,
+            "rank": 106,
             "file": "packages/db/drizzle/meta/0000_snapshot.json",
             "weight": 4.26,
             "bucket": "other",
@@ -18775,7 +19581,7 @@
             "route_count": 0
           },
           {
-            "rank": 102,
+            "rank": 107,
             "file": "packages/db/drizzle/meta/0001_snapshot.json",
             "weight": 4.24,
             "bucket": "other",
@@ -18788,7 +19594,7 @@
             "route_count": 0
           },
           {
-            "rank": 103,
+            "rank": 108,
             "file": "packages/db/drizzle/meta/0002_snapshot.json",
             "weight": 4.22,
             "bucket": "other",
@@ -18799,27 +19605,14 @@
             "dependency_in": 0,
             "dependency_out": 0,
             "route_count": 0
-          },
-          {
-            "rank": 104,
-            "file": "packages/db/drizzle/meta/0003_snapshot.json",
-            "weight": 4.19,
-            "bucket": "other",
-            "estimated_tokens": 16306,
-            "lines": 2501,
-            "symbols": 0,
-            "symbol_type_counts": {},
-            "dependency_in": 0,
-            "dependency_out": 0,
-            "route_count": 0
           }
         ]
       }
     ],
     "coverage": {
-      "files": 130,
-      "symbols": 993,
-      "total_estimated_tokens": 215760
+      "files": 135,
+      "symbols": 1035,
+      "total_estimated_tokens": 220157
     }
   }
 }

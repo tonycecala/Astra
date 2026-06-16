@@ -9,7 +9,7 @@ type: "handoff"
 from: "/Users/tony/Documents/Projects/Astra"
 to: "/Users/tony/Documents/Projects/Astra"
 tags: ["agent-message", "handoff", "fresh-thread", "astra", "report-writer", "model-route", "high"]
-related: ["../missions/2026-06-12-astra-clean-start-foundation-progress.md", "../../docs/architecture/clean-start-foundation.md", "../../docs/architecture/stream-read-model-cache-boundary.md", "2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md"]
+related: ["../../../akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md", "../../architecture/clean-start-foundation.md", "../../architecture/stream-read-model-cache-boundary.md", "2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md"]
 ---
 
 # Next Clean Thread Handoff: Report Writer Model Route
