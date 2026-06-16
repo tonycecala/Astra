@@ -9,6 +9,23 @@
   },
   "ranked_files": [
     {
+      "file": "packages/astrology/src/index.ts",
+      "weight": 339.3,
+      "bucket": "other",
+      "estimated_tokens": 4588,
+      "lines": 547,
+      "symbols": 85,
+      "symbol_type_counts": {
+        "class": 1,
+        "constant": 51,
+        "function": 17,
+        "type": 16
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "packages/db/src/repositories.ts",
       "weight": 323.27,
       "bucket": "other",
@@ -22,23 +39,6 @@
       },
       "dependency_in": 1,
       "dependency_out": 2,
-      "route_count": 0
-    },
-    {
-      "file": "packages/astrology/src/index.ts",
-      "weight": 281.32,
-      "bucket": "other",
-      "estimated_tokens": 3661,
-      "lines": 458,
-      "symbols": 70,
-      "symbol_type_counts": {
-        "class": 1,
-        "constant": 41,
-        "function": 14,
-        "type": 14
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -194,8 +194,8 @@
       "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
       "weight": 85.34,
       "bucket": "other",
-      "estimated_tokens": 2717,
-      "lines": 224,
+      "estimated_tokens": 2774,
+      "lines": 226,
       "symbols": 24,
       "symbol_type_counts": {
         "constant": 21,
@@ -506,8 +506,8 @@
       "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
       "weight": 33.32,
       "bucket": "akashic",
-      "estimated_tokens": 3573,
-      "lines": 125,
+      "estimated_tokens": 3687,
+      "lines": 127,
       "symbols": 9,
       "symbol_type_counts": {
         "heading": 9
@@ -577,9 +577,9 @@
     },
     {
       "file": "docs/architecture/clean-start-foundation.md",
-      "weight": 31.33,
+      "weight": 31.32,
       "bucket": "other",
-      "estimated_tokens": 3247,
+      "estimated_tokens": 3295,
       "lines": 129,
       "symbols": 9,
       "symbol_type_counts": {
@@ -593,8 +593,8 @@
       "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
       "weight": 30.33,
       "bucket": "akashic",
-      "estimated_tokens": 3136,
-      "lines": 116,
+      "estimated_tokens": 3256,
+      "lines": 118,
       "symbols": 8,
       "symbol_type_counts": {
         "heading": 8
@@ -1611,12 +1611,30 @@
     {
       "name": "top-weighted",
       "budget_tokens": 32000,
-      "estimated_tokens": 32471,
-      "file_count": 15,
-      "symbol_count": 435,
+      "estimated_tokens": 32446,
+      "file_count": 13,
+      "symbol_count": 431,
       "files": [
         {
           "rank": 1,
+          "file": "packages/astrology/src/index.ts",
+          "weight": 339.3,
+          "bucket": "other",
+          "estimated_tokens": 4588,
+          "lines": 547,
+          "symbols": 85,
+          "symbol_type_counts": {
+            "class": 1,
+            "constant": 51,
+            "function": 17,
+            "type": 16
+          },
+          "dependency_in": 0,
+          "dependency_out": 0,
+          "route_count": 0
+        },
+        {
+          "rank": 2,
           "file": "packages/db/src/repositories.ts",
           "weight": 323.27,
           "bucket": "other",
@@ -1630,24 +1648,6 @@
           },
           "dependency_in": 1,
           "dependency_out": 2,
-          "route_count": 0
-        },
-        {
-          "rank": 2,
-          "file": "packages/astrology/src/index.ts",
-          "weight": 281.32,
-          "bucket": "other",
-          "estimated_tokens": 3661,
-          "lines": 458,
-          "symbols": 70,
-          "symbol_type_counts": {
-            "class": 1,
-            "constant": 41,
-            "function": 14,
-            "type": 14
-          },
-          "dependency_in": 0,
-          "dependency_out": 0,
           "route_count": 0
         },
         {
@@ -1813,8 +1813,8 @@
           "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
           "weight": 85.34,
           "bucket": "other",
-          "estimated_tokens": 2717,
-          "lines": 224,
+          "estimated_tokens": 2774,
+          "lines": 226,
           "symbols": 24,
           "symbol_type_counts": {
             "constant": 21,
@@ -1842,53 +1842,36 @@
           "dependency_in": 1,
           "dependency_out": 1,
           "route_count": 0
-        },
-        {
-          "rank": 14,
-          "file": "apps/astra-web/app/api/places/search/route.ts",
-          "weight": 80.92,
-          "bucket": "app/api",
-          "estimated_tokens": 356,
-          "lines": 43,
-          "symbols": 6,
-          "symbol_type_counts": {
-            "component": 1,
-            "constant": 3,
-            "function": 1,
-            "route_handler": 1
-          },
-          "dependency_in": 0,
-          "dependency_out": 1,
-          "route_count": 1
-        },
-        {
-          "rank": 15,
-          "file": "apps/composer-web/src/voices/validateVoiceCard.ts",
-          "weight": 70.45,
-          "bucket": "other",
-          "estimated_tokens": 653,
-          "lines": 83,
-          "symbols": 13,
-          "symbol_type_counts": {
-            "constant": 5,
-            "function": 5,
-            "type": 3
-          },
-          "dependency_in": 2,
-          "dependency_out": 1,
-          "route_count": 0
         }
       ]
     },
     {
       "name": "top-weighted",
       "budget_tokens": 64000,
-      "estimated_tokens": 64052,
-      "file_count": 59,
-      "symbol_count": 703,
+      "estimated_tokens": 64810,
+      "file_count": 57,
+      "symbol_count": 710,
       "files": [
         {
           "rank": 1,
+          "file": "packages/astrology/src/index.ts",
+          "weight": 339.3,
+          "bucket": "other",
+          "estimated_tokens": 4588,
+          "lines": 547,
+          "symbols": 85,
+          "symbol_type_counts": {
+            "class": 1,
+            "constant": 51,
+            "function": 17,
+            "type": 16
+          },
+          "dependency_in": 0,
+          "dependency_out": 0,
+          "route_count": 0
+        },
+        {
+          "rank": 2,
           "file": "packages/db/src/repositories.ts",
           "weight": 323.27,
           "bucket": "other",
@@ -1902,24 +1885,6 @@
           },
           "dependency_in": 1,
           "dependency_out": 2,
-          "route_count": 0
-        },
-        {
-          "rank": 2,
-          "file": "packages/astrology/src/index.ts",
-          "weight": 281.32,
-          "bucket": "other",
-          "estimated_tokens": 3661,
-          "lines": 458,
-          "symbols": 70,
-          "symbol_type_counts": {
-            "class": 1,
-            "constant": 41,
-            "function": 14,
-            "type": 14
-          },
-          "dependency_in": 0,
-          "dependency_out": 0,
           "route_count": 0
         },
         {
@@ -2085,8 +2050,8 @@
           "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
           "weight": 85.34,
           "bucket": "other",
-          "estimated_tokens": 2717,
-          "lines": 224,
+          "estimated_tokens": 2774,
+          "lines": 226,
           "symbols": 24,
           "symbol_type_counts": {
             "constant": 21,
@@ -2417,8 +2382,8 @@
           "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
           "weight": 33.32,
           "bucket": "akashic",
-          "estimated_tokens": 3573,
-          "lines": 125,
+          "estimated_tokens": 3687,
+          "lines": 127,
           "symbols": 9,
           "symbol_type_counts": {
             "heading": 9
@@ -2493,9 +2458,9 @@
         {
           "rank": 37,
           "file": "docs/architecture/clean-start-foundation.md",
-          "weight": 31.33,
+          "weight": 31.32,
           "bucket": "other",
-          "estimated_tokens": 3247,
+          "estimated_tokens": 3295,
           "lines": 129,
           "symbols": 9,
           "symbol_type_counts": {
@@ -2510,8 +2475,8 @@
           "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
           "weight": 30.33,
           "bucket": "akashic",
-          "estimated_tokens": 3136,
-          "lines": 116,
+          "estimated_tokens": 3256,
+          "lines": 118,
           "symbols": 8,
           "symbol_type_counts": {
             "heading": 8
@@ -2810,48 +2775,36 @@
           "dependency_in": 0,
           "dependency_out": 4,
           "route_count": 0
-        },
-        {
-          "rank": 58,
-          "file": "akashic/templates/warning-template.md",
-          "weight": 17.37,
-          "bucket": "akashic",
-          "estimated_tokens": 82,
-          "lines": 20,
-          "symbols": 4,
-          "symbol_type_counts": {
-            "heading": 4
-          },
-          "dependency_in": 0,
-          "dependency_out": 0,
-          "route_count": 0
-        },
-        {
-          "rank": 59,
-          "file": "akashic/warnings/browser-bridge-networkidle-wait-is-not-reliable.md",
-          "weight": 17.32,
-          "bucket": "akashic",
-          "estimated_tokens": 426,
-          "lines": 22,
-          "symbols": 4,
-          "symbol_type_counts": {
-            "heading": 4
-          },
-          "dependency_in": 0,
-          "dependency_out": 0,
-          "route_count": 0
         }
       ]
     },
     {
       "name": "top-weighted",
       "budget_tokens": 128000,
-      "estimated_tokens": 171087,
+      "estimated_tokens": 172353,
       "file_count": 89,
-      "symbol_count": 744,
+      "symbol_count": 759,
       "files": [
         {
           "rank": 1,
+          "file": "packages/astrology/src/index.ts",
+          "weight": 339.3,
+          "bucket": "other",
+          "estimated_tokens": 4588,
+          "lines": 547,
+          "symbols": 85,
+          "symbol_type_counts": {
+            "class": 1,
+            "constant": 51,
+            "function": 17,
+            "type": 16
+          },
+          "dependency_in": 0,
+          "dependency_out": 0,
+          "route_count": 0
+        },
+        {
+          "rank": 2,
           "file": "packages/db/src/repositories.ts",
           "weight": 323.27,
           "bucket": "other",
@@ -2865,24 +2818,6 @@
           },
           "dependency_in": 1,
           "dependency_out": 2,
-          "route_count": 0
-        },
-        {
-          "rank": 2,
-          "file": "packages/astrology/src/index.ts",
-          "weight": 281.32,
-          "bucket": "other",
-          "estimated_tokens": 3661,
-          "lines": 458,
-          "symbols": 70,
-          "symbol_type_counts": {
-            "class": 1,
-            "constant": 41,
-            "function": 14,
-            "type": 14
-          },
-          "dependency_in": 0,
-          "dependency_out": 0,
           "route_count": 0
         },
         {
@@ -3048,8 +2983,8 @@
           "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
           "weight": 85.34,
           "bucket": "other",
-          "estimated_tokens": 2717,
-          "lines": 224,
+          "estimated_tokens": 2774,
+          "lines": 226,
           "symbols": 24,
           "symbol_type_counts": {
             "constant": 21,
@@ -3380,8 +3315,8 @@
           "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
           "weight": 33.32,
           "bucket": "akashic",
-          "estimated_tokens": 3573,
-          "lines": 125,
+          "estimated_tokens": 3687,
+          "lines": 127,
           "symbols": 9,
           "symbol_type_counts": {
             "heading": 9
@@ -3456,9 +3391,9 @@
         {
           "rank": 37,
           "file": "docs/architecture/clean-start-foundation.md",
-          "weight": 31.33,
+          "weight": 31.32,
           "bucket": "other",
-          "estimated_tokens": 3247,
+          "estimated_tokens": 3295,
           "lines": 129,
           "symbols": 9,
           "symbol_type_counts": {
@@ -3473,8 +3408,8 @@
           "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
           "weight": 30.33,
           "bucket": "akashic",
-          "estimated_tokens": 3136,
-          "lines": 116,
+          "estimated_tokens": 3256,
+          "lines": 118,
           "symbols": 8,
           "symbol_type_counts": {
             "heading": 8
@@ -4242,7 +4177,7 @@
   ],
   "coverage": {
     "files": 114,
-    "symbols": 744,
-    "total_estimated_tokens": 174239
+    "symbols": 759,
+    "total_estimated_tokens": 175505
   }
 }

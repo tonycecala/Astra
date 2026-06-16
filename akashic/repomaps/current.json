@@ -1,12 +1,474 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-06-16T13:22:51.183Z",
+  "generated_at": "2026-06-16T13:34:57.811Z",
   "root_name": "Astra",
   "files_indexed": 114,
-  "total_symbols": 744,
-  "total_estimated_tokens": 174239,
+  "total_symbols": 759,
+  "total_estimated_tokens": 175505,
   "files": [
+    {
+      "file": "packages/astrology/src/index.ts",
+      "lang": "typescript",
+      "size": 18349,
+      "lines": 547,
+      "estimated_tokens": 4588,
+      "symbols": [
+        {
+          "name": "AstrologyReportRequest",
+          "line": 2,
+          "type": "type"
+        },
+        {
+          "name": "BirthPlaceSearchQuery",
+          "line": 3,
+          "type": "type"
+        },
+        {
+          "name": "BirthPlaceSearchResponse",
+          "line": 4,
+          "type": "type"
+        },
+        {
+          "name": "RecordAstrologyReportResult",
+          "line": 5,
+          "type": "type"
+        },
+        {
+          "name": "ASTRA_ASTROLOGY_REPORT_ADAPTER",
+          "line": 13,
+          "type": "constant"
+        },
+        {
+          "name": "ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION",
+          "line": 14,
+          "type": "constant"
+        },
+        {
+          "name": "ASTRA_EPHEMERIS_ENGINE_ENV",
+          "line": 15,
+          "type": "constant"
+        },
+        {
+          "name": "ASTRA_REPORT_WRITER_ENV",
+          "line": 16,
+          "type": "constant"
+        },
+        {
+          "name": "ASTRA_PLACE_SEARCH_PROVIDER_ENV",
+          "line": 17,
+          "type": "constant"
+        },
+        {
+          "name": "LOCAL_CHART_ROUTINE_ENGINE",
+          "line": 18,
+          "type": "constant"
+        },
+        {
+          "name": "LOCAL_DETERMINISTIC_REPORT_WRITER",
+          "line": 19,
+          "type": "constant"
+        },
+        {
+          "name": "ASTRA_CHART_ROUTINE",
+          "line": 20,
+          "type": "constant"
+        },
+        {
+          "name": "ASTRA_DEFAULT_ZODIAC_MODE",
+          "line": 21,
+          "type": "constant"
+        },
+        {
+          "name": "ASTRA_DEFAULT_HOUSE_SYSTEM",
+          "line": 22,
+          "type": "constant"
+        },
+        {
+          "name": "AstrologyReportGenerationConfig",
+          "line": 24,
+          "type": "type"
+        },
+        {
+          "name": "ZodiacSign",
+          "line": 29,
+          "type": "type"
+        },
+        {
+          "name": "EphemerisPoint",
+          "line": 35,
+          "type": "type"
+        },
+        {
+          "name": "ChartSignature",
+          "line": 44,
+          "type": "type"
+        },
+        {
+          "name": "ReportWriterInput",
+          "line": 53,
+          "type": "type"
+        },
+        {
+          "name": "ReportDraft",
+          "line": 58,
+          "type": "type"
+        },
+        {
+          "name": "HoroscopeCtor",
+          "line": 60,
+          "type": "type"
+        },
+        {
+          "name": "OriginCtor",
+          "line": 72,
+          "type": "type"
+        },
+        {
+          "name": "OriginInstance",
+          "line": 84,
+          "type": "type"
+        },
+        {
+          "name": "HoroscopePoint",
+          "line": 86,
+          "type": "type"
+        },
+        {
+          "name": "HoroscopeLike",
+          "line": 98,
+          "type": "type"
+        },
+        {
+          "name": "horoscopeNamespace",
+          "line": 103,
+          "type": "constant"
+        },
+        {
+          "name": "horoscopeLib",
+          "line": 116,
+          "type": "constant"
+        },
+        {
+          "name": "BirthPlaceSearchUnavailableError",
+          "line": 123,
+          "type": "class"
+        },
+        {
+          "name": "LocalFixturePlace",
+          "line": 130,
+          "type": "type"
+        },
+        {
+          "name": "normalizeSearch",
+          "line": 176,
+          "type": "function"
+        },
+        {
+          "name": "resolveAstrologyReportGenerationConfig",
+          "line": 180,
+          "type": "function"
+        },
+        {
+          "name": "searchBirthPlaces",
+          "line": 189,
+          "type": "function"
+        },
+        {
+          "name": "query",
+          "line": 193,
+          "type": "constant"
+        },
+        {
+          "name": "provider",
+          "line": 194,
+          "type": "constant"
+        },
+        {
+          "name": "normalized",
+          "line": 204,
+          "type": "constant"
+        },
+        {
+          "name": "results",
+          "line": 205,
+          "type": "constant"
+        },
+        {
+          "name": "buildAstrologyEngineUnavailableResult",
+          "line": 219,
+          "type": "function"
+        },
+        {
+          "name": "request",
+          "line": 223,
+          "type": "constant"
+        },
+        {
+          "name": "missingEngine",
+          "line": 224,
+          "type": "constant"
+        },
+        {
+          "name": "buildReportWriterUnavailableResult",
+          "line": 256,
+          "type": "function"
+        },
+        {
+          "name": "request",
+          "line": 257,
+          "type": "constant"
+        },
+        {
+          "name": "horoscopeBodyMap",
+          "line": 302,
+          "type": "constant"
+        },
+        {
+          "name": "round",
+          "line": 316,
+          "type": "function"
+        },
+        {
+          "name": "factor",
+          "line": 317,
+          "type": "constant"
+        },
+        {
+          "name": "normalizeDegrees",
+          "line": 321,
+          "type": "function"
+        },
+        {
+          "name": "signForLongitude",
+          "line": 325,
+          "type": "function"
+        },
+        {
+          "name": "pointFor",
+          "line": 329,
+          "type": "function"
+        },
+        {
+          "name": "normalized",
+          "line": 330,
+          "type": "constant"
+        },
+        {
+          "name": "sign",
+          "line": 331,
+          "type": "constant"
+        },
+        {
+          "name": "toLocalBirthTime",
+          "line": 340,
+          "type": "function"
+        },
+        {
+          "name": "hour",
+          "line": 342,
+          "type": "constant"
+        },
+        {
+          "name": "minute",
+          "line": 343,
+          "type": "constant"
+        },
+        {
+          "name": "buildOrigin",
+          "line": 350,
+          "type": "function"
+        },
+        {
+          "name": "pointFromHoroscope",
+          "line": 365,
+          "type": "function"
+        },
+        {
+          "name": "longitude",
+          "line": 366,
+          "type": "constant"
+        },
+        {
+          "name": "buildChartSignature",
+          "line": 375,
+          "type": "function"
+        },
+        {
+          "name": "horoscope",
+          "line": 376,
+          "type": "constant"
+        },
+        {
+          "name": "points",
+          "line": 386,
+          "type": "constant"
+        },
+        {
+          "name": "point",
+          "line": 387,
+          "type": "constant"
+        },
+        {
+          "name": "parsed",
+          "line": 389,
+          "type": "constant"
+        },
+        {
+          "name": "sun",
+          "line": 392,
+          "type": "constant"
+        },
+        {
+          "name": "moon",
+          "line": 393,
+          "type": "constant"
+        },
+        {
+          "name": "hasAscendantInputs",
+          "line": 398,
+          "type": "constant"
+        },
+        {
+          "name": "ascendant",
+          "line": 402,
+          "type": "constant"
+        },
+        {
+          "name": "formatPoint",
+          "line": 414,
+          "type": "function"
+        },
+        {
+          "name": "houseText",
+          "line": 415,
+          "type": "constant"
+        },
+        {
+          "name": "retrogradeText",
+          "line": 416,
+          "type": "constant"
+        },
+        {
+          "name": "writeDeterministicCoreReport",
+          "line": 420,
+          "type": "function"
+        },
+        {
+          "name": "sunSign",
+          "line": 422,
+          "type": "constant"
+        },
+        {
+          "name": "moonSign",
+          "line": 423,
+          "type": "constant"
+        },
+        {
+          "name": "subject",
+          "line": 424,
+          "type": "constant"
+        },
+        {
+          "name": "publicReportId",
+          "line": 425,
+          "type": "constant"
+        },
+        {
+          "name": "risingText",
+          "line": 426,
+          "type": "constant"
+        },
+        {
+          "name": "headline",
+          "line": 427,
+          "type": "constant"
+        },
+        {
+          "name": "houseText",
+          "line": 428,
+          "type": "constant"
+        },
+        {
+          "name": "questionText",
+          "line": 431,
+          "type": "constant"
+        },
+        {
+          "name": "intentText",
+          "line": 434,
+          "type": "constant"
+        },
+        {
+          "name": "summary",
+          "line": 436,
+          "type": "constant"
+        },
+        {
+          "name": "buildLocalChartRoutineResult",
+          "line": 487,
+          "type": "function"
+        },
+        {
+          "name": "request",
+          "line": 488,
+          "type": "constant"
+        },
+        {
+          "name": "chartSignature",
+          "line": 489,
+          "type": "constant"
+        },
+        {
+          "name": "draft",
+          "line": 491,
+          "type": "constant"
+        },
+        {
+          "name": "buildAstrologyReportResult",
+          "line": 536,
+          "type": "function"
+        },
+        {
+          "name": "request",
+          "line": 537,
+          "type": "constant"
+        },
+        {
+          "name": "config",
+          "line": 538,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "circular-natal-horoscope-js"
+      ],
+      "exports": [
+        "ASTRA_ASTROLOGY_REPORT_ADAPTER",
+        "ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION",
+        "ASTRA_CHART_ROUTINE",
+        "ASTRA_DEFAULT_HOUSE_SYSTEM",
+        "ASTRA_DEFAULT_ZODIAC_MODE",
+        "ASTRA_EPHEMERIS_ENGINE_ENV",
+        "ASTRA_PLACE_SEARCH_PROVIDER_ENV",
+        "ASTRA_REPORT_WRITER_ENV",
+        "AstrologyReportGenerationConfig",
+        "BirthPlaceSearchUnavailableError",
+        "LOCAL_CHART_ROUTINE_ENGINE",
+        "LOCAL_DETERMINISTIC_REPORT_WRITER",
+        "buildAstrologyEngineUnavailableResult",
+        "buildAstrologyReportResult",
+        "resolveAstrologyReportGenerationConfig",
+        "searchBirthPlaces"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 339.3,
+      "importance_bucket": "other"
+    },
     {
       "file": "packages/db/src/repositories.ts",
       "lang": "typescript",
@@ -394,391 +856,6 @@
       "dependency_in": 1,
       "dependency_out": 2,
       "importance_weight": 323.27,
-      "importance_bucket": "other"
-    },
-    {
-      "file": "packages/astrology/src/index.ts",
-      "lang": "typescript",
-      "size": 14643,
-      "lines": 458,
-      "estimated_tokens": 3661,
-      "symbols": [
-        {
-          "name": "AstrologyReportRequest",
-          "line": 2,
-          "type": "type"
-        },
-        {
-          "name": "BirthPlaceSearchQuery",
-          "line": 3,
-          "type": "type"
-        },
-        {
-          "name": "BirthPlaceSearchResponse",
-          "line": 4,
-          "type": "type"
-        },
-        {
-          "name": "RecordAstrologyReportResult",
-          "line": 5,
-          "type": "type"
-        },
-        {
-          "name": "ASTRA_ASTROLOGY_REPORT_ADAPTER",
-          "line": 13,
-          "type": "constant"
-        },
-        {
-          "name": "ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION",
-          "line": 14,
-          "type": "constant"
-        },
-        {
-          "name": "ASTRA_EPHEMERIS_ENGINE_ENV",
-          "line": 15,
-          "type": "constant"
-        },
-        {
-          "name": "ASTRA_PLACE_SEARCH_PROVIDER_ENV",
-          "line": 16,
-          "type": "constant"
-        },
-        {
-          "name": "LOCAL_CHART_ROUTINE_ENGINE",
-          "line": 17,
-          "type": "constant"
-        },
-        {
-          "name": "ASTRA_CHART_ROUTINE",
-          "line": 18,
-          "type": "constant"
-        },
-        {
-          "name": "ASTRA_DEFAULT_ZODIAC_MODE",
-          "line": 19,
-          "type": "constant"
-        },
-        {
-          "name": "ASTRA_DEFAULT_HOUSE_SYSTEM",
-          "line": 20,
-          "type": "constant"
-        },
-        {
-          "name": "AstrologyReportGenerationConfig",
-          "line": 22,
-          "type": "type"
-        },
-        {
-          "name": "ZodiacSign",
-          "line": 26,
-          "type": "type"
-        },
-        {
-          "name": "EphemerisPoint",
-          "line": 32,
-          "type": "type"
-        },
-        {
-          "name": "ChartSignature",
-          "line": 41,
-          "type": "type"
-        },
-        {
-          "name": "HoroscopeCtor",
-          "line": 50,
-          "type": "type"
-        },
-        {
-          "name": "OriginCtor",
-          "line": 62,
-          "type": "type"
-        },
-        {
-          "name": "OriginInstance",
-          "line": 74,
-          "type": "type"
-        },
-        {
-          "name": "HoroscopePoint",
-          "line": 76,
-          "type": "type"
-        },
-        {
-          "name": "HoroscopeLike",
-          "line": 88,
-          "type": "type"
-        },
-        {
-          "name": "horoscopeNamespace",
-          "line": 93,
-          "type": "constant"
-        },
-        {
-          "name": "horoscopeLib",
-          "line": 106,
-          "type": "constant"
-        },
-        {
-          "name": "BirthPlaceSearchUnavailableError",
-          "line": 113,
-          "type": "class"
-        },
-        {
-          "name": "LocalFixturePlace",
-          "line": 120,
-          "type": "type"
-        },
-        {
-          "name": "normalizeSearch",
-          "line": 166,
-          "type": "function"
-        },
-        {
-          "name": "resolveAstrologyReportGenerationConfig",
-          "line": 170,
-          "type": "function"
-        },
-        {
-          "name": "searchBirthPlaces",
-          "line": 178,
-          "type": "function"
-        },
-        {
-          "name": "query",
-          "line": 182,
-          "type": "constant"
-        },
-        {
-          "name": "provider",
-          "line": 183,
-          "type": "constant"
-        },
-        {
-          "name": "normalized",
-          "line": 193,
-          "type": "constant"
-        },
-        {
-          "name": "results",
-          "line": 194,
-          "type": "constant"
-        },
-        {
-          "name": "buildAstrologyEngineUnavailableResult",
-          "line": 208,
-          "type": "function"
-        },
-        {
-          "name": "request",
-          "line": 212,
-          "type": "constant"
-        },
-        {
-          "name": "missingEngine",
-          "line": 213,
-          "type": "constant"
-        },
-        {
-          "name": "horoscopeBodyMap",
-          "line": 260,
-          "type": "constant"
-        },
-        {
-          "name": "round",
-          "line": 274,
-          "type": "function"
-        },
-        {
-          "name": "factor",
-          "line": 275,
-          "type": "constant"
-        },
-        {
-          "name": "normalizeDegrees",
-          "line": 279,
-          "type": "function"
-        },
-        {
-          "name": "signForLongitude",
-          "line": 283,
-          "type": "function"
-        },
-        {
-          "name": "pointFor",
-          "line": 287,
-          "type": "function"
-        },
-        {
-          "name": "normalized",
-          "line": 288,
-          "type": "constant"
-        },
-        {
-          "name": "sign",
-          "line": 289,
-          "type": "constant"
-        },
-        {
-          "name": "toLocalBirthTime",
-          "line": 298,
-          "type": "function"
-        },
-        {
-          "name": "hour",
-          "line": 300,
-          "type": "constant"
-        },
-        {
-          "name": "minute",
-          "line": 301,
-          "type": "constant"
-        },
-        {
-          "name": "buildOrigin",
-          "line": 308,
-          "type": "function"
-        },
-        {
-          "name": "pointFromHoroscope",
-          "line": 323,
-          "type": "function"
-        },
-        {
-          "name": "longitude",
-          "line": 324,
-          "type": "constant"
-        },
-        {
-          "name": "buildChartSignature",
-          "line": 333,
-          "type": "function"
-        },
-        {
-          "name": "horoscope",
-          "line": 334,
-          "type": "constant"
-        },
-        {
-          "name": "points",
-          "line": 344,
-          "type": "constant"
-        },
-        {
-          "name": "point",
-          "line": 345,
-          "type": "constant"
-        },
-        {
-          "name": "parsed",
-          "line": 347,
-          "type": "constant"
-        },
-        {
-          "name": "sun",
-          "line": 350,
-          "type": "constant"
-        },
-        {
-          "name": "moon",
-          "line": 351,
-          "type": "constant"
-        },
-        {
-          "name": "hasAscendantInputs",
-          "line": 356,
-          "type": "constant"
-        },
-        {
-          "name": "ascendant",
-          "line": 360,
-          "type": "constant"
-        },
-        {
-          "name": "buildLocalChartRoutineResult",
-          "line": 372,
-          "type": "function"
-        },
-        {
-          "name": "request",
-          "line": 373,
-          "type": "constant"
-        },
-        {
-          "name": "chartSignature",
-          "line": 374,
-          "type": "constant"
-        },
-        {
-          "name": "sunSign",
-          "line": 376,
-          "type": "constant"
-        },
-        {
-          "name": "subject",
-          "line": 377,
-          "type": "constant"
-        },
-        {
-          "name": "publicReportId",
-          "line": 378,
-          "type": "constant"
-        },
-        {
-          "name": "risingText",
-          "line": 379,
-          "type": "constant"
-        },
-        {
-          "name": "houseText",
-          "line": 380,
-          "type": "constant"
-        },
-        {
-          "name": "summary",
-          "line": 382,
-          "type": "constant"
-        },
-        {
-          "name": "buildAstrologyReportResult",
-          "line": 450,
-          "type": "function"
-        },
-        {
-          "name": "request",
-          "line": 451,
-          "type": "constant"
-        },
-        {
-          "name": "config",
-          "line": 452,
-          "type": "constant"
-        }
-      ],
-      "imports": [
-        "circular-natal-horoscope-js"
-      ],
-      "exports": [
-        "ASTRA_ASTROLOGY_REPORT_ADAPTER",
-        "ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION",
-        "ASTRA_CHART_ROUTINE",
-        "ASTRA_DEFAULT_HOUSE_SYSTEM",
-        "ASTRA_DEFAULT_ZODIAC_MODE",
-        "ASTRA_EPHEMERIS_ENGINE_ENV",
-        "ASTRA_PLACE_SEARCH_PROVIDER_ENV",
-        "AstrologyReportGenerationConfig",
-        "BirthPlaceSearchUnavailableError",
-        "LOCAL_CHART_ROUTINE_ENGINE",
-        "buildAstrologyEngineUnavailableResult",
-        "buildAstrologyReportResult",
-        "resolveAstrologyReportGenerationConfig",
-        "searchBirthPlaces"
-      ],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 281.32,
       "importance_bucket": "other"
     },
     {
@@ -2313,9 +2390,9 @@
     {
       "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
       "lang": "typescript",
-      "size": 10865,
-      "lines": 224,
-      "estimated_tokens": 2717,
+      "size": 11093,
+      "lines": 226,
+      "estimated_tokens": 2774,
       "symbols": [
         {
           "name": "JsonObject",
@@ -2434,7 +2511,7 @@
         },
         {
           "name": "generatedSignals",
-          "line": 220,
+          "line": 222,
           "type": "constant"
         }
       ],
@@ -3717,9 +3794,9 @@
     {
       "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
       "lang": "markdown",
-      "size": 14292,
-      "lines": 125,
-      "estimated_tokens": 3573,
+      "size": 14747,
+      "lines": 127,
+      "estimated_tokens": 3687,
       "symbols": [
         {
           "name": "Astra Clean Start Foundation Progress",
@@ -3763,7 +3840,7 @@
         },
         {
           "name": "Follow-Ups",
-          "line": 117,
+          "line": 118,
           "type": "heading"
         }
       ],
@@ -4004,9 +4081,9 @@
     {
       "file": "docs/architecture/clean-start-foundation.md",
       "lang": "markdown",
-      "size": 12988,
+      "size": 13177,
       "lines": 129,
-      "estimated_tokens": 3247,
+      "estimated_tokens": 3295,
       "symbols": [
         {
           "name": "Clean Start Foundation",
@@ -4070,15 +4147,15 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 31.33,
+      "importance_weight": 31.32,
       "importance_bucket": "other"
     },
     {
       "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
       "lang": "markdown",
-      "size": 12541,
-      "lines": 116,
-      "estimated_tokens": 3136,
+      "size": 13021,
+      "lines": 118,
+      "estimated_tokens": 3256,
       "symbols": [
         {
           "name": "Next Thread Handoff: Lean Rebuilt Stream and Astrology Reports",
@@ -6950,7 +7027,7 @@
     "ascendant": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 360,
+        "line": 402,
         "type": "constant"
       }
     ],
@@ -7027,21 +7104,21 @@
     "ASTRA_CHART_ROUTINE": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 18,
+        "line": 20,
         "type": "constant"
       }
     ],
     "ASTRA_DEFAULT_HOUSE_SYSTEM": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 20,
+        "line": 22,
         "type": "constant"
       }
     ],
     "ASTRA_DEFAULT_ZODIAC_MODE": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 19,
+        "line": 21,
         "type": "constant"
       }
     ],
@@ -7053,6 +7130,13 @@
       }
     ],
     "ASTRA_PLACE_SEARCH_PROVIDER_ENV": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 17,
+        "type": "constant"
+      }
+    ],
+    "ASTRA_REPORT_WRITER_ENV": [
       {
         "file": "packages/astrology/src/index.ts",
         "line": 16,
@@ -7109,7 +7193,7 @@
     "AstrologyReportGenerationConfig": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 22,
+        "line": 24,
         "type": "type"
       }
     ],
@@ -7417,7 +7501,7 @@
     "BirthPlaceSearchUnavailableError": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 113,
+        "line": 123,
         "type": "class"
       }
     ],
@@ -7452,14 +7536,14 @@
     "buildAstrologyEngineUnavailableResult": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 208,
+        "line": 219,
         "type": "function"
       }
     ],
     "buildAstrologyReportResult": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 450,
+        "line": 536,
         "type": "function"
       }
     ],
@@ -7487,21 +7571,28 @@
     "buildChartSignature": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 333,
+        "line": 375,
         "type": "function"
       }
     ],
     "buildLocalChartRoutineResult": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 372,
+        "line": 487,
         "type": "function"
       }
     ],
     "buildOrigin": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 308,
+        "line": 350,
+        "type": "function"
+      }
+    ],
+    "buildReportWriterUnavailableResult": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 256,
         "type": "function"
       }
     ],
@@ -7770,14 +7861,14 @@
     "chartSignature": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 374,
+        "line": 489,
         "type": "constant"
       }
     ],
     "ChartSignature": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 41,
+        "line": 44,
         "type": "type"
       }
     ],
@@ -8022,7 +8113,7 @@
     "config": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 452,
+        "line": 538,
         "type": "constant"
       }
     ],
@@ -8355,6 +8446,13 @@
         "type": "constant"
       }
     ],
+    "draft": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 491,
+        "type": "constant"
+      }
+    ],
     "dynamic": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
@@ -8387,7 +8485,7 @@
     "EphemerisPoint": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 32,
+        "line": 35,
         "type": "type"
       }
     ],
@@ -8415,7 +8513,7 @@
     "factor": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 275,
+        "line": 317,
         "type": "constant"
       }
     ],
@@ -8469,13 +8567,20 @@
     "Follow-Ups": [
       {
         "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
-        "line": 117,
+        "line": 118,
         "type": "heading"
       },
       {
         "file": "akashic/templates/mission-template.md",
         "line": 30,
         "type": "heading"
+      }
+    ],
+    "formatPoint": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 414,
+        "type": "function"
       }
     ],
     "FormState": [
@@ -8566,7 +8671,7 @@
     "generatedSignals": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 220,
+        "line": 222,
         "type": "constant"
       }
     ],
@@ -8782,7 +8887,7 @@
     "hasAscendantInputs": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 356,
+        "line": 398,
         "type": "constant"
       }
     ],
@@ -8814,6 +8919,13 @@
         "type": "constant"
       }
     ],
+    "headline": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 427,
+        "type": "constant"
+      }
+    ],
     "HomePage": [
       {
         "file": "apps/astra-web/app/page.tsx",
@@ -8824,63 +8936,68 @@
     "horoscope": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 334,
+        "line": 376,
         "type": "constant"
       }
     ],
     "horoscopeBodyMap": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 260,
+        "line": 302,
         "type": "constant"
       }
     ],
     "HoroscopeCtor": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 50,
+        "line": 60,
         "type": "type"
       }
     ],
     "horoscopeLib": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 106,
+        "line": 116,
         "type": "constant"
       }
     ],
     "HoroscopeLike": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 88,
+        "line": 98,
         "type": "type"
       }
     ],
     "horoscopeNamespace": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 93,
+        "line": 103,
         "type": "constant"
       }
     ],
     "HoroscopePoint": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 76,
+        "line": 86,
         "type": "type"
       }
     ],
     "hour": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 300,
+        "line": 342,
         "type": "constant"
       }
     ],
     "houseText": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 380,
+        "line": 415,
+        "type": "constant"
+      },
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 428,
         "type": "constant"
       }
     ],
@@ -8956,6 +9073,13 @@
         "file": "apps/composer-web/src/voices/validateVoiceCard.ts",
         "line": 14,
         "type": "function"
+      }
+    ],
+    "intentText": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 434,
+        "type": "constant"
       }
     ],
     "Internal machine tokens must fail hard when missing": [
@@ -9183,14 +9307,21 @@
     "LOCAL_CHART_ROUTINE_ENGINE": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 17,
+        "line": 18,
+        "type": "constant"
+      }
+    ],
+    "LOCAL_DETERMINISTIC_REPORT_WRITER": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 19,
         "type": "constant"
       }
     ],
     "LocalFixturePlace": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 120,
+        "line": 130,
         "type": "type"
       }
     ],
@@ -9211,7 +9342,7 @@
     "longitude": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 324,
+        "line": 366,
         "type": "constant"
       }
     ],
@@ -9282,14 +9413,14 @@
     "minute": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 301,
+        "line": 343,
         "type": "constant"
       }
     ],
     "missingEngine": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 213,
+        "line": 224,
         "type": "constant"
       }
     ],
@@ -9315,7 +9446,14 @@
     "moon": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 351,
+        "line": 393,
+        "type": "constant"
+      }
+    ],
+    "moonSign": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 423,
         "type": "constant"
       }
     ],
@@ -9404,26 +9542,26 @@
     "normalized": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 193,
+        "line": 204,
         "type": "constant"
       },
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 288,
+        "line": 330,
         "type": "constant"
       }
     ],
     "normalizeDegrees": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 279,
+        "line": 321,
         "type": "function"
       }
     ],
     "normalizeSearch": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 166,
+        "line": 176,
         "type": "function"
       }
     ],
@@ -9495,14 +9633,14 @@
     "OriginCtor": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 62,
+        "line": 72,
         "type": "type"
       }
     ],
     "OriginInstance": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 74,
+        "line": 84,
         "type": "type"
       }
     ],
@@ -9638,7 +9776,7 @@
       },
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 347,
+        "line": 389,
         "type": "constant"
       },
       {
@@ -9684,28 +9822,28 @@
     "point": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 345,
+        "line": 387,
         "type": "constant"
       }
     ],
     "pointFor": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 287,
+        "line": 329,
         "type": "function"
       }
     ],
     "pointFromHoroscope": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 323,
+        "line": 365,
         "type": "function"
       }
     ],
     "points": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 344,
+        "line": 386,
         "type": "constant"
       }
     ],
@@ -9873,14 +10011,14 @@
     "provider": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 183,
+        "line": 194,
         "type": "constant"
       }
     ],
     "publicReportId": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 378,
+        "line": 425,
         "type": "constant"
       }
     ],
@@ -9941,7 +10079,7 @@
       },
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 182,
+        "line": 193,
         "type": "constant"
       }
     ],
@@ -9949,6 +10087,13 @@
       {
         "file": "packages/db/src/client.ts",
         "line": 6,
+        "type": "constant"
+      }
+    ],
+    "questionText": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 431,
         "type": "constant"
       }
     ],
@@ -10119,6 +10264,13 @@
         "type": "constant"
       }
     ],
+    "ReportDraft": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 58,
+        "type": "type"
+      }
+    ],
     "reportPayload": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
@@ -10152,20 +10304,32 @@
         "type": "constant"
       }
     ],
+    "ReportWriterInput": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 53,
+        "type": "type"
+      }
+    ],
     "request": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 212,
+        "line": 223,
         "type": "constant"
       },
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 373,
+        "line": 257,
         "type": "constant"
       },
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 451,
+        "line": 488,
+        "type": "constant"
+      },
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 537,
         "type": "constant"
       },
       {
@@ -10237,7 +10401,7 @@
     "resolveAstrologyReportGenerationConfig": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 170,
+        "line": 180,
         "type": "function"
       }
     ],
@@ -10319,7 +10483,14 @@
       },
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 194,
+        "line": 205,
+        "type": "constant"
+      }
+    ],
+    "retrogradeText": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 416,
         "type": "constant"
       }
     ],
@@ -10340,7 +10511,7 @@
     "risingText": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 379,
+        "line": 426,
         "type": "constant"
       }
     ],
@@ -10361,7 +10532,7 @@
     "round": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 274,
+        "line": 316,
         "type": "function"
       }
     ],
@@ -10423,7 +10594,7 @@
     "searchBirthPlaces": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 178,
+        "line": 189,
         "type": "function"
       }
     ],
@@ -10554,7 +10725,7 @@
     "sign": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 289,
+        "line": 331,
         "type": "constant"
       },
       {
@@ -10573,7 +10744,7 @@
     "signForLongitude": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 283,
+        "line": 325,
         "type": "function"
       }
     ],
@@ -10796,7 +10967,7 @@
     "subject": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 377,
+        "line": 424,
         "type": "constant"
       }
     ],
@@ -10817,21 +10988,21 @@
     "summary": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 382,
+        "line": 436,
         "type": "constant"
       }
     ],
     "sun": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 350,
+        "line": 392,
         "type": "constant"
       }
     ],
     "sunSign": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 376,
+        "line": 422,
         "type": "constant"
       },
       {
@@ -10963,7 +11134,7 @@
     "toLocalBirthTime": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 298,
+        "line": 340,
         "type": "function"
       }
     ],
@@ -11268,10 +11439,17 @@
         "type": "function"
       }
     ],
+    "writeDeterministicCoreReport": [
+      {
+        "file": "packages/astrology/src/index.ts",
+        "line": 420,
+        "type": "function"
+      }
+    ],
     "ZodiacSign": [
       {
         "file": "packages/astrology/src/index.ts",
-        "line": 26,
+        "line": 29,
         "type": "type"
       }
     ]
@@ -11349,6 +11527,23 @@
     },
     "ranked_files": [
       {
+        "file": "packages/astrology/src/index.ts",
+        "weight": 339.3,
+        "bucket": "other",
+        "estimated_tokens": 4588,
+        "lines": 547,
+        "symbols": 85,
+        "symbol_type_counts": {
+          "class": 1,
+          "constant": 51,
+          "function": 17,
+          "type": 16
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "packages/db/src/repositories.ts",
         "weight": 323.27,
         "bucket": "other",
@@ -11362,23 +11557,6 @@
         },
         "dependency_in": 1,
         "dependency_out": 2,
-        "route_count": 0
-      },
-      {
-        "file": "packages/astrology/src/index.ts",
-        "weight": 281.32,
-        "bucket": "other",
-        "estimated_tokens": 3661,
-        "lines": 458,
-        "symbols": 70,
-        "symbol_type_counts": {
-          "class": 1,
-          "constant": 41,
-          "function": 14,
-          "type": 14
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -11534,8 +11712,8 @@
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
         "weight": 85.34,
         "bucket": "other",
-        "estimated_tokens": 2717,
-        "lines": 224,
+        "estimated_tokens": 2774,
+        "lines": 226,
         "symbols": 24,
         "symbol_type_counts": {
           "constant": 21,
@@ -11846,8 +12024,8 @@
         "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
         "weight": 33.32,
         "bucket": "akashic",
-        "estimated_tokens": 3573,
-        "lines": 125,
+        "estimated_tokens": 3687,
+        "lines": 127,
         "symbols": 9,
         "symbol_type_counts": {
           "heading": 9
@@ -11917,9 +12095,9 @@
       },
       {
         "file": "docs/architecture/clean-start-foundation.md",
-        "weight": 31.33,
+        "weight": 31.32,
         "bucket": "other",
-        "estimated_tokens": 3247,
+        "estimated_tokens": 3295,
         "lines": 129,
         "symbols": 9,
         "symbol_type_counts": {
@@ -11933,8 +12111,8 @@
         "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
         "weight": 30.33,
         "bucket": "akashic",
-        "estimated_tokens": 3136,
-        "lines": 116,
+        "estimated_tokens": 3256,
+        "lines": 118,
         "symbols": 8,
         "symbol_type_counts": {
           "heading": 8
@@ -12951,12 +13129,30 @@
       {
         "name": "top-weighted",
         "budget_tokens": 32000,
-        "estimated_tokens": 32471,
-        "file_count": 15,
-        "symbol_count": 435,
+        "estimated_tokens": 32446,
+        "file_count": 13,
+        "symbol_count": 431,
         "files": [
           {
             "rank": 1,
+            "file": "packages/astrology/src/index.ts",
+            "weight": 339.3,
+            "bucket": "other",
+            "estimated_tokens": 4588,
+            "lines": 547,
+            "symbols": 85,
+            "symbol_type_counts": {
+              "class": 1,
+              "constant": 51,
+              "function": 17,
+              "type": 16
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 2,
             "file": "packages/db/src/repositories.ts",
             "weight": 323.27,
             "bucket": "other",
@@ -12970,24 +13166,6 @@
             },
             "dependency_in": 1,
             "dependency_out": 2,
-            "route_count": 0
-          },
-          {
-            "rank": 2,
-            "file": "packages/astrology/src/index.ts",
-            "weight": 281.32,
-            "bucket": "other",
-            "estimated_tokens": 3661,
-            "lines": 458,
-            "symbols": 70,
-            "symbol_type_counts": {
-              "class": 1,
-              "constant": 41,
-              "function": 14,
-              "type": 14
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
             "route_count": 0
           },
           {
@@ -13153,8 +13331,8 @@
             "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
             "weight": 85.34,
             "bucket": "other",
-            "estimated_tokens": 2717,
-            "lines": 224,
+            "estimated_tokens": 2774,
+            "lines": 226,
             "symbols": 24,
             "symbol_type_counts": {
               "constant": 21,
@@ -13182,53 +13360,36 @@
             "dependency_in": 1,
             "dependency_out": 1,
             "route_count": 0
-          },
-          {
-            "rank": 14,
-            "file": "apps/astra-web/app/api/places/search/route.ts",
-            "weight": 80.92,
-            "bucket": "app/api",
-            "estimated_tokens": 356,
-            "lines": 43,
-            "symbols": 6,
-            "symbol_type_counts": {
-              "component": 1,
-              "constant": 3,
-              "function": 1,
-              "route_handler": 1
-            },
-            "dependency_in": 0,
-            "dependency_out": 1,
-            "route_count": 1
-          },
-          {
-            "rank": 15,
-            "file": "apps/composer-web/src/voices/validateVoiceCard.ts",
-            "weight": 70.45,
-            "bucket": "other",
-            "estimated_tokens": 653,
-            "lines": 83,
-            "symbols": 13,
-            "symbol_type_counts": {
-              "constant": 5,
-              "function": 5,
-              "type": 3
-            },
-            "dependency_in": 2,
-            "dependency_out": 1,
-            "route_count": 0
           }
         ]
       },
       {
         "name": "top-weighted",
         "budget_tokens": 64000,
-        "estimated_tokens": 64052,
-        "file_count": 59,
-        "symbol_count": 703,
+        "estimated_tokens": 64810,
+        "file_count": 57,
+        "symbol_count": 710,
         "files": [
           {
             "rank": 1,
+            "file": "packages/astrology/src/index.ts",
+            "weight": 339.3,
+            "bucket": "other",
+            "estimated_tokens": 4588,
+            "lines": 547,
+            "symbols": 85,
+            "symbol_type_counts": {
+              "class": 1,
+              "constant": 51,
+              "function": 17,
+              "type": 16
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 2,
             "file": "packages/db/src/repositories.ts",
             "weight": 323.27,
             "bucket": "other",
@@ -13242,24 +13403,6 @@
             },
             "dependency_in": 1,
             "dependency_out": 2,
-            "route_count": 0
-          },
-          {
-            "rank": 2,
-            "file": "packages/astrology/src/index.ts",
-            "weight": 281.32,
-            "bucket": "other",
-            "estimated_tokens": 3661,
-            "lines": 458,
-            "symbols": 70,
-            "symbol_type_counts": {
-              "class": 1,
-              "constant": 41,
-              "function": 14,
-              "type": 14
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
             "route_count": 0
           },
           {
@@ -13425,8 +13568,8 @@
             "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
             "weight": 85.34,
             "bucket": "other",
-            "estimated_tokens": 2717,
-            "lines": 224,
+            "estimated_tokens": 2774,
+            "lines": 226,
             "symbols": 24,
             "symbol_type_counts": {
               "constant": 21,
@@ -13757,8 +13900,8 @@
             "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
             "weight": 33.32,
             "bucket": "akashic",
-            "estimated_tokens": 3573,
-            "lines": 125,
+            "estimated_tokens": 3687,
+            "lines": 127,
             "symbols": 9,
             "symbol_type_counts": {
               "heading": 9
@@ -13833,9 +13976,9 @@
           {
             "rank": 37,
             "file": "docs/architecture/clean-start-foundation.md",
-            "weight": 31.33,
+            "weight": 31.32,
             "bucket": "other",
-            "estimated_tokens": 3247,
+            "estimated_tokens": 3295,
             "lines": 129,
             "symbols": 9,
             "symbol_type_counts": {
@@ -13850,8 +13993,8 @@
             "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
             "weight": 30.33,
             "bucket": "akashic",
-            "estimated_tokens": 3136,
-            "lines": 116,
+            "estimated_tokens": 3256,
+            "lines": 118,
             "symbols": 8,
             "symbol_type_counts": {
               "heading": 8
@@ -14150,48 +14293,36 @@
             "dependency_in": 0,
             "dependency_out": 4,
             "route_count": 0
-          },
-          {
-            "rank": 58,
-            "file": "akashic/templates/warning-template.md",
-            "weight": 17.37,
-            "bucket": "akashic",
-            "estimated_tokens": 82,
-            "lines": 20,
-            "symbols": 4,
-            "symbol_type_counts": {
-              "heading": 4
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
-            "route_count": 0
-          },
-          {
-            "rank": 59,
-            "file": "akashic/warnings/browser-bridge-networkidle-wait-is-not-reliable.md",
-            "weight": 17.32,
-            "bucket": "akashic",
-            "estimated_tokens": 426,
-            "lines": 22,
-            "symbols": 4,
-            "symbol_type_counts": {
-              "heading": 4
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
-            "route_count": 0
           }
         ]
       },
       {
         "name": "top-weighted",
         "budget_tokens": 128000,
-        "estimated_tokens": 171087,
+        "estimated_tokens": 172353,
         "file_count": 89,
-        "symbol_count": 744,
+        "symbol_count": 759,
         "files": [
           {
             "rank": 1,
+            "file": "packages/astrology/src/index.ts",
+            "weight": 339.3,
+            "bucket": "other",
+            "estimated_tokens": 4588,
+            "lines": 547,
+            "symbols": 85,
+            "symbol_type_counts": {
+              "class": 1,
+              "constant": 51,
+              "function": 17,
+              "type": 16
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 2,
             "file": "packages/db/src/repositories.ts",
             "weight": 323.27,
             "bucket": "other",
@@ -14205,24 +14336,6 @@
             },
             "dependency_in": 1,
             "dependency_out": 2,
-            "route_count": 0
-          },
-          {
-            "rank": 2,
-            "file": "packages/astrology/src/index.ts",
-            "weight": 281.32,
-            "bucket": "other",
-            "estimated_tokens": 3661,
-            "lines": 458,
-            "symbols": 70,
-            "symbol_type_counts": {
-              "class": 1,
-              "constant": 41,
-              "function": 14,
-              "type": 14
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
             "route_count": 0
           },
           {
@@ -14388,8 +14501,8 @@
             "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
             "weight": 85.34,
             "bucket": "other",
-            "estimated_tokens": 2717,
-            "lines": 224,
+            "estimated_tokens": 2774,
+            "lines": 226,
             "symbols": 24,
             "symbol_type_counts": {
               "constant": 21,
@@ -14720,8 +14833,8 @@
             "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
             "weight": 33.32,
             "bucket": "akashic",
-            "estimated_tokens": 3573,
-            "lines": 125,
+            "estimated_tokens": 3687,
+            "lines": 127,
             "symbols": 9,
             "symbol_type_counts": {
               "heading": 9
@@ -14796,9 +14909,9 @@
           {
             "rank": 37,
             "file": "docs/architecture/clean-start-foundation.md",
-            "weight": 31.33,
+            "weight": 31.32,
             "bucket": "other",
-            "estimated_tokens": 3247,
+            "estimated_tokens": 3295,
             "lines": 129,
             "symbols": 9,
             "symbol_type_counts": {
@@ -14813,8 +14926,8 @@
             "file": "akashic/agent-inbox/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
             "weight": 30.33,
             "bucket": "akashic",
-            "estimated_tokens": 3136,
-            "lines": 116,
+            "estimated_tokens": 3256,
+            "lines": 118,
             "symbols": 8,
             "symbol_type_counts": {
               "heading": 8
@@ -15582,8 +15695,8 @@
     ],
     "coverage": {
       "files": 114,
-      "symbols": 744,
-      "total_estimated_tokens": 174239
+      "symbols": 759,
+      "total_estimated_tokens": 175505
     }
   }
 }

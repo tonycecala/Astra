@@ -13,14 +13,17 @@ import * as horoscopeModule from "circular-natal-horoscope-js";
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER = "astra-astrology-report-adapter";
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION = "0.1.0";
 export const ASTRA_EPHEMERIS_ENGINE_ENV = "ASTRA_EPHEMERIS_ENGINE";
+export const ASTRA_REPORT_WRITER_ENV = "ASTRA_REPORT_WRITER";
 export const ASTRA_PLACE_SEARCH_PROVIDER_ENV = "ASTRA_PLACE_SEARCH_PROVIDER";
 export const LOCAL_CHART_ROUTINE_ENGINE = "local-chart-routine";
+export const LOCAL_DETERMINISTIC_REPORT_WRITER = "local-deterministic-writer";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
 
 export type AstrologyReportGenerationConfig = {
   ephemerisEngine?: string;
+  reportWriter?: string;
 };
 
 type ZodiacSign = {
@@ -46,6 +49,13 @@ type ChartSignature = {
   houseSystem: typeof ASTRA_DEFAULT_HOUSE_SYSTEM;
   zodiacMode: typeof ASTRA_DEFAULT_ZODIAC_MODE;
 };
+
+type ReportWriterInput = {
+  request: AstrologyReportRequest;
+  chartSignature: ChartSignature;
+};
+
+type ReportDraft = Pick<RecordAstrologyReportResult, "summary" | "sections" | "publicSignal">;
 
 type HoroscopeCtor = {
   new (input: {
@@ -171,7 +181,8 @@ export function resolveAstrologyReportGenerationConfig(
   env: Record<string, string | undefined> = process.env
 ): AstrologyReportGenerationConfig {
   return {
-    ephemerisEngine: env[ASTRA_EPHEMERIS_ENGINE_ENV]?.trim() || undefined
+    ephemerisEngine: env[ASTRA_EPHEMERIS_ENGINE_ENV]?.trim() || undefined,
+    reportWriter: env[ASTRA_REPORT_WRITER_ENV]?.trim() || LOCAL_DETERMINISTIC_REPORT_WRITER
   };
 }
 
@@ -236,6 +247,37 @@ export function buildAstrologyEngineUnavailableResult(
         kind: "engine",
         label: "Astrology engine",
         summary: missingEngine,
+        boundary: "private"
+      }
+    ]
+  });
+}
+
+function buildReportWriterUnavailableResult(input: AstrologyReportRequest, writer: string): RecordAstrologyReportResult {
+  const request = astrologyReportRequestSchema.parse(input);
+
+  return recordAstrologyReportResultSchema.parse({
+    requestId: request.id,
+    userId: request.userId,
+    engine: ASTRA_ASTROLOGY_REPORT_ADAPTER,
+    engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
+    status: "failed",
+    error: `Report writer "${writer}" is not wired. Astra will not spend credits or call an LLM without an explicit writer route.`,
+    sections: [],
+    provenance: [
+      {
+        id: `${request.id}:birth-data`,
+        kind: "birth_data",
+        label: "Birth data",
+        summary: `Birth data was accepted for ${request.subjectName}, but report writing stopped before interpretation.`,
+        boundary: "private",
+        sourceId: request.id
+      },
+      {
+        id: `${request.id}:writer`,
+        kind: "manual",
+        label: "Report writer",
+        summary: `Unsupported writer: ${writer}.`,
         boundary: "private"
       }
     ]
@@ -369,17 +411,84 @@ function buildChartSignature(request: AstrologyReportRequest): ChartSignature {
   };
 }
 
-function buildLocalChartRoutineResult(input: AstrologyReportRequest): RecordAstrologyReportResult {
-  const request = astrologyReportRequestSchema.parse(input);
-  const chartSignature = buildChartSignature(request);
+function formatPoint(point: EphemerisPoint) {
+  const houseText = point.house ? `, house ${point.house}` : "";
+  const retrogradeText = point.retrograde ? ", retrograde" : "";
+  return `${point.body} ${point.degree} degrees ${point.sign}${houseText}${retrogradeText}`;
+}
+
+function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterInput): ReportDraft {
   const { sun, moon, ascendant, points } = chartSignature;
   const sunSign = signForLongitude(sun.longitude);
+  const moonSign = signForLongitude(moon.longitude);
   const subject = request.subjectName;
   const publicReportId = `${request.id}:public-signal`;
   const risingText = ascendant ? `, ${ascendant.sign} rising` : "";
-  const houseText = ascendant ? ` ${ASTRA_DEFAULT_HOUSE_SYSTEM} houses begin with ${ascendant.sign}.` : "";
+  const headline = `${sun.sign} Sun, ${moon.sign} Moon${risingText}`;
+  const houseText = ascendant
+    ? `${ASTRA_DEFAULT_HOUSE_SYSTEM} houses begin with ${ascendant.sign} as the first-house field.`
+    : "No timed Ascendant was supplied, so house language stays out of the public signature.";
+  const questionText = request.question
+    ? `The reading lens is the user's question: "${request.question}"`
+    : "The reading lens is the computed birth-data pattern because no optional question was supplied.";
+  const intentText = request.intent ? `Intent marker: ${request.intent}.` : "No optional intent marker was supplied.";
 
-  const summary = `${subject}'s core report is grounded in a ${sun.sign} Sun, ${moon.sign} Moon${risingText}.${houseText}`;
+  const summary = `${subject}'s core report is grounded in ${headline}. ${houseText}`;
+
+  return {
+    summary,
+    sections: [
+      {
+        id: `${request.id}:core-pattern`,
+        title: "Core pattern",
+        body: `${subject}'s report opens with a ${sun.sign} Sun and ${moon.sign} Moon. The Sun sits at ${sun.degree} degrees ${sun.sign}, giving the report a ${sunSign.element} and ${sunSign.mode} center of gravity. The Moon sits at ${moon.degree} degrees ${moon.sign}, giving the emotional weather a ${moonSign.element} and ${moonSign.mode} rhythm.`,
+        emphasis: "primary"
+      },
+      {
+        id: `${request.id}:rising-houses`,
+        title: "Rising and houses",
+        body: ascendant
+          ? `${subject}'s Ascendant is ${formatPoint(ascendant)}. In Whole Sign houses, the report treats ${ascendant.sign} as the first house and keeps house language tied to the timed chart instead of decorative copy.`
+          : "This report does not publish rising or house language because the request does not include enough timed and located birth data.",
+        emphasis: ascendant ? "primary" : "supporting"
+      },
+      {
+        id: `${request.id}:planetary-frame`,
+        title: "Planetary frame",
+        body: `The non-LLM writer receives a structured chart frame: ${points.map(formatPoint).join("; ")}. This gives later prose and Composer signals a deterministic evidence trail before any model-backed writer is introduced.`,
+        emphasis: "supporting"
+      },
+      {
+        id: `${request.id}:reading-lens`,
+        title: "Reading lens",
+        body: `${questionText}. ${intentText} The deterministic writer keeps this as a private report constraint and exposes only the concise public signal to Composer.`,
+        emphasis: "practice"
+      },
+      {
+        id: `${request.id}:writer-handoff`,
+        title: "Writer handoff",
+        body: `This draft was produced by ${LOCAL_DETERMINISTIC_REPORT_WRITER}: no LLM call, no paid provider, no credit spend. It is intentionally structured so a lower-debug model route can be compared against the same chart signature later.`,
+        emphasis: "supporting"
+      }
+    ],
+    publicSignal: {
+      reportId: publicReportId,
+      requestId: request.id,
+      reportType: request.reportType,
+      headline,
+      summary,
+      tone: "grounded",
+      boundary: "public_signal",
+      provenanceSummary: `${ASTRA_CHART_ROUTINE}: ${ASTRA_DEFAULT_ZODIAC_MODE}, ${ASTRA_DEFAULT_HOUSE_SYSTEM}, ${LOCAL_DETERMINISTIC_REPORT_WRITER}, Sun ${sun.sign}, Moon ${moon.sign}${ascendant ? `, Rising ${ascendant.sign}` : ""}`
+    }
+  };
+}
+
+function buildLocalChartRoutineResult(input: AstrologyReportRequest): RecordAstrologyReportResult {
+  const request = astrologyReportRequestSchema.parse(input);
+  const chartSignature = buildChartSignature(request);
+  const { ascendant } = chartSignature;
+  const draft = writeDeterministicCoreReport({ request, chartSignature });
 
   return recordAstrologyReportResultSchema.parse({
     requestId: request.id,
@@ -387,29 +496,8 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest): RecordAstr
     engine: LOCAL_CHART_ROUTINE_ENGINE,
     engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
     status: "completed",
-    summary,
-    sections: [
-      {
-        id: `${request.id}:core-pattern`,
-        title: "Core pattern",
-        body: `${subject}'s Sun is at ${sun.degree} degrees ${sun.sign}, giving this report a ${sunSign.element} and ${sunSign.mode} center of gravity. The Moon is at ${moon.degree} degrees ${moon.sign}, anchoring the emotional signature in the same chart routine used by previous reports.${ascendant ? ` With ${ascendant.sign} rising, Whole Sign house language starts from a ${ascendant.sign} first house instead of making houses a decorative afterthought.` : ""}`,
-        emphasis: "primary"
-      },
-      {
-        id: `${request.id}:planetary-frame`,
-        title: "Planetary frame",
-        body: `The migrated chart routine calculated ecliptic longitudes for ${points.map((point) => `${point.body} in ${point.sign}`).join(", ")}. These positions are recorded as provenance-friendly evidence for later report writers and Composer signals.`,
-        emphasis: "supporting"
-      },
-      {
-        id: `${request.id}:practice`,
-        title: "Practice",
-        body: request.question
-          ? `Use the question "${request.question}" as the reading lens. Keep the first answer specific to the birth-data pattern before turning it into stream copy.`
-          : "Use the computed birth-data pattern as the reading lens before turning it into stream copy.",
-        emphasis: "practice"
-      }
-    ],
+    summary: draft.summary,
+    sections: draft.sections,
     provenance: [
       {
         id: `${request.id}:birth-data`,
@@ -427,6 +515,13 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest): RecordAstr
         boundary: "private"
       },
       {
+        id: `${request.id}:writer`,
+        kind: "manual",
+        label: "Report writer",
+        summary: `Wrote private sections and public signal with ${LOCAL_DETERMINISTIC_REPORT_WRITER}; no LLM provider, no paid route, no credit spend.`,
+        boundary: "private"
+      },
+      {
         id: `${request.id}:intent`,
         kind: "user_intent",
         label: "Report intent",
@@ -434,16 +529,7 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest): RecordAstr
         boundary: "private"
       }
     ],
-    publicSignal: {
-      reportId: publicReportId,
-      requestId: request.id,
-      reportType: request.reportType,
-      headline: `${sun.sign} Sun, ${moon.sign} Moon${ascendant ? `, ${ascendant.sign} rising` : ""}`,
-      summary,
-      tone: "grounded",
-      boundary: "public_signal",
-      provenanceSummary: `${ASTRA_CHART_ROUTINE}: ${ASTRA_DEFAULT_ZODIAC_MODE}, ${ASTRA_DEFAULT_HOUSE_SYSTEM}, Sun ${sun.sign}, Moon ${moon.sign}${ascendant ? `, Rising ${ascendant.sign}` : ""}`
-    }
+    publicSignal: draft.publicSignal
   });
 }
 
@@ -451,6 +537,9 @@ export function buildAstrologyReportResult(input: AstrologyReportRequest): Recor
   const request = astrologyReportRequestSchema.parse(input);
   const config = resolveAstrologyReportGenerationConfig();
   if (config.ephemerisEngine === LOCAL_CHART_ROUTINE_ENGINE) {
+    if (config.reportWriter !== LOCAL_DETERMINISTIC_REPORT_WRITER) {
+      return buildReportWriterUnavailableResult(request, config.reportWriter ?? "");
+    }
     return buildLocalChartRoutineResult(request);
   }
   return buildAstrologyEngineUnavailableResult(request);

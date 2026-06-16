@@ -103,6 +103,7 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - Browser QA on `/self` proved the signed-in onboarding journey can search `New`, select `New York, NY, USA`, review `08:30, America/New_York, New York, NY, USA`, queue linked chart/report records, and render desktop/tablet/phone with no console errors or horizontal overflow.
 - `@astra/astrology` can now run `ASTRA_EPHEMERIS_ENGINE=local-chart-routine` through the migrated `circular-natal-horoscope-js` routine from Astria, preserving tropical + Whole Sign chart signatures before writing completed private report sections plus a Composer-safe public signal.
 - `npm run test:astrology-engine` proves unconfigured engine failure still names `ASTRA_EPHEMERIS_ENGINE`, while configured local engine completion emits Tony's Gemini Sun, Virgo Moon, Cancer rising fixture and Einstein's public AA Pisces Sun, Sagittarius Moon, Cancer rising fixture.
+- `@astra/astrology` now separates chart computation from report writing with `ASTRA_REPORT_WRITER=local-deterministic-writer`; the first writer route is non-LLM, non-paid, records writer provenance, and fails closed for unsupported writer names before any lower-debug model route can run.
 - `/api/reports/[requestId]/generate` now lets a signed-in user generate their own queued report through the configured engine without exposing raw private sections publicly or using the internal writer token.
 - `/self` now shows a compact Generate action for queued reports, then updates the side rail to completed status with the Composer-safe public headline after generation.
 - `/self` now includes a private report reader for generated sections and provenance, keeping raw report content in the authenticated self surface instead of the public stream.
@@ -117,7 +118,8 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 ## Follow-Ups
 - Select the production birth-place provider and replace/extend the local fixture adapter without changing the `/api/places/search` contract.
 - Replace the deterministic chart-maker contract adapter with or behind a real ephemeris-backed module when the chart computation engine is selected.
-- Decide whether the migrated `circular-natal-horoscope-js` adapter is the production v1 report engine or should remain a local proof behind a later production ephemeris/report provider.
+- Decide whether the migrated `circular-natal-horoscope-js` adapter is the production v1 chart routine or should remain a local proof behind a later production ephemeris provider.
+- Add the first lower-debug model-backed writer behind the existing `ASTRA_REPORT_WRITER` boundary only after comparing it against the non-LLM deterministic writer output.
 - Design Composer artifact and future public/read-model retrieval/caching for production, including edge-first caching with explicit origin failure.
 - Implement the production cache/invalidation mechanism described in `docs/architecture/stream-read-model-cache-boundary.md` when the deployment target is ready.
 - Continue polishing reader density, card states, gifts/stars presentation, self/profile usefulness, and i18n-backed empty/error/loading states.

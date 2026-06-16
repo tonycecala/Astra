@@ -2,7 +2,9 @@ import {
   ASTRA_DEFAULT_HOUSE_SYSTEM,
   ASTRA_DEFAULT_ZODIAC_MODE,
   ASTRA_EPHEMERIS_ENGINE_ENV,
+  ASTRA_REPORT_WRITER_ENV,
   LOCAL_CHART_ROUTINE_ENGINE,
+  LOCAL_DETERMINISTIC_REPORT_WRITER,
   buildAstrologyReportResult
 } from "@astra/astrology";
 import { astrologyReportRequestSchema } from "@astra/contracts";
@@ -59,6 +61,7 @@ const einsteinPublicRequest = astrologyReportRequestSchema.parse({
 });
 
 const previousEngine = process.env[ASTRA_EPHEMERIS_ENGINE_ENV];
+const previousWriter = process.env[ASTRA_REPORT_WRITER_ENV];
 
 delete process.env[ASTRA_EPHEMERIS_ENGINE_ENV];
 const unavailable = buildAstrologyReportResult(reportRequest);
@@ -70,6 +73,7 @@ if (!unavailable.error?.includes(ASTRA_EPHEMERIS_ENGINE_ENV)) {
 }
 
 process.env[ASTRA_EPHEMERIS_ENGINE_ENV] = LOCAL_CHART_ROUTINE_ENGINE;
+process.env[ASTRA_REPORT_WRITER_ENV] = LOCAL_DETERMINISTIC_REPORT_WRITER;
 const completed = buildAstrologyReportResult(reportRequest);
 if (completed.status !== "completed") {
   throw new Error("Configured local astronomy engine should complete the report result.");
@@ -87,8 +91,14 @@ for (const phrase of expectedSignature) {
 if (completed.sections.length < 3) {
   throw new Error("Configured astrology report should include core, planetary, and practice sections.");
 }
+if (!completed.sections.some((section) => section.body.includes("no LLM call, no paid provider, no credit spend"))) {
+  throw new Error("Configured astrology report should prove the non-LLM, non-paid writer route.");
+}
 if (!completed.provenance.some((entry) => entry.kind === "engine")) {
   throw new Error("Configured astrology report should include engine provenance.");
+}
+if (!completed.provenance.some((entry) => entry.summary.includes(LOCAL_DETERMINISTIC_REPORT_WRITER))) {
+  throw new Error("Configured astrology report should include deterministic writer provenance.");
 }
 if (completed.publicSignal?.headline !== "Gemini Sun, Virgo Moon, Cancer rising") {
   throw new Error(`Configured astrology report should expose Tony's GEM/VIR/CAN signature, got: ${completed.publicSignal?.headline ?? "missing"}`);
@@ -99,6 +109,9 @@ if (
 ) {
   throw new Error("Configured astrology report should expose tropical and whole-sign provenance.");
 }
+if (!completed.publicSignal.provenanceSummary.includes(LOCAL_DETERMINISTIC_REPORT_WRITER)) {
+  throw new Error("Configured astrology report should expose deterministic writer provenance in the public signal summary.");
+}
 
 const publicCompleted = buildAstrologyReportResult(einsteinPublicRequest);
 if (publicCompleted.publicSignal?.headline !== "Pisces Sun, Sagittarius Moon, Cancer rising") {
@@ -107,10 +120,21 @@ if (publicCompleted.publicSignal?.headline !== "Pisces Sun, Sagittarius Moon, Ca
   );
 }
 
+process.env[ASTRA_REPORT_WRITER_ENV] = "paid-debug-writer";
+const unsupportedWriter = buildAstrologyReportResult(reportRequest);
+if (unsupportedWriter.status !== "failed" || !unsupportedWriter.error?.includes("paid-debug-writer")) {
+  throw new Error("Unsupported report writers must fail before any paid or model-backed route can run.");
+}
+
 if (previousEngine === undefined) {
   delete process.env[ASTRA_EPHEMERIS_ENGINE_ENV];
 } else {
   process.env[ASTRA_EPHEMERIS_ENGINE_ENV] = previousEngine;
+}
+if (previousWriter === undefined) {
+  delete process.env[ASTRA_REPORT_WRITER_ENV];
+} else {
+  process.env[ASTRA_REPORT_WRITER_ENV] = previousWriter;
 }
 
 console.log(`Astrology engine smoke passed with ${LOCAL_CHART_ROUTINE_ENGINE}.`);

@@ -206,6 +206,8 @@ test.describe("clean-start routes", () => {
     await expect(onboarding).toContainText("Gemini Sun, Virgo Moon, Cancer rising");
     await onboarding.getByRole("button", { exact: true, name: "Read report" }).click();
     await expect(onboarding.getByLabel("Private report reader")).toContainText("Core pattern");
+    await expect(onboarding.getByLabel("Private report reader")).toContainText("Writer handoff");
+    await expect(onboarding.getByLabel("Private report reader")).toContainText("no LLM call, no paid provider, no credit spend");
     await expect(onboarding.getByLabel("Private report reader")).toContainText("Provenance");
     await onboarding.getByRole("button", { exact: true, name: "Publish signal" }).click();
     await expect(onboarding).toContainText("Report signal published to Journey");

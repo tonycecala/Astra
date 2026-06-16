@@ -1,6 +1,12 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { ASTRA_EPHEMERIS_ENGINE_ENV, LOCAL_CHART_ROUTINE_ENGINE, buildAstrologyReportResult } from "@astra/astrology";
+import {
+  ASTRA_EPHEMERIS_ENGINE_ENV,
+  ASTRA_REPORT_WRITER_ENV,
+  LOCAL_CHART_ROUTINE_ENGINE,
+  LOCAL_DETERMINISTIC_REPORT_WRITER,
+  buildAstrologyReportResult
+} from "@astra/astrology";
 import { astrologyReportRequestSchema } from "@astra/contracts";
 
 type JsonObject = Record<string, unknown>;
@@ -210,6 +216,7 @@ const publicRequestId = (publicCreated.request as JsonObject | undefined)?.id;
 if (!publicRequestId) throw new Error("Report API did not return a public sample request id.");
 const reportRequest = astrologyReportRequestSchema.parse(created.request);
 const previousEngine = process.env[ASTRA_EPHEMERIS_ENGINE_ENV];
+const previousWriter = process.env[ASTRA_REPORT_WRITER_ENV];
 
 const listed = await requestJson(`${appBaseUrl}/api/reports`);
 const requests = Array.isArray(listed.requests) ? listed.requests : [];
@@ -233,6 +240,13 @@ if (((generated.result as JsonObject).publicSignal as JsonObject).headline !== "
 }
 if (!String(((generated.result as JsonObject).publicSignal as JsonObject).provenanceSummary).includes("tropical, whole-sign")) {
   throw new Error("User report generation route did not preserve tropical + whole-sign provenance.");
+}
+if (!String(((generated.result as JsonObject).publicSignal as JsonObject).provenanceSummary).includes(LOCAL_DETERMINISTIC_REPORT_WRITER)) {
+  throw new Error("User report generation route did not preserve deterministic writer provenance.");
+}
+const generatedSections = Array.isArray((generated.result as JsonObject).sections) ? ((generated.result as JsonObject).sections as JsonObject[]) : [];
+if (!generatedSections.some((section) => String(section.body).includes("no LLM call, no paid provider, no credit spend"))) {
+  throw new Error("User report generation route did not prove the non-LLM, non-paid writer route.");
 }
 if ((generated.request as JsonObject | undefined)?.status !== "completed") {
   throw new Error("User report generation route did not return the completed report request.");
@@ -258,6 +272,7 @@ if (((publishedSignal.artifact as JsonObject).streamItem as JsonObject | undefin
 }
 
 delete process.env[ASTRA_EPHEMERIS_ENGINE_ENV];
+process.env[ASTRA_REPORT_WRITER_ENV] = LOCAL_DETERMINISTIC_REPORT_WRITER;
 const recordPayload = buildAstrologyReportResult(reportRequest);
 
 await expectStatus(`${appBaseUrl}/api/report-results`, 401, {
@@ -273,6 +288,7 @@ await expectStatus(`${appBaseUrl}/api/report-results`, 401, {
 });
 
 process.env[ASTRA_EPHEMERIS_ENGINE_ENV] = LOCAL_CHART_ROUTINE_ENGINE;
+process.env[ASTRA_REPORT_WRITER_ENV] = LOCAL_DETERMINISTIC_REPORT_WRITER;
 const completedRecordPayload = buildAstrologyReportResult(reportRequest);
 const result = await requestJson(`${appBaseUrl}/api/report-results`, {
   method: "POST",
@@ -304,6 +320,11 @@ if (previousEngine === undefined) {
   delete process.env[ASTRA_EPHEMERIS_ENGINE_ENV];
 } else {
   process.env[ASTRA_EPHEMERIS_ENGINE_ENV] = previousEngine;
+}
+if (previousWriter === undefined) {
+  delete process.env[ASTRA_REPORT_WRITER_ENV];
+} else {
+  process.env[ASTRA_REPORT_WRITER_ENV] = previousWriter;
 }
 
 console.log(`Report API smoke passed for ${email}: ${requestId}.`);
