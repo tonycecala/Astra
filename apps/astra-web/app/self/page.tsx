@@ -1,32 +1,58 @@
+import Link from "next/link";
+import { listUserChartMakerRequests, db } from "@astra/db";
+import { ChartRequestPanel } from "../../components/ChartRequestPanel";
 import { PageHeader } from "../../components/PageHeader";
-import { getFoundationViewModel } from "../../lib/foundation";
+import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
 
-export default function SelfPage() {
-  const view = getFoundationViewModel();
+export default async function SelfPage() {
+  const { profile } = await getAstraAuthContext();
+
+  if (!profile) {
+    return (
+      <>
+        <PageHeader eyebrow={ui.self.eyebrow} title={ui.self.signedOutTitle}>
+          {ui.self.signedOutIntro}
+        </PageHeader>
+        <section className="grid" aria-label={ui.self.summaryLabel}>
+          <article className="card">
+            <div className="eyebrow">{ui.login.codeFlowEyebrow}</div>
+            <h2>{ui.login.title}</h2>
+            <p>{ui.login.intro}</p>
+            <Link className="button" href="/login">
+              {ui.self.signInCta}
+            </Link>
+          </article>
+        </section>
+      </>
+    );
+  }
+
+  const chartRequests = await listUserChartMakerRequests(db, profile.userId);
 
   return (
     <>
-      <PageHeader eyebrow={ui.self.eyebrow} title={view.user.displayName}>
+      <PageHeader eyebrow={ui.self.eyebrow} title={profile.displayName}>
         {ui.self.intro}
       </PageHeader>
       <section className="grid" aria-label={ui.self.summaryLabel}>
         <article className="card">
           <div className="eyebrow">{ui.self.stars}</div>
-          <div className="metric">{view.user.starBalance}</div>
+          <div className="metric">{profile.starBalance}</div>
           <p>{ui.self.starsDescription}</p>
         </article>
         <article className="card">
           <div className="eyebrow">{ui.self.onboarding}</div>
-          <h2>{view.user.onboardingStatus}</h2>
+          <h2>{profile.onboardingStatus}</h2>
           <p>{ui.self.onboardingDescription}</p>
         </article>
         <article className="card">
           <div className="eyebrow">{ui.self.achievement}</div>
-          <h2>{view.achievements[0]?.title}</h2>
-          <p>{view.achievements[0]?.description}</p>
+          <h2>{ui.self.noAchievementTitle}</h2>
+          <p>{ui.self.noAchievementDescription}</p>
         </article>
       </section>
+      <ChartRequestPanel displayName={profile.displayName} initialRequests={chartRequests} />
     </>
   );
 }

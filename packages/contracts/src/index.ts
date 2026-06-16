@@ -2,6 +2,9 @@ import { z } from "zod";
 
 const idSchema = z.string().min(1);
 const isoDateSchema = z.string().datetime();
+const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const timeOnlySchema = z.string().regex(/^\d{2}:\d{2}$/);
+const jsonObjectSchema = z.record(z.string(), z.unknown());
 
 export const userSchema = z.object({
   id: idSchema,
@@ -81,6 +84,150 @@ export const starTransactionSchema = z.object({
   createdAt: isoDateSchema
 });
 
+export const chartBirthDataSchema = z
+  .object({
+    date: dateOnlySchema,
+    time: timeOnlySchema.optional(),
+    timezone: z.string().min(1).optional(),
+    location: z.string().min(1).optional(),
+    latitude: z.number().min(-90).max(90).optional(),
+    longitude: z.number().min(-180).max(180).optional()
+  })
+  .superRefine((birthData, context) => {
+    const hasPrecisionBundle = Boolean(
+      birthData.time || birthData.timezone || birthData.location || birthData.latitude !== undefined || birthData.longitude !== undefined
+    );
+
+    if (!hasPrecisionBundle) return;
+
+    for (const field of ["time", "timezone", "location"] as const) {
+      if (!birthData[field]) {
+        context.addIssue({
+          code: "custom",
+          path: [field],
+          message: "Birth time, timezone, and location travel together; provide all three or leave all three blank."
+        });
+      }
+    }
+  });
+
+export const chartMakerRequestSchema = z.object({
+  id: idSchema,
+  userId: idSchema,
+  subjectName: z.string().min(1),
+  birthData: chartBirthDataSchema,
+  question: z.string().min(1).optional(),
+  intent: z.string().min(1).optional(),
+  context: jsonObjectSchema.optional(),
+  source: z.enum(["self", "ally", "composer", "import"]).default("self"),
+  status: z.enum(["queued", "processing", "completed", "failed", "cancelled"]).default("queued"),
+  createdAt: isoDateSchema,
+  updatedAt: isoDateSchema
+});
+
+export const createChartMakerRequestSchema = z.object({
+  subjectName: z.string().min(1),
+  birthData: chartBirthDataSchema,
+  question: z.string().min(1).optional(),
+  intent: z.string().min(1).optional(),
+  context: jsonObjectSchema.optional(),
+  source: z.enum(["self", "ally", "composer", "import"]).default("self")
+});
+
+export const chartMakerResultSchema = z.object({
+  id: idSchema,
+  requestId: idSchema,
+  userId: idSchema,
+  engine: z.string().min(1),
+  status: z.enum(["completed", "failed"]),
+  summary: z.string().min(1).optional(),
+  chartData: jsonObjectSchema,
+  error: z.string().min(1).optional(),
+  createdAt: isoDateSchema
+});
+
+export const chartMakerPrecisionSchema = z.enum(["date_only", "timed_location"]);
+
+export const chartMakerChartDataSchema = z.object({
+  schemaVersion: z.literal(1),
+  engine: z.string().min(1),
+  requestId: idSchema,
+  subjectName: z.string().min(1),
+  precision: chartMakerPrecisionSchema,
+  birthData: chartBirthDataSchema,
+  derived: z.object({
+    sunSign: z.string().min(1),
+    season: z.string().min(1),
+    dayOfYear: z.number().int().min(1).max(366)
+  }),
+  interpretation: z.object({
+    headline: z.string().min(1),
+    summary: z.string().min(1),
+    limits: z.array(z.string().min(1)).min(1)
+  }),
+  requestContext: z.object({
+    question: z.string().min(1).optional(),
+    intent: z.string().min(1).optional(),
+    source: z.enum(["self", "ally", "composer", "import"])
+  })
+});
+
+export const recordChartMakerResultSchema = z.object({
+  requestId: idSchema,
+  userId: idSchema,
+  engine: z.string().min(1),
+  status: z.enum(["completed", "failed"]),
+  summary: z.string().min(1).optional(),
+  chartData: jsonObjectSchema.optional(),
+  error: z.string().min(1).optional()
+});
+
+export const composerVoiceIdSchema = z.enum(["guide", "companion", "prompt"]);
+
+export const composerVoiceCardSchema = z.object({
+  voice: z.object({
+    id: composerVoiceIdSchema
+  }),
+  header: z.string().min(1),
+  body: z.string().min(1)
+});
+
+export const composerVoiceValidationErrorSchema = z.object({
+  ok: z.literal(false),
+  error: z.literal("VOICE_VALIDATION_FAILED"),
+  voice_id: composerVoiceIdSchema,
+  violations: z.array(
+    z.object({
+      field: z.enum(["header", "body"]),
+      type: z.enum(["WORD_LIMIT", "BANNED_TERM", "MORALIZING"]),
+      limit: z.number().int().positive().optional(),
+      actual: z.number().int().nonnegative().optional(),
+      term: z.string().min(1).optional()
+    })
+  )
+});
+
+export const composerArtifactRationaleSchema = z.object({
+  reason: z.string().min(1),
+  source: z.enum(["composer_voice", "chart_result", "onboarding", "manual"]).default("composer_voice")
+});
+
+export const composerStreamArtifactSchema = z
+  .object({
+    id: idSchema,
+    target: z.literal("stream"),
+    publisher: z.literal("composer"),
+    rationale: composerArtifactRationaleSchema,
+    voiceCard: composerVoiceCardSchema,
+    card: cardSchema,
+    streamItem: streamItemSchema,
+    createdAt: isoDateSchema
+  })
+  .refine((artifact) => artifact.card.id === artifact.streamItem.cardId, {
+    message: "Composer stream artifact card.id must match streamItem.cardId.",
+    path: ["streamItem", "cardId"]
+  });
+
 export type AstraUser = z.infer<typeof userSchema>;
 export type AstraCard = z.infer<typeof cardSchema>;
 export type StreamItem = z.infer<typeof streamItemSchema>;
@@ -89,6 +236,18 @@ export type Ally = z.infer<typeof allySchema>;
 export type Artifact = z.infer<typeof artifactSchema>;
 export type Gift = z.infer<typeof giftSchema>;
 export type StarTransaction = z.infer<typeof starTransactionSchema>;
+export type ChartBirthData = z.infer<typeof chartBirthDataSchema>;
+export type ChartMakerRequest = z.infer<typeof chartMakerRequestSchema>;
+export type CreateChartMakerRequest = z.infer<typeof createChartMakerRequestSchema>;
+export type ChartMakerResult = z.infer<typeof chartMakerResultSchema>;
+export type ChartMakerPrecision = z.infer<typeof chartMakerPrecisionSchema>;
+export type ChartMakerChartData = z.infer<typeof chartMakerChartDataSchema>;
+export type RecordChartMakerResult = z.infer<typeof recordChartMakerResultSchema>;
+export type ComposerVoiceId = z.infer<typeof composerVoiceIdSchema>;
+export type ComposerVoiceCard = z.infer<typeof composerVoiceCardSchema>;
+export type ComposerVoiceValidationError = z.infer<typeof composerVoiceValidationErrorSchema>;
+export type ComposerArtifactRationale = z.infer<typeof composerArtifactRationaleSchema>;
+export type ComposerStreamArtifact = z.infer<typeof composerStreamArtifactSchema>;
 
 export const foundationSeedSchema = z.object({
   user: userSchema,

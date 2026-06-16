@@ -2,7 +2,7 @@
 title: "Astra Clean Start Foundation Progress"
 status: "open"
 date: "2026-06-12"
-updated: "2026-06-12"
+updated: "2026-06-16"
 tags: ["mission", "astra", "clean-start", "foundation", "progress"]
 related: ["../../docs/architecture/clean-start-foundation.md", "../../ASTRA_CLEAN_START_INAUGURAL_CHARTER.md"]
 ---
@@ -13,13 +13,14 @@ related: ["../../docs/architecture/clean-start-foundation.md", "../../ASTRA_CLEA
 Build Astra as a clean-start foundation: a lean, light, modular symbolic stream reader with stable subassemblies, explicit contracts, Better Auth, Drizzle/Postgres, seeded data, durable local operation, and no Supabase carryover.
 
 ## Goal
-Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/tony/Documents/Projects/Astria` as the quarry. Astra should render the first useful reader shell while Composer remains a clean placeholder boundary until publishing contracts exist.
+Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/tony/Documents/Projects/Astria` as the quarry. Astra should render the first useful reader shell while Composer remains a clean boundary that publishes only through shared contracts.
 
 ## Files Changed
 - `apps/astra-web/` implements the visible reader shell, auth route, i18n-backed UI chrome, theme behavior, and route-level product surfaces.
-- `apps/composer-web/` exists as a placeholder subassembly with no Astra runtime coupling.
+- `apps/composer-web/` exists as a separate subassembly with voice validation and stream artifact publishing, but no Astra runtime coupling.
 - `packages/contracts/` defines typed core nouns.
 - `packages/db/` owns Drizzle schema, migrations, client, repository helpers, seed/reset support, and Better Auth tables.
+- `packages/chart-maker/` owns the independent chart-maker contract adapter.
 - `packages/testkit/` owns typed seed fixtures.
 - `scripts/` contains foundation checks, no-Supabase checks, boundary checks, seed/reset scripts, auth-code smoke support, and durable local server controls.
 - `docs/architecture/clean-start-foundation.md` documents the foundation shape and local database/auth loop.
@@ -34,7 +35,7 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - Preferred auth UX is email code first: send code, verify code, continue without password-first framing.
 - Mailpit is the preferred local email sink.
 - Composer internals must not leak into Astra.
-- Supabase carryover is forbidden: no packages, env vars, imports, RLS assumptions, compatibility shims, or runtime DDL.
+- Supabase carryover is forbidden: no packages, env vars, imports, legacy policy assumptions, compatibility shims, or runtime DDL.
 - Long-running local app review should use durable server controls instead of foreground-only dev sessions.
 
 ## Problems Encountered
@@ -56,13 +57,34 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - Playwright route coverage includes desktop, tablet, and mobile.
 - Recent validation passed: lint, typecheck, foundation test, boundary check, no-Supabase check, production build, and Playwright e2e.
 - Latest relevant Astra commits include durable local server work and Akashic governance installation.
+- Local Postgres `postgresql://astra:astra@127.0.0.1:5432/astra_clean_start` is available through Homebrew PostgreSQL 16.
+- Drizzle migration, seed, local guarded reset, remigration, and reseed have been exercised against the disposable local database.
+- Mailpit is running at `http://localhost:8025`, and the email-code auth smoke passed through send-code, Mailpit OTP read, verify-code, session check, and sign-out.
+- Browser verification proved `/login` can send and verify an email code and then display the authenticated session for the browser-smoke user.
+- `/self` now reads authenticated app profile state through `getAstraAuthContext`; logged-out visitors see a sign-in CTA, while signed-in users see their own display name, onboarding state, and private star balance.
+- Chart-maker contracts now require birth date only; birth time, location, and timezone form one optional precision bundle, while coordinates, question, intent, and context remain optional until onboarding defines stronger requirements.
+- `@astra/chart-maker` now consumes `ChartMakerRequest` and emits `RecordChartMakerResult` without importing Astra app or database internals.
+- `ChartMakerChartData` defines the first deterministic chart-maker payload shape with precision metadata, date-derived symbolic fields, interpretation, and explicit limits.
+- Drizzle owns `chart_requests` and `chart_results` tables with user ownership and request/result indexes.
+- `npm run test:chart-boundary` proves the local request/result lifecycle against Postgres.
+- `/api/chart-requests` now lets an authenticated user create and list their own chart requests.
+- `/api/chart-results` lets an internal chart-maker caller record a result behind `x-astra-internal-token`.
+- `/self` now includes a modular chart request panel that queues user-owned requests for an independent chart maker.
+- `npm run test:chart-maker` proves Tony's `1961-05-23` fixture through the independent chart-maker module, including date-only and timed/location precision paths.
+- `npm run test:chart-request-api` proves request creation through Better Auth/Mailpit and result recording through the internal chart-maker token using the independent chart-maker module.
+- The current `/self` chart request panel is intentionally a foundation smoke surface; future user-facing birth data capture should become a multi-step onboarding flow before real product use.
+- Composer's first publish target is now a shared stream artifact contract.
+- Composer now has a minimal independent implementation for voice registry, deterministic validation, and stream artifact publishing under `apps/composer-web/src`.
+- `npm run test:composer-stream` proves valid voice fixtures, invalid voice fixtures, and stream artifact publishing through the shared contract.
+- Composer stream artifacts now include a rationale so Astra can explain why a card appears.
+- Astra now exposes `/api/composer/stream-artifacts` as an internal token-guarded ingestion edge for Composer-published stream artifacts.
+- `upsertComposerStreamArtifact` persists Composer cards and stream items into Astra's existing public stream tables without importing Composer internals.
+- Journey, Allies, Library, and Gifts now read the persisted local database snapshot instead of seed-only in-memory fixtures.
+- `npm run test:composer-ingest-api` proves a Composer-style caller can publish a stream artifact and `/journey` renders the consumed card.
 
 ## Follow-Ups
-- Run the real local database loop against the chosen disposable local Postgres/Neon-style database.
-- Run the full Better Auth email-code smoke with Mailpit: send code, read code, verify code, confirm session, logout.
-- Keep Composer placeholder-only until an explicit publishing artifact contract exists.
-- Define Composer-to-Astra publishing contracts before implementing Composer internals.
-- Keep astrology placeholder-only until the reader shell, contracts, auth, and database loop are stable.
-- Add edge-first caching with origin fallback after published stream artifacts exist.
+- Replace the single chart request form with multi-step birth-data onboarding: subject, date, time certainty, place/timezone, intent/context, review, and confirmation.
+- Replace the deterministic chart-maker contract adapter with or behind a real ephemeris-backed module when the chart computation engine is selected.
+- Design Composer artifact and future public/read-model retrieval/caching for production, including edge-first caching with explicit origin failure.
 - Continue polishing reader density, card states, gifts/stars presentation, self/profile usefulness, and i18n-backed empty/error/loading states.
 - Update this mission after each non-trivial dev/debug session.

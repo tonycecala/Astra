@@ -17,11 +17,11 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `113341`
+- Estimated token footprint: `135551`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
-- Package scripts expose: `build`, `check`, `check:boundaries`, `check:no-supabase`, `composer:dev`, `db:generate`, `db:migrate`, `db:reset:local`, `db:seed`, `dev`, `dev:restart`, `dev:status`, `dev:stop`, `dev:up`, `lint`, `start`, `test`, `test:auth-code`, `test:e2e`, `typecheck`.
+- Package scripts expose: `build`, `check`, `check:boundaries`, `check:no-supabase`, `composer:dev`, `db:generate`, `db:migrate`, `db:reset:local`, `db:seed`, `dev`, `dev:restart`, `dev:status`, `dev:stop`, `dev:up`, `lint`, `start`, `test`, `test:auth-code`, `test:chart-boundary`, `test:chart-maker`, `test:chart-request-api`, `test:composer-ingest-api`, `test:composer-stream`, `test:e2e`, `typecheck`.
 
 ## Directory Structure
 ```txt
@@ -47,7 +47,10 @@ tsconfig.json
 - `akashic/warnings` knowledge artifacts
 
 ## Entry Points
-- `package.json` - ~581 tokens
+- `apps/astra-web/app/api/chart-requests/route.ts` - 2 route handler(s), 2 export(s), 8 symbol(s), 4 import(s), ~323 tokens
+- `apps/astra-web/app/api/chart-results/route.ts` - 1 route handler(s), 1 export(s), 4 symbol(s), 4 import(s), ~255 tokens
+- `apps/astra-web/app/api/composer/stream-artifacts/route.ts` - 1 route handler(s), 1 export(s), 4 symbol(s), 4 import(s), ~234 tokens
+- `package.json` - ~685 tokens
 
 ## External Integrations
 - Auth provider/library
@@ -62,29 +65,32 @@ tsconfig.json
 3. Akashic artifacts preserve durable repo knowledge.
 
 ## Critical Files
-- `packages/db/src/repositories.ts` - weight 115.34, ~2850 tokens, 24 symbols, in:1/out:2
+- `packages/db/src/repositories.ts` - weight 213.3, ~4290 tokens, 46 symbols, in:1/out:2
+- `packages/chart-maker/src/index.ts` - weight 132.4, ~1309 tokens, 28 symbols, in:0/out:0
+- `apps/astra-web/app/api/chart-requests/route.ts` - weight 130.92, ~323 tokens, 8 symbols, in:0/out:1
+- `packages/contracts/src/index.ts` - weight 127.36, ~2282 tokens, 48 symbols, in:0/out:0
 - `ASTRA_CLEAN_START_INAUGURAL_CHARTER.md` - weight 106.32, ~3449 tokens, 34 symbols, in:0/out:0
 - `apps/astra-web/components/ThemeToggle.tsx` - weight 103.44, ~687 tokens, 20 symbols, in:1/out:1
+- `apps/astra-web/components/ChartRequestPanel.tsx` - weight 79.38, ~1673 tokens, 14 symbols, in:1/out:1
+- `apps/composer-web/src/voices/validateVoiceCard.ts` - weight 70.45, ~653 tokens, 13 symbols, in:2/out:1
+- `apps/astra-web/app/api/chart-results/route.ts` - weight 69.68, ~255 tokens, 4 symbols, in:0/out:1
+- `apps/astra-web/app/api/composer/stream-artifacts/route.ts` - weight 69.58, ~234 tokens, 4 symbols, in:0/out:1
 - `apps/astra-web/lib/email/send-email.ts` - weight 60.29, ~444 tokens, 10 symbols, in:1/out:0
 - `apps/astra-web/lib/auth/server.ts` - weight 58.36, ~564 tokens, 8 symbols, in:2/out:1
-- `packages/contracts/src/index.ts` - weight 55.44, ~852 tokens, 20 symbols, in:0/out:0
 - `apps/astra-web/components/StreamReader.tsx` - weight 54.39, ~1453 tokens, 11 symbols, in:1/out:1
 - `apps/astra-web/components/AuthPanel.tsx` - weight 50.42, ~1058 tokens, 7 symbols, in:1/out:2
-- `apps/astra-web/app/layout.tsx` - weight 44.39, ~688 tokens, 8 symbols, in:0/out:2
-- `packages/db/src/schema.ts` - weight 44.37, ~1983 tokens, 12 symbols, in:2/out:0
-- `apps/composer-web/docs/inbox-astra-composer/COMPOSER_VOICE_TEMPLATES.md` - weight 43.36, ~2093 tokens, 14 symbols, in:0/out:0
-- `packages/db/src/env.ts` - weight 37.45, ~206 tokens, 5 symbols, in:2/out:0
-- `packages/db/drizzle.config.ts` - weight 37.01, ~291 tokens, 6 symbols, in:0/out:0
-- `akashic/templates/repomap-template.md` - weight 35.89, ~126 tokens, 10 symbols, in:0/out:0
-- `apps/astra-web/lib/foundation.ts` - weight 33.29, ~131 tokens, 5 symbols, in:5/out:0
+- `packages/db/src/schema.ts` - weight 50.35, ~2425 tokens, 14 symbols, in:2/out:0
 
 ## Critical Routes
-- No route files detected.
+- `GET /api/chart-requests` in `apps/astra-web/app/api/chart-requests/route.ts:10`
+- `POST /api/chart-requests` in `apps/astra-web/app/api/chart-requests/route.ts:18`
+- `POST /api/chart-results` in `apps/astra-web/app/api/chart-results/route.ts:6`
+- `POST /api/composer/stream-artifacts` in `apps/astra-web/app/api/composer/stream-artifacts/route.ts:6`
 
 ## Pareto Profiles
-- `32000` tokens -> 62 files, 341 symbols, ~33818 estimated tokens.
-- `64000` tokens -> 64 files, 341 symbols, ~111669 estimated tokens.
-- `128000` tokens -> 84 files, 341 symbols, ~113341 estimated tokens.
+- `32000` tokens -> 31 files, 388 symbols, ~32158 estimated tokens.
+- `64000` tokens -> 78 files, 500 symbols, ~133175 estimated tokens.
+- `128000` tokens -> 78 files, 500 symbols, ~133175 estimated tokens.
 
 ## Data Model
 Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.
@@ -116,4 +122,4 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - Treat auth as a first-class product concern and verify the repo's documented local auth flow.
 - Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 84 local files in `/Users/tony/Documents/Projects/Astra`.
+Generated from 102 local files in `/Users/tony/Documents/Projects/Astra`.

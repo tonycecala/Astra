@@ -57,6 +57,10 @@ function ownerOf(file: string) {
 function boundaryViolation(file: string, importPath: string): Violation | null {
   const owner = ownerOf(file);
 
+  if (file.startsWith("packages/chart-maker/") && /(?:@astra\/db|packages\/db|apps\/)/.test(importPath)) {
+    return { file, importPath, reason: "Chart maker must not import Astra app or database internals." };
+  }
+
   if (owner === "apps/astra-web" && /(?:^|\/)apps\/composer-web(?:\/|$)/.test(importPath)) {
     return { file, importPath, reason: "Astra must not import Composer internals." };
   }

@@ -3,8 +3,10 @@ import { StreamReader } from "../../components/StreamReader";
 import { getFoundationViewModel } from "../../lib/foundation";
 import { ui } from "../../lib/i18n";
 
-export default function JourneyPage() {
-  const view = getFoundationViewModel();
+export const dynamic = "force-dynamic";
+
+export default async function JourneyPage() {
+  const view = await getFoundationViewModel();
 
   return (
     <>
