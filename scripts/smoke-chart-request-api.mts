@@ -1,5 +1,3 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { buildChartMakerRecordResult } from "@astra/chart-maker";
 import { chartMakerRequestSchema } from "@astra/contracts";
 
@@ -84,22 +82,6 @@ function findOtp(value: unknown): string | null {
   return null;
 }
 
-async function readOtpFromFileCapture() {
-  const outboxDir = clean(process.env.ASTRA_EMAIL_CAPTURE_DIR) || ".astra-email";
-  const text = await readFile(join(outboxDir, "outbox.jsonl"), "utf8");
-  const rows = text
-    .trim()
-    .split("\n")
-    .filter(Boolean)
-    .map((line) => JSON.parse(line) as JsonObject)
-    .reverse();
-
-  const row = rows.find((candidate) => candidate.to === email);
-  const otp = findOtp(row);
-  if (!otp) throw new Error(`No OTP found in file capture for ${email}.`);
-  return otp;
-}
-
 async function readOtpFromMailpit() {
   const searchUrl = new URL("/api/v1/search", mailpitUrl);
   searchUrl.searchParams.set("query", email);
@@ -131,11 +113,6 @@ async function readOtpFromMailpit() {
   throw new Error(`No OTP found in Mailpit for ${email}.`);
 }
 
-async function readOtp() {
-  if (clean(process.env.ASTRA_EMAIL_DELIVERY) === "file") return readOtpFromFileCapture();
-  return readOtpFromMailpit();
-}
-
 await requestJson(`${authBaseUrl}/email-otp/send-verification-otp`, {
   method: "POST",
   body: JSON.stringify({ email, type: "sign-in" })
@@ -143,7 +120,7 @@ await requestJson(`${authBaseUrl}/email-otp/send-verification-otp`, {
 
 await requestJson(`${authBaseUrl}/sign-in/email-otp`, {
   method: "POST",
-  body: JSON.stringify({ email, otp: await readOtp(), name })
+  body: JSON.stringify({ email, otp: await readOtpFromMailpit(), name })
 });
 
 const created = await requestJson(`${appBaseUrl}/api/chart-requests`, {

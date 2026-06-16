@@ -10,6 +10,25 @@
   margin-top: 16px;
 }
 
+.alphaGuide {
+  display: grid;
+  gap: 4px;
+  border: 1px solid color-mix(in srgb, var(--blue) 28%, var(--line));
+  border-radius: 8px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--blue) 8%, var(--panel));
+}
+
+.alphaGuide strong {
+  color: var(--ink);
+}
+
+.alphaGuide span {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .stepper {
   display: flex;
   flex-wrap: wrap;
@@ -48,6 +67,12 @@
   border-color: color-mix(in srgb, var(--gold) 50%, var(--line));
   color: var(--ink);
   outline: none;
+}
+
+.progressText {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 14px;
 }
 
 .formGrid {

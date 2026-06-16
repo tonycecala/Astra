@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { KeyRound, LogOut, Mail, Sparkles } from "lucide-react";
 import { authClient } from "../lib/auth/client";
@@ -72,10 +73,19 @@ export function AuthPanel() {
           <h2>{session.user.name || session.user.email}</h2>
           <p className="muted">{session.user.email}</p>
         </div>
-        <button className="button secondary" type="button" onClick={signOut}>
-          <LogOut aria-hidden="true" size={18} />
-          {ui.login.signOut}
-        </button>
+        <div className="auth-actions">
+          <Link className="button" href="/self">
+            <Sparkles aria-hidden="true" size={18} />
+            {ui.login.continueToSelf}
+          </Link>
+          <Link className="button secondary" href="/journey">
+            {ui.login.openJourney}
+          </Link>
+          <button className="button secondary" type="button" onClick={signOut}>
+            <LogOut aria-hidden="true" size={18} />
+            {ui.login.signOut}
+          </button>
+        </div>
         {message ? <p className="form-status">{message}</p> : null}
       </section>
     );
