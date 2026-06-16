@@ -202,6 +202,17 @@ try {
   const targetUserA = await signInSmokeUser();
   await insertUser(targetUserB, `${targetUserB}@example.com`);
 
+  const firstRunPrivateHtml = await requestText(`${appBaseUrl}/journey`);
+  if (
+    !firstRunPrivateHtml.includes("Private journey") ||
+    !firstRunPrivateHtml.includes("Composer will generate your onboarding cards")
+  ) {
+    throw new Error("Signed-in first-run Journey did not show the Composer onboarding state before publish.");
+  }
+  if (firstRunPrivateHtml.includes("Public fallback")) {
+    throw new Error("Signed-in first-run Journey must not masquerade as public fallback.");
+  }
+
   const draft = createComposerOperatorDraftFixture(now);
   const preview = previewComposerOperatorDraft({
     ...draft,
@@ -254,6 +265,9 @@ try {
   if (!feedA.items.some((item) => item.id === feedItemId && item.title === publish.write.feedItem.title)) {
     throw new Error("Target user private feed did not include the operator-published card.");
   }
+  if (feedA.items.some((item) => item.reasonCode === "private_projection_from_public_source")) {
+    throw new Error("Composer operator flow must not rely on copied public fallback projections.");
+  }
 
   const forgedRead = await getUserFeedItemById(db, { userId: targetUserB, feedItemId });
   if (forgedRead) throw new Error("Another user could read the operator-published private card.");
@@ -269,7 +283,11 @@ try {
   }
 
   const privateHtml = await requestText(`${appBaseUrl}/journey`);
-  if (!privateHtml.includes("Private journey") || !privateHtml.includes(publish.write.feedItem.title)) {
+  if (
+    !privateHtml.includes("Private journey") ||
+    !privateHtml.includes("Composer is shaping this Journey") ||
+    !privateHtml.includes(publish.write.feedItem.title)
+  ) {
     throw new Error("Signed-in Journey did not render the operator-published private card.");
   }
 } finally {

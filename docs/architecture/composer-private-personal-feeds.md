@@ -52,6 +52,7 @@ The first private-feed boundary now exists in shared contracts, Drizzle schema, 
 - `createComposerDecision` verifies the target feed item belongs to the same user before writing the private audit record.
 - `scripts/smoke-private-feed.mts` proves User A cannot read User B's item, public fallback rows do not carry private payload, and private feed responses do not expose decision internals.
 - `/journey` now reads authenticated users from `UserFeedItem` rows. Signed-out readers see an explicitly labeled public fallback, not a personalized stream.
+- First-run signed-in `/journey` stays private and empty until Composer generates onboarding cards; Astra must not copy public fallback rows into a user's private feed.
 - Publishing a completed report signal creates a deterministic user-owned `report_signal` feed item for the signed-in user instead of making the global stream the product feed.
 - `ComposerPrivateFeedWrite` is the trusted Composer-to-Astra write contract. `POST /api/composer/private-feed-items` accepts it behind `x-astra-internal-token`, persists an optional `SourceCard`, creates the user-owned `UserFeedItem`, and records optional `ComposerDecision` metadata.
 - `apps/composer-web/src/publishPrivateFeedItem.ts` creates validated private feed writes from Composer voice cards and source/report-signal inputs without importing Astra app internals.

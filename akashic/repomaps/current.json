@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-06-16T20:40:22.270Z",
+  "generated_at": "2026-06-16T21:29:32.794Z",
   "root_name": "Astra",
   "files_indexed": 136,
-  "total_symbols": 1062,
-  "total_estimated_tokens": 222783,
+  "total_symbols": 1061,
+  "total_estimated_tokens": 223271,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -2365,181 +2365,6 @@
       "importance_bucket": "other"
     },
     {
-      "file": "apps/astra-web/lib/journey.ts",
-      "lang": "typescript",
-      "size": 5481,
-      "lines": 172,
-      "estimated_tokens": 1371,
-      "symbols": [
-        {
-          "name": "JourneyKind",
-          "line": 6,
-          "type": "type"
-        },
-        {
-          "name": "JourneyStatus",
-          "line": 7,
-          "type": "type"
-        },
-        {
-          "name": "JourneyAudience",
-          "line": 8,
-          "type": "type"
-        },
-        {
-          "name": "JourneyStreamCard",
-          "line": 10,
-          "type": "type"
-        },
-        {
-          "name": "JourneyViewModel",
-          "line": 22,
-          "type": "type"
-        },
-        {
-          "name": "LegacyStreamItem",
-          "line": 27,
-          "type": "type"
-        },
-        {
-          "name": "LegacyCard",
-          "line": 28,
-          "type": "type"
-        },
-        {
-          "name": "fallbackRankStart",
-          "line": 30,
-          "type": "constant"
-        },
-        {
-          "name": "payloadString",
-          "line": 32,
-          "type": "function"
-        },
-        {
-          "name": "value",
-          "line": 33,
-          "type": "constant"
-        },
-        {
-          "name": "payloadLane",
-          "line": 37,
-          "type": "function"
-        },
-        {
-          "name": "value",
-          "line": 38,
-          "type": "constant"
-        },
-        {
-          "name": "payloadTone",
-          "line": 45,
-          "type": "function"
-        },
-        {
-          "name": "value",
-          "line": 46,
-          "type": "constant"
-        },
-        {
-          "name": "feedKindFromJourneyKind",
-          "line": 51,
-          "type": "function"
-        },
-        {
-          "name": "laneForFeedKind",
-          "line": 58,
-          "type": "function"
-        },
-        {
-          "name": "cardFromFeedItem",
-          "line": 66,
-          "type": "function"
-        },
-        {
-          "name": "payload",
-          "line": 67,
-          "type": "constant"
-        },
-        {
-          "name": "fallbackLane",
-          "line": 68,
-          "type": "constant"
-        },
-        {
-          "name": "privateStreamCard",
-          "line": 83,
-          "type": "function"
-        },
-        {
-          "name": "publicFallbackStreamCard",
-          "line": 97,
-          "type": "function"
-        },
-        {
-          "name": "getPublicFallbackJourney",
-          "line": 111,
-          "type": "function"
-        },
-        {
-          "name": "snapshot",
-          "line": 112,
-          "type": "constant"
-        },
-        {
-          "name": "cardsById",
-          "line": 113,
-          "type": "constant"
-        },
-        {
-          "name": "card",
-          "line": 118,
-          "type": "constant"
-        },
-        {
-          "name": "seedPrivateFeedFromPublicFallback",
-          "line": 124,
-          "type": "function"
-        },
-        {
-          "name": "fallback",
-          "line": 125,
-          "type": "constant"
-        },
-        {
-          "name": "getJourneyViewModel",
-          "line": 153,
-          "type": "function"
-        },
-        {
-          "name": "existing",
-          "line": 161,
-          "type": "constant"
-        },
-        {
-          "name": "feed",
-          "line": 166,
-          "type": "constant"
-        }
-      ],
-      "imports": [
-        "@astra/contracts",
-        "@astra/db"
-      ],
-      "exports": [
-        "JourneyStreamCard",
-        "JourneyViewModel",
-        "getJourneyViewModel"
-      ],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 2,
-      "dependency_out": 0,
-      "importance_weight": 146.4,
-      "importance_bucket": "other"
-    },
-    {
       "file": "packages/chart-maker/src/index.ts",
       "lang": "typescript",
       "size": 5235,
@@ -2862,6 +2687,156 @@
       "dependency_out": 1,
       "importance_weight": 130.92,
       "importance_bucket": "app/api"
+    },
+    {
+      "file": "apps/astra-web/lib/journey.ts",
+      "lang": "typescript",
+      "size": 4249,
+      "lines": 132,
+      "estimated_tokens": 1063,
+      "symbols": [
+        {
+          "name": "JourneyKind",
+          "line": 6,
+          "type": "type"
+        },
+        {
+          "name": "JourneyStatus",
+          "line": 7,
+          "type": "type"
+        },
+        {
+          "name": "JourneyAudience",
+          "line": 8,
+          "type": "type"
+        },
+        {
+          "name": "JourneyStreamCard",
+          "line": 10,
+          "type": "type"
+        },
+        {
+          "name": "JourneyViewModel",
+          "line": 22,
+          "type": "type"
+        },
+        {
+          "name": "LegacyStreamItem",
+          "line": 28,
+          "type": "type"
+        },
+        {
+          "name": "LegacyCard",
+          "line": 29,
+          "type": "type"
+        },
+        {
+          "name": "payloadString",
+          "line": 31,
+          "type": "function"
+        },
+        {
+          "name": "value",
+          "line": 32,
+          "type": "constant"
+        },
+        {
+          "name": "payloadLane",
+          "line": 36,
+          "type": "function"
+        },
+        {
+          "name": "value",
+          "line": 37,
+          "type": "constant"
+        },
+        {
+          "name": "payloadTone",
+          "line": 44,
+          "type": "function"
+        },
+        {
+          "name": "value",
+          "line": 45,
+          "type": "constant"
+        },
+        {
+          "name": "laneForFeedKind",
+          "line": 50,
+          "type": "function"
+        },
+        {
+          "name": "cardFromFeedItem",
+          "line": 58,
+          "type": "function"
+        },
+        {
+          "name": "payload",
+          "line": 59,
+          "type": "constant"
+        },
+        {
+          "name": "fallbackLane",
+          "line": 60,
+          "type": "constant"
+        },
+        {
+          "name": "privateStreamCard",
+          "line": 75,
+          "type": "function"
+        },
+        {
+          "name": "publicFallbackStreamCard",
+          "line": 89,
+          "type": "function"
+        },
+        {
+          "name": "getPublicFallbackJourney",
+          "line": 103,
+          "type": "function"
+        },
+        {
+          "name": "snapshot",
+          "line": 104,
+          "type": "constant"
+        },
+        {
+          "name": "cardsById",
+          "line": 105,
+          "type": "constant"
+        },
+        {
+          "name": "card",
+          "line": 110,
+          "type": "constant"
+        },
+        {
+          "name": "getJourneyViewModel",
+          "line": 116,
+          "type": "function"
+        },
+        {
+          "name": "feed",
+          "line": 125,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "@astra/contracts",
+        "@astra/db"
+      ],
+      "exports": [
+        "JourneyStreamCard",
+        "JourneyViewModel",
+        "getJourneyViewModel"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 2,
+      "dependency_out": 0,
+      "importance_weight": 121.42,
+      "importance_bucket": "other"
     },
     {
       "file": "ASTRA_CLEAN_START_INAUGURAL_CHARTER.md",
@@ -3477,9 +3452,9 @@
     {
       "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
       "lang": "typescript",
-      "size": 11485,
-      "lines": 231,
-      "estimated_tokens": 2872,
+      "size": 12032,
+      "lines": 238,
+      "estimated_tokens": 3008,
       "symbols": [
         {
           "name": "JsonObject",
@@ -3578,27 +3553,27 @@
         },
         {
           "name": "email",
-          "line": 164,
-          "type": "constant"
-        },
-        {
-          "name": "name",
           "line": 165,
           "type": "constant"
         },
         {
+          "name": "name",
+          "line": 166,
+          "type": "constant"
+        },
+        {
           "name": "nextButton",
-          "line": 181,
+          "line": 187,
           "type": "constant"
         },
         {
           "name": "onboarding",
-          "line": 199,
+          "line": 205,
           "type": "constant"
         },
         {
           "name": "generatedSignals",
-          "line": 224,
+          "line": 231,
           "type": "constant"
         }
       ],
@@ -3611,7 +3586,7 @@
       "headings": [],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 85.34,
+      "importance_weight": 85.33,
       "importance_bucket": "other"
     },
     {
@@ -4284,6 +4259,121 @@
       "importance_bucket": "other"
     },
     {
+      "file": "docs/progress/PROGRESS_LOG.md",
+      "lang": "markdown",
+      "size": 4427,
+      "lines": 125,
+      "estimated_tokens": 1107,
+      "symbols": [
+        {
+          "name": "Astra Progress Log",
+          "line": 12,
+          "type": "heading"
+        },
+        {
+          "name": "Entries",
+          "line": 14,
+          "type": "heading"
+        },
+        {
+          "name": "2026-06-16 - Journey Core Product Loop",
+          "line": 16,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
+          "line": 23,
+          "type": "heading"
+        },
+        {
+          "name": "Tests Run",
+          "line": 29,
+          "type": "heading"
+        },
+        {
+          "name": "Risks / Follow-ups",
+          "line": 36,
+          "type": "heading"
+        },
+        {
+          "name": "2026-06-16 - Composer Operator Review Workflow",
+          "line": 40,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
+          "line": 47,
+          "type": "heading"
+        },
+        {
+          "name": "Tests Run",
+          "line": 55,
+          "type": "heading"
+        },
+        {
+          "name": "Risks / Follow-ups",
+          "line": 70,
+          "type": "heading"
+        },
+        {
+          "name": "2026-06-16 - Composer Private Feed Write Edge",
+          "line": 74,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
+          "line": 81,
+          "type": "heading"
+        },
+        {
+          "name": "Tests Run",
+          "line": 88,
+          "type": "heading"
+        },
+        {
+          "name": "Risks / Follow-ups",
+          "line": 99,
+          "type": "heading"
+        },
+        {
+          "name": "2026-06-16 - Stewardship v3 Install",
+          "line": 104,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
+          "line": 111,
+          "type": "heading"
+        },
+        {
+          "name": "Tests Run",
+          "line": 117,
+          "type": "heading"
+        },
+        {
+          "name": "Risks / Follow-ups",
+          "line": 121,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Astra Progress Log",
+        "Entries",
+        "2026-06-16 - Journey Core Product Loop",
+        "2026-06-16 - Composer Operator Review Workflow",
+        "2026-06-16 - Composer Private Feed Write Edge",
+        "2026-06-16 - Stewardship v3 Install"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 58.42,
+      "importance_bucket": "other"
+    },
+    {
       "file": "apps/astra-web/lib/auth/server.ts",
       "lang": "typescript",
       "size": 2254,
@@ -4601,100 +4691,6 @@
       "dependency_in": 1,
       "dependency_out": 1,
       "importance_weight": 49.45,
-      "importance_bucket": "other"
-    },
-    {
-      "file": "docs/progress/PROGRESS_LOG.md",
-      "lang": "markdown",
-      "size": 3441,
-      "lines": 101,
-      "estimated_tokens": 861,
-      "symbols": [
-        {
-          "name": "Astra Progress Log",
-          "line": 12,
-          "type": "heading"
-        },
-        {
-          "name": "Entries",
-          "line": 14,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-16 - Composer Operator Review Workflow",
-          "line": 16,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 23,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 31,
-          "type": "heading"
-        },
-        {
-          "name": "Risks / Follow-ups",
-          "line": 46,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-16 - Composer Private Feed Write Edge",
-          "line": 50,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 57,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 64,
-          "type": "heading"
-        },
-        {
-          "name": "Risks / Follow-ups",
-          "line": 75,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-16 - Stewardship v3 Install",
-          "line": 80,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 87,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 93,
-          "type": "heading"
-        },
-        {
-          "name": "Risks / Follow-ups",
-          "line": 97,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Astra Progress Log",
-        "Entries",
-        "2026-06-16 - Composer Operator Review Workflow",
-        "2026-06-16 - Composer Private Feed Write Edge",
-        "2026-06-16 - Stewardship v3 Install"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 46.44,
       "importance_bucket": "other"
     },
     {
@@ -5237,9 +5233,9 @@
     {
       "file": "apps/astra-web/lib/i18n.ts",
       "lang": "typescript",
-      "size": 10312,
-      "lines": 246,
-      "estimated_tokens": 2578,
+      "size": 11260,
+      "lines": 266,
+      "estimated_tokens": 2815,
       "symbols": [
         {
           "name": "ui",
@@ -5256,7 +5252,7 @@
       "headings": [],
       "dependency_in": 13,
       "dependency_out": 0,
-      "importance_weight": 33.35,
+      "importance_weight": 33.34,
       "importance_bucket": "other"
     },
     {
@@ -5593,9 +5589,9 @@
     {
       "file": "docs/architecture/composer-private-personal-feeds.md",
       "lang": "markdown",
-      "size": 5594,
-      "lines": 83,
-      "estimated_tokens": 1399,
+      "size": 5763,
+      "lines": 84,
+      "estimated_tokens": 1441,
       "symbols": [
         {
           "name": "Composer Private Personal Feeds",
@@ -5634,12 +5630,12 @@
         },
         {
           "name": "v0 Access Rules",
-          "line": 61,
+          "line": 62,
           "type": "heading"
         },
         {
           "name": "Testing Bar",
-          "line": 72,
+          "line": 73,
           "type": "heading"
         }
       ],
@@ -5659,7 +5655,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 31.38,
+      "importance_weight": 31.39,
       "importance_bucket": "other"
     },
     {
@@ -6374,23 +6370,23 @@
     {
       "file": "apps/astra-web/app/journey/page.tsx",
       "lang": "typescript",
-      "size": 1512,
-      "lines": 44,
-      "estimated_tokens": 378,
+      "size": 2051,
+      "lines": 57,
+      "estimated_tokens": 513,
       "symbols": [
         {
           "name": "dynamic",
-          "line": 7,
+          "line": 8,
           "type": "constant"
         },
         {
           "name": "JourneyPage",
-          "line": 9,
+          "line": 10,
           "type": "component"
         },
         {
           "name": "view",
-          "line": 11,
+          "line": 12,
           "type": "constant"
         }
       ],
@@ -6399,7 +6395,8 @@
         "../../components/StreamReader",
         "../../lib/auth/profile",
         "../../lib/i18n",
-        "../../lib/journey"
+        "../../lib/journey",
+        "next/link"
       ],
       "exports": [
         "JourneyPage",
@@ -6410,7 +6407,7 @@
       "headings": [],
       "dependency_in": 0,
       "dependency_out": 5,
-      "importance_weight": 24.93,
+      "importance_weight": 25.13,
       "importance_bucket": "other"
     },
     {
@@ -8898,21 +8895,28 @@
     "2026-06-16 - Composer Operator Review Workflow": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 16,
+        "line": 40,
         "type": "heading"
       }
     ],
     "2026-06-16 - Composer Private Feed Write Edge": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 50,
+        "line": 74,
+        "type": "heading"
+      }
+    ],
+    "2026-06-16 - Journey Core Product Loop": [
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 16,
         "type": "heading"
       }
     ],
     "2026-06-16 - Stewardship v3 Install": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 80,
+        "line": 104,
         "type": "heading"
       }
     ],
@@ -10328,7 +10332,7 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 118,
+        "line": 110,
         "type": "constant"
       },
       {
@@ -10352,7 +10356,7 @@
     "cardFromFeedItem": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 66,
+        "line": 58,
         "type": "function"
       }
     ],
@@ -10385,7 +10389,7 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 113,
+        "line": 105,
         "type": "constant"
       }
     ],
@@ -11516,7 +11520,7 @@
       },
       {
         "file": "apps/astra-web/app/journey/page.tsx",
-        "line": 7,
+        "line": 8,
         "type": "constant"
       },
       {
@@ -11528,7 +11532,7 @@
     "email": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 164,
+        "line": 165,
         "type": "constant"
       }
     ],
@@ -11567,13 +11571,6 @@
         "type": "heading"
       }
     ],
-    "existing": [
-      {
-        "file": "apps/astra-web/lib/journey.ts",
-        "line": 161,
-        "type": "constant"
-      }
-    ],
     "External Services / Dependencies": [
       {
         "file": "docs/architecture/SYSTEM_MAP.md",
@@ -11609,31 +11606,17 @@
         "type": "heading"
       }
     ],
-    "fallback": [
-      {
-        "file": "apps/astra-web/lib/journey.ts",
-        "line": 125,
-        "type": "constant"
-      }
-    ],
     "fallbackLane": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 68,
-        "type": "constant"
-      }
-    ],
-    "fallbackRankStart": [
-      {
-        "file": "apps/astra-web/lib/journey.ts",
-        "line": 30,
+        "line": 60,
         "type": "constant"
       }
     ],
     "feed": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 166,
+        "line": 125,
         "type": "constant"
       }
     ],
@@ -11642,13 +11625,6 @@
         "file": "apps/astra-web/lib/composer-private-feed.ts",
         "line": 16,
         "type": "constant"
-      }
-    ],
-    "feedKindFromJourneyKind": [
-      {
-        "file": "apps/astra-web/lib/journey.ts",
-        "line": 51,
-        "type": "function"
       }
     ],
     "fetchImpl": [
@@ -11833,7 +11809,7 @@
     "generatedSignals": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 224,
+        "line": 231,
         "type": "constant"
       }
     ],
@@ -11907,14 +11883,14 @@
     "getJourneyViewModel": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 153,
+        "line": 116,
         "type": "function"
       }
     ],
     "getPublicFallbackJourney": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 111,
+        "line": 103,
         "type": "function"
       }
     ],
@@ -12407,7 +12383,7 @@
     "JourneyPage": [
       {
         "file": "apps/astra-web/app/journey/page.tsx",
-        "line": 9,
+        "line": 10,
         "type": "component"
       }
     ],
@@ -12491,7 +12467,7 @@
     "laneForFeedKind": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 58,
+        "line": 50,
         "type": "function"
       }
     ],
@@ -12505,14 +12481,14 @@
     "LegacyCard": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 28,
+        "line": 29,
         "type": "type"
       }
     ],
     "LegacyStreamItem": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 27,
+        "line": 28,
         "type": "type"
       }
     ],
@@ -12831,7 +12807,7 @@
     "name": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 165,
+        "line": 166,
         "type": "constant"
       }
     ],
@@ -12899,7 +12875,7 @@
     "nextButton": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 181,
+        "line": 187,
         "type": "constant"
       }
     ],
@@ -13000,7 +12976,7 @@
     "onboarding": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 199,
+        "line": 205,
         "type": "constant"
       }
     ],
@@ -13266,7 +13242,7 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 67,
+        "line": 59,
         "type": "constant"
       },
       {
@@ -13278,21 +13254,21 @@
     "payloadLane": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 37,
+        "line": 36,
         "type": "function"
       }
     ],
     "payloadString": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 32,
+        "line": 31,
         "type": "function"
       }
     ],
     "payloadTone": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 45,
+        "line": 44,
         "type": "function"
       }
     ],
@@ -13529,7 +13505,7 @@
     "privateStreamCard": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 83,
+        "line": 75,
         "type": "function"
       }
     ],
@@ -13600,7 +13576,7 @@
     "publicFallbackStreamCard": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 97,
+        "line": 89,
         "type": "function"
       }
     ],
@@ -14272,17 +14248,22 @@
     "Risks / Follow-ups": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 46,
+        "line": 36,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 75,
+        "line": 70,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 97,
+        "line": 99,
+        "type": "heading"
+      },
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 121,
         "type": "heading"
       }
     ],
@@ -14416,13 +14397,6 @@
       {
         "file": "packages/db/src/repositories.ts",
         "line": 384,
-        "type": "function"
-      }
-    ],
-    "seedPrivateFeedFromPublicFallback": [
-      {
-        "file": "apps/astra-web/lib/journey.ts",
-        "line": 124,
         "type": "function"
       }
     ],
@@ -14568,7 +14542,7 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 112,
+        "line": 104,
         "type": "constant"
       }
     ],
@@ -14919,24 +14893,29 @@
     "Testing Bar": [
       {
         "file": "docs/architecture/composer-private-personal-feeds.md",
-        "line": 72,
+        "line": 73,
         "type": "heading"
       }
     ],
     "Tests Run": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 31,
+        "line": 29,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 64,
+        "line": 55,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 93,
+        "line": 88,
+        "type": "heading"
+      },
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 117,
         "type": "heading"
       }
     ],
@@ -15220,7 +15199,7 @@
     "v0 Access Rules": [
       {
         "file": "docs/architecture/composer-private-personal-feeds.md",
-        "line": 61,
+        "line": 62,
         "type": "heading"
       }
     ],
@@ -15258,17 +15237,17 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 33,
+        "line": 32,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 38,
+        "line": 37,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 46,
+        "line": 45,
         "type": "constant"
       },
       {
@@ -15316,7 +15295,7 @@
       },
       {
         "file": "apps/astra-web/app/journey/page.tsx",
-        "line": 11,
+        "line": 12,
         "type": "constant"
       },
       {
@@ -15359,12 +15338,17 @@
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 57,
+        "line": 47,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 87,
+        "line": 81,
+        "type": "heading"
+      },
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 111,
         "type": "heading"
       }
     ],
@@ -15662,22 +15646,6 @@
         "route_count": 0
       },
       {
-        "file": "apps/astra-web/lib/journey.ts",
-        "weight": 146.4,
-        "bucket": "other",
-        "estimated_tokens": 1371,
-        "lines": 172,
-        "symbols": 30,
-        "symbol_type_counts": {
-          "constant": 12,
-          "function": 11,
-          "type": 7
-        },
-        "dependency_in": 2,
-        "dependency_out": 0,
-        "route_count": 0
-      },
-      {
         "file": "packages/chart-maker/src/index.ts",
         "weight": 132.4,
         "bucket": "other",
@@ -15726,6 +15694,22 @@
         "dependency_in": 0,
         "dependency_out": 1,
         "route_count": 2
+      },
+      {
+        "file": "apps/astra-web/lib/journey.ts",
+        "weight": 121.42,
+        "bucket": "other",
+        "estimated_tokens": 1063,
+        "lines": 132,
+        "symbols": 25,
+        "symbol_type_counts": {
+          "constant": 9,
+          "function": 9,
+          "type": 7
+        },
+        "dependency_in": 2,
+        "dependency_out": 0,
+        "route_count": 0
       },
       {
         "file": "ASTRA_CLEAN_START_INAUGURAL_CHARTER.md",
@@ -15812,10 +15796,10 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "weight": 85.34,
+        "weight": 85.33,
         "bucket": "other",
-        "estimated_tokens": 2872,
-        "lines": 231,
+        "estimated_tokens": 3008,
+        "lines": 238,
         "symbols": 24,
         "symbol_type_counts": {
           "constant": 21,
@@ -15971,6 +15955,20 @@
         "route_count": 0
       },
       {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "weight": 58.42,
+        "bucket": "other",
+        "estimated_tokens": 1107,
+        "lines": 125,
+        "symbols": 18,
+        "symbol_type_counts": {
+          "heading": 18
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "apps/astra-web/lib/auth/server.ts",
         "weight": 58.36,
         "bucket": "other",
@@ -16032,20 +16030,6 @@
         },
         "dependency_in": 1,
         "dependency_out": 1,
-        "route_count": 0
-      },
-      {
-        "file": "docs/progress/PROGRESS_LOG.md",
-        "weight": 46.44,
-        "bucket": "other",
-        "estimated_tokens": 861,
-        "lines": 101,
-        "symbols": 14,
-        "symbol_type_counts": {
-          "heading": 14
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -16185,10 +16169,10 @@
       },
       {
         "file": "apps/astra-web/lib/i18n.ts",
-        "weight": 33.35,
+        "weight": 33.34,
         "bucket": "other",
-        "estimated_tokens": 2578,
-        "lines": 246,
+        "estimated_tokens": 2815,
+        "lines": 266,
         "symbols": 1,
         "symbol_type_counts": {
           "constant": 1
@@ -16272,10 +16256,10 @@
       },
       {
         "file": "docs/architecture/composer-private-personal-feeds.md",
-        "weight": 31.38,
+        "weight": 31.39,
         "bucket": "other",
-        "estimated_tokens": 1399,
-        "lines": 83,
+        "estimated_tokens": 1441,
+        "lines": 84,
         "symbols": 9,
         "symbol_type_counts": {
           "heading": 9
@@ -16457,10 +16441,10 @@
       },
       {
         "file": "apps/astra-web/app/journey/page.tsx",
-        "weight": 24.93,
+        "weight": 25.13,
         "bucket": "other",
-        "estimated_tokens": 378,
-        "lines": 44,
+        "estimated_tokens": 513,
+        "lines": 57,
         "symbols": 3,
         "symbol_type_counts": {
           "component": 1,
@@ -17499,9 +17483,9 @@
       {
         "name": "top-weighted",
         "budget_tokens": 32000,
-        "estimated_tokens": 33278,
+        "estimated_tokens": 33216,
         "file_count": 6,
-        "symbol_count": 448,
+        "symbol_count": 446,
         "files": [
           {
             "rank": 1,
@@ -17589,18 +17573,18 @@
           },
           {
             "rank": 6,
-            "file": "apps/astra-web/lib/journey.ts",
-            "weight": 146.4,
+            "file": "packages/chart-maker/src/index.ts",
+            "weight": 132.4,
             "bucket": "other",
-            "estimated_tokens": 1371,
-            "lines": 172,
-            "symbols": 30,
+            "estimated_tokens": 1309,
+            "lines": 156,
+            "symbols": 28,
             "symbol_type_counts": {
               "constant": 12,
-              "function": 11,
-              "type": 7
+              "function": 10,
+              "type": 6
             },
-            "dependency_in": 2,
+            "dependency_in": 0,
             "dependency_out": 0,
             "route_count": 0
           }
@@ -17609,9 +17593,9 @@
       {
         "name": "top-weighted",
         "budget_tokens": 64000,
-        "estimated_tokens": 66026,
+        "estimated_tokens": 66337,
         "file_count": 39,
-        "symbol_count": 810,
+        "symbol_count": 809,
         "files": [
           {
             "rank": 1,
@@ -17699,23 +17683,6 @@
           },
           {
             "rank": 6,
-            "file": "apps/astra-web/lib/journey.ts",
-            "weight": 146.4,
-            "bucket": "other",
-            "estimated_tokens": 1371,
-            "lines": 172,
-            "symbols": 30,
-            "symbol_type_counts": {
-              "constant": 12,
-              "function": 11,
-              "type": 7
-            },
-            "dependency_in": 2,
-            "dependency_out": 0,
-            "route_count": 0
-          },
-          {
-            "rank": 7,
             "file": "packages/chart-maker/src/index.ts",
             "weight": 132.4,
             "bucket": "other",
@@ -17732,7 +17699,7 @@
             "route_count": 0
           },
           {
-            "rank": 8,
+            "rank": 7,
             "file": "apps/astra-web/app/api/chart-requests/route.ts",
             "weight": 130.92,
             "bucket": "app/api",
@@ -17750,7 +17717,7 @@
             "route_count": 2
           },
           {
-            "rank": 9,
+            "rank": 8,
             "file": "apps/astra-web/app/api/reports/route.ts",
             "weight": 130.92,
             "bucket": "app/api",
@@ -17766,6 +17733,23 @@
             "dependency_in": 0,
             "dependency_out": 1,
             "route_count": 2
+          },
+          {
+            "rank": 9,
+            "file": "apps/astra-web/lib/journey.ts",
+            "weight": 121.42,
+            "bucket": "other",
+            "estimated_tokens": 1063,
+            "lines": 132,
+            "symbols": 25,
+            "symbol_type_counts": {
+              "constant": 9,
+              "function": 9,
+              "type": 7
+            },
+            "dependency_in": 2,
+            "dependency_out": 0,
+            "route_count": 0
           },
           {
             "rank": 10,
@@ -17858,10 +17842,10 @@
           {
             "rank": 15,
             "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-            "weight": 85.34,
+            "weight": 85.33,
             "bucket": "other",
-            "estimated_tokens": 2872,
-            "lines": 231,
+            "estimated_tokens": 3008,
+            "lines": 238,
             "symbols": 24,
             "symbol_type_counts": {
               "constant": 21,
@@ -18027,6 +18011,21 @@
           },
           {
             "rank": 25,
+            "file": "docs/progress/PROGRESS_LOG.md",
+            "weight": 58.42,
+            "bucket": "other",
+            "estimated_tokens": 1107,
+            "lines": 125,
+            "symbols": 18,
+            "symbol_type_counts": {
+              "heading": 18
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 26,
             "file": "apps/astra-web/lib/auth/server.ts",
             "weight": 58.36,
             "bucket": "other",
@@ -18042,7 +18041,7 @@
             "route_count": 0
           },
           {
-            "rank": 26,
+            "rank": 27,
             "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
             "weight": 52.43,
             "bucket": "other",
@@ -18059,7 +18058,7 @@
             "route_count": 0
           },
           {
-            "rank": 27,
+            "rank": 28,
             "file": "apps/astra-web/components/AuthPanel.tsx",
             "weight": 50.42,
             "bucket": "other",
@@ -18077,7 +18076,7 @@
             "route_count": 0
           },
           {
-            "rank": 28,
+            "rank": 29,
             "file": "apps/composer-web/src/publishStreamArtifact.ts",
             "weight": 49.45,
             "bucket": "other",
@@ -18091,21 +18090,6 @@
             },
             "dependency_in": 1,
             "dependency_out": 1,
-            "route_count": 0
-          },
-          {
-            "rank": 29,
-            "file": "docs/progress/PROGRESS_LOG.md",
-            "weight": 46.44,
-            "bucket": "other",
-            "estimated_tokens": 861,
-            "lines": 101,
-            "symbols": 14,
-            "symbol_type_counts": {
-              "heading": 14
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
             "route_count": 0
           },
           {
@@ -18255,10 +18239,10 @@
           {
             "rank": 39,
             "file": "apps/astra-web/lib/i18n.ts",
-            "weight": 33.35,
+            "weight": 33.34,
             "bucket": "other",
-            "estimated_tokens": 2578,
-            "lines": 246,
+            "estimated_tokens": 2815,
+            "lines": 266,
             "symbols": 1,
             "symbol_type_counts": {
               "constant": 1
@@ -18272,9 +18256,9 @@
       {
         "name": "top-weighted",
         "budget_tokens": 128000,
-        "estimated_tokens": 132307,
+        "estimated_tokens": 132795,
         "file_count": 109,
-        "symbol_count": 1062,
+        "symbol_count": 1061,
         "files": [
           {
             "rank": 1,
@@ -18362,23 +18346,6 @@
           },
           {
             "rank": 6,
-            "file": "apps/astra-web/lib/journey.ts",
-            "weight": 146.4,
-            "bucket": "other",
-            "estimated_tokens": 1371,
-            "lines": 172,
-            "symbols": 30,
-            "symbol_type_counts": {
-              "constant": 12,
-              "function": 11,
-              "type": 7
-            },
-            "dependency_in": 2,
-            "dependency_out": 0,
-            "route_count": 0
-          },
-          {
-            "rank": 7,
             "file": "packages/chart-maker/src/index.ts",
             "weight": 132.4,
             "bucket": "other",
@@ -18395,7 +18362,7 @@
             "route_count": 0
           },
           {
-            "rank": 8,
+            "rank": 7,
             "file": "apps/astra-web/app/api/chart-requests/route.ts",
             "weight": 130.92,
             "bucket": "app/api",
@@ -18413,7 +18380,7 @@
             "route_count": 2
           },
           {
-            "rank": 9,
+            "rank": 8,
             "file": "apps/astra-web/app/api/reports/route.ts",
             "weight": 130.92,
             "bucket": "app/api",
@@ -18429,6 +18396,23 @@
             "dependency_in": 0,
             "dependency_out": 1,
             "route_count": 2
+          },
+          {
+            "rank": 9,
+            "file": "apps/astra-web/lib/journey.ts",
+            "weight": 121.42,
+            "bucket": "other",
+            "estimated_tokens": 1063,
+            "lines": 132,
+            "symbols": 25,
+            "symbol_type_counts": {
+              "constant": 9,
+              "function": 9,
+              "type": 7
+            },
+            "dependency_in": 2,
+            "dependency_out": 0,
+            "route_count": 0
           },
           {
             "rank": 10,
@@ -18521,10 +18505,10 @@
           {
             "rank": 15,
             "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-            "weight": 85.34,
+            "weight": 85.33,
             "bucket": "other",
-            "estimated_tokens": 2872,
-            "lines": 231,
+            "estimated_tokens": 3008,
+            "lines": 238,
             "symbols": 24,
             "symbol_type_counts": {
               "constant": 21,
@@ -18690,6 +18674,21 @@
           },
           {
             "rank": 25,
+            "file": "docs/progress/PROGRESS_LOG.md",
+            "weight": 58.42,
+            "bucket": "other",
+            "estimated_tokens": 1107,
+            "lines": 125,
+            "symbols": 18,
+            "symbol_type_counts": {
+              "heading": 18
+            },
+            "dependency_in": 0,
+            "dependency_out": 0,
+            "route_count": 0
+          },
+          {
+            "rank": 26,
             "file": "apps/astra-web/lib/auth/server.ts",
             "weight": 58.36,
             "bucket": "other",
@@ -18705,7 +18704,7 @@
             "route_count": 0
           },
           {
-            "rank": 26,
+            "rank": 27,
             "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
             "weight": 52.43,
             "bucket": "other",
@@ -18722,7 +18721,7 @@
             "route_count": 0
           },
           {
-            "rank": 27,
+            "rank": 28,
             "file": "apps/astra-web/components/AuthPanel.tsx",
             "weight": 50.42,
             "bucket": "other",
@@ -18740,7 +18739,7 @@
             "route_count": 0
           },
           {
-            "rank": 28,
+            "rank": 29,
             "file": "apps/composer-web/src/publishStreamArtifact.ts",
             "weight": 49.45,
             "bucket": "other",
@@ -18754,21 +18753,6 @@
             },
             "dependency_in": 1,
             "dependency_out": 1,
-            "route_count": 0
-          },
-          {
-            "rank": 29,
-            "file": "docs/progress/PROGRESS_LOG.md",
-            "weight": 46.44,
-            "bucket": "other",
-            "estimated_tokens": 861,
-            "lines": 101,
-            "symbols": 14,
-            "symbol_type_counts": {
-              "heading": 14
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
             "route_count": 0
           },
           {
@@ -18918,10 +18902,10 @@
           {
             "rank": 39,
             "file": "apps/astra-web/lib/i18n.ts",
-            "weight": 33.35,
+            "weight": 33.34,
             "bucket": "other",
-            "estimated_tokens": 2578,
-            "lines": 246,
+            "estimated_tokens": 2815,
+            "lines": 266,
             "symbols": 1,
             "symbol_type_counts": {
               "constant": 1
@@ -19011,10 +18995,10 @@
           {
             "rank": 45,
             "file": "docs/architecture/composer-private-personal-feeds.md",
-            "weight": 31.38,
+            "weight": 31.39,
             "bucket": "other",
-            "estimated_tokens": 1399,
-            "lines": 83,
+            "estimated_tokens": 1441,
+            "lines": 84,
             "symbols": 9,
             "symbol_type_counts": {
               "heading": 9
@@ -19209,10 +19193,10 @@
           {
             "rank": 58,
             "file": "apps/astra-web/app/journey/page.tsx",
-            "weight": 24.93,
+            "weight": 25.13,
             "bucket": "other",
-            "estimated_tokens": 378,
-            "lines": 44,
+            "estimated_tokens": 513,
+            "lines": 57,
             "symbols": 3,
             "symbol_type_counts": {
               "component": 1,
@@ -19978,8 +19962,8 @@
     ],
     "coverage": {
       "files": 136,
-      "symbols": 1062,
-      "total_estimated_tokens": 222783
+      "symbols": 1061,
+      "total_estimated_tokens": 223271
     }
   }
 }

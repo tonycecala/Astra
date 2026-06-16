@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { AstraCard, StreamItem, UserFeedItem } from "@astra/contracts";
-import { createUserFeedItem, db, listUserFeedItems, readFoundationSnapshot } from "@astra/db";
+import { db, listUserFeedItems, readFoundationSnapshot } from "@astra/db";
 
 type JourneyKind = StreamItem["kind"] | "source_card" | "report_signal" | "manual";
 type JourneyStatus = StreamItem["status"] | UserFeedItem["state"];
@@ -22,12 +22,11 @@ export type JourneyStreamCard = {
 export type JourneyViewModel = {
   mode: "private" | "public_fallback";
   streamCards: JourneyStreamCard[];
+  feedState: "private_ready" | "private_empty" | "public_preview";
 };
 
 type LegacyStreamItem = StreamItem;
 type LegacyCard = AstraCard;
-
-const fallbackRankStart = 1_000;
 
 function payloadString(payload: Record<string, unknown>, key: string) {
   const value = payload[key];
@@ -46,13 +45,6 @@ function payloadTone(payload: Record<string, unknown>, fallback: AstraCard["tone
   const value = payloadString(payload, "tone");
   if (value === "calm" || value === "bright" || value === "grounded" || value === "ceremonial") return value;
   return fallback;
-}
-
-function feedKindFromJourneyKind(kind: JourneyKind): UserFeedItem["feedKind"] {
-  if (kind === "source_card" || kind === "report_signal" || kind === "manual") return kind;
-  if (kind === "card") return "source_card";
-  if (kind === "artifact") return "report_signal";
-  return kind;
 }
 
 function laneForFeedKind(kind: UserFeedItem["feedKind"]): AstraCard["lane"] {
@@ -121,51 +113,19 @@ async function getPublicFallbackJourney(): Promise<JourneyStreamCard[]> {
     });
 }
 
-async function seedPrivateFeedFromPublicFallback(userId: string) {
-  const fallback = await getPublicFallbackJourney();
-  await Promise.all(
-    fallback.map(({ item, card }, index) =>
-      createUserFeedItem(db, {
-        id: `private_feed:${userId}:${item.id}`,
-        userId,
-        feedKind: feedKindFromJourneyKind(item.kind),
-        title: card.title,
-        body: card.body,
-        displayPayload: {
-          subtitle: card.subtitle,
-          lane: card.lane,
-          tone: card.tone,
-          ctaLabel: card.ctaLabel,
-          ctaAction: card.ctaAction,
-          imageUrl: card.imageUrl,
-          publicFallbackItemId: item.id,
-          source: "public_fallback_projection"
-        },
-        rankScore: fallbackRankStart - index,
-        reasonCode: "private_projection_from_public_source",
-        state: "available",
-        availableAt: card.publishedAt
-      })
-    )
-  );
-}
-
 export async function getJourneyViewModel(userId?: string): Promise<JourneyViewModel> {
   if (!userId) {
     return {
       mode: "public_fallback",
+      feedState: "public_preview",
       streamCards: await getPublicFallbackJourney()
     };
-  }
-
-  const existing = await listUserFeedItems(db, { userId, limit: 1 });
-  if (!existing.items.length) {
-    await seedPrivateFeedFromPublicFallback(userId);
   }
 
   const feed = await listUserFeedItems(db, { userId, state: "available", limit: 50 });
   return {
     mode: "private",
+    feedState: feed.items.length ? "private_ready" : "private_empty",
     streamCards: feed.items.map(privateStreamCard)
   };
 }

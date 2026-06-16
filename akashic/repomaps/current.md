@@ -17,7 +17,7 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `222783`
+- Estimated token footprint: `223271`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
@@ -77,16 +77,16 @@ tsconfig.json
 - `packages/contracts/src/index.ts` - weight 247.29, ~4936 tokens, 96 symbols, in:0/out:0
 - `apps/astra-web/components/BirthOnboardingPanel.tsx` - weight 235.27, ~6424 tokens, 50 symbols, in:1/out:1
 - `docs/inbox-astra/ASTRA_COMPOSER_PRIVATE_PERSONAL_FEED_DOCTRINE.md` - weight 163.29, ~4775 tokens, 53 symbols, in:0/out:0
-- `apps/astra-web/lib/journey.ts` - weight 146.4, ~1371 tokens, 30 symbols, in:2/out:0
 - `packages/chart-maker/src/index.ts` - weight 132.4, ~1309 tokens, 28 symbols, in:0/out:0
 - `apps/astra-web/app/api/chart-requests/route.ts` - weight 130.92, ~323 tokens, 8 symbols, in:0/out:1
 - `apps/astra-web/app/api/reports/route.ts` - weight 130.92, ~334 tokens, 8 symbols, in:0/out:1
+- `apps/astra-web/lib/journey.ts` - weight 121.42, ~1063 tokens, 25 symbols, in:2/out:0
 - `ASTRA_CLEAN_START_INAUGURAL_CHARTER.md` - weight 106.32, ~3531 tokens, 34 symbols, in:0/out:0
 - `apps/astra-web/components/ThemeToggle.tsx` - weight 103.44, ~687 tokens, 20 symbols, in:1/out:1
 - `apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts` - weight 90.43, ~896 tokens, 9 symbols, in:0/out:2
 - `apps/composer-web/src/operatorWorkflow.ts` - weight 87.38, ~1724 tokens, 22 symbols, in:0/out:2
 - `apps/astra-web/app/api/reports/[requestId]/generate/route.ts` - weight 85.84, ~313 tokens, 8 symbols, in:0/out:1
-- `apps/astra-web/e2e/foundation-routes.spec.ts` - weight 85.34, ~2872 tokens, 24 symbols, in:0/out:0
+- `apps/astra-web/e2e/foundation-routes.spec.ts` - weight 85.33, ~3008 tokens, 24 symbols, in:0/out:0
 
 ## Critical Routes
 - `GET /api/chart-requests` in `apps/astra-web/app/api/chart-requests/route.ts:10`
@@ -102,9 +102,9 @@ tsconfig.json
 - `POST /api/reports` in `apps/astra-web/app/api/reports/route.ts:18`
 
 ## Pareto Profiles
-- `32000` tokens -> 6 files, 448 symbols, ~33278 estimated tokens.
-- `64000` tokens -> 39 files, 810 symbols, ~66026 estimated tokens.
-- `128000` tokens -> 109 files, 1062 symbols, ~132307 estimated tokens.
+- `32000` tokens -> 6 files, 446 symbols, ~33216 estimated tokens.
+- `64000` tokens -> 39 files, 809 symbols, ~66337 estimated tokens.
+- `128000` tokens -> 109 files, 1061 symbols, ~132795 estimated tokens.
 
 ## Data Model
 Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.
@@ -121,12 +121,12 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - `apps/astra-web/components/BirthOnboardingPanel.tsx` needs extra care because it is large or touches auth/data/schema concerns.
 - `docs/inbox-astra/ASTRA_COMPOSER_PRIVATE_PERSONAL_FEED_DOCTRINE.md` needs extra care because it is large or touches auth/data/schema concerns.
 - `ASTRA_CLEAN_START_INAUGURAL_CHARTER.md` needs extra care because it is large or touches auth/data/schema concerns.
+- `apps/astra-web/e2e/foundation-routes.spec.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `packages/db/src/schema.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `apps/astra-web/lib/auth/server.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `packages/db/src/env.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `packages/db/drizzle.config.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `apps/astra-web/lib/auth/profile.ts` needs extra care because it is large or touches auth/data/schema concerns.
-- `akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md` needs extra care because it is large or touches auth/data/schema concerns.
 
 ## Current Priorities
 - Honor this repo's own AGENTS.md, ADRs, REPOMAP, and local Akashic artifacts before applying central guidance.

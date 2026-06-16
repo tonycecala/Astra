@@ -178,6 +178,31 @@ textarea {
   margin-bottom: 24px;
 }
 
+.journey-state-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-bottom: 18px;
+  padding: 16px 18px;
+  background: var(--soft);
+}
+
+.journey-state-card h2 {
+  margin: 4px 0 0;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.journey-state-card p {
+  max-width: 760px;
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
 .pill {
   display: inline-flex;
   align-items: center;
@@ -608,6 +633,11 @@ textarea {
   }
 
   .reader-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .journey-state-card {
     align-items: stretch;
     flex-direction: column;
   }

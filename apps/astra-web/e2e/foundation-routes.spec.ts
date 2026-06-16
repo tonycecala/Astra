@@ -115,6 +115,7 @@ test.describe("clean-start routes", () => {
   test("reader filters lanes and opens card detail", async ({ page }) => {
     await page.goto("/journey");
     await expect(page.locator(".status-strip").getByText("Public fallback")).toBeVisible();
+    await expect(page.getByLabel("Journey state")).toContainText("A public sample, not your private Journey");
     await page.getByRole("tab", { name: "Practice" }).click();
     await expect(page.getByRole("button", { name: /Three Quiet Breaths/ })).toBeVisible();
     await expect(page.getByRole("button", { name: /The River Keeps Moving/ })).toHaveCount(0);
@@ -174,6 +175,11 @@ test.describe("clean-start routes", () => {
     await page.getByRole("button", { name: "Verify code" }).click();
     await expect(page.getByText("Signed in")).toBeVisible();
 
+    await page.goto("/journey");
+    await expect(page.locator(".status-strip").getByText("Private journey")).toBeVisible();
+    await expect(page.getByLabel("Journey state")).toContainText("Composer will generate your onboarding cards");
+    await expect(page.getByRole("heading", { name: "No cards in this lane" })).toBeVisible();
+
     await page.goto("/self");
     await expect(page.getByRole("heading", { name })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
@@ -220,6 +226,7 @@ test.describe("clean-start routes", () => {
 
     await page.goto("/journey");
     await expect(page.locator(".status-strip").getByText("Private journey")).toBeVisible();
+    await expect(page.getByLabel("Journey state")).toContainText("Composer is shaping this Journey");
     await page.getByRole("tab", { name: "Know yourself" }).click();
     const generatedSignals = page.locator(".stream-card-open").filter({ hasText: "Gemini Sun, Virgo Moon, Cancer rising" });
     expect(await generatedSignals.count()).toBeGreaterThan(0);

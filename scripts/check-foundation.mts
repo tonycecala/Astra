@@ -317,6 +317,9 @@ if (!journeyRoute.includes("getAstraAuthContext") || !journeyRoute.includes("get
 if (!journeyModel.includes("listUserFeedItems") || !journeyModel.includes("public_fallback")) {
   throw new Error("Journey view model must split authenticated private feed reads from public fallback content.");
 }
+if (journeyModel.includes("private_projection_from_public_source") || journeyModel.includes("seedPrivateFeedFromPublicFallback")) {
+  throw new Error("Signed-in first-run Journey must wait for Composer onboarding cards instead of copying public fallback cards.");
+}
 if (
   !reportSignalPublishRoute.includes("composerPrivateFeedWriteSchema") ||
   !reportSignalPublishRoute.includes("persistComposerPrivateFeedWrite") ||

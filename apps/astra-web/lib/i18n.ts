@@ -29,8 +29,28 @@ export const ui = {
     privateFeed: "Private journey",
     publicFallback: "Public fallback",
     reportSignalsReady: "Report signals ready",
+    composerDefaultPath: "Composer-authored feed",
     noLegacyData: "No legacy data",
     cardCount: (count: number) => `${count} cards`,
+    stateLabel: "Journey state",
+    signInCta: "Sign in",
+    states: {
+      public_preview: {
+        eyebrow: "Preview mode",
+        title: "A public sample, not your private Journey",
+        body: "Signed-out readers see fallback cards only. Your personal feed appears after sign-in and Composer publishes user-owned cards."
+      },
+      private_empty: {
+        eyebrow: "First private run",
+        title: "Composer will generate your onboarding cards",
+        body: "Astra will not copy public fallback cards into your private feed. Your first private Journey cards arrive from the Composer onboarding workflow."
+      },
+      private_ready: {
+        eyebrow: "Private feed",
+        title: "Composer is shaping this Journey",
+        body: "These cards are user-owned private feed projections. Source material and decision traces stay behind the Composer boundary."
+      }
+    },
     streamCardsLabel: "Stream cards",
     laneFilterLabel: "Stream lanes",
     allLanes: "All",

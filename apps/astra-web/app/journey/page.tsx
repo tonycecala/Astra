@@ -3,6 +3,7 @@ import { StreamReader } from "../../components/StreamReader";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
 import { getJourneyViewModel } from "../../lib/journey";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -33,10 +34,22 @@ export default async function JourneyPage() {
       </PageHeader>
       <div className="status-strip">
         <span className="pill">{view.mode === "private" ? ui.journey.privateFeed : ui.journey.publicFallback}</span>
-        <span className="pill">{ui.journey.reportSignalsReady}</span>
+        <span className="pill">{ui.journey.composerDefaultPath}</span>
         <span className="pill">{ui.journey.noLegacyData}</span>
         <span className="pill">{ui.journey.cardCount(view.streamCards.length)}</span>
       </div>
+      <section className="journey-state-card" aria-label={ui.journey.stateLabel}>
+        <div>
+          <p className="eyebrow">{ui.journey.states[view.feedState].eyebrow}</p>
+          <h2>{ui.journey.states[view.feedState].title}</h2>
+          <p>{ui.journey.states[view.feedState].body}</p>
+        </div>
+        {view.feedState === "public_preview" ? (
+          <Link className="button secondary" href="/login">
+            {ui.journey.signInCta}
+          </Link>
+        ) : null}
+      </section>
       <StreamReader streamCards={view.streamCards} />
     </>
   );

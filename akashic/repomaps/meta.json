@@ -88,22 +88,6 @@
       "route_count": 0
     },
     {
-      "file": "apps/astra-web/lib/journey.ts",
-      "weight": 146.4,
-      "bucket": "other",
-      "estimated_tokens": 1371,
-      "lines": 172,
-      "symbols": 30,
-      "symbol_type_counts": {
-        "constant": 12,
-        "function": 11,
-        "type": 7
-      },
-      "dependency_in": 2,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
       "file": "packages/chart-maker/src/index.ts",
       "weight": 132.4,
       "bucket": "other",
@@ -152,6 +136,22 @@
       "dependency_in": 0,
       "dependency_out": 1,
       "route_count": 2
+    },
+    {
+      "file": "apps/astra-web/lib/journey.ts",
+      "weight": 121.42,
+      "bucket": "other",
+      "estimated_tokens": 1063,
+      "lines": 132,
+      "symbols": 25,
+      "symbol_type_counts": {
+        "constant": 9,
+        "function": 9,
+        "type": 7
+      },
+      "dependency_in": 2,
+      "dependency_out": 0,
+      "route_count": 0
     },
     {
       "file": "ASTRA_CLEAN_START_INAUGURAL_CHARTER.md",
@@ -238,10 +238,10 @@
     },
     {
       "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-      "weight": 85.34,
+      "weight": 85.33,
       "bucket": "other",
-      "estimated_tokens": 2872,
-      "lines": 231,
+      "estimated_tokens": 3008,
+      "lines": 238,
       "symbols": 24,
       "symbol_type_counts": {
         "constant": 21,
@@ -397,6 +397,20 @@
       "route_count": 0
     },
     {
+      "file": "docs/progress/PROGRESS_LOG.md",
+      "weight": 58.42,
+      "bucket": "other",
+      "estimated_tokens": 1107,
+      "lines": 125,
+      "symbols": 18,
+      "symbol_type_counts": {
+        "heading": 18
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/astra-web/lib/auth/server.ts",
       "weight": 58.36,
       "bucket": "other",
@@ -458,20 +472,6 @@
       },
       "dependency_in": 1,
       "dependency_out": 1,
-      "route_count": 0
-    },
-    {
-      "file": "docs/progress/PROGRESS_LOG.md",
-      "weight": 46.44,
-      "bucket": "other",
-      "estimated_tokens": 861,
-      "lines": 101,
-      "symbols": 14,
-      "symbol_type_counts": {
-        "heading": 14
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -611,10 +611,10 @@
     },
     {
       "file": "apps/astra-web/lib/i18n.ts",
-      "weight": 33.35,
+      "weight": 33.34,
       "bucket": "other",
-      "estimated_tokens": 2578,
-      "lines": 246,
+      "estimated_tokens": 2815,
+      "lines": 266,
       "symbols": 1,
       "symbol_type_counts": {
         "constant": 1
@@ -698,10 +698,10 @@
     },
     {
       "file": "docs/architecture/composer-private-personal-feeds.md",
-      "weight": 31.38,
+      "weight": 31.39,
       "bucket": "other",
-      "estimated_tokens": 1399,
-      "lines": 83,
+      "estimated_tokens": 1441,
+      "lines": 84,
       "symbols": 9,
       "symbol_type_counts": {
         "heading": 9
@@ -883,10 +883,10 @@
     },
     {
       "file": "apps/astra-web/app/journey/page.tsx",
-      "weight": 24.93,
+      "weight": 25.13,
       "bucket": "other",
-      "estimated_tokens": 378,
-      "lines": 44,
+      "estimated_tokens": 513,
+      "lines": 57,
       "symbols": 3,
       "symbol_type_counts": {
         "component": 1,
@@ -1925,9 +1925,9 @@
     {
       "name": "top-weighted",
       "budget_tokens": 32000,
-      "estimated_tokens": 33278,
+      "estimated_tokens": 33216,
       "file_count": 6,
-      "symbol_count": 448,
+      "symbol_count": 446,
       "files": [
         {
           "rank": 1,
@@ -2015,18 +2015,18 @@
         },
         {
           "rank": 6,
-          "file": "apps/astra-web/lib/journey.ts",
-          "weight": 146.4,
+          "file": "packages/chart-maker/src/index.ts",
+          "weight": 132.4,
           "bucket": "other",
-          "estimated_tokens": 1371,
-          "lines": 172,
-          "symbols": 30,
+          "estimated_tokens": 1309,
+          "lines": 156,
+          "symbols": 28,
           "symbol_type_counts": {
             "constant": 12,
-            "function": 11,
-            "type": 7
+            "function": 10,
+            "type": 6
           },
-          "dependency_in": 2,
+          "dependency_in": 0,
           "dependency_out": 0,
           "route_count": 0
         }
@@ -2035,9 +2035,9 @@
     {
       "name": "top-weighted",
       "budget_tokens": 64000,
-      "estimated_tokens": 66026,
+      "estimated_tokens": 66337,
       "file_count": 39,
-      "symbol_count": 810,
+      "symbol_count": 809,
       "files": [
         {
           "rank": 1,
@@ -2125,23 +2125,6 @@
         },
         {
           "rank": 6,
-          "file": "apps/astra-web/lib/journey.ts",
-          "weight": 146.4,
-          "bucket": "other",
-          "estimated_tokens": 1371,
-          "lines": 172,
-          "symbols": 30,
-          "symbol_type_counts": {
-            "constant": 12,
-            "function": 11,
-            "type": 7
-          },
-          "dependency_in": 2,
-          "dependency_out": 0,
-          "route_count": 0
-        },
-        {
-          "rank": 7,
           "file": "packages/chart-maker/src/index.ts",
           "weight": 132.4,
           "bucket": "other",
@@ -2158,7 +2141,7 @@
           "route_count": 0
         },
         {
-          "rank": 8,
+          "rank": 7,
           "file": "apps/astra-web/app/api/chart-requests/route.ts",
           "weight": 130.92,
           "bucket": "app/api",
@@ -2176,7 +2159,7 @@
           "route_count": 2
         },
         {
-          "rank": 9,
+          "rank": 8,
           "file": "apps/astra-web/app/api/reports/route.ts",
           "weight": 130.92,
           "bucket": "app/api",
@@ -2192,6 +2175,23 @@
           "dependency_in": 0,
           "dependency_out": 1,
           "route_count": 2
+        },
+        {
+          "rank": 9,
+          "file": "apps/astra-web/lib/journey.ts",
+          "weight": 121.42,
+          "bucket": "other",
+          "estimated_tokens": 1063,
+          "lines": 132,
+          "symbols": 25,
+          "symbol_type_counts": {
+            "constant": 9,
+            "function": 9,
+            "type": 7
+          },
+          "dependency_in": 2,
+          "dependency_out": 0,
+          "route_count": 0
         },
         {
           "rank": 10,
@@ -2284,10 +2284,10 @@
         {
           "rank": 15,
           "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-          "weight": 85.34,
+          "weight": 85.33,
           "bucket": "other",
-          "estimated_tokens": 2872,
-          "lines": 231,
+          "estimated_tokens": 3008,
+          "lines": 238,
           "symbols": 24,
           "symbol_type_counts": {
             "constant": 21,
@@ -2453,6 +2453,21 @@
         },
         {
           "rank": 25,
+          "file": "docs/progress/PROGRESS_LOG.md",
+          "weight": 58.42,
+          "bucket": "other",
+          "estimated_tokens": 1107,
+          "lines": 125,
+          "symbols": 18,
+          "symbol_type_counts": {
+            "heading": 18
+          },
+          "dependency_in": 0,
+          "dependency_out": 0,
+          "route_count": 0
+        },
+        {
+          "rank": 26,
           "file": "apps/astra-web/lib/auth/server.ts",
           "weight": 58.36,
           "bucket": "other",
@@ -2468,7 +2483,7 @@
           "route_count": 0
         },
         {
-          "rank": 26,
+          "rank": 27,
           "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
           "weight": 52.43,
           "bucket": "other",
@@ -2485,7 +2500,7 @@
           "route_count": 0
         },
         {
-          "rank": 27,
+          "rank": 28,
           "file": "apps/astra-web/components/AuthPanel.tsx",
           "weight": 50.42,
           "bucket": "other",
@@ -2503,7 +2518,7 @@
           "route_count": 0
         },
         {
-          "rank": 28,
+          "rank": 29,
           "file": "apps/composer-web/src/publishStreamArtifact.ts",
           "weight": 49.45,
           "bucket": "other",
@@ -2517,21 +2532,6 @@
           },
           "dependency_in": 1,
           "dependency_out": 1,
-          "route_count": 0
-        },
-        {
-          "rank": 29,
-          "file": "docs/progress/PROGRESS_LOG.md",
-          "weight": 46.44,
-          "bucket": "other",
-          "estimated_tokens": 861,
-          "lines": 101,
-          "symbols": 14,
-          "symbol_type_counts": {
-            "heading": 14
-          },
-          "dependency_in": 0,
-          "dependency_out": 0,
           "route_count": 0
         },
         {
@@ -2681,10 +2681,10 @@
         {
           "rank": 39,
           "file": "apps/astra-web/lib/i18n.ts",
-          "weight": 33.35,
+          "weight": 33.34,
           "bucket": "other",
-          "estimated_tokens": 2578,
-          "lines": 246,
+          "estimated_tokens": 2815,
+          "lines": 266,
           "symbols": 1,
           "symbol_type_counts": {
             "constant": 1
@@ -2698,9 +2698,9 @@
     {
       "name": "top-weighted",
       "budget_tokens": 128000,
-      "estimated_tokens": 132307,
+      "estimated_tokens": 132795,
       "file_count": 109,
-      "symbol_count": 1062,
+      "symbol_count": 1061,
       "files": [
         {
           "rank": 1,
@@ -2788,23 +2788,6 @@
         },
         {
           "rank": 6,
-          "file": "apps/astra-web/lib/journey.ts",
-          "weight": 146.4,
-          "bucket": "other",
-          "estimated_tokens": 1371,
-          "lines": 172,
-          "symbols": 30,
-          "symbol_type_counts": {
-            "constant": 12,
-            "function": 11,
-            "type": 7
-          },
-          "dependency_in": 2,
-          "dependency_out": 0,
-          "route_count": 0
-        },
-        {
-          "rank": 7,
           "file": "packages/chart-maker/src/index.ts",
           "weight": 132.4,
           "bucket": "other",
@@ -2821,7 +2804,7 @@
           "route_count": 0
         },
         {
-          "rank": 8,
+          "rank": 7,
           "file": "apps/astra-web/app/api/chart-requests/route.ts",
           "weight": 130.92,
           "bucket": "app/api",
@@ -2839,7 +2822,7 @@
           "route_count": 2
         },
         {
-          "rank": 9,
+          "rank": 8,
           "file": "apps/astra-web/app/api/reports/route.ts",
           "weight": 130.92,
           "bucket": "app/api",
@@ -2855,6 +2838,23 @@
           "dependency_in": 0,
           "dependency_out": 1,
           "route_count": 2
+        },
+        {
+          "rank": 9,
+          "file": "apps/astra-web/lib/journey.ts",
+          "weight": 121.42,
+          "bucket": "other",
+          "estimated_tokens": 1063,
+          "lines": 132,
+          "symbols": 25,
+          "symbol_type_counts": {
+            "constant": 9,
+            "function": 9,
+            "type": 7
+          },
+          "dependency_in": 2,
+          "dependency_out": 0,
+          "route_count": 0
         },
         {
           "rank": 10,
@@ -2947,10 +2947,10 @@
         {
           "rank": 15,
           "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-          "weight": 85.34,
+          "weight": 85.33,
           "bucket": "other",
-          "estimated_tokens": 2872,
-          "lines": 231,
+          "estimated_tokens": 3008,
+          "lines": 238,
           "symbols": 24,
           "symbol_type_counts": {
             "constant": 21,
@@ -3116,6 +3116,21 @@
         },
         {
           "rank": 25,
+          "file": "docs/progress/PROGRESS_LOG.md",
+          "weight": 58.42,
+          "bucket": "other",
+          "estimated_tokens": 1107,
+          "lines": 125,
+          "symbols": 18,
+          "symbol_type_counts": {
+            "heading": 18
+          },
+          "dependency_in": 0,
+          "dependency_out": 0,
+          "route_count": 0
+        },
+        {
+          "rank": 26,
           "file": "apps/astra-web/lib/auth/server.ts",
           "weight": 58.36,
           "bucket": "other",
@@ -3131,7 +3146,7 @@
           "route_count": 0
         },
         {
-          "rank": 26,
+          "rank": 27,
           "file": "apps/composer-web/src/publishPrivateFeedItem.ts",
           "weight": 52.43,
           "bucket": "other",
@@ -3148,7 +3163,7 @@
           "route_count": 0
         },
         {
-          "rank": 27,
+          "rank": 28,
           "file": "apps/astra-web/components/AuthPanel.tsx",
           "weight": 50.42,
           "bucket": "other",
@@ -3166,7 +3181,7 @@
           "route_count": 0
         },
         {
-          "rank": 28,
+          "rank": 29,
           "file": "apps/composer-web/src/publishStreamArtifact.ts",
           "weight": 49.45,
           "bucket": "other",
@@ -3180,21 +3195,6 @@
           },
           "dependency_in": 1,
           "dependency_out": 1,
-          "route_count": 0
-        },
-        {
-          "rank": 29,
-          "file": "docs/progress/PROGRESS_LOG.md",
-          "weight": 46.44,
-          "bucket": "other",
-          "estimated_tokens": 861,
-          "lines": 101,
-          "symbols": 14,
-          "symbol_type_counts": {
-            "heading": 14
-          },
-          "dependency_in": 0,
-          "dependency_out": 0,
           "route_count": 0
         },
         {
@@ -3344,10 +3344,10 @@
         {
           "rank": 39,
           "file": "apps/astra-web/lib/i18n.ts",
-          "weight": 33.35,
+          "weight": 33.34,
           "bucket": "other",
-          "estimated_tokens": 2578,
-          "lines": 246,
+          "estimated_tokens": 2815,
+          "lines": 266,
           "symbols": 1,
           "symbol_type_counts": {
             "constant": 1
@@ -3437,10 +3437,10 @@
         {
           "rank": 45,
           "file": "docs/architecture/composer-private-personal-feeds.md",
-          "weight": 31.38,
+          "weight": 31.39,
           "bucket": "other",
-          "estimated_tokens": 1399,
-          "lines": 83,
+          "estimated_tokens": 1441,
+          "lines": 84,
           "symbols": 9,
           "symbol_type_counts": {
             "heading": 9
@@ -3635,10 +3635,10 @@
         {
           "rank": 58,
           "file": "apps/astra-web/app/journey/page.tsx",
-          "weight": 24.93,
+          "weight": 25.13,
           "bucket": "other",
-          "estimated_tokens": 378,
-          "lines": 44,
+          "estimated_tokens": 513,
+          "lines": 57,
           "symbols": 3,
           "symbol_type_counts": {
             "component": 1,
@@ -4404,7 +4404,7 @@
   ],
   "coverage": {
     "files": 136,
-    "symbols": 1062,
-    "total_estimated_tokens": 222783
+    "symbols": 1061,
+    "total_estimated_tokens": 223271
   }
 }

@@ -13,6 +13,30 @@ summary: "Durable session-by-session memory for Astra repo work."
 
 ## Entries
 
+### 2026-06-16 - Journey Core Product Loop
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** core Journey loop
+**Status:** complete
+
+#### What Changed
+
+- Made `/journey` explicit about signed-out public preview, signed-in first-run private empty state, and signed-in private ready state.
+- Removed automatic copying of public fallback cards into signed-in private feeds.
+- Clarified that Composer generates the first onboarding cards and remains the default private feed creation path.
+
+#### Tests Run
+
+- `npm run check`
+- `npm run test:composer-operator-workflow`
+- `npm run test:e2e`
+- In-app browser `/journey` QA for signed-out public preview, first-run signed-in private empty state, and Composer-published signed-in private ready state at desktop/tablet/mobile.
+
+#### Risks / Follow-ups
+
+- Composer onboarding card generation is the intended product path; this slice only prevents Astra from substituting public fallback cards as private feed content.
+
 ### 2026-06-16 - Composer Operator Review Workflow
 
 **Report Level:** 3 - Workflow & QA View
