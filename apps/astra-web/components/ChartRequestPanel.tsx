@@ -6,6 +6,16 @@ import type { ChartMakerRequest } from "@astra/contracts";
 import { ui } from "../lib/i18n";
 import styles from "./ChartRequestPanel.module.css";
 
+function supportedTimeZones() {
+  if (typeof Intl.supportedValuesOf !== "function") {
+    throw new Error("Intl.supportedValuesOf is required for timezone selection.");
+  }
+
+  return Intl.supportedValuesOf("timeZone");
+}
+
+const timeZones = supportedTimeZones();
+
 type ChartRequestPanelProps = {
   displayName: string;
   initialRequests: ChartMakerRequest[];
@@ -130,7 +140,14 @@ export function ChartRequestPanel({ displayName, initialRequests }: ChartRequest
           <div className={styles.formGrid}>
             <label>
               <span>{ui.self.chartTimezoneLabel}</span>
-              <input value={form.timezone} onChange={(event) => updateField("timezone", event.target.value)} />
+              <select value={form.timezone} onChange={(event) => updateField("timezone", event.target.value)}>
+                <option value="">{ui.self.chartTimezonePlaceholder}</option>
+                {timeZones.map((timeZone) => (
+                  <option key={timeZone} value={timeZone}>
+                    {timeZone.replaceAll("_", " ")}
+                  </option>
+                ))}
+              </select>
             </label>
             <label>
               <span>{ui.self.chartLocationLabel}</span>

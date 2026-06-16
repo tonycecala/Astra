@@ -63,6 +63,7 @@ a {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -301,6 +302,7 @@ textarea {
 }
 
 .auth-form input,
+.auth-form select,
 .auth-form textarea {
   width: 100%;
   min-height: 44px;

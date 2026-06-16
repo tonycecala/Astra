@@ -79,6 +79,7 @@ export const ui = {
     chartTimeLabel: "Birth time (optional)",
     chartTimePlaceholder: "HH:MM",
     chartTimezoneLabel: "Timezone (optional)",
+    chartTimezonePlaceholder: "Choose timezone",
     chartLocationLabel: "Birth location (optional)",
     chartPrecisionHint: "Birth time, timezone, and location travel together. Add all three for a precise chart, or leave them blank for date-only intake.",
     chartQuestionLabel: "Question (optional)",
