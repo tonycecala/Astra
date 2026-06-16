@@ -1,8 +1,12 @@
 import "server-only";
 
 import {
+  type ComposerOnboardingCardsWrite,
+  type ComposerOnboardingCardsWriteResponse,
   type ComposerPrivateFeedWrite,
   type ComposerPrivateFeedWriteResponse,
+  composerOnboardingCardsWriteResponseSchema,
+  composerOnboardingCardsWriteSchema,
   composerPrivateFeedWriteResponseSchema,
   composerPrivateFeedWriteSchema
 } from "@astra/contracts";
@@ -27,6 +31,24 @@ export async function persistComposerPrivateFeedWrite(
     sourceCard,
     feedItem,
     decision,
+    createdAt: parsed.createdAt
+  });
+}
+
+export async function persistComposerOnboardingCardsWrite(
+  input: ComposerOnboardingCardsWrite
+): Promise<ComposerOnboardingCardsWriteResponse> {
+  const parsed = composerOnboardingCardsWriteSchema.parse(input);
+  const writes: ComposerPrivateFeedWriteResponse[] = [];
+
+  for (const card of parsed.cards) {
+    writes.push(await persistComposerPrivateFeedWrite(card));
+  }
+
+  return composerOnboardingCardsWriteResponseSchema.parse({
+    id: parsed.id,
+    targetUserId: parsed.targetUserId,
+    writes,
     createdAt: parsed.createdAt
   });
 }
