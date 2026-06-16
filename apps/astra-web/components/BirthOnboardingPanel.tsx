@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send, Sparkles, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send, Sparkles } from "lucide-react";
 import type { AstrologyReportRequest, AstrologyReportResult, BirthPlaceSearchResult, ChartMakerRequest } from "@astra/contracts";
 import { ui } from "../lib/i18n";
 import styles from "./BirthOnboardingPanel.module.css";
@@ -113,7 +113,6 @@ export function BirthOnboardingPanel({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatingReportId, setGeneratingReportId] = useState("");
   const [publishingReportId, setPublishingReportId] = useState("");
-  const [isReportSheetOpen, setIsReportSheetOpen] = useState(Boolean(initialReportResults[0]));
 
   const activeStepIndex = stepIndex(activeStep);
   const canSubmit = activeStep === "review";
@@ -326,7 +325,6 @@ export function BirthOnboardingPanel({
       }
       setReportResults((current) => [payload.result, ...current.filter((result) => result.requestId !== payload.result.requestId)]);
       setSelectedReportRequestId(payload.result.requestId);
-      setIsReportSheetOpen(true);
       setMessage(payload.result.status === "completed" ? ui.self.reportGenerateCompleted : ui.self.reportGenerateFailed);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : ui.self.reportGenerateError);
@@ -609,10 +607,7 @@ export function BirthOnboardingPanel({
                       {result ? (
                         <button
                           className="button secondary"
-                          onClick={() => {
-                            setSelectedReportRequestId(result.requestId);
-                            setIsReportSheetOpen(true);
-                          }}
+                          onClick={() => setSelectedReportRequestId(result.requestId)}
                           type="button"
                         >
                           <BookOpenText aria-hidden="true" size={16} />
@@ -648,27 +643,11 @@ export function BirthOnboardingPanel({
             {ui.self.reportLibraryCta}
           </Link>
         </article>
-      </aside>
-
-      {selectedReportResult && isReportSheetOpen ? (
-        <div aria-label={ui.self.reportReaderLabel} aria-modal="true" className={styles.sheetBackdrop} role="dialog">
-          <aside className={styles.reportSheet}>
-            <div className={styles.sheetHandle} aria-hidden="true" />
-            <div className={styles.sheetHead}>
-              <div>
-                <div className="eyebrow">{ui.self.reportReaderEyebrow}</div>
-                <h2>{ui.self.reportReaderTitle}</h2>
-                <p>{ui.self.reportSavedToLibrary}</p>
-              </div>
-              <button
-                aria-label={ui.self.reportCloseCta}
-                className="button secondary"
-                onClick={() => setIsReportSheetOpen(false)}
-                type="button"
-              >
-                <X aria-hidden="true" size={18} />
-              </button>
-            </div>
+        {selectedReportResult ? (
+          <article className="card" aria-label={ui.self.reportReaderLabel}>
+            <div className="eyebrow">{ui.self.reportReaderEyebrow}</div>
+            <h2>{ui.self.reportReaderTitle}</h2>
+            <p>{ui.self.reportSavedToLibrary}</p>
             <div className={styles.reportReader}>
               {selectedReportResult.publicSignal ? <strong>{selectedReportResult.publicSignal.headline}</strong> : null}
               {selectedReportResult.summary ? <p>{selectedReportResult.summary}</p> : null}
@@ -708,9 +687,9 @@ export function BirthOnboardingPanel({
                 </ul>
               </details>
             </div>
-          </aside>
-        </div>
-      ) : null}
+          </article>
+        ) : null}
+      </aside>
     </section>
   );
 }
