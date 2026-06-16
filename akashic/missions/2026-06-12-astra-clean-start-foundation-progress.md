@@ -70,11 +70,13 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - `npm run test:chart-request-api` proves request creation through Better Auth/Mailpit and result recording through the internal chart-maker token.
 - The current `/self` chart request panel is intentionally a foundation smoke surface; future user-facing birth data capture should become a multi-step onboarding flow before real product use.
 - Composer's first publish target is now a shared stream artifact contract.
+- Composer now has a minimal independent implementation for voice registry, deterministic validation, and stream artifact publishing under `apps/composer-web/src`.
+- `npm run test:composer-stream` proves valid voice fixtures, invalid voice fixtures, and stream artifact publishing through the shared contract.
 
 ## Follow-Ups
 - Replace the single chart request form with multi-step birth-data onboarding: subject, date, time certainty, place/timezone, intent/context, review, and confirmation.
 - Implement the independent chart-maker module behind the `ChartMakerRequest` and `ChartMakerResult` contracts.
-- Implement Composer's stream artifact validation/publish path without importing Astra app internals.
+- Connect Astra to consume Composer-published stream artifacts without importing Composer app internals.
 - Add edge-first caching with origin fallback after published stream artifacts exist.
 - Continue polishing reader density, card states, gifts/stars presentation, self/profile usefulness, and i18n-backed empty/error/loading states.
 - Update this mission after each non-trivial dev/debug session.

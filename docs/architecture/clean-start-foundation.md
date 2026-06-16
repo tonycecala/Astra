@@ -79,6 +79,14 @@ The current `/self` chart request form is a foundation smoke surface, not the fi
 
 Composer's first publishing target is `ComposerStreamArtifact`: a voice card plus a stream card and stream item whose IDs must match. Composer remains implementation-free in the foundation, but the publish contract is available before internals are built.
 
+Composer's minimal implementation lives under `apps/composer-web/src` and stays independent from Astra app internals. It provides:
+
+- a deterministic `guide` / `companion` / `prompt` voice registry,
+- a validation gate for word limits, banned terms, and moralizing language,
+- `publishComposerStreamArtifact`, which validates a voice card and emits a shared stream artifact contract.
+
+Run `npm run test:composer-stream` to prove valid fixtures pass, invalid fixtures fail, and a stream artifact publishes through the shared contract.
+
 ## Future Delivery Posture
 
 For published stream artifacts, prefer edge-first caching with origin fallback. Keep this out of the first foundation until the publishing contract exists, but do not design future retrieval paths around request-time origin dependency only.

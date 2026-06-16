@@ -22,6 +22,7 @@
     "test:auth-code": "node --import tsx scripts/smoke-auth-code.mts",
     "test:chart-boundary": "node --import tsx scripts/smoke-chart-boundary.mts",
     "test:chart-request-api": "node --import tsx scripts/smoke-chart-request-api.mts",
+    "test:composer-stream": "node --import tsx scripts/smoke-composer-stream.mts",
     "test:e2e": "playwright test --config apps/astra-web/playwright.config.ts",
     "check": "npm run lint && npm run typecheck && npm run test && npm run check:boundaries && npm run check:no-supabase && npm run build",
     "check:boundaries": "node --import tsx scripts/check-boundaries.mts",

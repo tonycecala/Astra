@@ -132,7 +132,11 @@ if (!resetScript.includes("assertResetAllowed")) throw new Error("Local reset sc
 
 const chartRequestRoute = await readFile("apps/astra-web/app/api/chart-requests/route.ts", "utf8");
 const chartResultRoute = await readFile("apps/astra-web/app/api/chart-results/route.ts", "utf8");
+const composerPublisher = await readFile("apps/composer-web/src/publishStreamArtifact.ts", "utf8");
 if (!chartRequestRoute.includes("getAstraAuthContext")) throw new Error("Chart request API must use Astra auth context.");
 if (!chartResultRoute.includes("x-astra-internal-token")) throw new Error("Chart result API must require the internal token.");
+if (!composerPublisher.includes("composerStreamArtifactSchema")) {
+  throw new Error("Composer stream publisher must validate the shared stream artifact contract.");
+}
 
 console.log("Foundation contracts, seed data, schema, and runtime DDL checks passed.");

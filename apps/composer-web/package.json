@@ -7,6 +7,9 @@
     "dev": "echo 'Composer is intentionally placeholder-only in the clean-start foundation. Reserved local port: 3012.'",
     "build": "echo 'Composer placeholder build complete.'",
     "lint": "echo 'Composer placeholder lint complete.'",
-    "typecheck": "echo 'Composer placeholder typecheck complete.'"
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@astra/contracts": "file:../../packages/contracts"
   }
 }
