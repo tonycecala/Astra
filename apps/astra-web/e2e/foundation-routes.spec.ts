@@ -187,6 +187,8 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
     await expect(page.getByLabel("Alpha onboarding guidance")).toContainText("Subject and birth date are enough");
     await expect(page.getByText("Step 1 of 5: Subject")).toBeVisible();
+    await expect(page.getByLabel("Chart generation flow")).toContainText("Birth data");
+    await expect(page.getByLabel("Chart generation flow")).toContainText("Saved in Library");
 
     const nextButton = page.getByRole("button", { exact: true, name: "Next" });
     await nextButton.click();
@@ -216,12 +218,15 @@ test.describe("clean-start routes", () => {
     await expect(onboarding).toContainText("Report generated");
     await expect(onboarding).toContainText("completed");
     await expect(onboarding).toContainText("Gemini Sun, Virgo Moon, Cancer rising");
-    await onboarding.getByRole("button", { exact: true, name: "Read report" }).click();
-    await expect(onboarding.getByLabel("Private report reader")).toContainText("Core pattern");
-    await expect(onboarding.getByLabel("Private report reader")).toContainText("Writer handoff");
-    await expect(onboarding.getByLabel("Private report reader")).toContainText("no LLM call, no paid provider, no credit spend");
-    await expect(onboarding.getByLabel("Private report reader")).toContainText("Provenance");
-    await onboarding.getByRole("button", { exact: true, name: "Publish signal" }).click();
+    await expect(onboarding.getByLabel("Chart generation flow")).toContainText("Saved in Library");
+    const reportReader = page.getByLabel("Private report reader");
+    await expect(reportReader).toContainText("Generated reports are saved to Library automatically");
+    await expect(reportReader).toContainText("Core pattern");
+    await expect(reportReader).toContainText("Writer handoff");
+    await expect(reportReader).toContainText("no LLM call, no paid provider, no credit spend");
+    await expect(reportReader).toContainText("Provenance");
+    await expect(reportReader.getByRole("link", { name: "Open Library" })).toBeVisible();
+    await reportReader.getByRole("button", { exact: true, name: "Publish signal" }).click();
     await expect(onboarding).toContainText("Report signal published to Journey");
 
     await page.goto("/library");

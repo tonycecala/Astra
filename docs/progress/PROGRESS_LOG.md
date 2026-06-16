@@ -13,6 +13,40 @@ summary: "Durable session-by-session memory for Astra repo work."
 
 ## Entries
 
+### 2026-06-16 - Chart Generation Flow UX
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** chart/report generation UX
+**Status:** complete
+
+#### What Changed
+
+- Added a compact chart generation flow map to `/self`: birth data -> chart queued -> report generated -> saved in Library.
+- Moved generated report reading into a slide-up private report reader with a visible handle, close action, Library link, and publish-signal action.
+- Made Library handoff explicit in `/self`; completed reports continue to persist as `report:<requestId>` artifacts.
+- Kept automatic testing on the local deterministic writer and preserved the later alpha seam for chosen LLM writers.
+- Used Mobbin pattern references for staged generation/status and bottom-sheet result review: Rox, Elicit, Bevel, and Spotify for Creators.
+- Reverted the birth-date field to plain `YYYY-MM-DD` text input after rendered browser QA exposed native date-input state friction.
+
+#### Tests Run
+
+- `ak governance check`
+- `npm run lint`
+- `npm run typecheck`
+- `ASTRA_INTERNAL_API_TOKEN=astra-local-internal-token npm run test:chart-request-api`
+- `ASTRA_INTERNAL_API_TOKEN=astra-local-internal-token npm run test:report-api`
+- `npm run test:place-search-api`
+- `ASTRA_INTERNAL_API_TOKEN=astra-local-internal-token npx playwright test --config apps/astra-web/playwright.config.ts --project=desktop -g "signed-in self onboarding queues chart and report requests"`
+- `npm run check`
+- `ASTRA_INTERNAL_API_TOKEN=astra-local-internal-token npm run test:e2e`
+- In-app browser `/self` chart flow QA through report generation, slide-up reader, Library route, tablet, and mobile with no horizontal overflow and no console error logs.
+
+#### Risks / Follow-ups
+
+- The report writer remains deterministic/local for automatic testing. Alpha can choose LLM writers later behind the existing writer boundary.
+- The slide-up reader is intentionally scoped to private report detail; Composer still controls publishing user-owned Journey cards from explicit report signals.
+
 ### 2026-06-16 - Auth and Self Onboarding Alpha
 
 **Report Level:** 3 - Workflow & QA View

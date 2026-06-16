@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send, Sparkles, X } from "lucide-react";
 import type { AstrologyReportRequest, AstrologyReportResult, BirthPlaceSearchResult, ChartMakerRequest } from "@astra/contracts";
 import { ui } from "../lib/i18n";
 import styles from "./BirthOnboardingPanel.module.css";
@@ -112,6 +113,7 @@ export function BirthOnboardingPanel({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatingReportId, setGeneratingReportId] = useState("");
   const [publishingReportId, setPublishingReportId] = useState("");
+  const [isReportSheetOpen, setIsReportSheetOpen] = useState(Boolean(initialReportResults[0]));
 
   const activeStepIndex = stepIndex(activeStep);
   const canSubmit = activeStep === "review";
@@ -136,6 +138,13 @@ export function BirthOnboardingPanel({
     [reportResults]
   );
   const selectedReportResult = selectedReportRequestId ? reportResultsByRequestId.get(selectedReportRequestId) : undefined;
+  const hasCompletedReport = reportResults.some((result) => result.status === "completed");
+  const flowStages = [
+    { label: ui.self.chartFlowBirthData, isDone: requests.length > 0 },
+    { label: ui.self.chartFlowChart, isDone: requests.length > 0 },
+    { label: ui.self.chartFlowReport, isDone: hasCompletedReport },
+    { label: ui.self.chartFlowLibrary, isDone: hasCompletedReport }
+  ];
 
   function updateField(field: keyof FormState, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -317,6 +326,7 @@ export function BirthOnboardingPanel({
       }
       setReportResults((current) => [payload.result, ...current.filter((result) => result.requestId !== payload.result.requestId)]);
       setSelectedReportRequestId(payload.result.requestId);
+      setIsReportSheetOpen(true);
       setMessage(payload.result.status === "completed" ? ui.self.reportGenerateCompleted : ui.self.reportGenerateFailed);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : ui.self.reportGenerateError);
@@ -369,6 +379,14 @@ export function BirthOnboardingPanel({
         <p className={styles.progressText} aria-live="polite">
           {ui.self.onboardingProgress(activeStepIndex + 1, steps.length, ui.self.onboardingSteps[activeStep])}
         </p>
+        <ol className={styles.flowMap} aria-label={ui.self.chartFlowLabel}>
+          {flowStages.map((stage, index) => (
+            <li className={stage.isDone ? styles.flowDone : undefined} key={stage.label}>
+              <span>{stage.isDone ? <Check aria-hidden="true" size={14} /> : index + 1}</span>
+              {stage.label}
+            </li>
+          ))}
+        </ol>
 
         <form className={`auth-form ${styles.form}`} onSubmit={submitChartRequest}>
           {activeStep === "subject" ? (
@@ -397,7 +415,6 @@ export function BirthOnboardingPanel({
                 value={form.date}
                 onChange={(event) => updateField("date", event.target.value)}
                 required
-                type="date"
                 inputMode="numeric"
                 placeholder={ui.self.chartDatePlaceholder}
               />
@@ -590,7 +607,14 @@ export function BirthOnboardingPanel({
                     <div className={styles.statusActions}>
                       <strong>{request.status}</strong>
                       {result ? (
-                        <button className="button secondary" onClick={() => setSelectedReportRequestId(result.requestId)} type="button">
+                        <button
+                          className="button secondary"
+                          onClick={() => {
+                            setSelectedReportRequestId(result.requestId);
+                            setIsReportSheetOpen(true);
+                          }}
+                          type="button"
+                        >
                           <BookOpenText aria-hidden="true" size={16} />
                           {ui.self.reportReadCta}
                         </button>
@@ -615,13 +639,43 @@ export function BirthOnboardingPanel({
             <p>{ui.self.reportRequestsEmpty}</p>
           )}
         </article>
-        <article className="card" aria-label={ui.self.reportReaderLabel}>
+        <article className="card">
           <div className="eyebrow">{ui.self.reportReaderEyebrow}</div>
-          <h2>{ui.self.reportReaderTitle}</h2>
-          {selectedReportResult ? (
+          <h2>{ui.self.reportLibraryTitle}</h2>
+          <p>{hasCompletedReport ? ui.self.reportLibraryReady : ui.self.reportReaderEmpty}</p>
+          <Link className="button secondary" href="/library">
+            <BookOpenText aria-hidden="true" size={16} />
+            {ui.self.reportLibraryCta}
+          </Link>
+        </article>
+      </aside>
+
+      {selectedReportResult && isReportSheetOpen ? (
+        <div aria-label={ui.self.reportReaderLabel} aria-modal="true" className={styles.sheetBackdrop} role="dialog">
+          <aside className={styles.reportSheet}>
+            <div className={styles.sheetHandle} aria-hidden="true" />
+            <div className={styles.sheetHead}>
+              <div>
+                <div className="eyebrow">{ui.self.reportReaderEyebrow}</div>
+                <h2>{ui.self.reportReaderTitle}</h2>
+                <p>{ui.self.reportSavedToLibrary}</p>
+              </div>
+              <button
+                aria-label={ui.self.reportCloseCta}
+                className="button secondary"
+                onClick={() => setIsReportSheetOpen(false)}
+                type="button"
+              >
+                <X aria-hidden="true" size={18} />
+              </button>
+            </div>
             <div className={styles.reportReader}>
               {selectedReportResult.publicSignal ? <strong>{selectedReportResult.publicSignal.headline}</strong> : null}
               {selectedReportResult.summary ? <p>{selectedReportResult.summary}</p> : null}
+              <Link className="button secondary" href="/library">
+                <BookOpenText aria-hidden="true" size={16} />
+                {ui.self.reportLibraryCta}
+              </Link>
               {selectedReportResult.publicSignal ? (
                 <button
                   className="button secondary"
@@ -654,11 +708,9 @@ export function BirthOnboardingPanel({
                 </ul>
               </details>
             </div>
-          ) : (
-            <p>{ui.self.reportReaderEmpty}</p>
-          )}
-        </article>
-      </aside>
+          </aside>
+        </div>
+      ) : null}
     </section>
   );
 }
