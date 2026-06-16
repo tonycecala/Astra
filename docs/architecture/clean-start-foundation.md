@@ -20,12 +20,12 @@ packages/
 The foundation proves:
 
 - Astra opens locally on port `3011`.
-- Journey, Allies, Self, Library, and Gifts render from typed seed data.
+- Journey, Allies, Self, Library, and Gifts render from the local database snapshot seeded by typed fixtures.
 - Better Auth is wired through a clean route boundary and a small visible `/login` panel.
 - The preferred user login flow is email code first: send code, verify code, continue without a password prompt.
 - Database schema is Drizzle-owned and contains Better Auth plus Astra-owned tables.
 - Chart-maker communication starts as explicit request/result contracts with user-owned persistence.
-- Composer's first publishing target is a stream artifact contract.
+- Composer's first publishing target is a stream artifact contract that Astra can ingest without importing Composer internals.
 - Seed/reset commands are explicit: dry-run by default, executable only with `--execute`, and destructive reset is local-host guarded.
 - Composer is visible as a boundary but not implemented.
 - Supabase assumptions are rejected by checks and database URL guards.
@@ -34,7 +34,7 @@ The foundation proves:
 
 - `packages/contracts` defines public nouns.
 - `packages/db` owns schema/client.
-- `packages/db/src/repositories.ts` owns typed seed, reset, snapshot, and profile bootstrap helpers.
+- `packages/db/src/repositories.ts` owns typed seed, reset, snapshot, Composer stream ingest, and profile bootstrap helpers.
 - `packages/db/src/repositories.ts` also owns the local chart-maker request/result lifecycle boundary.
 - `apps/astra-web` renders product routes and owns auth integration.
 - `apps/astra-web/lib/email/send-email.ts` owns email delivery and local email capture.
@@ -83,9 +83,13 @@ Composer's minimal implementation lives under `apps/composer-web/src` and stays 
 
 - a deterministic `guide` / `companion` / `prompt` voice registry,
 - a validation gate for word limits, banned terms, and moralizing language,
-- `publishComposerStreamArtifact`, which validates a voice card and emits a shared stream artifact contract.
+- `publishComposerStreamArtifact`, which validates a voice card, carries a plain rationale, and emits a shared stream artifact contract.
 
 Run `npm run test:composer-stream` to prove valid fixtures pass, invalid fixtures fail, and a stream artifact publishes through the shared contract.
+
+Astra consumes Composer artifacts through `/api/composer/stream-artifacts`, guarded by `x-astra-internal-token`. The route validates `composerStreamArtifactSchema`, persists the card and stream item through `upsertComposerStreamArtifact`, and `/journey` reads the persisted public stream from Postgres. Astra does not import Composer app code for this handoff.
+
+Run `npm run test:composer-ingest-api` with the local app running to prove an internal Composer-style caller can publish a stream artifact and that `/journey` renders the resulting card.
 
 ## Future Delivery Posture
 

@@ -1,5 +1,6 @@
 import {
   type AstraCard,
+  type ComposerArtifactRationale,
   type ComposerStreamArtifact,
   type ComposerVoiceCard,
   type ComposerVoiceValidationError,
@@ -15,9 +16,11 @@ export type ComposerStreamPublishInput = {
   voiceCard: ComposerVoiceCard;
   lane?: AstraCard["lane"];
   tone?: AstraCard["tone"];
+  rationale: ComposerArtifactRationale;
   ctaLabel?: string;
   ctaAction?: AstraCard["ctaAction"];
   position?: number;
+  status?: StreamItem["status"];
   audience?: StreamItem["audience"];
   createdAt?: string;
 };
@@ -35,6 +38,7 @@ export function publishComposerStreamArtifact(input: ComposerStreamPublishInput)
     id: input.cardId,
     title: validation.card.header,
     body: validation.card.body,
+    subtitle: input.rationale.reason,
     lane: input.lane ?? "today",
     tone: input.tone ?? "grounded",
     ctaLabel: input.ctaLabel,
@@ -46,7 +50,7 @@ export function publishComposerStreamArtifact(input: ComposerStreamPublishInput)
     cardId: input.cardId,
     kind: "card",
     position: input.position ?? 0,
-    status: "draft",
+    status: input.status ?? "published",
     audience: input.audience ?? "all"
   };
 
@@ -56,6 +60,7 @@ export function publishComposerStreamArtifact(input: ComposerStreamPublishInput)
       id: input.id,
       target: "stream",
       publisher: "composer",
+      rationale: input.rationale,
       voiceCard: validation.card,
       card,
       streamItem,

@@ -74,6 +74,10 @@ composerStreamArtifactSchema.parse({
   id: "composer_stream_smoke",
   target: "stream",
   publisher: "composer",
+  rationale: {
+    reason: "Astra is validating the Composer stream publishing contract.",
+    source: "manual"
+  },
   voiceCard: {
     voice: { id: "guide" },
     header: "A clear stream card",
@@ -132,9 +136,18 @@ if (!resetScript.includes("assertResetAllowed")) throw new Error("Local reset sc
 
 const chartRequestRoute = await readFile("apps/astra-web/app/api/chart-requests/route.ts", "utf8");
 const chartResultRoute = await readFile("apps/astra-web/app/api/chart-results/route.ts", "utf8");
+const composerIngestRoute = await readFile("apps/astra-web/app/api/composer/stream-artifacts/route.ts", "utf8");
+const internalTokenHelper = await readFile("apps/astra-web/lib/internal-token.ts", "utf8");
 const composerPublisher = await readFile("apps/composer-web/src/publishStreamArtifact.ts", "utf8");
 if (!chartRequestRoute.includes("getAstraAuthContext")) throw new Error("Chart request API must use Astra auth context.");
-if (!chartResultRoute.includes("x-astra-internal-token")) throw new Error("Chart result API must require the internal token.");
+if (!chartResultRoute.includes("hasValidInternalApiToken")) throw new Error("Chart result API must require the internal token helper.");
+if (!internalTokenHelper.includes("x-astra-internal-token")) throw new Error("Internal token helper must check the shared internal token header.");
+if (!composerIngestRoute.includes("composerStreamArtifactSchema")) {
+  throw new Error("Composer stream ingest API must validate the shared stream artifact contract.");
+}
+if (!composerIngestRoute.includes("upsertComposerStreamArtifact")) {
+  throw new Error("Composer stream ingest API must persist through the Astra database repository.");
+}
 if (!composerPublisher.includes("composerStreamArtifactSchema")) {
   throw new Error("Composer stream publisher must validate the shared stream artifact contract.");
 }

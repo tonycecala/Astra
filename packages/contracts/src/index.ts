@@ -181,11 +181,17 @@ export const composerVoiceValidationErrorSchema = z.object({
   )
 });
 
+export const composerArtifactRationaleSchema = z.object({
+  reason: z.string().min(1),
+  source: z.enum(["composer_voice", "chart_result", "onboarding", "manual"]).default("composer_voice")
+});
+
 export const composerStreamArtifactSchema = z
   .object({
     id: idSchema,
     target: z.literal("stream"),
     publisher: z.literal("composer"),
+    rationale: composerArtifactRationaleSchema,
     voiceCard: composerVoiceCardSchema,
     card: cardSchema,
     streamItem: streamItemSchema,
@@ -212,6 +218,7 @@ export type RecordChartMakerResult = z.infer<typeof recordChartMakerResultSchema
 export type ComposerVoiceId = z.infer<typeof composerVoiceIdSchema>;
 export type ComposerVoiceCard = z.infer<typeof composerVoiceCardSchema>;
 export type ComposerVoiceValidationError = z.infer<typeof composerVoiceValidationErrorSchema>;
+export type ComposerArtifactRationale = z.infer<typeof composerArtifactRationaleSchema>;
 export type ComposerStreamArtifact = z.infer<typeof composerStreamArtifactSchema>;
 
 export const foundationSeedSchema = z.object({

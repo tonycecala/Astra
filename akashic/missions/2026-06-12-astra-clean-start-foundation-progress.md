@@ -13,11 +13,11 @@ related: ["../../docs/architecture/clean-start-foundation.md", "../../ASTRA_CLEA
 Build Astra as a clean-start foundation: a lean, light, modular symbolic stream reader with stable subassemblies, explicit contracts, Better Auth, Drizzle/Postgres, seeded data, durable local operation, and no Supabase carryover.
 
 ## Goal
-Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/tony/Documents/Projects/Astria` as the quarry. Astra should render the first useful reader shell while Composer remains a clean placeholder boundary until publishing contracts exist.
+Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/tony/Documents/Projects/Astria` as the quarry. Astra should render the first useful reader shell while Composer remains a clean boundary that publishes only through shared contracts.
 
 ## Files Changed
 - `apps/astra-web/` implements the visible reader shell, auth route, i18n-backed UI chrome, theme behavior, and route-level product surfaces.
-- `apps/composer-web/` exists as a placeholder subassembly with no Astra runtime coupling.
+- `apps/composer-web/` exists as a separate subassembly with voice validation and stream artifact publishing, but no Astra runtime coupling.
 - `packages/contracts/` defines typed core nouns.
 - `packages/db/` owns Drizzle schema, migrations, client, repository helpers, seed/reset support, and Better Auth tables.
 - `packages/testkit/` owns typed seed fixtures.
@@ -72,11 +72,15 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - Composer's first publish target is now a shared stream artifact contract.
 - Composer now has a minimal independent implementation for voice registry, deterministic validation, and stream artifact publishing under `apps/composer-web/src`.
 - `npm run test:composer-stream` proves valid voice fixtures, invalid voice fixtures, and stream artifact publishing through the shared contract.
+- Composer stream artifacts now include a rationale so Astra can explain why a card appears.
+- Astra now exposes `/api/composer/stream-artifacts` as an internal token-guarded ingestion edge for Composer-published stream artifacts.
+- `upsertComposerStreamArtifact` persists Composer cards and stream items into Astra's existing public stream tables without importing Composer internals.
+- Journey, Allies, Library, and Gifts now read the persisted local database snapshot instead of seed-only in-memory fixtures.
+- `npm run test:composer-ingest-api` proves a Composer-style caller can publish a stream artifact and `/journey` renders the consumed card.
 
 ## Follow-Ups
 - Replace the single chart request form with multi-step birth-data onboarding: subject, date, time certainty, place/timezone, intent/context, review, and confirmation.
 - Implement the independent chart-maker module behind the `ChartMakerRequest` and `ChartMakerResult` contracts.
-- Connect Astra to consume Composer-published stream artifacts without importing Composer app internals.
-- Add edge-first caching with origin fallback after published stream artifacts exist.
+- Design Composer artifact retrieval/caching for production, including edge-first caching with origin fallback.
 - Continue polishing reader density, card states, gifts/stars presentation, self/profile usefulness, and i18n-backed empty/error/loading states.
 - Update this mission after each non-trivial dev/debug session.

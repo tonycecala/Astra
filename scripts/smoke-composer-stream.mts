@@ -56,6 +56,10 @@ const published = publishComposerStreamArtifact({
   cardId: "composer_card_smoke",
   streamItemId: "composer_stream_item_smoke",
   voiceCard: validFixtures[0],
+  rationale: {
+    reason: "Shown because Composer validated a guide voice card for the stream.",
+    source: "composer_voice"
+  },
   lane: "today",
   position: 0,
   createdAt: "2026-06-16T00:00:00.000Z"
@@ -66,5 +70,11 @@ if (!published.ok) {
 }
 
 composerStreamArtifactSchema.parse(published.artifact);
+if (published.artifact.streamItem.status !== "published") {
+  throw new Error("Composer stream publisher must default stream items to published.");
+}
+if (published.artifact.card.subtitle !== published.artifact.rationale.reason) {
+  throw new Error("Composer stream publisher must carry the rationale into the card subtitle.");
+}
 
 console.log(`Composer stream smoke passed: ${published.artifact.id}.`);

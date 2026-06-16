@@ -2,8 +2,10 @@ import { PageHeader } from "../../components/PageHeader";
 import { getFoundationViewModel } from "../../lib/foundation";
 import { ui } from "../../lib/i18n";
 
-export default function AlliesPage() {
-  const view = getFoundationViewModel();
+export const dynamic = "force-dynamic";
+
+export default async function AlliesPage() {
+  const view = await getFoundationViewModel();
 
   return (
     <>

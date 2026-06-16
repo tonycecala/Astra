@@ -1,5 +1,6 @@
 import { and, asc, desc, eq } from "drizzle-orm";
 import {
+  type ComposerStreamArtifact,
   type ChartBirthData,
   type ChartMakerRequest,
   type ChartMakerResult,
@@ -7,6 +8,7 @@ import {
   chartBirthDataSchema,
   chartMakerRequestSchema,
   chartMakerResultSchema,
+  composerStreamArtifactSchema,
   type FoundationSeed,
   foundationSeedSchema
 } from "@astra/contracts";
@@ -60,6 +62,7 @@ export type CreateChartMakerRequestInput = {
 };
 
 export type RecordChartMakerResultInput = RecordChartMakerResult;
+export type UpsertComposerStreamArtifactInput = ComposerStreamArtifact;
 
 function toDate(value: string) {
   return new Date(value);
@@ -99,6 +102,32 @@ function chartResultFromRow(row: typeof chartResults.$inferSelect): ChartMakerRe
   });
 }
 
+function cardFromRow(row: typeof cards.$inferSelect) {
+  return {
+    id: row.id,
+    title: row.title,
+    subtitle: row.subtitle ?? undefined,
+    body: row.body,
+    lane: row.lane,
+    tone: row.tone,
+    ctaLabel: row.ctaLabel ?? undefined,
+    ctaAction: row.ctaAction ?? undefined,
+    imageUrl: row.imageUrl ?? undefined,
+    publishedAt: toIsoDate(row.publishedAt)
+  };
+}
+
+function streamItemFromRow(row: typeof streamItems.$inferSelect) {
+  return {
+    id: row.id,
+    cardId: row.cardId,
+    kind: row.kind,
+    position: row.position,
+    status: row.status,
+    audience: row.audience
+  };
+}
+
 export function seedSnapshot(): FoundationSnapshot {
   return foundationSeedSchema.parse(getSeedForDatabase());
 }
@@ -106,7 +135,7 @@ export function seedSnapshot(): FoundationSnapshot {
 export async function readFoundationSnapshot(database: AstraDb): Promise<FoundationSnapshot> {
   const [profile] = await database.select().from(appUserProfiles).orderBy(asc(appUserProfiles.createdAt)).limit(1);
   const cardRows = await database.select().from(cards).orderBy(asc(cards.publishedAt));
-  const streamRows = await database.select().from(streamItems).orderBy(asc(streamItems.position));
+  const streamRows = await database.select().from(streamItems).where(eq(streamItems.status, "published")).orderBy(asc(streamItems.position));
   const achievementRows = await database.select().from(achievements).orderBy(asc(achievements.createdAt));
   const allyRows = await database.select().from(allies).orderBy(asc(allies.createdAt));
   const artifactRows = await database.select().from(artifacts).orderBy(asc(artifacts.createdAt));
@@ -127,32 +156,8 @@ export async function readFoundationSnapshot(database: AstraDb): Promise<Foundat
       starBalance: profile.starBalance,
       createdAt: toIsoDate(profile.createdAt)
     },
-    cards: cardRows.map(
-      (card) =>
-        ({
-          id: card.id,
-          title: card.title,
-          subtitle: card.subtitle ?? undefined,
-          body: card.body,
-          lane: card.lane,
-          tone: card.tone,
-          ctaLabel: card.ctaLabel ?? undefined,
-          ctaAction: card.ctaAction ?? undefined,
-          imageUrl: card.imageUrl ?? undefined,
-          publishedAt: toIsoDate(card.publishedAt)
-        })
-    ),
-    streamItems: streamRows.map(
-      (item) =>
-        ({
-          id: item.id,
-          cardId: item.cardId,
-          kind: item.kind,
-          position: item.position,
-          status: item.status,
-          audience: item.audience
-        })
-    ),
+    cards: cardRows.map(cardFromRow),
+    streamItems: streamRows.map(streamItemFromRow),
     achievements: achievementRows.map(
       (achievement) =>
         ({
@@ -530,6 +535,59 @@ export async function recordChartMakerResult(
       .where(and(eq(chartRequests.id, input.requestId), eq(chartRequests.userId, input.userId)));
 
     return chartResultFromRow(result);
+  });
+}
+
+export async function upsertComposerStreamArtifact(
+  database: AstraDb,
+  input: UpsertComposerStreamArtifactInput
+): Promise<ComposerStreamArtifact> {
+  const artifact = composerStreamArtifactSchema.parse(input);
+  const now = new Date();
+
+  return database.transaction(async (tx) => {
+    await tx
+      .insert(cards)
+      .values({
+        ...artifact.card,
+        subtitle: artifact.card.subtitle ?? artifact.rationale.reason,
+        ctaLabel: artifact.card.ctaLabel ?? null,
+        ctaAction: artifact.card.ctaAction ?? null,
+        imageUrl: artifact.card.imageUrl ?? null,
+        publishedAt: toDate(artifact.card.publishedAt),
+        updatedAt: now
+      })
+      .onConflictDoUpdate({
+        target: cards.id,
+        set: {
+          title: artifact.card.title,
+          subtitle: artifact.card.subtitle ?? artifact.rationale.reason,
+          body: artifact.card.body,
+          lane: artifact.card.lane,
+          tone: artifact.card.tone,
+          ctaLabel: artifact.card.ctaLabel ?? null,
+          ctaAction: artifact.card.ctaAction ?? null,
+          imageUrl: artifact.card.imageUrl ?? null,
+          publishedAt: toDate(artifact.card.publishedAt),
+          updatedAt: now
+        }
+      });
+
+    await tx
+      .insert(streamItems)
+      .values(artifact.streamItem)
+      .onConflictDoUpdate({
+        target: streamItems.id,
+        set: {
+          cardId: artifact.streamItem.cardId,
+          kind: artifact.streamItem.kind,
+          position: artifact.streamItem.position,
+          status: artifact.streamItem.status,
+          audience: artifact.streamItem.audience
+        }
+      });
+
+    return artifact;
   });
 }
 

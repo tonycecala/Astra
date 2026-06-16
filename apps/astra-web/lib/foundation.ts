@@ -1,9 +1,11 @@
-import { getFoundationSeed } from "@astra/testkit";
+import "server-only";
 
-export function getFoundationViewModel() {
-  const seed = getFoundationSeed();
-  const cardsById = new Map(seed.cards.map((card) => [card.id, card]));
-  const streamCards = [...seed.streamItems]
+import { db, readFoundationSnapshot } from "@astra/db";
+
+export async function getFoundationViewModel() {
+  const snapshot = await readFoundationSnapshot(db);
+  const cardsById = new Map(snapshot.cards.map((card) => [card.id, card]));
+  const streamCards = [...snapshot.streamItems]
     .sort((a, b) => a.position - b.position)
     .map((item) => {
       const card = cardsById.get(item.cardId);
@@ -12,7 +14,7 @@ export function getFoundationViewModel() {
     });
 
   return {
-    ...seed,
+    ...snapshot,
     streamCards
   };
 }
