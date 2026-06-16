@@ -1,22 +1,30 @@
 import {
+  type AstrologyReportSection,
   type AstrologyReportRequest,
   type BirthPlaceSearchQuery,
   type BirthPlaceSearchResponse,
   type RecordAstrologyReportResult,
+  astrologyReportSectionSchema,
   astrologyReportRequestSchema,
   birthPlaceSearchQuerySchema,
   birthPlaceSearchResponseSchema,
   recordAstrologyReportResultSchema
 } from "@astra/contracts";
 import * as horoscopeModule from "circular-natal-horoscope-js";
+import { z } from "zod";
 
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER = "astra-astrology-report-adapter";
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION = "0.1.0";
 export const ASTRA_EPHEMERIS_ENGINE_ENV = "ASTRA_EPHEMERIS_ENGINE";
 export const ASTRA_REPORT_WRITER_ENV = "ASTRA_REPORT_WRITER";
+export const ASTRA_REPORT_MODEL_PROVIDER_ENV = "ASTRA_REPORT_MODEL_PROVIDER";
+export const ASTRA_REPORT_MODEL_ENV = "ASTRA_REPORT_MODEL";
+export const ASTRA_OPENAI_API_KEY_ENV = "ASTRA_OPENAI_API_KEY";
 export const ASTRA_PLACE_SEARCH_PROVIDER_ENV = "ASTRA_PLACE_SEARCH_PROVIDER";
 export const LOCAL_CHART_ROUTINE_ENGINE = "local-chart-routine";
 export const LOCAL_DETERMINISTIC_REPORT_WRITER = "local-deterministic-writer";
+export const DEBUG_MODEL_REPORT_WRITER = "debug-model-writer";
+export const OPENAI_REPORT_MODEL_PROVIDER = "openai";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
@@ -24,6 +32,14 @@ export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
 export type AstrologyReportGenerationConfig = {
   ephemerisEngine?: string;
   reportWriter?: string;
+  reportModelProvider?: string;
+  reportModel?: string;
+  openaiApiKey?: string;
+};
+
+export type AstrologyReportGenerationOptions = {
+  env?: Record<string, string | undefined>;
+  fetchImpl?: typeof fetch;
 };
 
 type ZodiacSign = {
@@ -56,6 +72,28 @@ type ReportWriterInput = {
 };
 
 type ReportDraft = Pick<RecordAstrologyReportResult, "summary" | "sections" | "publicSignal">;
+
+type OpenAIResponse = {
+  output_text?: unknown;
+  output?: Array<{
+    content?: Array<{
+      text?: unknown;
+      type?: string;
+    }>;
+  }>;
+};
+
+const modelReportDraftSchema = z
+  .object({
+    summary: z.string().trim().min(1),
+    sections: z.array(astrologyReportSectionSchema).length(3),
+    publicSignal: z
+      .object({
+        summary: z.string().trim().min(1).optional()
+      })
+      .optional()
+  })
+  .passthrough();
 
 type HoroscopeCtor = {
   new (input: {
@@ -182,7 +220,10 @@ export function resolveAstrologyReportGenerationConfig(
 ): AstrologyReportGenerationConfig {
   return {
     ephemerisEngine: env[ASTRA_EPHEMERIS_ENGINE_ENV]?.trim() || undefined,
-    reportWriter: env[ASTRA_REPORT_WRITER_ENV]?.trim() || LOCAL_DETERMINISTIC_REPORT_WRITER
+    reportWriter: env[ASTRA_REPORT_WRITER_ENV]?.trim() || LOCAL_DETERMINISTIC_REPORT_WRITER,
+    reportModelProvider: env[ASTRA_REPORT_MODEL_PROVIDER_ENV]?.trim() || undefined,
+    reportModel: env[ASTRA_REPORT_MODEL_ENV]?.trim() || undefined,
+    openaiApiKey: env[ASTRA_OPENAI_API_KEY_ENV]?.trim() || undefined
   };
 }
 
@@ -278,6 +319,94 @@ function buildReportWriterUnavailableResult(input: AstrologyReportRequest, write
         kind: "manual",
         label: "Report writer",
         summary: `Unsupported writer: ${writer}.`,
+        boundary: "private"
+      }
+    ]
+  });
+}
+
+function buildReportModelConfigUnavailableResult(
+  input: AstrologyReportRequest,
+  config: AstrologyReportGenerationConfig
+): RecordAstrologyReportResult {
+  const request = astrologyReportRequestSchema.parse(input);
+  const missing = [
+    config.reportModelProvider ? null : ASTRA_REPORT_MODEL_PROVIDER_ENV,
+    config.reportModel ? null : ASTRA_REPORT_MODEL_ENV,
+    config.openaiApiKey ? null : ASTRA_OPENAI_API_KEY_ENV
+  ].filter(Boolean);
+
+  return recordAstrologyReportResultSchema.parse({
+    requestId: request.id,
+    userId: request.userId,
+    engine: ASTRA_ASTROLOGY_REPORT_ADAPTER,
+    engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
+    status: "failed",
+    error: `${DEBUG_MODEL_REPORT_WRITER} requires explicit model configuration (${missing.join(", ")}). Astra will not call a model, spend credits, or leak private chart data without this configuration.`,
+    sections: [],
+    provenance: [
+      {
+        id: `${request.id}:birth-data`,
+        kind: "birth_data",
+        label: "Birth data",
+        summary: `Birth data was accepted for ${request.subjectName}, but the debug model writer stopped before any provider call.`,
+        boundary: "private",
+        sourceId: request.id
+      },
+      {
+        id: `${request.id}:writer`,
+        kind: "manual",
+        label: "Report writer",
+        summary: `${DEBUG_MODEL_REPORT_WRITER} failed closed because ${missing.join(", ")} ${missing.length === 1 ? "is" : "are"} missing.`,
+        boundary: "private"
+      }
+    ]
+  });
+}
+
+function buildReportModelProviderUnavailableResult(
+  input: AstrologyReportRequest,
+  provider: string
+): RecordAstrologyReportResult {
+  const request = astrologyReportRequestSchema.parse(input);
+
+  return recordAstrologyReportResultSchema.parse({
+    requestId: request.id,
+    userId: request.userId,
+    engine: ASTRA_ASTROLOGY_REPORT_ADAPTER,
+    engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
+    status: "failed",
+    error: `Report model provider "${provider}" is not wired. Supported debug provider: ${OPENAI_REPORT_MODEL_PROVIDER}.`,
+    sections: [],
+    provenance: [
+      {
+        id: `${request.id}:writer`,
+        kind: "manual",
+        label: "Report writer",
+        summary: `${DEBUG_MODEL_REPORT_WRITER} rejected unsupported provider "${provider}" before any model call.`,
+        boundary: "private"
+      }
+    ]
+  });
+}
+
+function buildReportModelCallFailedResult(input: AstrologyReportRequest, message: string): RecordAstrologyReportResult {
+  const request = astrologyReportRequestSchema.parse(input);
+
+  return recordAstrologyReportResultSchema.parse({
+    requestId: request.id,
+    userId: request.userId,
+    engine: ASTRA_ASTROLOGY_REPORT_ADAPTER,
+    engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
+    status: "failed",
+    error: `${DEBUG_MODEL_REPORT_WRITER} failed before a report draft was accepted: ${message}`,
+    sections: [],
+    provenance: [
+      {
+        id: `${request.id}:writer`,
+        kind: "manual",
+        label: "Report writer",
+        summary: `${DEBUG_MODEL_REPORT_WRITER} did not produce a validated draft. No public signal was emitted.`,
         boundary: "private"
       }
     ]
@@ -484,11 +613,96 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
   };
 }
 
-function buildLocalChartRoutineResult(input: AstrologyReportRequest): RecordAstrologyReportResult {
+function extractOpenAIText(response: OpenAIResponse) {
+  if (typeof response.output_text === "string" && response.output_text.trim()) return response.output_text.trim();
+
+  for (const item of response.output ?? []) {
+    for (const content of item.content ?? []) {
+      if (typeof content.text === "string" && content.text.trim()) return content.text.trim();
+    }
+  }
+
+  throw new Error("OpenAI response did not include text output.");
+}
+
+function parseModelDraft(text: string, request: AstrologyReportRequest, chartSignature: ChartSignature): ReportDraft {
+  const jsonText = text
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+  const parsed = modelReportDraftSchema.parse(JSON.parse(jsonText));
+  const baseline = writeDeterministicCoreReport({ request, chartSignature });
+  if (!baseline.publicSignal) {
+    throw new Error("Deterministic baseline did not include a public signal.");
+  }
+
+  return {
+    summary: parsed.summary,
+    sections: parsed.sections as AstrologyReportSection[],
+    publicSignal: {
+      ...baseline.publicSignal,
+      provenanceSummary: `${baseline.publicSignal.provenanceSummary}, ${DEBUG_MODEL_REPORT_WRITER}`
+    }
+  };
+}
+
+function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: ChartSignature) {
+  const baseline = writeDeterministicCoreReport({ request, chartSignature });
+  return [
+    "Write a concise private astrology report draft as strict JSON.",
+    "Return only JSON with keys summary and sections.",
+    "sections must be an array of 3 objects with id, title, body, and emphasis.",
+    "Allowed emphasis values: primary, supporting, practice.",
+    "Do not include birth date, birth time, coordinates, full provenance, or private user identifiers in any public-facing language.",
+    "Preserve the chart signature exactly.",
+    JSON.stringify({
+      subjectName: request.subjectName,
+      reportType: request.reportType,
+      question: request.question,
+      intent: request.intent,
+      chartSignature: {
+        sun: chartSignature.sun,
+        moon: chartSignature.moon,
+        ascendant: chartSignature.ascendant,
+        zodiacMode: chartSignature.zodiacMode,
+        houseSystem: chartSignature.houseSystem
+      },
+      deterministicBaseline: baseline
+    })
+  ].join("\n");
+}
+
+async function writeOpenAIDebugModelReport(
+  input: ReportWriterInput,
+  config: Required<Pick<AstrologyReportGenerationConfig, "reportModel" | "openaiApiKey">>,
+  fetchImpl: typeof fetch
+): Promise<ReportDraft> {
+  const response = await fetchImpl("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${config.openaiApiKey}`,
+      "content-type": "application/json"
+    },
+    body: JSON.stringify({
+      model: config.reportModel,
+      input: buildDebugModelPrompt(input.request, input.chartSignature),
+      max_output_tokens: 1200
+    })
+  });
+
+  const payload = (await response.json()) as OpenAIResponse & { error?: { message?: string } };
+  if (!response.ok) {
+    throw new Error(payload.error?.message || `OpenAI Responses API failed with ${response.status}.`);
+  }
+
+  return parseModelDraft(extractOpenAIText(payload), input.request, input.chartSignature);
+}
+
+function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: ReportDraft): RecordAstrologyReportResult {
   const request = astrologyReportRequestSchema.parse(input);
   const chartSignature = buildChartSignature(request);
   const { ascendant } = chartSignature;
-  const draft = writeDeterministicCoreReport({ request, chartSignature });
+  const reportDraft = draft ?? writeDeterministicCoreReport({ request, chartSignature });
 
   return recordAstrologyReportResultSchema.parse({
     requestId: request.id,
@@ -496,8 +710,8 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest): RecordAstr
     engine: LOCAL_CHART_ROUTINE_ENGINE,
     engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
     status: "completed",
-    summary: draft.summary,
-    sections: draft.sections,
+    summary: reportDraft.summary,
+    sections: reportDraft.sections,
     provenance: [
       {
         id: `${request.id}:birth-data`,
@@ -529,7 +743,48 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest): RecordAstr
         boundary: "private"
       }
     ],
-    publicSignal: draft.publicSignal
+    publicSignal: reportDraft.publicSignal
+  });
+}
+
+async function buildDebugModelReportResult(
+  input: AstrologyReportRequest,
+  config: AstrologyReportGenerationConfig,
+  fetchImpl: typeof fetch
+): Promise<RecordAstrologyReportResult> {
+  const request = astrologyReportRequestSchema.parse(input);
+  if (!config.reportModelProvider || !config.reportModel || !config.openaiApiKey) {
+    return buildReportModelConfigUnavailableResult(request, config);
+  }
+  if (config.reportModelProvider !== OPENAI_REPORT_MODEL_PROVIDER) {
+    return buildReportModelProviderUnavailableResult(request, config.reportModelProvider);
+  }
+
+  const chartSignature = buildChartSignature(request);
+  let draft: ReportDraft;
+  try {
+    draft = await writeOpenAIDebugModelReport(
+      { request, chartSignature },
+      { reportModel: config.reportModel, openaiApiKey: config.openaiApiKey },
+      fetchImpl
+    );
+  } catch (error) {
+    return buildReportModelCallFailedResult(request, error instanceof Error ? error.message : "Unknown model writer error.");
+  }
+  const result = buildLocalChartRoutineResult(request, draft);
+
+  return recordAstrologyReportResultSchema.parse({
+    ...result,
+    provenance: [
+      ...result.provenance.filter((entry) => entry.id !== `${request.id}:writer`),
+      {
+        id: `${request.id}:writer`,
+        kind: "manual",
+        label: "Report writer",
+        summary: `Wrote private sections with ${DEBUG_MODEL_REPORT_WRITER} via ${OPENAI_REPORT_MODEL_PROVIDER}/${config.reportModel}; credit lifecycle is still disabled.`,
+        boundary: "private"
+      }
+    ]
   });
 }
 
@@ -537,6 +792,25 @@ export function buildAstrologyReportResult(input: AstrologyReportRequest): Recor
   const request = astrologyReportRequestSchema.parse(input);
   const config = resolveAstrologyReportGenerationConfig();
   if (config.ephemerisEngine === LOCAL_CHART_ROUTINE_ENGINE) {
+    if (config.reportWriter !== LOCAL_DETERMINISTIC_REPORT_WRITER) {
+      return buildReportWriterUnavailableResult(request, config.reportWriter ?? "");
+    }
+    return buildLocalChartRoutineResult(request);
+  }
+  return buildAstrologyEngineUnavailableResult(request);
+}
+
+export async function buildAstrologyReportResultAsync(
+  input: AstrologyReportRequest,
+  options: AstrologyReportGenerationOptions = {}
+): Promise<RecordAstrologyReportResult> {
+  const request = astrologyReportRequestSchema.parse(input);
+  const config = resolveAstrologyReportGenerationConfig(options.env);
+  const fetchImpl = options.fetchImpl ?? fetch;
+  if (config.ephemerisEngine === LOCAL_CHART_ROUTINE_ENGINE) {
+    if (config.reportWriter === DEBUG_MODEL_REPORT_WRITER) {
+      return buildDebugModelReportResult(request, config, fetchImpl);
+    }
     if (config.reportWriter !== LOCAL_DETERMINISTIC_REPORT_WRITER) {
       return buildReportWriterUnavailableResult(request, config.reportWriter ?? "");
     }

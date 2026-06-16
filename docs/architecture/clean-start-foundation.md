@@ -27,7 +27,7 @@ The foundation proves:
 - Database schema is Drizzle-owned and contains Better Auth plus Astra-owned tables.
 - Chart-maker communication starts as explicit request/result contracts with user-owned persistence.
 - `@astra/chart-maker` consumes `ChartMakerRequest` and emits `RecordChartMakerResult` without importing Astra app or database internals.
-- Composer's first publishing target is a stream artifact contract that Astra can ingest without importing Composer internals.
+- Composer's first publishing target is a stream artifact contract that Astra can ingest without importing Composer internals; this is a transitional contract, not a claim that Astra's core feed is public broadcast content.
 - Seed/reset commands are explicit: dry-run by default, executable only with `--execute`, and destructive reset is local-host guarded.
 - Composer is visible as a boundary but not implemented.
 - Supabase assumptions are rejected by checks and database URL guards.
@@ -85,7 +85,7 @@ The current onboarding flow covers:
 
 `/api/places/search` is the authenticated birth-place search edge. It accepts `q` and optional `limit`, returns typed place results with label, IANA timezone, latitude, longitude, and provider, and fails clearly with `PLACE_SEARCH_PROVIDER_UNAVAILABLE` when no provider is configured. Local smoke and Playwright coverage use the non-secret `ASTRA_PLACE_SEARCH_PROVIDER=local-fixture` provider so tests can prove place selection without introducing production credentials or hidden fallbacks.
 
-Composer's first publishing target is `ComposerStreamArtifact`: a voice card plus a stream card and stream item whose IDs must match. Composer remains implementation-free in the foundation, but the publish contract is available before internals are built.
+Composer's first publishing target is `ComposerStreamArtifact`: a voice card plus a stream card and stream item whose IDs must match. Composer remains implementation-free in the foundation, but the publish contract is available before internals are built. Per `docs/architecture/composer-private-personal-feeds.md`, this contract must evolve toward private `UserFeedItem` projections; public/shared stream items are fallback/source-layer artifacts, not Astra's core journey.
 
 Composer's minimal implementation lives under `apps/composer-web/src` and stays independent from Astra app internals. It provides:
 
@@ -95,23 +95,25 @@ Composer's minimal implementation lives under `apps/composer-web/src` and stays 
 
 Run `npm run test:composer-stream` to prove valid fixtures pass, invalid fixtures fail, and a stream artifact publishes through the shared contract.
 
-Astra consumes Composer artifacts through `/api/composer/stream-artifacts`, guarded by `x-astra-internal-token`. The route validates `composerStreamArtifactSchema`, persists the card and stream item through `upsertComposerStreamArtifact`, and `/journey` reads the persisted public stream from Postgres. Astra does not import Composer app code for this handoff.
+Astra consumes Composer artifacts through `/api/composer/stream-artifacts`, guarded by `x-astra-internal-token`. The route validates `composerStreamArtifactSchema`, persists the card and stream item through `upsertComposerStreamArtifact`, and `/journey` currently reads the persisted stream from Postgres as a transitional proof. Astra does not import Composer app code for this handoff. The production feed read must be user-scoped and private by default.
 
 Run `npm run test:composer-ingest-api` with the local app running to prove an internal Composer-style caller can publish a stream artifact and that `/journey` renders the resulting card.
 
 ## Astrology Report Lifecycle
 
-Astrology reports are a separate lifecycle from chart-maker results. Shared contracts define `AstrologyReportRequest`, `AstrologyReportResult`, report sections, provenance, status, and the private/public signal boundary. Raw report requests, report sections, provenance, and engine errors are private and user-owned. Composer may consume only explicit `AstrologyReportPublicSignal` payloads, which summarize enough for a stream card without hauling raw private report content through the public stream.
+Astrology reports are a separate lifecycle from chart-maker results. Shared contracts define `AstrologyReportRequest`, `AstrologyReportResult`, report sections, provenance, status, and the private/public signal boundary. Raw report requests, report sections, provenance, and engine errors are private and user-owned. Composer may consume only explicit permissioned boundary payloads, such as `AstrologyReportPublicSignal`, which summarize enough for a feed card without hauling raw private report content through Composer internals.
 
 Astra persists report lifecycle state in Drizzle-owned `astrology_report_requests` and `astrology_report_results` tables. Requests are created by authenticated users through `/api/reports`; internal report writers record results through `/api/report-results` with `x-astra-internal-token`. Missing or wrong `ASTRA_INTERNAL_API_TOKEN` returns `INTERNAL_TOKEN_REQUIRED`; local smoke scripts load the ignored app env file instead of inventing defaults.
 
 `@astra/astrology` is now a real module boundary. Without `ASTRA_EPHEMERIS_ENGINE`, it returns a failed `RecordAstrologyReportResult` that records the accepted request and explicit engine-unavailable provenance. With `ASTRA_EPHEMERIS_ENGINE=local-chart-routine`, it uses the prior Astria `circular-natal-horoscope-js` routine for tropical + Whole Sign chart signatures. Report writing is a separate switch: `ASTRA_REPORT_WRITER=local-deterministic-writer` emits private sections/provenance and an explicit public signal for Composer without an LLM call, paid provider, or credit spend.
 
+The first model-backed seam is `ASTRA_REPORT_WRITER=debug-model-writer`. It is intentionally opt-in and async-only through the user-owned generation path. It requires `ASTRA_REPORT_MODEL_PROVIDER=openai`, `ASTRA_REPORT_MODEL`, and `ASTRA_OPENAI_API_KEY`; missing or unsupported configuration records a failed private report result before any provider call. The deterministic writer remains the baseline and public-signal oracle, so model output can only vary private summary/sections while preserving the computed chart signature and public/private boundary. The local smoke uses an injected OpenAI Responses API fixture to prove success, malformed-output failure, provider/model provenance, and public-signal preservation without real provider spend.
+
 Signed-in users can generate their own queued report through `/api/reports/[requestId]/generate`. The route authorizes ownership, builds the configured astrology result server-side, records it through the same Drizzle transaction used by internal writers, and returns the updated request/result for `/self` to show completed status and the public-signal headline. `/self` also renders a private report reader for the signed-in user's generated sections and provenance. This is a private user-owned report action, not a public stream publish.
 
 Completed report generation also creates a deterministic user-owned `report:<requestId>` library artifact. `/library` shows signed-in users their private artifacts, including generated reports, while signed-out visitors keep the public foundation artifact view. Older completed report results without a persisted artifact are merged into the signed-in library view as report artifacts so local generated reports remain visible after this slice.
 
-Generated reports can publish their explicit public signal through `/api/reports/[requestId]/publish-signal`. The route authorizes ownership, requires a completed result with `publicSignal`, and writes only the Composer-shaped stream artifact into the public `/journey` read model. Raw report sections, provenance detail, and engine payloads remain private in `/self` and the report result tables.
+Generated reports can publish their explicit signal through `/api/reports/[requestId]/publish-signal`. The route authorizes ownership, requires a completed result with `publicSignal`, and writes only the Composer-shaped artifact into the current `/journey` read model. This is a transitional implementation; the correct production target is a user-owned feed projection. Raw report sections, provenance detail, and engine payloads remain private in `/self` and the report result tables.
 
 Composer can publish report-derived stream cards through `publishAstrologyReportSignalArtifact`, which accepts `AstrologyReportPublicSignal` and emits the same `ComposerStreamArtifact` contract Astra already ingests. Run `npm run test:astrology-engine` to prove both unconfigured failure and configured local engine completion, including Tony's Gemini/Virgo/Cancer fixture, Einstein's public AA Pisces/Sagittarius/Cancer fixture, deterministic writer provenance, and unsupported-writer fail-closed behavior. Run `npm run test:report-api` with the local app, migrated database, Mailpit, and app-local env loaded to prove authenticated report create/list, user-owned generation, missing-token rejection, wrong-token rejection, completed internal result recording, non-LLM writer evidence, and public-signal preservation.
 
@@ -119,10 +121,10 @@ Run `npm run test:place-search-api` with the local app, Mailpit, and `ASTRA_PLAC
 
 ## Stream Read Model
 
-`/journey` is the first DB-backed reader surface. It shows lane filtering, save/reflect actions, card detail, stream-item metadata, report-signal metadata, and explicit loading/empty/error states. Report-linked cards must enter this surface through Composer-published `ComposerStreamArtifact` records derived from `AstrologyReportPublicSignal`; raw private report payloads never move into public stream cards.
+`/journey` is the first DB-backed reader surface. It shows lane filtering, save/reflect actions, card detail, stream-item metadata, report-signal metadata, and explicit loading/empty/error states. The correct production model is a private, personalized user feed assembled by Composer from public source material, personal state, timing, progress, and explicit permissions. Report-linked cards must enter this surface through permissioned boundary objects and user-owned feed projections; raw private report payloads never move into shared/public fallback rows.
 
 See `docs/architecture/stream-read-model-cache-boundary.md` for the production read-model, cache tag, invalidation, and origin-failure rules.
 
 ## Future Delivery Posture
 
-For published Composer stream artifacts and future public/read-model data, expect edge-first caching with explicit origin failure. Keep this out of the first foundation until production retrieval is designed, and do not silently substitute stale or placeholder content when the origin path is broken.
+For Composer source artifacts and future feed/read-model data, keep public fallback caching separate from private user feed projections. Private personalized feed reads must be authenticated, user-scoped, and explicit about origin failure; do not silently substitute stale public content as if it were the user's composed journey.

@@ -1,4 +1,4 @@
-import { buildAstrologyReportResult } from "@astra/astrology";
+import { buildAstrologyReportResultAsync } from "@astra/astrology";
 import { db, getUserAstrologyReportRequest, recordAstrologyReportResult } from "@astra/db";
 import { NextResponse } from "next/server";
 import { getAstraAuthContext } from "../../../../../lib/auth/profile";
@@ -27,7 +27,7 @@ export async function POST(_request: Request, context: RouteContext) {
     return NextResponse.json({ error: "ASTROLOGY_REPORT_REQUEST_NOT_FOUND" }, { status: 404 });
   }
 
-  const resultPayload = buildAstrologyReportResult(reportRequest);
+  const resultPayload = await buildAstrologyReportResultAsync(reportRequest);
   const result = await recordAstrologyReportResult(db, resultPayload);
   const updatedRequest = await getUserAstrologyReportRequest(db, {
     requestId,

@@ -1,26 +1,70 @@
-# Stream Read Model And Cache Boundary
+# Private Personal Feed Read Model And Cache Boundary
 
-## Current Boundary
+## Foundational Correction
 
-`/journey` reads from Astra-owned Postgres tables through `readFoundationSnapshot`. Composer writes public stream artifacts only through `/api/composer/stream-artifacts` with `x-astra-internal-token`; Astra persists the resulting `cards` and `stream_items`. Private report requests/results stay behind authenticated report APIs and are not read by `/journey`.
+Astra is not a newspaper. Composer privately assembles each user's next meaningful card from public source material, personal state, timing, progress, and explicit permissions.
 
-Report-derived cards enter the stream only as `ComposerStreamArtifact` records generated from `AstrologyReportPublicSignal`. The public signal is the boundary object: it can carry headline, summary, tone, report type, and a provenance summary, but it must not carry raw private report sections, full provenance, birth data, or engine payloads.
+`/journey` is the private user stream by default. Public/shared stream records may exist for anonymous demo, shared atmosphere, educational samples, announcements, or fallback content, but they are not the core product feed.
+
+The corrected mental model is:
+
+```txt
+authenticated user -> private context -> Composer decision -> user_feed_item -> Astra stream display
+```
+
+not:
+
+```txt
+published card -> everyone sees the same stream
+```
+
+## Current Transitional Boundary
+
+The clean-start implementation still reads from Astra-owned Postgres tables through `readFoundationSnapshot` and stores Composer-shaped cards in `cards` / `stream_items`. Treat that as a transitional foundation, not the final feed architecture.
+
+Composer artifacts remain explicit contract payloads. A report-derived artifact may be created from `AstrologyReportPublicSignal`, but the actual stream projection shown to a user should become a user-owned `UserFeedItem` selected from public source material plus private user context. Raw private report sections, full provenance, birth data, engine payloads, navigation history, preferences, and progress must not be stored in public fallback rows.
 
 ## Caching Rule
 
-The first production read model should cache only public stream records: published `cards` joined to `stream_items`, ordered by stream position and filtered by audience/status. Private reports, chart requests, chart results, and user-owned artifacts remain auth-gated origin reads.
+The first production read model must split cache domains:
+
+- public fallback/source content can use shared cache tags,
+- private user feed projections must be user-scoped and auth-gated,
+- Composer decisions are private internal audit records,
+- private reports, chart requests, chart results, user-owned artifacts, navigation state, preferences, and progress remain auth-gated origin reads unless a deliberately private user-scoped cache is added.
 
 Future cache tags should be scoped narrowly:
 
-- `stream:public` for the public published stream list.
-- `stream:item:<streamItemId>` for a single public stream item.
-- `card:<cardId>` for public card content.
-- `report-signal:<reportId>` only for the approved public signal, never raw report results.
+- `feed:user:<userId>` for one user's private feed projection.
+- `feed:item:<userFeedItemId>` for one user-owned feed item.
+- `source-card:<sourceCardId>` for reusable public-safe source material.
+- `public-stream` for anonymous/shared fallback only.
+- `report-signal:<reportId>` only for the approved boundary signal, never raw report results.
 
 ## Failure Rule
 
-No hidden fallbacks. If the origin read fails, the app shows the explicit `/journey` stream-unavailable state. A future edge cache may serve a previously published public stream only when it is marked as such and the origin failure is surfaced through observability; private/user-owned report data must not be substituted from public cache.
+No hidden fallbacks. If the private feed origin read fails, the app shows an explicit private-stream unavailable state. Public fallback content can be shown only when the product state intentionally chooses fallback and labels it as non-personalized; it must not masquerade as the user's composed journey.
+
+Private/user-owned feed data must not be substituted from public cache. Public fallback data must not be personalized with private context.
 
 ## Invalidation Rule
 
-Composer ingest should invalidate public stream tags when it creates or updates a public stream artifact. Report-result writes should not invalidate the public stream directly unless a separate Composer publish step emits an approved `AstrologyReportPublicSignal`.
+Composer writes should invalidate the specific user feed tags for affected users and source-card tags for public-safe source changes. Report-result writes should not publish to the feed directly unless a separate Composer decision creates a user-owned feed projection from an approved boundary object.
+
+## Required Next Architecture
+
+The private feed implementation should add or evolve these first-class objects:
+
+- `SourceCard`: reusable public-safe content ingredient.
+- `PublicStreamItem`: optional anonymous/shared fallback item.
+- `UserFeedItem`: private feed projection for exactly one authenticated user.
+- `ComposerDecision`: private internal decision trace.
+- `PrivateFeedRequest` / `PrivateFeedResponse`: authenticated feed read contracts.
+
+Mandatory access rules:
+
+- Every `UserFeedItem` has exactly one `userId`.
+- Every private feed read is authenticated and server-side user-scoped.
+- No client-side filtering is used as a privacy boundary.
+- Composer does not read arbitrary user tables directly from Astra UI code.
+- Astra does not import Composer ranking internals.

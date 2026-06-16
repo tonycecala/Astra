@@ -1,6 +1,6 @@
 ---
 title: "Next clean thread handoff: report writer model route"
-status: "acknowledged"
+status: "acted"
 created: "2026-06-16"
 date: "2026-06-16"
 updated: "2026-06-16"
@@ -57,7 +57,7 @@ Do not assume `main` contains these until the branch is merged.
 - `ASTRA_REPORT_WRITER=local-deterministic-writer` writes the first report draft without LLM calls, paid providers, or credit spend.
 - Unsupported writer names fail closed before any model-backed route can run.
 - `/self` can queue, generate, read, and publish a private report/public signal.
-- `/journey` receives only the explicit public signal; private report sections and writer handoff text stay out of the public stream.
+- `/journey` currently receives only the explicit boundary signal; private report sections and writer handoff text stay out of the stream projection. The production `/journey` model must be private and user-scoped, not a global public stream.
 - Desktop/tablet/mobile browser QA proved `/self` and `/journey` have no console errors or horizontal overflow after the latest report-writer work.
 - Active nav indicators now work on desktop list and mobile bottom tabs.
 
@@ -84,7 +84,7 @@ Review path:
 3. Confirm private report text includes `Writer handoff`.
 4. Confirm private report text includes `no LLM call, no paid provider, no credit spend`.
 5. Open `http://localhost:3011/journey`.
-6. Confirm the public report signal appears, but the private writer handoff text does not.
+6. Confirm the boundary report signal appears, but the private writer handoff text does not.
 
 Old visible rows with incorrect historical signatures are expected local history and should not be treated as current failures.
 
@@ -106,7 +106,7 @@ Recommended shape:
 
 ## Model Notes From Latest Check
 
-OpenAI official docs currently position `gpt-5.5` as the flagship model, with `gpt-5.4`, `gpt-5.4-mini`, and `gpt-5.4-nano` as lower-cost/lower-latency options. For the first debug writer, prefer the cheapest official low-debug route that can keep private data under our account controls.
+OpenAI official docs currently surface `Latest: GPT-5.2` in the API docs navigation. For the first live debug writer run, use an explicit `ASTRA_REPORT_MODEL` value from the current OpenAI account/model list rather than relying on older handoff notes.
 
 OpenRouter free models can be useful for public/synthetic comparison only. Their providers may log prompts, so do not send private chart data there.
 
@@ -122,3 +122,9 @@ OpenRouter free models can be useful for public/synthetic comparison only. Their
 ## Recommended First Review Step For Tony
 
 After the next branch starts, first refresh `/self`, open `Astra Writer Smoke`, and confirm the deterministic writer baseline. Then implement the model-backed writer behind the switch and compare against that baseline.
+
+## Progress Note
+
+2026-06-16: First model-writer boundary step acted. `ASTRA_REPORT_WRITER=debug-model-writer` now routes through async report generation, requires explicit `ASTRA_REPORT_MODEL_PROVIDER=openai`, `ASTRA_REPORT_MODEL`, and `ASTRA_OPENAI_API_KEY`, and records failed private report results before any provider call when config is missing or unsupported. The deterministic writer remains the default baseline and public-signal oracle; next review should exercise the OpenAI path with synthetic/public fixtures before private-report enablement.
+
+2026-06-16: Mocked OpenAI Responses API fixture now proves the `debug-model-writer` success path without real provider spend. The smoke verifies the Responses endpoint payload, provider/model provenance, private model summary/sections, malformed-output failure, and that model output cannot rewrite the deterministic public signal sent to Composer.

@@ -28,4 +28,5 @@
 
 - This clean-start Composer app is intentionally placeholder-only until implementation begins.
 - Also obey `/Users/tony/Documents/Projects/Astra/AGENTS.md`; root Astra rules remain binding.
-- Composer composes and publishes artifacts through explicit contracts. Astra consumes those artifacts without importing Composer internals.
+- Composer composes private, user-scoped feed projections through explicit contracts. Astra consumes those projections without importing Composer internals.
+- Astra is not a newspaper. Public/shared cards are source or fallback material; the core stream is a private personal feed assembled from public source material, personal state, timing, progress, and explicit permissions.

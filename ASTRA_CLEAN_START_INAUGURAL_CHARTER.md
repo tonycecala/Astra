@@ -15,7 +15,7 @@ This is **not** a migration of the old Astra codebase.
 This is **not** a drag-forward cleanup.
 This is **not** a salvage operation where every historical artifact comes along for the ride.
 
-This is a clean rebuild of Astra as a lean, modular, RSS-type symbolic reader with a small number of durable product primitives.
+This is a clean rebuild of Astra as a lean, modular symbolic reader with a small number of durable product primitives. "RSS-like" describes a calm card-reading interaction pattern, not a public broadcast data model.
 
 The old repo becomes a **quarry**.
 The new repo becomes the **cathedral**.
@@ -30,6 +30,8 @@ We will leave behind accumulated entropy.
 Astra is becoming a symbolic operating system for the self, but the first implementation should stay radically simple.
 
 At launch, Astra should behave more like a beautiful, meaningful, personalized stream reader than a sprawling SaaS platform.
+
+Astra is not a newspaper. Composer privately assembles each user's next meaningful card from public source material, personal state, timing, progress, and explicit permissions.
 
 Core metaphor:
 
@@ -65,7 +67,7 @@ Astra is being rewritten as a lean reader/account system with these core areas:
 
 | Area | Description |
 |---|---|
-| Stream | RSS-like card/feed reader for symbolic, reflective, useful content |
+| Stream | Private, personalized user feed for symbolic, reflective, useful content; public/shared cards are source or fallback material only |
 | Self | User account/home area with identity, progress, and personal state |
 | Achievements | Record of meaningful actions, milestones, streaks, and earned symbolic progress |
 | Allies | List of people, guides, archetypes, ancestors, mentors, or symbolic companions |
@@ -617,4 +619,3 @@ Extract only what earns its place.
 ```
 
 When in doubt, choose the smaller stable subassembly.
-
