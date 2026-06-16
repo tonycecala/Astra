@@ -1,6 +1,6 @@
 ---
 title: "Next thread handoff: lean rebuilt stream and astrology reports"
-status: "active"
+status: "acted"
 created: "2026-06-16"
 date: "2026-06-16"
 updated: "2026-06-16"
@@ -111,3 +111,5 @@ Recommended next slice: **Contracts first**, because it fixes the shape of strea
 2026-06-16: Library artifact slice added. Completed report generation now upserts a deterministic user-owned `report:<requestId>` artifact, and `/library` switches to signed-in private artifacts instead of the public foundation snapshot. Older completed report results without artifact rows are merged into the signed-in library view as report artifacts so existing local generations stay visible. The signed-in `/self` E2E now verifies the generated report appears in `/library`; browser QA verified signed-in `/library` report artifacts on desktop/tablet/phone with no console errors or horizontal overflow.
 
 2026-06-16: Explicit public-signal publish slice added. `/api/reports/[requestId]/publish-signal` authorizes the signed-in owner, requires a completed report result with `publicSignal`, and upserts only the Composer-shaped public stream artifact into `/journey`. `/self` exposes this as `Publish signal` in the private report reader. `npm run test:report-api` covers the route, the signed-in `/self` E2E verifies the published card appears in `/journey`, and in-app browser QA verified desktop/tablet/phone `/journey` report-signal rendering with no console errors or horizontal overflow.
+
+2026-06-16: Handoff acted. `codex/astra-report-contracts` was validated, committed as `9d94767`, fast-forward merged into `main`, and the fresh follow-up branch `codex/astra-next-stream-cache-review` was started from merged `main`. Remaining items are product/provider decisions, not unfinished mechanics in this handoff: production birth-place provider, whether `local-astronomy-engine` is production v1, report product packaging, credits timing, and deployment-time cache/invalidation implementation.
