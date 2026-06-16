@@ -347,6 +347,10 @@ export function BirthOnboardingPanel({
         <div className="eyebrow">{ui.self.chartRequestEyebrow}</div>
         <h2>{ui.self.chartRequestTitle}</h2>
         <p>{ui.self.chartRequestIntro}</p>
+        <div className={styles.alphaGuide} aria-label={ui.self.onboardingGuideLabel}>
+          <strong>{ui.self.onboardingGuideTitle}</strong>
+          <span>{ui.self.onboardingGuideBody}</span>
+        </div>
 
         <div className={styles.stepper} aria-label={ui.self.onboardingStepsLabel}>
           {steps.map((step, index) => (
@@ -362,6 +366,9 @@ export function BirthOnboardingPanel({
             </button>
           ))}
         </div>
+        <p className={styles.progressText} aria-live="polite">
+          {ui.self.onboardingProgress(activeStepIndex + 1, steps.length, ui.self.onboardingSteps[activeStep])}
+        </p>
 
         <form className={`auth-form ${styles.form}`} onSubmit={submitChartRequest}>
           {activeStep === "subject" ? (
@@ -390,6 +397,7 @@ export function BirthOnboardingPanel({
                 value={form.date}
                 onChange={(event) => updateField("date", event.target.value)}
                 required
+                type="date"
                 inputMode="numeric"
                 placeholder={ui.self.chartDatePlaceholder}
               />
@@ -398,6 +406,10 @@ export function BirthOnboardingPanel({
 
           {activeStep === "precision" ? (
             <>
+              <div className={styles.alphaGuide}>
+                <strong>{ui.self.onboardingPrecisionGuideTitle}</strong>
+                <span>{ui.self.onboardingPrecisionGuideBody}</span>
+              </div>
               <fieldset className={styles.optionGroup}>
                 <legend>{ui.self.onboardingPrecisionModeLabel}</legend>
                 <label className={styles.option}>

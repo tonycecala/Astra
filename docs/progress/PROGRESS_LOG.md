@@ -13,6 +13,37 @@ summary: "Durable session-by-session memory for Astra repo work."
 
 ## Entries
 
+### 2026-06-16 - Auth and Self Onboarding Alpha
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** auth/onboarding alpha hardening
+**Status:** complete
+
+#### What Changed
+
+- Made the signed-in email-code panel actionable with direct `Continue to Self` and `Open Journey` actions.
+- Simplified `/self` first-run report setup copy around the alpha path: subject and birth date are enough; time and place are optional precision.
+- Added visible onboarding progress and date-only guidance while keeping the private chart/report request contract unchanged.
+- Updated auth-related smokes to require Mailpit for OTP retrieval instead of falling back to file-captured email.
+
+#### Tests Run
+
+- `ak governance check`
+- `npm run dev:status`
+- `npm run test:auth-code`
+- `npm run test:place-search-api`
+- `ASTRA_INTERNAL_API_TOKEN=astra-local-internal-token npm run test:chart-request-api`
+- `ASTRA_INTERNAL_API_TOKEN=astra-local-internal-token npm run test:report-api`
+- `npm run check`
+- `ASTRA_INTERNAL_API_TOKEN=astra-local-internal-token npm run test:e2e`
+- In-app browser `/login` -> Mailpit OTP -> `/self` reload QA at desktop, plus `/self` tablet/mobile responsive checks with no horizontal overflow and no console error logs.
+
+#### Risks / Follow-ups
+
+- Production-like local smokes require `ASTRA_INTERNAL_API_TOKEN` in the shell environment when exercising trusted internal result APIs.
+- The alpha path is now ready for LLM writer selection later; local deterministic writer remains the automatic testing route.
+
 ### 2026-06-16 - Journey Core Product Loop
 
 **Report Level:** 3 - Workflow & QA View
