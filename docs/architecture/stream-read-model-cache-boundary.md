@@ -61,6 +61,8 @@ The private feed implementation should add or evolve these first-class objects:
 - `ComposerDecision`: private internal decision trace.
 - `PrivateFeedRequest` / `PrivateFeedResponse`: authenticated feed read contracts.
 
+These objects now exist as v0 shared contracts and database tables. The remaining product step is to move `/journey` from the transitional global stream reader to the authenticated `UserFeedItem` read model.
+
 Mandatory access rules:
 
 - Every `UserFeedItem` has exactly one `userId`.

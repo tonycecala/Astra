@@ -3,8 +3,13 @@ import {
   chartMakerChartDataSchema,
   chartMakerRequestSchema,
   chartMakerResultSchema,
+  composerDecisionSchema,
   composerStreamArtifactSchema,
-  foundationSeedSchema
+  foundationSeedSchema,
+  privateFeedRequestSchema,
+  publicStreamItemSchema,
+  sourceCardSchema,
+  userFeedItemSchema
 } from "@astra/contracts";
 import { getFoundationSeed } from "@astra/testkit";
 
@@ -125,6 +130,69 @@ composerStreamArtifactSchema.parse({
   createdAt: now
 });
 
+sourceCardSchema.parse({
+  id: "source_card_smoke",
+  slug: "source-card-smoke",
+  title: "Reusable source material",
+  bodyTemplate: "Public-safe source material becomes personal only after Composer creates a user feed item.",
+  cardType: "reflection",
+  topicTags: ["feed"],
+  symbolicTags: ["threshold"],
+  eligibilityRules: { requiresAuthenticatedUser: true },
+  safetyFlags: [],
+  status: "active",
+  createdAt: now,
+  updatedAt: now
+});
+
+publicStreamItemSchema.parse({
+  id: "public_stream_smoke",
+  sourceCardId: "source_card_smoke",
+  title: "Public fallback",
+  body: "Public fallback content contains no private user context.",
+  audienceScope: "anonymous",
+  status: "published",
+  publishAt: now,
+  createdAt: now,
+  updatedAt: now
+});
+
+userFeedItemSchema.parse({
+  id: "user_feed_smoke",
+  userId: seed.user.id,
+  sourceCardId: "source_card_smoke",
+  feedKind: "source_card",
+  title: "Private next meaningful card",
+  body: "This projection belongs to one authenticated user.",
+  displayPayload: { note: "private" },
+  rankScore: 10,
+  reasonCode: "foundation_private_feed_smoke",
+  state: "available",
+  availableAt: now,
+  createdAt: now,
+  updatedAt: now
+});
+
+composerDecisionSchema.parse({
+  id: "composer_decision_smoke",
+  userId: seed.user.id,
+  userFeedItemId: "user_feed_smoke",
+  decisionVersion: "foundation-v1",
+  inputContextHash: "hash:private-context",
+  candidateIds: ["source_card_smoke"],
+  selectedCandidateId: "source_card_smoke",
+  rankFeatures: { timing: "now" },
+  suppressionReasons: [],
+  safetyNotes: ["Decision audit stays private."],
+  createdAt: now
+});
+
+privateFeedRequestSchema.parse({
+  userId: seed.user.id,
+  state: "available",
+  limit: 10
+});
+
 const schema = await readFile("packages/db/src/schema.ts", "utf8");
 for (const table of [
   "user",
@@ -140,7 +208,11 @@ for (const table of [
   "chart_requests",
   "chart_results",
   "gifts",
-  "star_transactions"
+  "star_transactions",
+  "source_cards",
+  "public_stream_items",
+  "user_feed_items",
+  "composer_decisions"
 ]) {
   if (!schema.includes(`"${table}"`)) throw new Error(`Missing schema table: ${table}`);
 }
@@ -162,6 +234,13 @@ for (const expected of [
   "createChartMakerRequest",
   "recordChartMakerResult",
   "listUserChartMakerRequests",
+  "upsertSourceCard",
+  "listPublicStreamItems",
+  "createUserFeedItem",
+  "listUserFeedItems",
+  "getUserFeedItemById",
+  "assertUserOwnsFeedItem",
+  "createComposerDecision",
   "assertResetAllowed"
 ]) {
   if (!repository.includes(expected)) throw new Error(`Missing database repository helper: ${expected}`);

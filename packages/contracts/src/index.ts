@@ -84,6 +84,114 @@ export const starTransactionSchema = z.object({
   createdAt: isoDateSchema
 });
 
+export const sourceCardSchema = z.object({
+  id: idSchema,
+  slug: z.string().min(1),
+  title: z.string().min(1),
+  bodyTemplate: z.string().min(1),
+  cardType: z.enum(["reflection", "practice", "lesson", "report_signal", "gift", "announcement"]).default("reflection"),
+  topicTags: z.array(z.string().min(1)).default([]),
+  symbolicTags: z.array(z.string().min(1)).default([]),
+  eligibilityRules: jsonObjectSchema.default({}),
+  safetyFlags: z.array(z.string().min(1)).default([]),
+  status: z.enum(["draft", "active", "archived"]).default("draft"),
+  createdAt: isoDateSchema,
+  updatedAt: isoDateSchema
+});
+
+export const publicStreamItemSchema = z.object({
+  id: idSchema,
+  sourceCardId: idSchema.optional(),
+  title: z.string().min(1),
+  body: z.string().min(1),
+  audienceScope: z.enum(["anonymous", "all", "new_user", "returning_user"]).default("all"),
+  status: z.enum(["draft", "published", "archived"]).default("draft"),
+  publishAt: isoDateSchema,
+  expiresAt: isoDateSchema.optional(),
+  createdAt: isoDateSchema,
+  updatedAt: isoDateSchema
+});
+
+export const userFeedItemSchema = z.object({
+  id: idSchema,
+  userId: idSchema,
+  sourceCardId: idSchema.optional(),
+  artifactId: idSchema.optional(),
+  achievementId: idSchema.optional(),
+  allyId: idSchema.optional(),
+  giftId: idSchema.optional(),
+  feedKind: z.enum(["source_card", "report_signal", "artifact", "achievement", "ally", "gift", "manual"]),
+  title: z.string().min(1),
+  body: z.string().min(1),
+  displayPayload: jsonObjectSchema.default({}),
+  rankScore: z.number().default(0),
+  reasonCode: z.string().min(1),
+  state: z.enum(["queued", "available", "seen", "dismissed", "saved", "expired"]).default("available"),
+  availableAt: isoDateSchema,
+  expiresAt: isoDateSchema.optional(),
+  seenAt: isoDateSchema.optional(),
+  dismissedAt: isoDateSchema.optional(),
+  savedAt: isoDateSchema.optional(),
+  createdAt: isoDateSchema,
+  updatedAt: isoDateSchema
+});
+
+export const composerDecisionSchema = z.object({
+  id: idSchema,
+  userId: idSchema,
+  userFeedItemId: idSchema,
+  decisionVersion: z.string().min(1),
+  inputContextHash: z.string().min(1),
+  candidateIds: z.array(idSchema).default([]),
+  selectedCandidateId: idSchema,
+  rankFeatures: jsonObjectSchema.default({}),
+  suppressionReasons: z.array(z.string().min(1)).default([]),
+  safetyNotes: z.array(z.string().min(1)).default([]),
+  createdAt: isoDateSchema
+});
+
+export const privateFeedRequestSchema = z.object({
+  userId: idSchema,
+  limit: z.number().int().min(1).max(100).default(25),
+  state: z.enum(["queued", "available", "seen", "dismissed", "saved", "expired"]).optional()
+});
+
+export const privateFeedResponseSchema = z.object({
+  userId: idSchema,
+  items: z.array(userFeedItemSchema),
+  generatedAt: isoDateSchema
+});
+
+export const createUserFeedItemSchema = z.object({
+  userId: idSchema,
+  sourceCardId: idSchema.optional(),
+  artifactId: idSchema.optional(),
+  achievementId: idSchema.optional(),
+  allyId: idSchema.optional(),
+  giftId: idSchema.optional(),
+  feedKind: userFeedItemSchema.shape.feedKind,
+  title: z.string().min(1),
+  body: z.string().min(1),
+  displayPayload: jsonObjectSchema.default({}),
+  rankScore: z.number().default(0),
+  reasonCode: z.string().min(1),
+  state: userFeedItemSchema.shape.state.default("available"),
+  availableAt: isoDateSchema.optional(),
+  expiresAt: isoDateSchema.optional()
+});
+
+export const createComposerDecisionSchema = z.object({
+  userId: idSchema,
+  userFeedItemId: idSchema,
+  decisionVersion: z.string().min(1),
+  inputContextHash: z.string().min(1),
+  candidateIds: z.array(idSchema).default([]),
+  selectedCandidateId: idSchema,
+  rankFeatures: jsonObjectSchema.default({}),
+  suppressionReasons: z.array(z.string().min(1)).default([]),
+  safetyNotes: z.array(z.string().min(1)).default([])
+});
+
 export const chartBirthDataSchema = z
   .object({
     date: dateOnlySchema,
@@ -345,6 +453,14 @@ export type Ally = z.infer<typeof allySchema>;
 export type Artifact = z.infer<typeof artifactSchema>;
 export type Gift = z.infer<typeof giftSchema>;
 export type StarTransaction = z.infer<typeof starTransactionSchema>;
+export type SourceCard = z.infer<typeof sourceCardSchema>;
+export type PublicStreamItem = z.infer<typeof publicStreamItemSchema>;
+export type UserFeedItem = z.infer<typeof userFeedItemSchema>;
+export type ComposerDecision = z.infer<typeof composerDecisionSchema>;
+export type PrivateFeedRequest = z.infer<typeof privateFeedRequestSchema>;
+export type PrivateFeedResponse = z.infer<typeof privateFeedResponseSchema>;
+export type CreateUserFeedItem = z.infer<typeof createUserFeedItemSchema>;
+export type CreateComposerDecision = z.infer<typeof createComposerDecisionSchema>;
 export type ChartBirthData = z.infer<typeof chartBirthDataSchema>;
 export type BirthPlaceSearchQuery = z.infer<typeof birthPlaceSearchQuerySchema>;
 export type BirthPlaceSearchResult = z.infer<typeof birthPlaceSearchResultSchema>;

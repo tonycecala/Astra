@@ -119,13 +119,14 @@ The production journey must be a private, authenticated, user-owned feed; public
 - `akashic/agent-inbox/2026-06-16-next-clean-thread-report-writer-model-handoff.md` now captures the clean next-thread start point for the lower-debug model-backed report writer route.
 - `ASTRA_REPORT_WRITER=debug-model-writer` now exists as an opt-in async writer route behind `ASTRA_REPORT_MODEL_PROVIDER=openai`, `ASTRA_REPORT_MODEL`, and `ASTRA_OPENAI_API_KEY`. Missing config and unsupported providers fail closed as private failed report results before any model call, while `local-deterministic-writer` remains the default baseline and public-signal oracle.
 - `npm run test:astrology-engine` now proves the mocked OpenAI Responses API success path, malformed model-output failure, provider/model provenance, and the rule that model output cannot rewrite the deterministic public signal.
+- Astra's private personal feed boundary now has v0 shared contracts, Drizzle tables, migration, and repository helpers for `SourceCard`, `PublicStreamItem`, `UserFeedItem`, `ComposerDecision`, `PrivateFeedRequest`, and `PrivateFeedResponse`.
+- `npm run test:private-feed` proves User A can read User A's feed item, cannot read User B's feed item, Composer decisions cannot attach across users, public fallback rows do not carry private payload, and private feed responses do not expose raw decision internals.
 
 ## Follow-Ups
 - Select the production birth-place provider and replace/extend the local fixture adapter without changing the `/api/places/search` contract.
 - Replace the deterministic chart-maker contract adapter with or behind a real ephemeris-backed module when the chart computation engine is selected.
 - Decide whether the migrated `circular-natal-horoscope-js` adapter is the production v1 chart routine or should remain a local proof behind a later production ephemeris provider.
 - Exercise the first lower-debug model-backed writer with real OpenAI account config on synthetic/public fixtures, then compare private sections against the non-LLM deterministic writer output before enabling it for normal private reports.
-- Implement the private personal feed contract split from `docs/architecture/composer-private-personal-feeds.md`: `SourceCard`, `PublicStreamItem`, `UserFeedItem`, `ComposerDecision`, `PrivateFeedRequest`, and `PrivateFeedResponse`.
 - Replace the transitional global stream read with authenticated `getPrivateFeedForUser(userId)` semantics and privacy tests before further stream UI polish.
 - Continue polishing reader density, card states, gifts/stars presentation, self/profile usefulness, and i18n-backed empty/error/loading states.
 - Update this mission after each non-trivial dev/debug session.

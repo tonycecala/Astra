@@ -3,22 +3,38 @@ import {
   type Artifact,
   type AstrologyReportRequest,
   type AstrologyReportResult,
+  type ComposerDecision,
+  type CreateComposerDecision,
+  type CreateUserFeedItem,
   type ComposerStreamArtifact,
   type ChartBirthData,
   type ChartMakerRequest,
   type ChartMakerResult,
+  type PrivateFeedRequest,
+  type PrivateFeedResponse,
+  type PublicStreamItem,
   type RecordChartMakerResult,
   type RecordAstrologyReportResult,
+  type SourceCard,
+  type UserFeedItem,
   artifactSchema,
   astrologyReportRequestSchema,
   astrologyReportResultSchema,
   chartBirthDataSchema,
   chartMakerRequestSchema,
   chartMakerResultSchema,
+  composerDecisionSchema,
+  createComposerDecisionSchema,
   createAstrologyReportRequestSchema,
+  createUserFeedItemSchema,
   composerStreamArtifactSchema,
   type FoundationSeed,
-  foundationSeedSchema
+  foundationSeedSchema,
+  privateFeedRequestSchema,
+  privateFeedResponseSchema,
+  publicStreamItemSchema,
+  sourceCardSchema,
+  userFeedItemSchema
 } from "@astra/contracts";
 import type { AstraDb } from "./client";
 import { getSeedForDatabase } from "./seed";
@@ -32,10 +48,14 @@ import {
   cards,
   chartRequests,
   chartResults,
+  composerDecisions,
   gifts,
+  publicStreamItems,
+  sourceCards,
   starTransactions,
   streamItems,
-  user
+  user,
+  userFeedItems
 } from "./schema";
 
 export type FoundationSnapshot = FoundationSeed;
@@ -86,6 +106,8 @@ export type CreateAstrologyReportRequestInput = {
 export type RecordChartMakerResultInput = RecordChartMakerResult;
 export type RecordAstrologyReportResultInput = RecordAstrologyReportResult;
 export type UpsertComposerStreamArtifactInput = ComposerStreamArtifact;
+export type CreateUserFeedItemInput = CreateUserFeedItem;
+export type CreateComposerDecisionInput = CreateComposerDecision;
 
 function toDate(value: string) {
   return new Date(value);
@@ -199,6 +221,80 @@ function streamItemFromRow(row: typeof streamItems.$inferSelect) {
     status: row.status,
     audience: row.audience
   };
+}
+
+function sourceCardFromRow(row: typeof sourceCards.$inferSelect): SourceCard {
+  return sourceCardSchema.parse({
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    bodyTemplate: row.bodyTemplate,
+    cardType: row.cardType,
+    topicTags: row.topicTags,
+    symbolicTags: row.symbolicTags,
+    eligibilityRules: row.eligibilityRules,
+    safetyFlags: row.safetyFlags,
+    status: row.status,
+    createdAt: toIsoDate(row.createdAt),
+    updatedAt: toIsoDate(row.updatedAt)
+  });
+}
+
+function publicStreamItemFromRow(row: typeof publicStreamItems.$inferSelect): PublicStreamItem {
+  return publicStreamItemSchema.parse({
+    id: row.id,
+    sourceCardId: row.sourceCardId ?? undefined,
+    title: row.title,
+    body: row.body,
+    audienceScope: row.audienceScope,
+    status: row.status,
+    publishAt: toIsoDate(row.publishAt),
+    expiresAt: row.expiresAt ? toIsoDate(row.expiresAt) : undefined,
+    createdAt: toIsoDate(row.createdAt),
+    updatedAt: toIsoDate(row.updatedAt)
+  });
+}
+
+function userFeedItemFromRow(row: typeof userFeedItems.$inferSelect): UserFeedItem {
+  return userFeedItemSchema.parse({
+    id: row.id,
+    userId: row.userId,
+    sourceCardId: row.sourceCardId ?? undefined,
+    artifactId: row.artifactId ?? undefined,
+    achievementId: row.achievementId ?? undefined,
+    allyId: row.allyId ?? undefined,
+    giftId: row.giftId ?? undefined,
+    feedKind: row.feedKind,
+    title: row.title,
+    body: row.body,
+    displayPayload: row.displayPayload,
+    rankScore: row.rankScore,
+    reasonCode: row.reasonCode,
+    state: row.state,
+    availableAt: toIsoDate(row.availableAt),
+    expiresAt: row.expiresAt ? toIsoDate(row.expiresAt) : undefined,
+    seenAt: row.seenAt ? toIsoDate(row.seenAt) : undefined,
+    dismissedAt: row.dismissedAt ? toIsoDate(row.dismissedAt) : undefined,
+    savedAt: row.savedAt ? toIsoDate(row.savedAt) : undefined,
+    createdAt: toIsoDate(row.createdAt),
+    updatedAt: toIsoDate(row.updatedAt)
+  });
+}
+
+function composerDecisionFromRow(row: typeof composerDecisions.$inferSelect): ComposerDecision {
+  return composerDecisionSchema.parse({
+    id: row.id,
+    userId: row.userId,
+    userFeedItemId: row.userFeedItemId,
+    decisionVersion: row.decisionVersion,
+    inputContextHash: row.inputContextHash,
+    candidateIds: row.candidateIds,
+    selectedCandidateId: row.selectedCandidateId,
+    rankFeatures: row.rankFeatures,
+    suppressionReasons: row.suppressionReasons,
+    safetyNotes: row.safetyNotes,
+    createdAt: toIsoDate(row.createdAt)
+  });
 }
 
 export function seedSnapshot(): FoundationSnapshot {
@@ -475,6 +571,10 @@ export async function seedFoundationData(
 }
 
 export async function resetFoundationData(database: AstraDb): Promise<FoundationResetResult> {
+  await database.delete(composerDecisions);
+  await database.delete(userFeedItems);
+  await database.delete(publicStreamItems);
+  await database.delete(sourceCards);
   await database.delete(astrologyReportResults);
   await database.delete(astrologyReportRequests);
   await database.delete(chartResults);
@@ -490,6 +590,159 @@ export async function resetFoundationData(database: AstraDb): Promise<Foundation
   await database.delete(user);
 
   return { cleared: true };
+}
+
+export async function upsertSourceCard(database: AstraDb, input: SourceCard): Promise<SourceCard> {
+  const card = sourceCardSchema.parse(input);
+  const [row] = await database
+    .insert(sourceCards)
+    .values({
+      ...card,
+      topicTags: card.topicTags,
+      symbolicTags: card.symbolicTags,
+      eligibilityRules: card.eligibilityRules,
+      safetyFlags: card.safetyFlags,
+      createdAt: toDate(card.createdAt),
+      updatedAt: toDate(card.updatedAt)
+    })
+    .onConflictDoUpdate({
+      target: sourceCards.id,
+      set: {
+        slug: card.slug,
+        title: card.title,
+        bodyTemplate: card.bodyTemplate,
+        cardType: card.cardType,
+        topicTags: card.topicTags,
+        symbolicTags: card.symbolicTags,
+        eligibilityRules: card.eligibilityRules,
+        safetyFlags: card.safetyFlags,
+        status: card.status,
+        updatedAt: toDate(card.updatedAt)
+      }
+    })
+    .returning();
+
+  return sourceCardFromRow(row);
+}
+
+export async function listPublicStreamItems(database: AstraDb): Promise<PublicStreamItem[]> {
+  const rows = await database
+    .select()
+    .from(publicStreamItems)
+    .where(eq(publicStreamItems.status, "published"))
+    .orderBy(asc(publicStreamItems.publishAt));
+
+  return rows.map(publicStreamItemFromRow);
+}
+
+export async function createUserFeedItem(database: AstraDb, input: CreateUserFeedItemInput): Promise<UserFeedItem> {
+  const parsed = createUserFeedItemSchema.parse(input);
+  const now = new Date();
+  const availableAt = parsed.availableAt ? toDate(parsed.availableAt) : now;
+
+  const [row] = await database
+    .insert(userFeedItems)
+    .values({
+      userId: parsed.userId,
+      sourceCardId: parsed.sourceCardId ?? null,
+      artifactId: parsed.artifactId ?? null,
+      achievementId: parsed.achievementId ?? null,
+      allyId: parsed.allyId ?? null,
+      giftId: parsed.giftId ?? null,
+      feedKind: parsed.feedKind,
+      title: parsed.title,
+      body: parsed.body,
+      displayPayload: parsed.displayPayload,
+      rankScore: Math.round(parsed.rankScore),
+      reasonCode: parsed.reasonCode,
+      state: parsed.state,
+      availableAt,
+      expiresAt: parsed.expiresAt ? toDate(parsed.expiresAt) : null,
+      createdAt: now,
+      updatedAt: now
+    })
+    .returning();
+
+  return userFeedItemFromRow(row);
+}
+
+export async function listUserFeedItems(
+  database: AstraDb,
+  request: PrivateFeedRequest
+): Promise<PrivateFeedResponse> {
+  const parsed = privateFeedRequestSchema.parse(request);
+  const filters = [eq(userFeedItems.userId, parsed.userId)];
+  if (parsed.state) filters.push(eq(userFeedItems.state, parsed.state));
+
+  const rows = await database
+    .select()
+    .from(userFeedItems)
+    .where(and(...filters))
+    .orderBy(desc(userFeedItems.rankScore), asc(userFeedItems.availableAt))
+    .limit(parsed.limit);
+
+  return privateFeedResponseSchema.parse({
+    userId: parsed.userId,
+    items: rows.map(userFeedItemFromRow),
+    generatedAt: new Date().toISOString()
+  });
+}
+
+export async function getUserFeedItemById(
+  database: AstraDb,
+  input: { userId: string; feedItemId: string }
+): Promise<UserFeedItem | null> {
+  const [row] = await database
+    .select()
+    .from(userFeedItems)
+    .where(and(eq(userFeedItems.id, input.feedItemId), eq(userFeedItems.userId, input.userId)))
+    .limit(1);
+
+  return row ? userFeedItemFromRow(row) : null;
+}
+
+export async function assertUserOwnsFeedItem(database: AstraDb, input: { userId: string; feedItemId: string }) {
+  const item = await getUserFeedItemById(database, input);
+  if (!item) throw new Error("Feed item was not found for the supplied user.");
+  return item;
+}
+
+export async function createComposerDecision(
+  database: AstraDb,
+  input: CreateComposerDecisionInput
+): Promise<ComposerDecision> {
+  const parsed = createComposerDecisionSchema.parse(input);
+  const now = new Date();
+
+  return database.transaction(async (tx) => {
+    const [feedItem] = await tx
+      .select({ id: userFeedItems.id })
+      .from(userFeedItems)
+      .where(and(eq(userFeedItems.id, parsed.userFeedItemId), eq(userFeedItems.userId, parsed.userId)))
+      .limit(1);
+
+    if (!feedItem) {
+      throw new Error("Composer decision target feed item was not found for the supplied user.");
+    }
+
+    const [row] = await tx
+      .insert(composerDecisions)
+      .values({
+        userId: parsed.userId,
+        userFeedItemId: parsed.userFeedItemId,
+        decisionVersion: parsed.decisionVersion,
+        inputContextHash: parsed.inputContextHash,
+        candidateIds: parsed.candidateIds,
+        selectedCandidateId: parsed.selectedCandidateId,
+        rankFeatures: parsed.rankFeatures,
+        suppressionReasons: parsed.suppressionReasons,
+        safetyNotes: parsed.safetyNotes,
+        createdAt: now
+      })
+      .returning();
+
+    return composerDecisionFromRow(row);
+  });
 }
 
 export async function upsertAuthUserProfile(database: AstraDb, input: AuthUserProfileInput) {

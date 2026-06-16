@@ -42,6 +42,16 @@ Composer may consider public source material, personal state, timing, progress, 
 - `ComposerDecision`: private internal trace explaining why a feed item was created.
 - `PrivateFeedRequest` / `PrivateFeedResponse`: authenticated read contracts.
 
+## Implemented v0 Contract And Schema Split
+
+The first private-feed boundary now exists in shared contracts, Drizzle schema, migration `0003_round_hellcat`, and database repository helpers.
+
+- `packages/contracts` defines the source, public fallback, private feed item, decision trace, request, and response schemas.
+- `packages/db` owns `source_cards`, `public_stream_items`, `user_feed_items`, and `composer_decisions`.
+- `listUserFeedItems` and `getUserFeedItemById` require a `userId` in the database predicate.
+- `createComposerDecision` verifies the target feed item belongs to the same user before writing the private audit record.
+- `scripts/smoke-private-feed.mts` proves User A cannot read User B's item, public fallback rows do not carry private payload, and private feed responses do not expose decision internals.
+
 ## v0 Access Rules
 
 - Feed reads are mentally modeled as `getPrivateFeedForUser(authenticatedUserId)`.

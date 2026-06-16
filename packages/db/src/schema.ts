@@ -322,3 +322,104 @@ export const starTransactions = pgTable(
     userIdx: index("star_transactions_user_idx").on(table.userId, table.createdAt)
   })
 );
+
+export const sourceCards = pgTable(
+  "source_cards",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    bodyTemplate: text("body_template").notNull(),
+    cardType: text("card_type").notNull().default("reflection"),
+    topicTags: jsonb("topic_tags").notNull().default(sql`'[]'::jsonb`),
+    symbolicTags: jsonb("symbolic_tags").notNull().default(sql`'[]'::jsonb`),
+    eligibilityRules: jsonb("eligibility_rules").notNull().default(sql`'{}'::jsonb`),
+    safetyFlags: jsonb("safety_flags").notNull().default(sql`'[]'::jsonb`),
+    status: text("status").notNull().default("draft"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    slugIdx: uniqueIndex("source_cards_slug_idx").on(table.slug),
+    statusIdx: index("source_cards_status_idx").on(table.status, table.updatedAt)
+  })
+);
+
+export const publicStreamItems = pgTable(
+  "public_stream_items",
+  {
+    id: text("id").primaryKey(),
+    sourceCardId: text("source_card_id").references(() => sourceCards.id, { onDelete: "set null" }),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    audienceScope: text("audience_scope").notNull().default("all"),
+    status: text("status").notNull().default("draft"),
+    publishAt: timestamp("publish_at", { withTimezone: true }).notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    publicFeedIdx: index("public_stream_items_feed_idx").on(table.status, table.publishAt),
+    sourceCardIdx: index("public_stream_items_source_card_idx").on(table.sourceCardId)
+  })
+);
+
+export const userFeedItems = pgTable(
+  "user_feed_items",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    sourceCardId: text("source_card_id").references(() => sourceCards.id, { onDelete: "set null" }),
+    artifactId: text("artifact_id").references(() => artifacts.id, { onDelete: "set null" }),
+    achievementId: text("achievement_id").references(() => achievements.id, { onDelete: "set null" }),
+    allyId: text("ally_id").references(() => allies.id, { onDelete: "set null" }),
+    giftId: text("gift_id").references(() => gifts.id, { onDelete: "set null" }),
+    feedKind: text("feed_kind").notNull(),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    displayPayload: jsonb("display_payload").notNull().default(sql`'{}'::jsonb`),
+    rankScore: integer("rank_score").notNull().default(0),
+    reasonCode: text("reason_code").notNull(),
+    state: text("state").notNull().default("available"),
+    availableAt: timestamp("available_at", { withTimezone: true }).notNull().defaultNow(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    seenAt: timestamp("seen_at", { withTimezone: true }),
+    dismissedAt: timestamp("dismissed_at", { withTimezone: true }),
+    savedAt: timestamp("saved_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    userFeedIdx: index("user_feed_items_user_feed_idx").on(table.userId, table.state, table.availableAt),
+    sourceCardIdx: index("user_feed_items_source_card_idx").on(table.sourceCardId),
+    artifactIdx: index("user_feed_items_artifact_idx").on(table.artifactId)
+  })
+);
+
+export const composerDecisions = pgTable(
+  "composer_decisions",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    userFeedItemId: text("user_feed_item_id")
+      .notNull()
+      .references(() => userFeedItems.id, { onDelete: "cascade" }),
+    decisionVersion: text("decision_version").notNull(),
+    inputContextHash: text("input_context_hash").notNull(),
+    candidateIds: jsonb("candidate_ids").notNull().default(sql`'[]'::jsonb`),
+    selectedCandidateId: text("selected_candidate_id").notNull(),
+    rankFeatures: jsonb("rank_features").notNull().default(sql`'{}'::jsonb`),
+    suppressionReasons: jsonb("suppression_reasons").notNull().default(sql`'[]'::jsonb`),
+    safetyNotes: jsonb("safety_notes").notNull().default(sql`'[]'::jsonb`),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    userDecisionIdx: index("composer_decisions_user_idx").on(table.userId, table.createdAt),
+    userFeedItemIdx: uniqueIndex("composer_decisions_user_feed_item_idx").on(table.userFeedItemId)
+  })
+);
