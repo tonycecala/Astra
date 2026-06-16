@@ -1,16 +1,11 @@
 "use client";
 
-import type { AstraCard, StreamItem } from "@astra/contracts";
 import { Bookmark, Check, MessageCircle, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ui } from "../lib/i18n";
+import type { JourneyStreamCard } from "../lib/journey";
 
-type StreamCardView = {
-  item: StreamItem;
-  card: AstraCard;
-};
-
-type Lane = AstraCard["lane"];
+type Lane = JourneyStreamCard["card"]["lane"];
 type LaneFilter = Lane | "all";
 
 const laneOrder: LaneFilter[] = ["all", "today", "know_yourself", "myth_and_symbol", "practice", "gift"];
@@ -20,11 +15,11 @@ function laneLabel(lane: LaneFilter) {
   return ui.journey.lanes[lane];
 }
 
-function itemKindLabel(kind: StreamItem["kind"]) {
+function itemKindLabel(kind: JourneyStreamCard["item"]["kind"]) {
   return ui.journey.itemKinds[kind];
 }
 
-function audienceLabel(audience: StreamItem["audience"]) {
+function audienceLabel(audience: JourneyStreamCard["item"]["audience"]) {
   return ui.journey.audiences[audience];
 }
 
@@ -32,7 +27,7 @@ function publishedDate(value: string) {
   return new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(value));
 }
 
-export function StreamReader({ streamCards }: { streamCards: StreamCardView[] }) {
+export function StreamReader({ streamCards }: { streamCards: JourneyStreamCard[] }) {
   const [activeLane, setActiveLane] = useState<LaneFilter>("all");
   const [activeCardId, setActiveCardId] = useState(streamCards[0]?.card.id ?? "");
   const [savedCardIds, setSavedCardIds] = useState<Set<string>>(() => new Set());
@@ -89,7 +84,7 @@ export function StreamReader({ streamCards }: { streamCards: StreamCardView[] })
                       <span className="stream-card-meta">
                         <span>{itemKindLabel(item.kind)}</span>
                         <span>{audienceLabel(item.audience)}</span>
-                        <span>{publishedDate(card.publishedAt)}</span>
+                        <span>{publishedDate(item.publishedAt)}</span>
                       </span>
                     </span>
                   </button>

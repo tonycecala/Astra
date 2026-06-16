@@ -114,6 +114,7 @@ test.describe("clean-start routes", () => {
 
   test("reader filters lanes and opens card detail", async ({ page }) => {
     await page.goto("/journey");
+    await expect(page.locator(".status-strip").getByText("Public fallback")).toBeVisible();
     await page.getByRole("tab", { name: "Practice" }).click();
     await expect(page.getByRole("button", { name: /Three Quiet Breaths/ })).toBeVisible();
     await expect(page.getByRole("button", { name: /The River Keeps Moving/ })).toHaveCount(0);
@@ -218,8 +219,12 @@ test.describe("clean-start routes", () => {
     await expect(page.getByText("report", { exact: true })).toBeVisible();
 
     await page.goto("/journey");
+    await expect(page.locator(".status-strip").getByText("Private journey")).toBeVisible();
     await page.getByRole("tab", { name: "Know yourself" }).click();
     const generatedSignals = page.locator(".stream-card-open").filter({ hasText: "Gemini Sun, Virgo Moon, Cancer rising" });
     expect(await generatedSignals.count()).toBeGreaterThan(0);
+    await generatedSignals.first().click();
+    await expect(page.getByLabel("Card metadata")).toContainText("Private journey");
+    await expect(page.getByLabel("Card metadata")).toContainText("Available");
   });
 });

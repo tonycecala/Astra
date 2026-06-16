@@ -121,7 +121,7 @@ Run `npm run test:place-search-api` with the local app, Mailpit, and `ASTRA_PLAC
 
 ## Stream Read Model
 
-`/journey` is the first DB-backed reader surface. It shows lane filtering, save/reflect actions, card detail, stream-item metadata, report-signal metadata, and explicit loading/empty/error states. The correct production model is a private, personalized user feed assembled by Composer from public source material, personal state, timing, progress, and explicit permissions. Report-linked cards must enter this surface through permissioned boundary objects and user-owned feed projections; raw private report payloads never move into shared/public fallback rows.
+`/journey` is the first private-feed reader surface. Signed-in users read user-owned `UserFeedItem` rows; signed-out visitors see explicitly labeled public fallback content. It shows lane filtering, save/reflect actions, card detail, feed-item metadata, report-signal metadata, and explicit loading/empty/error states. The correct production model is a private, personalized user feed assembled by Composer from public source material, personal state, timing, progress, and explicit permissions. Report-linked cards now enter this surface through permissioned boundary objects and user-owned feed projections; raw private report payloads never move into shared/public fallback rows.
 
 See `docs/architecture/stream-read-model-cache-boundary.md` for the production read-model, cache tag, invalidation, and origin-failure rules.
 

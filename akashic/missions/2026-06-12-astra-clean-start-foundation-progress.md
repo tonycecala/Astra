@@ -121,12 +121,14 @@ The production journey must be a private, authenticated, user-owned feed; public
 - `npm run test:astrology-engine` now proves the mocked OpenAI Responses API success path, malformed model-output failure, provider/model provenance, and the rule that model output cannot rewrite the deterministic public signal.
 - Astra's private personal feed boundary now has v0 shared contracts, Drizzle tables, migration, and repository helpers for `SourceCard`, `PublicStreamItem`, `UserFeedItem`, `ComposerDecision`, `PrivateFeedRequest`, and `PrivateFeedResponse`.
 - `npm run test:private-feed` proves User A can read User A's feed item, cannot read User B's feed item, Composer decisions cannot attach across users, public fallback rows do not carry private payload, and private feed responses do not expose raw decision internals.
+- `/journey` now uses authenticated private feed semantics: signed-in users read `UserFeedItem` projections, first-visit users receive deterministic private projections from public-safe fallback material, and signed-out readers see an explicitly labeled public fallback.
+- Report signal publishing now writes a deterministic user-owned `report_signal` feed item for the signed-in user, so generated report cards enter Journey through the private feed boundary rather than the transitional global stream reader.
 
 ## Follow-Ups
 - Select the production birth-place provider and replace/extend the local fixture adapter without changing the `/api/places/search` contract.
 - Replace the deterministic chart-maker contract adapter with or behind a real ephemeris-backed module when the chart computation engine is selected.
 - Decide whether the migrated `circular-natal-horoscope-js` adapter is the production v1 chart routine or should remain a local proof behind a later production ephemeris provider.
 - Exercise the first lower-debug model-backed writer with real OpenAI account config on synthetic/public fixtures, then compare private sections against the non-LLM deterministic writer output before enabling it for normal private reports.
-- Replace the transitional global stream read with authenticated `getPrivateFeedForUser(userId)` semantics and privacy tests before further stream UI polish.
+- Move Composer's active source-card/review/write workflow fully onto private feed projections and retire the transitional global stream publish path once Composer has a private write edge.
 - Continue polishing reader density, card states, gifts/stars presentation, self/profile usefulness, and i18n-backed empty/error/loading states.
 - Update this mission after each non-trivial dev/debug session.

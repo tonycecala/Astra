@@ -1,12 +1,14 @@
 import { PageHeader } from "../../components/PageHeader";
 import { StreamReader } from "../../components/StreamReader";
-import { getFoundationViewModel } from "../../lib/foundation";
+import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
+import { getJourneyViewModel } from "../../lib/journey";
 
 export const dynamic = "force-dynamic";
 
 export default async function JourneyPage() {
-  const view = await getFoundationViewModel().catch(() => null);
+  const { profile } = await getAstraAuthContext();
+  const view = await getJourneyViewModel(profile?.userId).catch(() => null);
 
   if (!view) {
     return (
@@ -30,7 +32,7 @@ export default async function JourneyPage() {
         {ui.journey.intro}
       </PageHeader>
       <div className="status-strip">
-        <span className="pill">{ui.journey.dbBackedStream}</span>
+        <span className="pill">{view.mode === "private" ? ui.journey.privateFeed : ui.journey.publicFallback}</span>
         <span className="pill">{ui.journey.reportSignalsReady}</span>
         <span className="pill">{ui.journey.noLegacyData}</span>
         <span className="pill">{ui.journey.cardCount(view.streamCards.length)}</span>

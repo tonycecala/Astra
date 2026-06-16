@@ -267,8 +267,11 @@ const publishedSignal = await requestJson(`${appBaseUrl}/api/reports/${requestId
 if ((publishedSignal.artifact as JsonObject | undefined)?.id !== `report_signal:${requestId}`) {
   throw new Error("User report signal publish route did not return the expected stream artifact.");
 }
-if (((publishedSignal.artifact as JsonObject).streamItem as JsonObject | undefined)?.kind !== "artifact") {
-  throw new Error("User report signal publish route must publish an artifact stream item.");
+if ((publishedSignal.feedItem as JsonObject | undefined)?.feedKind !== "report_signal") {
+  throw new Error("User report signal publish route must create a private report-signal feed item.");
+}
+if ((publishedSignal.feedItem as JsonObject | undefined)?.userId !== reportRequest.userId) {
+  throw new Error("User report signal publish route returned a feed item for the wrong user.");
 }
 
 delete process.env[ASTRA_EPHEMERIS_ENGINE_ENV];

@@ -643,6 +643,7 @@ export async function createUserFeedItem(database: AstraDb, input: CreateUserFee
   const [row] = await database
     .insert(userFeedItems)
     .values({
+      id: parsed.id,
       userId: parsed.userId,
       sourceCardId: parsed.sourceCardId ?? null,
       artifactId: parsed.artifactId ?? null,
@@ -660,6 +661,26 @@ export async function createUserFeedItem(database: AstraDb, input: CreateUserFee
       expiresAt: parsed.expiresAt ? toDate(parsed.expiresAt) : null,
       createdAt: now,
       updatedAt: now
+    })
+    .onConflictDoUpdate({
+      target: userFeedItems.id,
+      set: {
+        sourceCardId: parsed.sourceCardId ?? null,
+        artifactId: parsed.artifactId ?? null,
+        achievementId: parsed.achievementId ?? null,
+        allyId: parsed.allyId ?? null,
+        giftId: parsed.giftId ?? null,
+        feedKind: parsed.feedKind,
+        title: parsed.title,
+        body: parsed.body,
+        displayPayload: parsed.displayPayload,
+        rankScore: Math.round(parsed.rankScore),
+        reasonCode: parsed.reasonCode,
+        state: parsed.state,
+        availableAt,
+        expiresAt: parsed.expiresAt ? toDate(parsed.expiresAt) : null,
+        updatedAt: now
+      }
     })
     .returning();
 

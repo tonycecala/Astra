@@ -257,10 +257,22 @@ if (!resetScript.includes("assertResetAllowed")) throw new Error("Local reset sc
 const chartRequestRoute = await readFile("apps/astra-web/app/api/chart-requests/route.ts", "utf8");
 const chartResultRoute = await readFile("apps/astra-web/app/api/chart-results/route.ts", "utf8");
 const composerIngestRoute = await readFile("apps/astra-web/app/api/composer/stream-artifacts/route.ts", "utf8");
+const journeyRoute = await readFile("apps/astra-web/app/journey/page.tsx", "utf8");
+const journeyModel = await readFile("apps/astra-web/lib/journey.ts", "utf8");
+const reportSignalPublishRoute = await readFile("apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts", "utf8");
 const internalTokenHelper = await readFile("apps/astra-web/lib/internal-token.ts", "utf8");
 const composerPublisher = await readFile("apps/composer-web/src/publishStreamArtifact.ts", "utf8");
 if (!chartRequestRoute.includes("getAstraAuthContext")) throw new Error("Chart request API must use Astra auth context.");
 if (!chartResultRoute.includes("hasValidInternalApiToken")) throw new Error("Chart result API must require the internal token helper.");
+if (!journeyRoute.includes("getAstraAuthContext") || !journeyRoute.includes("getJourneyViewModel")) {
+  throw new Error("/journey must read through the authenticated private journey view model.");
+}
+if (!journeyModel.includes("listUserFeedItems") || !journeyModel.includes("public_fallback")) {
+  throw new Error("Journey view model must split authenticated private feed reads from public fallback content.");
+}
+if (!reportSignalPublishRoute.includes("createUserFeedItem") || reportSignalPublishRoute.includes("upsertComposerStreamArtifact")) {
+  throw new Error("Report signal publishing must create a user-owned feed item, not publish to the global stream reader.");
+}
 if (!internalTokenHelper.includes("x-astra-internal-token")) throw new Error("Internal token helper must check the shared internal token header.");
 if (!composerIngestRoute.includes("composerStreamArtifactSchema")) {
   throw new Error("Composer stream ingest API must validate the shared stream artifact contract.");

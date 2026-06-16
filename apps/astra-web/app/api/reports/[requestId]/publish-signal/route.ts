@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { type ComposerStreamArtifact, composerStreamArtifactSchema } from "@astra/contracts";
-import { db, getUserAstrologyReportResult, upsertComposerStreamArtifact } from "@astra/db";
+import { createUserFeedItem, db, getUserAstrologyReportResult } from "@astra/db";
 import { getAstraAuthContext } from "../../../../../lib/auth/profile";
 
 type RouteContext = {
@@ -68,8 +68,27 @@ export async function POST(_request: Request, context: RouteContext) {
   } satisfies ComposerStreamArtifact);
 
   try {
-    const streamArtifact = await upsertComposerStreamArtifact(db, artifact);
-    return NextResponse.json({ artifact: streamArtifact }, { status: 201 });
+    const feedItem = await createUserFeedItem(db, {
+      id: `report_signal_feed:${profile.userId}:${requestId}`,
+      userId: profile.userId,
+      feedKind: "report_signal",
+      title: artifact.card.title,
+      body: artifact.card.body,
+      displayPayload: {
+        subtitle: artifact.card.subtitle,
+        lane: artifact.card.lane,
+        tone: artifact.card.tone,
+        ctaLabel: artifact.card.ctaLabel,
+        ctaAction: artifact.card.ctaAction,
+        publicSignal: reportResult.publicSignal,
+        composerArtifactId: artifact.id
+      },
+      rankScore: artifact.streamItem.position,
+      reasonCode: "explicit_report_signal_publish",
+      state: "available",
+      availableAt: publishedAt
+    });
+    return NextResponse.json({ artifact, feedItem }, { status: 201 });
   } catch {
     return NextResponse.json({ error: "ASTROLOGY_REPORT_PUBLIC_SIGNAL_NOT_PUBLISHED" }, { status: 502 });
   }

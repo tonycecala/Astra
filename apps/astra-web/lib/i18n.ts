@@ -26,6 +26,8 @@ export const ui = {
     intro: "Meaningful cards, reflections, achievements, allies, artifacts, and gifts begin here as one calm reader surface.",
     seededStream: "Seeded stream",
     dbBackedStream: "DB-backed stream",
+    privateFeed: "Private journey",
+    publicFallback: "Public fallback",
     reportSignalsReady: "Report signals ready",
     noLegacyData: "No legacy data",
     cardCount: (count: number) => `${count} cards`,
@@ -48,25 +50,36 @@ export const ui = {
     emptyTitle: "No cards in this lane",
     emptyBody: "Choose another lane to keep reading.",
     errorTitle: "Stream unavailable",
-    errorBody: "Astra could not read the DB-backed stream. Check the local database and retry the route.",
+    errorBody: "Astra could not read the journey feed. Check the local database and retry the route.",
     loadingTitle: "Loading stream",
-    loadingBody: "Astra is reading the latest DB-backed cards.",
+    loadingBody: "Astra is reading the latest journey cards.",
     itemKinds: {
       card: "Card",
+      source_card: "Source card",
+      report_signal: "Report signal",
       achievement: "Achievement",
       artifact: "Report signal",
       gift: "Gift",
-      ally: "Ally"
+      ally: "Ally",
+      manual: "Manual"
     },
     audiences: {
       all: "All readers",
       new_user: "New readers",
-      returning_user: "Returning readers"
+      returning_user: "Returning readers",
+      private: "Private journey",
+      public_fallback: "Public fallback"
     },
     statuses: {
       draft: "Draft",
       published: "Published",
-      archived: "Archived"
+      archived: "Archived",
+      queued: "Queued",
+      available: "Available",
+      seen: "Seen",
+      dismissed: "Dismissed",
+      saved: "Saved",
+      expired: "Expired"
     },
     lanes: {
       today: "Today",

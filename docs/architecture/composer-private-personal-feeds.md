@@ -51,6 +51,8 @@ The first private-feed boundary now exists in shared contracts, Drizzle schema, 
 - `listUserFeedItems` and `getUserFeedItemById` require a `userId` in the database predicate.
 - `createComposerDecision` verifies the target feed item belongs to the same user before writing the private audit record.
 - `scripts/smoke-private-feed.mts` proves User A cannot read User B's item, public fallback rows do not carry private payload, and private feed responses do not expose decision internals.
+- `/journey` now reads authenticated users from `UserFeedItem` rows. Signed-out readers see an explicitly labeled public fallback, not a personalized stream.
+- Publishing a completed report signal creates a deterministic user-owned `report_signal` feed item for the signed-in user instead of making the global stream the product feed.
 
 ## v0 Access Rules
 

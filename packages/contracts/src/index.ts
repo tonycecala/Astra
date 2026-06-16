@@ -163,6 +163,7 @@ export const privateFeedResponseSchema = z.object({
 });
 
 export const createUserFeedItemSchema = z.object({
+  id: idSchema.optional(),
   userId: idSchema,
   sourceCardId: idSchema.optional(),
   artifactId: idSchema.optional(),
