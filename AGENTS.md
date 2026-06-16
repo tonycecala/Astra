@@ -9,6 +9,13 @@
 - Before patching a bug, use one hypothesis and one test; do not patch multiple suspected causes unless evidence proves one shared root cause.
 - The gate must never deadlock work: acknowledge/defer/close active messages with `ak inbox ack`, `ak inbox defer`, or `ak inbox close`, or edit files inside `akashic/agent-inbox/` and `akashic/warnings/`.
 
+## Akashic Stewardship v3 & Reporting Levels
+
+- This repo is governed by `/Users/tony/Documents/Projects/Akashic/akashic/governance/AKASHIC_REPO_STEWARDSHIP_PROTOCOL.md`; start substantial work from `docs/architecture/REPO_STEWARDSHIP.md`.
+- Codex acts as the engineering team and should report mostly at Levels 2-4: Level 2 for architecture/boundaries, Level 3 for workflow/QA, and Level 4 for implementation/debug detail.
+- Level 0 is a governing constraint and escalation level only. Use it only when technical work threatens mission, user promise, trust, privacy, economics, public/private boundaries, or strategic direction.
+- Do not install stronger hooks, gates, or aggressive blocking without Tony approval. Report existing `.codex/config.toml`, hooks, and PreToolUse gates before recommending changes.
+
 ## Akashic Knowledge Source
 
 - Treat `/Users/tony/Documents/Projects/Akashic` as the shared engineering knowledge source before broad implementation or debugging.
