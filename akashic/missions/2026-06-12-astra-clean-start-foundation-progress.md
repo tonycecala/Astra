@@ -61,12 +61,15 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - Mailpit is running at `http://localhost:8025`, and the email-code auth smoke passed through send-code, Mailpit OTP read, verify-code, session check, and sign-out.
 - Browser verification proved `/login` can send and verify an email code and then display the authenticated session for the browser-smoke user.
 - `/self` now reads authenticated app profile state through `getAstraAuthContext`; logged-out visitors see a sign-in CTA, while signed-in users see their own display name, onboarding state, and private star balance.
+- Chart-maker contracts now accept birth data plus optional question, intent, and context.
+- Drizzle owns `chart_requests` and `chart_results` tables with user ownership and request/result indexes.
+- `npm run test:chart-boundary` proves the local request/result lifecycle against Postgres.
+- Composer's first publish target is now a shared stream artifact contract.
 
 ## Follow-Ups
-- Define chart-maker request/result contracts and ownership tables so private chart work can attach to the authenticated app profile.
-- Keep Composer placeholder-only until an explicit publishing artifact contract exists.
-- Define Composer-to-Astra publishing contracts before implementing Composer internals.
-- Keep astrology placeholder-only until the reader shell, contracts, auth, and database loop are stable.
+- Add authenticated route handlers or server actions for creating chart requests from the app UI.
+- Implement the independent chart-maker module behind the `ChartMakerRequest` and `ChartMakerResult` contracts.
+- Implement Composer's stream artifact validation/publish path without importing Astra app internals.
 - Add edge-first caching with origin fallback after published stream artifacts exist.
 - Continue polishing reader density, card states, gifts/stars presentation, self/profile usefulness, and i18n-backed empty/error/loading states.
 - Update this mission after each non-trivial dev/debug session.

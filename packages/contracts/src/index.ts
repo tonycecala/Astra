@@ -2,6 +2,9 @@ import { z } from "zod";
 
 const idSchema = z.string().min(1);
 const isoDateSchema = z.string().datetime();
+const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const timeOnlySchema = z.string().regex(/^\d{2}:\d{2}$/);
+const jsonObjectSchema = z.record(z.string(), z.unknown());
 
 export const userSchema = z.object({
   id: idSchema,
@@ -81,6 +84,81 @@ export const starTransactionSchema = z.object({
   createdAt: isoDateSchema
 });
 
+export const chartBirthDataSchema = z.object({
+  date: dateOnlySchema,
+  time: timeOnlySchema.optional(),
+  timezone: z.string().min(1).optional(),
+  location: z.string().min(1),
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional()
+});
+
+export const chartMakerRequestSchema = z.object({
+  id: idSchema,
+  userId: idSchema,
+  subjectName: z.string().min(1),
+  birthData: chartBirthDataSchema,
+  question: z.string().min(1).optional(),
+  intent: z.string().min(1).optional(),
+  context: jsonObjectSchema.optional(),
+  source: z.enum(["self", "ally", "composer", "import"]).default("self"),
+  status: z.enum(["queued", "processing", "completed", "failed", "cancelled"]).default("queued"),
+  createdAt: isoDateSchema,
+  updatedAt: isoDateSchema
+});
+
+export const chartMakerResultSchema = z.object({
+  id: idSchema,
+  requestId: idSchema,
+  userId: idSchema,
+  engine: z.string().min(1),
+  status: z.enum(["completed", "failed"]),
+  summary: z.string().min(1).optional(),
+  chartData: jsonObjectSchema,
+  error: z.string().min(1).optional(),
+  createdAt: isoDateSchema
+});
+
+export const composerVoiceIdSchema = z.enum(["guide", "companion", "prompt"]);
+
+export const composerVoiceCardSchema = z.object({
+  voice: z.object({
+    id: composerVoiceIdSchema
+  }),
+  header: z.string().min(1),
+  body: z.string().min(1)
+});
+
+export const composerVoiceValidationErrorSchema = z.object({
+  ok: z.literal(false),
+  error: z.literal("VOICE_VALIDATION_FAILED"),
+  voice_id: composerVoiceIdSchema,
+  violations: z.array(
+    z.object({
+      field: z.enum(["header", "body"]),
+      type: z.enum(["WORD_LIMIT", "BANNED_TERM", "MORALIZING"]),
+      limit: z.number().int().positive().optional(),
+      actual: z.number().int().nonnegative().optional(),
+      term: z.string().min(1).optional()
+    })
+  )
+});
+
+export const composerStreamArtifactSchema = z
+  .object({
+    id: idSchema,
+    target: z.literal("stream"),
+    publisher: z.literal("composer"),
+    voiceCard: composerVoiceCardSchema,
+    card: cardSchema,
+    streamItem: streamItemSchema,
+    createdAt: isoDateSchema
+  })
+  .refine((artifact) => artifact.card.id === artifact.streamItem.cardId, {
+    message: "Composer stream artifact card.id must match streamItem.cardId.",
+    path: ["streamItem", "cardId"]
+  });
+
 export type AstraUser = z.infer<typeof userSchema>;
 export type AstraCard = z.infer<typeof cardSchema>;
 export type StreamItem = z.infer<typeof streamItemSchema>;
@@ -89,6 +167,13 @@ export type Ally = z.infer<typeof allySchema>;
 export type Artifact = z.infer<typeof artifactSchema>;
 export type Gift = z.infer<typeof giftSchema>;
 export type StarTransaction = z.infer<typeof starTransactionSchema>;
+export type ChartBirthData = z.infer<typeof chartBirthDataSchema>;
+export type ChartMakerRequest = z.infer<typeof chartMakerRequestSchema>;
+export type ChartMakerResult = z.infer<typeof chartMakerResultSchema>;
+export type ComposerVoiceId = z.infer<typeof composerVoiceIdSchema>;
+export type ComposerVoiceCard = z.infer<typeof composerVoiceCardSchema>;
+export type ComposerVoiceValidationError = z.infer<typeof composerVoiceValidationErrorSchema>;
+export type ComposerStreamArtifact = z.infer<typeof composerStreamArtifactSchema>;
 
 export const foundationSeedSchema = z.object({
   user: userSchema,

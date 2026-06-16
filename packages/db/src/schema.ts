@@ -186,6 +186,52 @@ export const artifacts = pgTable(
   })
 );
 
+export const chartRequests = pgTable(
+  "chart_requests",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    subjectName: text("subject_name").notNull(),
+    birthData: jsonb("birth_data").notNull(),
+    question: text("question"),
+    intent: text("intent"),
+    context: jsonb("context").notNull().default(sql`'{}'::jsonb`),
+    source: text("source").notNull().default("self"),
+    status: text("status").notNull().default("queued"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    userIdx: index("chart_requests_user_idx").on(table.userId, table.createdAt),
+    statusIdx: index("chart_requests_status_idx").on(table.status, table.createdAt)
+  })
+);
+
+export const chartResults = pgTable(
+  "chart_results",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+    requestId: text("request_id")
+      .notNull()
+      .references(() => chartRequests.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    engine: text("engine").notNull(),
+    status: text("status").notNull(),
+    summary: text("summary"),
+    chartData: jsonb("chart_data").notNull().default(sql`'{}'::jsonb`),
+    error: text("error"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    requestIdx: uniqueIndex("chart_results_request_idx").on(table.requestId),
+    userIdx: index("chart_results_user_idx").on(table.userId, table.createdAt)
+  })
+);
+
 export const gifts = pgTable(
   "gifts",
   {

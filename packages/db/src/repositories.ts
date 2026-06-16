@@ -1,5 +1,11 @@
-import { asc } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import {
+  type ChartBirthData,
+  type ChartMakerRequest,
+  type ChartMakerResult,
+  chartBirthDataSchema,
+  chartMakerRequestSchema,
+  chartMakerResultSchema,
   type FoundationSeed,
   foundationSeedSchema
 } from "@astra/contracts";
@@ -11,6 +17,8 @@ import {
   appUserProfiles,
   artifacts,
   cards,
+  chartRequests,
+  chartResults,
   gifts,
   starTransactions,
   streamItems,
@@ -40,12 +48,62 @@ export type AuthUserProfileInput = {
   displayName: string;
 };
 
+export type CreateChartMakerRequestInput = {
+  userId: string;
+  subjectName: string;
+  birthData: ChartBirthData;
+  question?: string;
+  intent?: string;
+  context?: Record<string, unknown>;
+  source?: ChartMakerRequest["source"];
+};
+
+export type RecordChartMakerResultInput = {
+  requestId: string;
+  userId: string;
+  engine: string;
+  status: ChartMakerResult["status"];
+  summary?: string;
+  chartData?: Record<string, unknown>;
+  error?: string;
+};
+
 function toDate(value: string) {
   return new Date(value);
 }
 
 function toIsoDate(value: Date | string) {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
+}
+
+function chartRequestFromRow(row: typeof chartRequests.$inferSelect): ChartMakerRequest {
+  return chartMakerRequestSchema.parse({
+    id: row.id,
+    userId: row.userId,
+    subjectName: row.subjectName,
+    birthData: row.birthData,
+    question: row.question ?? undefined,
+    intent: row.intent ?? undefined,
+    context: row.context,
+    source: row.source,
+    status: row.status,
+    createdAt: toIsoDate(row.createdAt),
+    updatedAt: toIsoDate(row.updatedAt)
+  });
+}
+
+function chartResultFromRow(row: typeof chartResults.$inferSelect): ChartMakerResult {
+  return chartMakerResultSchema.parse({
+    id: row.id,
+    requestId: row.requestId,
+    userId: row.userId,
+    engine: row.engine,
+    status: row.status,
+    summary: row.summary ?? undefined,
+    chartData: row.chartData,
+    error: row.error ?? undefined,
+    createdAt: toIsoDate(row.createdAt)
+  });
 }
 
 export function seedSnapshot(): FoundationSnapshot {
@@ -351,6 +409,8 @@ export async function seedFoundationData(
 }
 
 export async function resetFoundationData(database: AstraDb): Promise<FoundationResetResult> {
+  await database.delete(chartResults);
+  await database.delete(chartRequests);
   await database.delete(starTransactions);
   await database.delete(gifts);
   await database.delete(artifacts);
@@ -391,6 +451,83 @@ export async function upsertAuthUserProfile(database: AstraDb, input: AuthUserPr
     .returning();
 
   return profile;
+}
+
+export async function createChartMakerRequest(
+  database: AstraDb,
+  input: CreateChartMakerRequestInput
+): Promise<ChartMakerRequest> {
+  const birthData = chartBirthDataSchema.parse(input.birthData);
+  const now = new Date();
+
+  const [request] = await database
+    .insert(chartRequests)
+    .values({
+      userId: input.userId,
+      subjectName: input.subjectName,
+      birthData,
+      question: input.question ?? null,
+      intent: input.intent ?? null,
+      context: input.context ?? {},
+      source: input.source ?? "self",
+      status: "queued",
+      createdAt: now,
+      updatedAt: now
+    })
+    .returning();
+
+  return chartRequestFromRow(request);
+}
+
+export async function listUserChartMakerRequests(database: AstraDb, userId: string): Promise<ChartMakerRequest[]> {
+  const rows = await database
+    .select()
+    .from(chartRequests)
+    .where(eq(chartRequests.userId, userId))
+    .orderBy(desc(chartRequests.createdAt));
+
+  return rows.map(chartRequestFromRow);
+}
+
+export async function recordChartMakerResult(
+  database: AstraDb,
+  input: RecordChartMakerResultInput
+): Promise<ChartMakerResult> {
+  const now = new Date();
+
+  return database.transaction(async (tx) => {
+    const [result] = await tx
+      .insert(chartResults)
+      .values({
+        requestId: input.requestId,
+        userId: input.userId,
+        engine: input.engine,
+        status: input.status,
+        summary: input.summary ?? null,
+        chartData: input.chartData ?? {},
+        error: input.error ?? null,
+        createdAt: now
+      })
+      .onConflictDoUpdate({
+        target: chartResults.requestId,
+        set: {
+          engine: input.engine,
+          status: input.status,
+          summary: input.summary ?? null,
+          chartData: input.chartData ?? {},
+          error: input.error ?? null,
+          createdAt: now
+        }
+      })
+      .returning();
+
+    await tx
+      .update(chartRequests)
+      .set({ status: input.status, updatedAt: now })
+      .where(eq(chartRequests.id, input.requestId));
+
+    return chartResultFromRow(result);
+  });
 }
 
 export function assertResetAllowed(databaseUrl: string, override = process.env.ASTRA_ALLOW_DB_RESET === "1") {
