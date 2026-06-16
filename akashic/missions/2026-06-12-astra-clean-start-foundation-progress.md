@@ -2,7 +2,7 @@
 title: "Astra Clean Start Foundation Progress"
 status: "open"
 date: "2026-06-12"
-updated: "2026-06-12"
+updated: "2026-06-16"
 tags: ["mission", "astra", "clean-start", "foundation", "progress"]
 related: ["../../docs/architecture/clean-start-foundation.md", "../../ASTRA_CLEAN_START_INAUGURAL_CHARTER.md"]
 ---
@@ -34,7 +34,7 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - Preferred auth UX is email code first: send code, verify code, continue without password-first framing.
 - Mailpit is the preferred local email sink.
 - Composer internals must not leak into Astra.
-- Supabase carryover is forbidden: no packages, env vars, imports, RLS assumptions, compatibility shims, or runtime DDL.
+- Supabase carryover is forbidden: no packages, env vars, imports, legacy policy assumptions, compatibility shims, or runtime DDL.
 - Long-running local app review should use durable server controls instead of foreground-only dev sessions.
 
 ## Problems Encountered
@@ -56,10 +56,14 @@ Keep `/Users/tony/Documents/Projects/Astra` as the new clean repo and `/Users/to
 - Playwright route coverage includes desktop, tablet, and mobile.
 - Recent validation passed: lint, typecheck, foundation test, boundary check, no-Supabase check, production build, and Playwright e2e.
 - Latest relevant Astra commits include durable local server work and Akashic governance installation.
+- Local Postgres `postgresql://astra:astra@127.0.0.1:5432/astra_clean_start` is available through Homebrew PostgreSQL 16.
+- Drizzle migration, seed, local guarded reset, remigration, and reseed have been exercised against the disposable local database.
+- Mailpit is running at `http://localhost:8025`, and the email-code auth smoke passed through send-code, Mailpit OTP read, verify-code, session check, and sign-out.
+- Browser verification proved `/login` can send and verify an email code and then display the authenticated session for the browser-smoke user.
+- `/self` currently remains seed-backed and does not yet personalize to the signed-in user's app profile.
 
 ## Follow-Ups
-- Run the real local database loop against the chosen disposable local Postgres/Neon-style database.
-- Run the full Better Auth email-code smoke with Mailpit: send code, read code, verify code, confirm session, logout.
+- Bind authenticated app routes to `getAstraAuthContext` where product intent requires user-specific profile state.
 - Keep Composer placeholder-only until an explicit publishing artifact contract exists.
 - Define Composer-to-Astra publishing contracts before implementing Composer internals.
 - Keep astrology placeholder-only until the reader shell, contracts, auth, and database loop are stable.

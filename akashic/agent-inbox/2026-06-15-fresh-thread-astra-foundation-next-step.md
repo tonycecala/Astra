@@ -42,7 +42,7 @@ Make the local database and auth loop real:
 ## Guardrails
 - Do not copy old Astria routes wholesale.
 - Do not add Composer internals to Astra.
-- Do not add Supabase packages, env vars, imports, RLS policy assumptions, compatibility shims, or runtime DDL.
+- Do not add Supabase packages, env vars, imports, legacy policy assumptions, compatibility shims, or runtime DDL.
 - Do not use Docker unless Tony explicitly asks; keep the local path simple.
 - Use `astra-browser-qa` for route/auth/navigation/user-journey work.
 - Update `akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md` before closeout.
