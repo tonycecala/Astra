@@ -36,7 +36,8 @@
     "db:generate": "drizzle-kit generate --config packages/db/drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config packages/db/drizzle.config.ts",
     "db:reset:local": "node --import tsx scripts/reset-local-db.mts",
-    "db:seed": "node --import tsx scripts/seed-db.mts"
+    "db:seed": "node --import tsx scripts/seed-db.mts",
+    "db:seed:private-card": "node --import tsx scripts/seed-private-journey-card.mts"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.11",
