@@ -126,22 +126,221 @@ textarea {
 
 .nav a:hover,
 .nav a[aria-current="page"] {
-  background: var(--nav-hover);
+  background: color-mix(in srgb, var(--gold) 24%, transparent);
 }
 
 .nav a[aria-current="page"] {
-  color: var(--ink);
+  color: var(--gold);
   font-weight: 700;
 }
 
-.nav a[aria-current="page"]::before {
-  position: absolute;
-  left: 0;
-  width: 3px;
-  height: 22px;
-  border-radius: 999px;
-  background: var(--gold);
-  content: "";
+.nav-avatar {
+  display: inline-grid;
+  width: 19px;
+  height: 19px;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6b45d6, #e8bd57);
+  color: #fff7df;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.nav-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.self-profile-card {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: clamp(18px, 3vw, 28px);
+  justify-items: center;
+  padding: clamp(22px, 5vw, 42px);
+  text-align: center;
+  border: 1px solid rgba(216, 177, 94, 0.14);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(216, 177, 94, 0.11), transparent 34%),
+    radial-gradient(circle at 88% 8%, rgba(136, 99, 218, 0.12), transparent 32%),
+    linear-gradient(180deg, rgba(15, 18, 31, 0.84), rgba(8, 10, 18, 0.58));
+  box-shadow: 0 22px 58px rgba(0, 0, 0, 0.24);
+}
+
+.self-profile-role {
+  margin: 0;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 820;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.self-profile-name {
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  line-height: 0.94;
+  letter-spacing: 0;
+}
+
+.self-profile-birth-data {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  max-width: 580px;
+  font-size: clamp(0.95rem, 2vw, 1.08rem);
+  line-height: 1.45;
+}
+
+.self-profile-birth-data p {
+  margin: 0;
+}
+
+.self-stream-intro {
+  display: grid;
+  gap: 6px;
+}
+
+.self-stream-intro-wrap {
+  grid-column: 1 / -1;
+  margin: 18px 0 24px;
+}
+
+.self-stream-separator {
+  margin: 0 0 16px;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--line) 68%, transparent);
+}
+
+.self-stream-intro h2 {
+  margin: 2px 0 0;
+  font-size: clamp(1.45rem, 2.2vw, 1.75rem);
+  line-height: 1.12;
+}
+
+.self-stream-intro p {
+  margin: 0;
+  max-width: 640px;
+  color: var(--muted);
+}
+
+.self-chart-anchor {
+  display: grid;
+  gap: 10px;
+}
+
+.self-chart-anchor-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  row-gap: 4px;
+  align-items: start;
+}
+
+.self-chart-anchor-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.self-chart-anchor-icon,
+.self-chart-anchor-chevron {
+  color: var(--gold);
+}
+
+.self-chart-anchor-icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 18px;
+  height: 18px;
+}
+
+.self-chart-anchor-eyebrow {
+  color: var(--gold);
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.self-chart-anchor-title {
+  margin: 0;
+  font-size: clamp(1.85rem, 2.8vw, 2.2rem);
+  line-height: 1.08;
+  font-weight: 760;
+}
+
+.self-chart-anchor-chevron {
+  grid-column: 3;
+  grid-row: 1;
+  color: var(--ink);
+  margin-left: auto;
+  transition: transform 140ms ease;
+}
+
+.self-chart-anchor:hover .self-chart-anchor-chevron,
+.self-chart-anchor:focus-within .self-chart-anchor-chevron {
+  transform: translateX(2px);
+}
+
+.self-profile-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: min(100%, 680px);
+  margin-top: 6px;
+}
+
+.self-profile-actions .button {
+  min-width: 150px;
+}
+
+.self-profile-actions .button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.self-profile-edit-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.self-profile-edit-button:hover,
+.self-profile-edit-button:focus-visible {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--gold) 44%, var(--line));
+  outline: none;
+}
+
+.self-profile-edit-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.self-profile-avatar {
+  width: 192px;
+  height: 192px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, transparent);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.34);
+}
+
+.self-profile-avatar,
+.self-profile-avatar img {
+  object-fit: cover;
+}
+
+.self-profile-avatar.nav-avatar {
+  font-size: 84px;
 }
 
 .main {
@@ -286,6 +485,22 @@ textarea {
   padding: 16px;
   min-width: 0;
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
+}
+
+.card.self-profile-card {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: clamp(18px, 3vw, 28px);
+  justify-items: center;
+  padding: clamp(22px, 5vw, 42px);
+  text-align: center;
+  border: 1px solid rgba(216, 177, 94, 0.14);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(216, 177, 94, 0.11), transparent 34%),
+    radial-gradient(circle at 88% 8%, rgba(136, 99, 218, 0.12), transparent 32%),
+    linear-gradient(180deg, rgba(15, 18, 31, 0.84), rgba(8, 10, 18, 0.58));
+  box-shadow: 0 22px 58px rgba(0, 0, 0, 0.24);
 }
 
 .card-link,
@@ -1105,6 +1320,30 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
   line-height: 1.5;
 }
 
+.card.self-profile-card .self-profile-name {
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  line-height: 0.94;
+  letter-spacing: 0;
+}
+
+.card.self-profile-card .self-profile-role {
+  margin: 0;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 820;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.card.self-chart-anchor .self-chart-anchor-title {
+  margin: 0;
+  font-size: clamp(1.85rem, 2.8vw, 2.2rem);
+  line-height: 1.08;
+  font-weight: 760;
+}
+
 .card-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1318,20 +1557,22 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
     font-size: 11px;
   }
 
+  .bottom-nav a:hover,
   .bottom-nav a[aria-current="page"] {
-    background: var(--nav-hover);
-    color: var(--ink);
+    background: color-mix(in srgb, var(--gold) 24%, transparent);
+    color: var(--gold);
     font-weight: 700;
   }
 
-  .bottom-nav a[aria-current="page"]::before {
-    position: absolute;
-    top: 3px;
+  .bottom-nav .nav-avatar {
     width: 18px;
-    height: 3px;
-    border-radius: 999px;
-    background: var(--gold);
-    content: "";
+    height: 18px;
+    font-size: 10px;
+  }
+
+  .self-profile-avatar {
+    width: 160px;
+    height: 160px;
   }
 
   .mobile-theme-toggle {
