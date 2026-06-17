@@ -276,12 +276,16 @@ textarea {
 }
 
 .card {
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--panel);
-  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--gold) 14%, transparent);
+  background:
+    radial-gradient(circle at 12% 0, color-mix(in srgb, var(--gold) 8%, transparent), transparent 34%),
+    color-mix(in srgb, var(--panel) 86%, transparent);
+  color: var(--ink);
+  text-decoration: none;
+  padding: 16px;
   min-width: 0;
-  box-shadow: var(--shadow);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
 }
 
 .card-link,
@@ -295,7 +299,11 @@ a.card-link {
 .card-link:focus-visible,
 a.card-link:hover,
 a.card-link:focus-visible {
-  border-color: var(--ink);
+  border-color: color-mix(in srgb, var(--gold) 28%, var(--line));
+  background:
+    radial-gradient(circle at 12% 0, color-mix(in srgb, var(--gold) 16%, transparent), transparent 34%),
+    color-mix(in srgb, var(--panel) 98%, transparent);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
   outline: none;
 }
 
@@ -418,21 +426,44 @@ a.card-link:focus-visible {
   color: var(--green);
 }
 
-.stream-card {
-  min-height: 280px;
+.stream-card,
+.astraFeedCard {
+  min-height: 340px;
   display: grid;
-  align-content: stretch;
-  gap: 18px;
+  align-content: start;
+  gap: 0;
   padding: 0;
   overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(216, 177, 94, 0.13);
+  background: radial-gradient(circle at 12% 0, rgba(216, 177, 94, 0.06), transparent 34%), rgba(255, 255, 255, 0.035);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
+}
+
+html[data-astra-theme="day"] .stream-card,
+html[data-astra-theme="day"] .astraFeedCard {
+  background: radial-gradient(circle at 12% 0, rgba(157, 110, 21, 0.08), transparent 34%), rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 34px rgba(64, 45, 25, 0.1);
+}
+
+.stream-card:focus-visible,
+.stream-card:hover,
+.astraFeedCard:focus-visible,
+.astraFeedCard:hover,
+html[data-astra-theme="day"] .astraFeedCard:focus-visible,
+html[data-astra-theme="day"] .astraFeedCard:hover,
+html[data-astra-theme="day"] .stream-card:hover,
+html[data-astra-theme="day"] .stream-card:focus-visible {
+  border-color: rgba(216, 177, 94, 0.28);
+  background-color: rgba(255, 255, 255, 0.052);
 }
 
 .stream-card-open {
-  display: grid;
-  gap: 16px;
   width: 100%;
+  display: grid;
+  gap: 0;
   border: 0;
-  padding: 18px 18px 0;
+  padding: 0;
   background: transparent;
   color: inherit;
   text-align: left;
@@ -449,11 +480,26 @@ a.card-link:focus-visible {
   display: block;
 }
 
+.stream-card-header {
+  display: grid;
+  gap: 4px;
+}
+
+.stream-card-eyebrow {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .stream-card-title {
   margin-top: 4px;
-  font-size: 24px;
+  color: color-mix(in srgb, var(--gold) 80%, var(--ink));
+  font-size: clamp(1.18rem, 2.4vw, 1.55rem);
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .stream-card-body {
@@ -478,14 +524,219 @@ a.card-link:focus-visible {
   font-size: 12px;
 }
 
-.art {
-  aspect-ratio: 4 / 3;
+.stream-card-content {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px 14px 12px;
+}
+
+.stream-card-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  min-height: 168px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: #19172b;
+}
+
+.astraStreamArtFrame {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: #19172b;
+}
+
+.astraStreamArtFrame img,
+.stream-card-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.astraStreamSocialBlock {
+  display: grid;
+  gap: 10px;
+  padding: 0 14px 14px;
+}
+
+.astraFeedCardActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-inline: 14px;
+  padding-bottom: 14px;
+}
+
+.astraStreamSocialActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.astraStreamArtLink {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.astraStreamSocialActionsBar {
+  min-height: 38px;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.astraStreamSocialActionsLeft,
+.astraStreamSocialActionsRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.astraStreamSocialActionsRight {
+  margin-left: auto;
+}
+
+.astraStreamIconAction,
+.astraStreamPrimaryAction,
+.astraStreamSavedLink {
+  display: inline-flex;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(216, 177, 94, 0.14);
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: rgba(255, 255, 255, 0.045);
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 850;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.astraStreamSocialActionsBar .astraStreamIconAction {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  color: #ffffff;
+}
+
+.astraStreamSocialActionsBar .astraStreamIconAction svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2;
+  fill: none;
+}
+
+.astraStreamIconActionActive,
+.astraStreamIconAction[aria-pressed="true"],
+.astraStreamPrimaryAction {
+  border-color: rgba(216, 177, 94, 0.28);
+  color: var(--gold);
+}
+
+.astraStreamSocialActionsBar .astraStreamIconAction:focus-visible,
+.astraStreamSocialActionsBar .astraStreamIconAction:hover,
+.astraStreamSocialActionsBar .astraStreamIconAction[aria-pressed="true"],
+.astraStreamSocialActionsBar .astraStreamIconActionActive,
+.astraStreamSocialActionsBar .astraStreamIconAction.hover {
+  background: transparent;
+  color: var(--gold);
+}
+
+.astraStreamIconAction:focus-visible,
+.astraStreamIconAction:hover,
+.astraStreamPrimaryAction:focus-visible,
+.astraStreamPrimaryAction:hover,
+.astraStreamSavedLink:focus-visible,
+.astraStreamSavedLink:hover {
+  border-color: rgba(216, 177, 94, 0.32);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.astraStreamPrimaryActionText {
+  width: auto;
+  min-width: 0;
+  padding-inline: 13px;
+}
+
+.astraStreamSavedLink {
+  justify-self: start;
+}
+
+.astraStreamPostText {
+  display: grid;
+  gap: 4px;
+}
+
+.astraStreamPostTextContent {
+  display: grid;
+  gap: 10px;
+}
+
+.astraStreamPostTextContentCollapsed {
+  max-height: 4.55em;
+  overflow: hidden;
+}
+
+.astraStreamPostText p {
+  margin: 0;
+}
+
+.astraStreamSeeMore {
+  justify-self: start;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.astraStreamSeeMore:focus-visible,
+.astraStreamSeeMore:hover {
+  color: var(--gold);
+}
+
+.astraStreamTextBox {
+  display: grid;
+  gap: 6px;
+}
+
+.astraStreamTextBox span {
+  color: var(--gold);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astraStreamTextBox textarea {
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+  border: 1px solid rgba(216, 177, 94, 0.16);
   border-radius: 8px;
-  border: 1px solid var(--line);
-  background:
-    linear-gradient(135deg, var(--art-a), transparent 42%),
-    linear-gradient(45deg, var(--art-b), transparent 48%),
-    var(--soft);
+  padding: 10px;
+  background: rgba(5, 8, 17, 0.46);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.4;
 }
 
 .card h2,
@@ -495,11 +746,13 @@ a.card-link:focus-visible {
 }
 
 .card h2 {
-  font-size: 24px;
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  line-height: 1.12;
 }
 
 .card h3 {
-  font-size: 18px;
+  font-size: 1.2rem;
+  line-height: 1.15;
 }
 
 .card p {
@@ -513,6 +766,10 @@ a.card-link:focus-visible {
   flex-wrap: wrap;
   gap: 8px;
   padding: 0 18px 18px;
+}
+
+.stream-card .card-actions {
+  padding: 0 14px 14px;
 }
 
 .icon-action {

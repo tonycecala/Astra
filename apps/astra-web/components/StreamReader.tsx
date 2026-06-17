@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, Check, MessageCircle, X } from "lucide-react";
+import { Bookmark, Heart, MessageCircle, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ui } from "../lib/i18n";
 import type { JourneyStreamCard } from "../lib/journey";
@@ -76,10 +76,11 @@ export function StreamReader({ streamCards }: { streamCards: JourneyStreamCard[]
               return (
                 <article className="card stream-card" key={item.id}>
                   <button className="stream-card-open" onClick={() => setActiveCardId(card.id)} type="button">
-                    <span className="art" aria-hidden="true" />
-                    <span>
-                      <span className="eyebrow">{laneLabel(card.lane)}</span>
-                      <span className="stream-card-title">{card.title}</span>
+                    <span className="stream-card-content">
+                      <span className="stream-card-header">
+                        <span className="eyebrow stream-card-eyebrow">{laneLabel(card.lane)}</span>
+                        <span className="stream-card-title">{card.title}</span>
+                      </span>
                       <span className="stream-card-body">{card.body}</span>
                       <span className="stream-card-meta">
                         <span>{itemKindLabel(item.kind)}</span>
@@ -87,16 +88,44 @@ export function StreamReader({ streamCards }: { streamCards: JourneyStreamCard[]
                         <span>{publishedDate(item.publishedAt)}</span>
                       </span>
                     </span>
+                    <span className="stream-card-media astraStreamArtFrame" aria-hidden="true">
+                      {card.imageUrl ? <img alt="" className="stream-card-image" src={card.imageUrl} /> : null}
+                    </span>
                   </button>
-                  <div className="card-actions">
-                    <button aria-pressed={isSaved} className="icon-action" onClick={() => toggleSet(card.id, setSavedCardIds, savedCardIds)} type="button">
-                      {isSaved ? <Check size={16} aria-hidden="true" /> : <Bookmark size={16} aria-hidden="true" />}
-                      <span>{isSaved ? ui.journey.savedCard : ui.journey.saveCard}</span>
-                    </button>
-                    <button aria-pressed={isReflected} className="icon-action" onClick={() => toggleSet(card.id, setReflectedCardIds, reflectedCardIds)} type="button">
-                      {isReflected ? <Check size={16} aria-hidden="true" /> : <MessageCircle size={16} aria-hidden="true" />}
-                      <span>{isReflected ? ui.journey.reflectedCard : ui.journey.reflectCard}</span>
-                    </button>
+                  <div className="astraStreamSocialBlock astraFeedCardActions" aria-label={`Social actions for ${card.title}`}>
+                    <div className="astraStreamSocialActions astraStreamSocialActionsBar">
+                      <div className="astraStreamSocialActionsLeft">
+                        <button
+                          aria-label={`Like ${card.title}`}
+                          aria-pressed={isReflected}
+                          className={`astraStreamIconAction${isReflected ? " astraStreamIconActionActive" : ""}`}
+                          onClick={() => toggleSet(card.id, setReflectedCardIds, reflectedCardIds)}
+                          type="button"
+                        >
+                          <Heart size={20} aria-hidden="true" />
+                        </button>
+                        <button
+                          aria-label={`Comment on ${card.title}`}
+                          aria-pressed={isReflected}
+                          className={`astraStreamIconAction${isReflected ? " astraStreamIconActionActive" : ""}`}
+                          onClick={() => toggleSet(card.id, setReflectedCardIds, reflectedCardIds)}
+                          type="button"
+                        >
+                          <MessageCircle size={20} aria-hidden="true" />
+                        </button>
+                      </div>
+                      <div className="astraStreamSocialActionsRight">
+                        <button
+                          aria-label={`Save ${card.title}`}
+                          aria-pressed={isSaved}
+                          className={`astraStreamIconAction${isSaved ? " astraStreamIconActionActive" : ""}`}
+                          onClick={() => toggleSet(card.id, setSavedCardIds, savedCardIds)}
+                          type="button"
+                        >
+                          <Bookmark size={20} aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </article>
               );
