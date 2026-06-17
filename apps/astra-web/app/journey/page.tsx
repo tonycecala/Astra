@@ -45,7 +45,7 @@ export default async function JourneyPage() {
           <p>{ui.journey.states[view.feedState].body}</p>
         </div>
         {view.feedState === "public_preview" ? (
-          <Link className="button secondary" href="/login">
+          <Link className="button secondary" href="/">
             {ui.journey.signInCta}
           </Link>
         ) : null}

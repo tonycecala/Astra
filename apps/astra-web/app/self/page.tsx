@@ -19,7 +19,7 @@ export default async function SelfPage() {
             <div className="eyebrow">{ui.login.codeFlowEyebrow}</div>
             <h2>{ui.login.title}</h2>
             <p>{ui.login.intro}</p>
-            <Link className="button" href="/login">
+            <Link className="button" href="/">
               {ui.self.signInCta}
             </Link>
           </article>

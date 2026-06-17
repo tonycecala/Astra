@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { KeyRound, LogOut, Mail, Sparkles } from "lucide-react";
 import { authClient } from "../lib/auth/client";
 import { ui } from "../lib/i18n";
 
@@ -59,72 +58,70 @@ export function AuthPanel() {
 
   if (isPending) {
     return (
-      <section className="auth-panel" aria-label={ui.login.authPanelLabel}>
-        <p className="muted">{ui.login.loadingSession}</p>
+      <section className="loginPanel" aria-label={ui.login.authPanelLabel}>
+        <p className="loginStatus loginStatus-loading">{ui.login.loadingSession}</p>
       </section>
     );
   }
 
   if (session?.user) {
     return (
-      <section className="auth-panel" aria-label={ui.login.authPanelLabel}>
-        <div>
-          <p className="eyebrow">{ui.login.currentSession}</p>
-          <h2>{session.user.name || session.user.email}</h2>
-          <p className="muted">{session.user.email}</p>
-        </div>
-        <div className="auth-actions">
-          <Link className="button" href="/self">
-            <Sparkles aria-hidden="true" size={18} />
+      <section className="loginSignedIn" aria-label={ui.login.authPanelLabel}>
+        <p className="loginKicker">{ui.login.currentSession}</p>
+        <h2 className="loginStatusTitle loginStatusBold">
+          {session.user.name || session.user.email}
+        </h2>
+        <p className="loginEmailText">{session.user.email}</p>
+        <div className="loginUserDivider" />
+        <div className="loginSignedInActions loginActions">
+          <Link className="loginPrimaryAction" href="/self">
             {ui.login.continueToSelf}
           </Link>
-          <Link className="button secondary" href="/journey">
+          <Link className="loginSecondaryAction" href="/journey">
             {ui.login.openJourney}
           </Link>
-          <button className="button secondary" type="button" onClick={signOut}>
-            <LogOut aria-hidden="true" size={18} />
+          <button className="loginSecondaryAction" type="button" onClick={signOut}>
             {ui.login.signOut}
           </button>
         </div>
-        {message ? <p className="form-status">{message}</p> : null}
+        {message ? <p className="loginStatus loginStatus-success">{message}</p> : null}
       </section>
     );
   }
 
   return (
-    <section className="auth-panel" aria-label={ui.login.authPanelLabel}>
-      <div>
-        <p className="eyebrow">{ui.login.codeFlowEyebrow}</p>
-        <h2>{step === "email" ? ui.login.codeFlowTitle : ui.login.verifyCodeTitle}</h2>
-      </div>
+      <section aria-label={ui.login.authPanelLabel}>
+      <form
+        className="loginPanel"
+        onSubmit={step === "email" ? sendCode : verifyCode}
+      >
+        <label className="loginField">
+          <span>{ui.login.nameLabel}</span>
+          <input
+            id="login-name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            autoComplete="name"
+          />
+        </label>
 
-      {step === "email" ? (
-        <form className="auth-form" onSubmit={sendCode}>
-          <label>
-            <span>{ui.login.nameLabel}</span>
-            <input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" />
-          </label>
-          <label>
-            <span>{ui.login.emailLabel}</span>
-            <input
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-              type="email"
-              autoComplete="email"
-            />
-          </label>
-          <button className="button" type="submit">
-            <Mail aria-hidden="true" size={18} />
-            {ui.login.sendCode}
-          </button>
-        </form>
-      ) : (
-        <form className="auth-form" onSubmit={verifyCode}>
-          <p className="form-status">{ui.login.codeSentTo(email)}</p>
-          <label>
+        <label className="loginField">
+          <span>{ui.login.emailLabel}</span>
+          <input
+            id="login-email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            required
+            type="email"
+            autoComplete="email"
+          />
+        </label>
+
+        {step === "code" ? (
+          <label className="loginField" key="code-field">
             <span>{ui.login.codeLabel}</span>
             <input
+              id="login-code"
               value={code}
               onChange={(event) => setCode(event.target.value)}
               required
@@ -133,17 +130,29 @@ export function AuthPanel() {
               pattern="[0-9]*"
             />
           </label>
-          <button className="button" type="submit">
-            <Sparkles aria-hidden="true" size={18} />
-            {ui.login.verifyCode}
+        ) : null}
+
+        {step === "code" ? (
+          <p className="loginStatus loginStatus-success">{ui.login.codeSentTo(email)}</p>
+        ) : null}
+
+        <div className="loginActions">
+          <button className="loginPrimaryAction" type="submit">
+            {step === "email" ? ui.login.sendCode : ui.login.verifyCode}
           </button>
-          <button className="button secondary" type="button" onClick={() => setStep("email")}>
-            <KeyRound aria-hidden="true" size={18} />
+        </div>
+        {step === "code" ? (
+          <button
+            className="loginTextAction"
+            type="button"
+            onClick={() => setStep("email")}
+          >
             {ui.login.useDifferentEmail}
           </button>
-        </form>
-      )}
-      {message ? <p className="form-status">{message}</p> : null}
+        ) : null}
+      </form>
+
+      {message ? <p className="loginStatus">{message}</p> : null}
     </section>
   );
 }

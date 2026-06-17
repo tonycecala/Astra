@@ -1,18 +1,20 @@
 import { AuthPanel } from "../../components/AuthPanel";
-import { PageHeader } from "../../components/PageHeader";
 import { ui } from "../../lib/i18n";
 
 export default function LoginPage() {
   return (
-    <>
-      <PageHeader eyebrow={ui.login.eyebrow} title={ui.login.title}>
-        {ui.login.intro}
-      </PageHeader>
-      <AuthPanel />
-      <section className="card">
-        <h2>{ui.login.infrastructureTitle}</h2>
-        <p>{ui.login.infrastructureDescription}</p>
+    <main className="loginShell" id="main-content">
+      <section className="loginCard">
+        <a className="loginLogo" href="/">
+          Astra
+        </a>
+        <div className="loginHeader">
+          <p className="loginKicker">{ui.login.pageKicker}</p>
+          <h1>{ui.login.pageTitle}</h1>
+          <p>{ui.login.pageIntro}</p>
+        </div>
+        <AuthPanel />
       </section>
-    </>
+    </main>
   );
 }

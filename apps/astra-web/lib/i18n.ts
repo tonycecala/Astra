@@ -246,6 +246,9 @@ export const ui = {
     starAmount: (count: number) => `${count} stars`
   },
   login: {
+    pageKicker: "Log in",
+    pageTitle: "Welcome back to Astra",
+    pageIntro: "Return to your Stream, chart, Stars, and saved reports.",
     eyebrow: "Login",
     title: "Email code sign-in",
     intro: "Astra uses a simple code-first login flow. Enter an email, receive a short code, and continue without a password.",

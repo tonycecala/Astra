@@ -36,7 +36,7 @@ try {
         <div className="shell">
           <aside className="sidebar">
             <div className="brand-row">
-              <Link className="brand" href="/journey">
+              <Link className="brand" href="/">
                 <Home size={24} aria-hidden="true" />
                 <strong>{ui.shell.brand}</strong>
                 <span>{ui.shell.tagline}</span>
