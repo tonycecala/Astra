@@ -1,0 +1,330 @@
+{
+  "schemaVersion": "astra-composer-card-import-v1",
+  "title": "Astra Astrology 101 - Quiz Module",
+  "series": {
+    "id": "astra_astrology_101",
+    "title": "ASTRA Astrology 101",
+    "lane": "astrology_101",
+    "defaultDifficulty": "beginner"
+  },
+  "version": "0.3",
+  "notes": [
+    "Quiz module for Astrology 101 Curriculum Prototype Pack v0.3.",
+    "Imported cards remain drafts until reviewed in Composer.",
+    "Quiz answers are stored in structured quiz fields for Composer review and future multiple-choice runtime UI."
+  ],
+  "cards": [
+    {
+      "id": "astro101_067_quiz_signs_are_styles_not_sentences",
+      "kind": "quiz",
+      "status": "draft",
+      "title": "Quiz: Signs Are Styles, Not Sentences",
+      "subtitle": "Test the core zodiac idea without turning signs into stereotypes.",
+      "body": "The zodiac signs describe styles of expression, not fixed personality sentences. This matters because astrology becomes weaker when it reduces a person to one label and stronger when it helps you notice how different parts of life move.",
+      "excerpt": "The zodiac signs describe styles of expression, not fixed personality sentences. The symbol gives you a doorway, not a cage.",
+      "eyebrow": "Astrology 101 - Quiz Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 67,
+      "energy": [
+        "instructional",
+        "playful"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner",
+        "module_quiz",
+        "zodiac",
+        "archetypes"
+      ],
+      "ctaLabel": "Save quiz",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course quiz card hero image, twelve zodiac glyph-inspired archetypal doors arranged in a luminous circular gallery, one door glowing brighter, electric aquarian line art, mythic editorial style, indigo night field with warm gold accents, no text, no letters, no numbers.",
+      "quiz": {
+        "format": "multiple_choice",
+        "questions": [
+          {
+            "id": "question_1",
+            "prompt": "Which statement uses the zodiac most intelligently?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "A Scorpio will always be secretive and impossible to trust.",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "A Taurus can only care about money, food, and comfort.",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Aries often symbolizes directness, initiation, and the impulse to move first.",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Pisces means someone cannot handle ordinary life.",
+                "isCorrect": false
+              }
+            ],
+            "explanation": "The better answer does not trap a person inside a cartoon. It describes an archetypal style. Aries can show up as courage, impatience, leadership, conflict, freshness, athletic urgency, or the ability to begin before certainty arrives. The symbol gives you a doorway, not a cage.\n\nThe practical skill is learning to say, ‘This sign often points toward this kind of movement,’ rather than, ‘This person must be this way.’ That one distinction makes astrology immediately more humane."
+          }
+        ]
+      }
+    },
+    {
+      "id": "astro101_068_quiz_planets_describe_functions",
+      "kind": "quiz",
+      "status": "draft",
+      "title": "Quiz: Planets Describe Functions",
+      "subtitle": "Match the planet to the part of life it usually symbolizes.",
+      "body": "Planets are easiest to learn when you treat them as functions inside experience. They are not merely distant objects. In astrology, they name recurring human capacities: feeling, thinking, choosing, desiring, growing, structuring, disrupting, imagining, and transforming.",
+      "excerpt": "Planets are easiest to learn when you treat them as functions inside experience: feeling, thinking, choosing, desiring, growing, structuring, disrupting, imagining, and transforming.",
+      "eyebrow": "Astrology 101 - Quiz Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 68,
+      "energy": [
+        "instructional",
+        "playful"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner",
+        "module_quiz",
+        "planets",
+        "mercury"
+      ],
+      "ctaLabel": "Save quiz",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course quiz card hero image, a luminous Mercury-like messenger figure made of flowing lines carrying small star symbols between planets, elegant celestial geometry, electric aquarian line art, premium mythic-modern editorial illustration, no text, no letters, no numbers.",
+      "quiz": {
+        "format": "multiple_choice",
+        "questions": [
+          {
+            "id": "question_1",
+            "prompt": "Which pairing is the strongest basic match?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Mercury — communication, thought, language, and exchange",
+                "isCorrect": true
+              },
+              {
+                "id": "b",
+                "label": "Saturn — fantasy, glamour, and dreamlike escape",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Venus — discipline, pressure, duty, and limits",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Mars — memory, caretaking, and emotional safety",
+                "isCorrect": false
+              }
+            ],
+            "explanation": "Mercury is the messenger principle. It shows how information moves. It can speak, ask, write, analyze, negotiate, imitate, joke, translate, and connect one thing to another. A strong Mercury signature does not automatically make someone wise. It often makes the mind active, responsive, curious, verbal, or restless.\n\nThe point is not memorizing one-word definitions. The point is recognizing the living function. When a planet shows up strongly, ask: what part of human life is trying to speak here?"
+          }
+        ]
+      }
+    },
+    {
+      "id": "astro101_069_quiz_houses_show_where_life_happens",
+      "kind": "quiz",
+      "status": "draft",
+      "title": "Quiz: Houses Show Where Life Happens",
+      "subtitle": "Use houses as context, not decoration.",
+      "body": "Houses answer a practical question: where does this part of life tend to express itself? The same planet can behave very differently depending on the house it occupies, because context changes meaning.",
+      "excerpt": "Houses answer a practical question: where does this part of life tend to express itself? Context changes meaning.",
+      "eyebrow": "Astrology 101 - Quiz Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 69,
+      "energy": [
+        "instructional",
+        "practical"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_quiz",
+        "houses",
+        "venus",
+        "seventh_house"
+      ],
+      "ctaLabel": "Save quiz",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course quiz card hero image, a twelve-room celestial house arranged as a chart wheel, one relationship chamber softly illuminated by two mirrored star figures, refined line work, indigo and gold, premium symbolic curriculum art, no text, no letters, no numbers.",
+      "quiz": {
+        "format": "multiple_choice",
+        "questions": [
+          {
+            "id": "question_1",
+            "prompt": "If Venus is strongly connected to the Seventh House, which interpretation is most appropriate for a beginner?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Beauty, attraction, harmony, and value may become especially visible through partnership and one-to-one relationships.",
+                "isCorrect": true
+              },
+              {
+                "id": "b",
+                "label": "The person will never be alone.",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "The person cannot make money unless married.",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "The person has no independent identity.",
+                "isCorrect": false
+              }
+            ],
+            "explanation": "The Seventh House points toward partnership, agreement, projection, negotiation, and the mirror of the other person. Venus points toward attraction, value, pleasure, taste, connection, and harmony. Together, they suggest a life area where relationship dynamics may carry extra meaning.\n\nNotice what the better answer does not do. It does not exaggerate. It does not predict an unavoidable fate. It combines planet and house carefully. That is the beginning of real chart interpretation."
+          }
+        ]
+      }
+    },
+    {
+      "id": "astro101_070_quiz_aspects_describe_relationships_between_parts",
+      "kind": "quiz",
+      "status": "draft",
+      "title": "Quiz: Aspects Describe Inner Relationships",
+      "subtitle": "A chart becomes alive when its parts start talking to each other.",
+      "body": "Aspects describe the relationships between planets. That is why they matter so much. A chart is not a pile of separate traits. It is a living system of cooperation, friction, emphasis, tension, flow, and awareness.",
+      "excerpt": "A chart is not a pile of separate traits. It is a living system of cooperation, friction, emphasis, tension, flow, and awareness.",
+      "eyebrow": "Astrology 101 - Quiz Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 70,
+      "energy": [
+        "instructional",
+        "reflective"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_quiz",
+        "aspects",
+        "squares"
+      ],
+      "ctaLabel": "Save quiz",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course quiz card hero image, two luminous planets connected by a taut geometric square of light, visible tension resolving into elegant celestial architecture, electric aquarian line art, mythic educational style, no text, no letters, no numbers.",
+      "quiz": {
+        "format": "multiple_choice",
+        "questions": [
+          {
+            "id": "question_1",
+            "prompt": "Which statement best describes a square?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "A square always means disaster.",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "A square often describes friction that demands effort, adjustment, and development.",
+                "isCorrect": true
+              },
+              {
+                "id": "c",
+                "label": "A square means two planets are identical.",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "A square makes the rest of the chart irrelevant.",
+                "isCorrect": false
+              }
+            ],
+            "explanation": "Squares can be uncomfortable because they show parts of life that do not automatically cooperate. One part pushes one way; another pushes another way. That pressure can become frustration, but it can also become competence. Many people develop real skill because a square will not let them sleep through the tension.\n\nThe mature view is not, ‘This aspect is bad.’ The mature view is, ‘This part of the chart may require practice, honesty, and repeated integration.’"
+          }
+        ]
+      }
+    },
+    {
+      "id": "astro101_071_quiz_symbolism_not_fatalism",
+      "kind": "quiz",
+      "status": "draft",
+      "title": "Quiz: Symbolism Is Not Fatalism",
+      "subtitle": "The final skill is interpretation without surrendering responsibility.",
+      "body": "This course began with a simple principle: astrology works best as symbolic language, not as a verdict. The signs, planets, houses, aspects, and timing cycles can all describe meaningful patterns, but they do not remove choice.",
+      "excerpt": "Astrology can help you notice patterns, but awareness and responsibility still belong to you.",
+      "eyebrow": "Astrology 101 - Quiz Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 71,
+      "energy": [
+        "grounding",
+        "reflective"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_quiz",
+        "symbolism",
+        "free_will",
+        "responsibility"
+      ],
+      "ctaLabel": "Save quiz",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course quiz card hero image, a human silhouette holding a small luminous chart mirror beneath a vast star field, symbolic reflection without determinism, calm premium celestial illustration, electric aquarian line art, no text, no letters, no numbers.",
+      "quiz": {
+        "format": "multiple_choice",
+        "questions": [
+          {
+            "id": "question_1",
+            "prompt": "Which sentence best reflects the healthiest use of astrology?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "My chart explains everything, so I do not need to examine my choices.",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "If a transit is difficult, nothing I do matters.",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Astrology can help me notice patterns, but awareness and responsibility still belong to me.",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "A placement tells me exactly who someone is before I know them.",
+                "isCorrect": false
+              }
+            ],
+            "explanation": "Good astrology should increase awareness. It should not make a person smaller, more superstitious, or less responsible. If a symbol helps you see a habit, a strength, a fear, or a recurring pattern more clearly, it has done useful work.\n\nThe danger begins when symbolism becomes an excuse. The deeper use begins when symbolism becomes a mirror. A mirror can show you something clearly, but it cannot choose your next action for you."
+          }
+        ]
+      }
+    }
+  ]
+}

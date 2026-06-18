@@ -75,6 +75,14 @@ Completion requires:
 - desktop/tablet/mobile rendered verification when layout or navigation changes
 - console/page-error review
 
+## Persistent Local Servers
+
+- Do not rely on foreground `npm run dev`, `nohup`, stale browser tabs, or PID files alone for local app handoff.
+- Existing repo launchers come first. If a durable launcher is missing, follow the Akashic decision tree: `pm2` if already available, otherwise `screen`, otherwise `tmux`, otherwise ask Tony.
+- On this machine, avoid LaunchAgents/launchd for repo dev servers unless fresh evidence proves the repo path is allowed; prior attempts hit macOS privacy failures.
+- A server is not "up" until both are true: a real listener exists on the reserved port, and a real route returns a healthy HTTP response.
+- Keep durable controls repo-owned and obvious: `up`, `status`, `restart`, `stop`, and logs. For Composer on `3012`, use the Composer durable controls, not a one-off shell background process.
+
 ## Follow-Up Report Shape
 
 Keep closeout concise:

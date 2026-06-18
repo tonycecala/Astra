@@ -145,7 +145,7 @@ try {
   await page.goto(`${appBaseUrl}/journey`);
   await page.locator(".status-strip").getByText("Public fallback").waitFor();
   await page.locator(".status-strip").getByText("12 cards").waitFor();
-  await page.getByRole("button", { name: /Cleopatra: image/ }).waitFor();
+  await page.locator(".stream-card-open").filter({ hasText: "Cleopatra: image" }).waitFor();
   if (await page.getByText("Welcome to Astra").count()) {
     throw new Error("Mobile signed-out Journey leaked Composer onboarding cards.");
   }
@@ -174,7 +174,7 @@ try {
   await page.reload();
   await page.locator(".status-strip").getByText("Private journey").waitFor();
   await page.locator(".status-strip").getByText("5 cards").waitFor();
-  await page.getByRole("button", { name: "Welcome to Astra" }).waitFor();
+  await page.locator(".stream-card-open").filter({ hasText: "Welcome to Astra" }).waitFor();
   if (await page.locator(".status-strip").getByText("Public fallback").count()) {
     throw new Error("Mobile signed-in Journey showed public fallback after Composer onboarding publish.");
   }

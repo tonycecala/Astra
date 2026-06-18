@@ -1,11 +1,21 @@
 import "server-only";
 
-import type { AstraCard, StreamItem, UserFeedItem } from "@astra/contracts";
+import type { AstraCard, ComposerAvailabilityCard, ComposerSelectionResponse, StreamItem, UserFeedItem } from "@astra/contracts";
 import { db, listUserFeedItems, readFoundationSnapshot, seedSnapshot } from "@astra/db";
+import { selectComposerCardsForUser } from "./composer-selection";
 
-type JourneyKind = StreamItem["kind"] | "source_card" | "report_signal" | "manual";
+type JourneyKind = StreamItem["kind"] | "source_card" | "report_signal" | "manual" | "composer_selected";
 type JourneyStatus = StreamItem["status"] | UserFeedItem["state"];
-type JourneyAudience = StreamItem["audience"] | "private" | "public_fallback";
+type JourneyAudience = StreamItem["audience"] | "private" | "public_fallback" | "composer_selected";
+
+export type JourneyComposerSelectionInput = {
+  enabled?: boolean;
+  requestType?: "course" | "series" | "pool" | "ordered_list" | "onboarding";
+  id?: string;
+  selectionDate?: string;
+  count?: number;
+  eligibility?: Record<string, unknown>;
+};
 
 export type JourneyStreamCard = {
   item: {
@@ -14,15 +24,21 @@ export type JourneyStreamCard = {
     status: JourneyStatus;
     audience: JourneyAudience;
     publishedAt: string;
-    source: "private_feed" | "public_fallback";
+      source: "private_feed" | "public_fallback" | "composer_selection";
+    };
+    card: AstraCard;
   };
-  card: AstraCard;
-};
 
 export type JourneyViewModel = {
-  mode: "private" | "public_fallback";
+  mode: "private" | "public_fallback" | "composer_selected";
   streamCards: JourneyStreamCard[];
-  feedState: "private_ready" | "private_empty" | "public_preview";
+  feedState: "private_ready" | "private_empty" | "public_preview" | "composer_selected";
+  composerSelection?: {
+    id: string;
+    collectionTitle: string;
+    reasonCode: string;
+    selectionMode: ComposerSelectionResponse["selectionMode"];
+  };
 };
 
 type LegacyStreamItem = StreamItem;
@@ -100,6 +116,39 @@ function publicFallbackStreamCard(item: LegacyStreamItem, card: LegacyCard): Jou
   };
 }
 
+function laneForSelectedCard(card: ComposerAvailabilityCard): AstraCard["lane"] {
+  if (card.ontologyType === "quiz" || card.ontologyType === "test" || card.ontologyType === "certification") return "practice";
+  if (card.ontologyType === "reflection") return "know_yourself";
+  if (card.ontologyType === "art") return "myth_and_symbol";
+  return "today";
+}
+
+function selectedComposerStreamCard(card: ComposerAvailabilityCard, index: number, selection: ComposerSelectionResponse): JourneyStreamCard {
+  const publishedAt = `${selection.request.selectionDate ?? selection.generatedAt.slice(0, 10)}T00:00:00.000Z`;
+  return {
+    item: {
+      id: `${selection.id}:${card.id}`,
+      kind: "composer_selected",
+      status: "available",
+      audience: "composer_selected",
+      publishedAt,
+      source: "composer_selection"
+    },
+    card: {
+      id: `composer_selected:${selection.id}:${card.id}`,
+      title: card.title,
+      subtitle: card.sectionTitle ?? card.collectionTitle,
+      body: card.excerpt ?? card.body,
+      lane: laneForSelectedCard(card),
+      tone: index === 0 ? "bright" : "grounded",
+      ctaLabel: "Open",
+      ctaAction: "open",
+      imageUrl: card.imageUrl,
+      publishedAt
+    }
+  };
+}
+
 async function getPublicFallbackJourney(): Promise<JourneyStreamCard[]> {
   const snapshot = await readFoundationSnapshot(db);
   const cardsById = new Map(snapshot.cards.map((card) => [card.id, card]));
@@ -118,7 +167,30 @@ async function getPublicFallbackJourney(): Promise<JourneyStreamCard[]> {
     });
 }
 
-export async function getJourneyViewModel(userId?: string): Promise<JourneyViewModel> {
+export async function getJourneyViewModel(userId?: string, composerSelectionInput: JourneyComposerSelectionInput = {}): Promise<JourneyViewModel> {
+  if (composerSelectionInput.enabled) {
+    const selection = await selectComposerCardsForUser({
+      userKey: userId ?? "anonymous",
+      requestType: composerSelectionInput.requestType ?? "course",
+      id: composerSelectionInput.id ?? "astrology_101",
+      selectionDate: composerSelectionInput.selectionDate,
+      count: composerSelectionInput.count ?? 5,
+      eligibility: composerSelectionInput.eligibility ?? {},
+      limit: 100
+    });
+    return {
+      mode: "composer_selected",
+      feedState: "composer_selected",
+      streamCards: selection.selectedCards.map((card, index) => selectedComposerStreamCard(card, index, selection)),
+      composerSelection: {
+        id: selection.id,
+        collectionTitle: selection.availability.collection.title,
+        reasonCode: selection.reasonCode,
+        selectionMode: selection.selectionMode
+      }
+    };
+  }
+
   if (!userId) {
     return {
       mode: "public_fallback",

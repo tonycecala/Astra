@@ -507,6 +507,68 @@ export const composerStreamArtifactSchema = z
     path: ["streamItem", "cardId"]
   });
 
+export const composerCardOntologyTypeSchema = z.enum(["lesson", "reflection", "quiz", "test", "certification", "art", "onboarding", "series"]);
+
+export const composerAvailabilityRequestSchema = z.object({
+  requestType: z.enum(["course", "series", "pool", "ordered_list", "onboarding"]).default("course"),
+  id: idSchema.optional(),
+  cardIds: z.array(idSchema).default([]),
+  limit: z.number().int().min(1).max(100).default(48)
+});
+
+export const composerAvailabilityCardSchema = z.object({
+  id: idSchema,
+  title: z.string().min(1),
+  subtitle: z.string().min(1).optional(),
+  body: z.string().min(1),
+  excerpt: z.string().min(1).optional(),
+  kind: z.string().min(1),
+  ontologyType: composerCardOntologyTypeSchema,
+  status: z.string().min(1),
+  order: z.number().int().nonnegative().optional(),
+  collectionId: idSchema,
+  collectionTitle: z.string().min(1),
+  sectionId: idSchema.optional(),
+  sectionTitle: z.string().min(1).optional(),
+  lane: z.string().min(1).optional(),
+  tags: z.array(z.string().min(1)).default([]),
+  imageUrl: z.string().min(1).optional(),
+  quiz: jsonObjectSchema.optional(),
+  source: z.string().min(1).optional()
+});
+
+export const composerAvailabilityCollectionSchema = z.object({
+  id: idSchema,
+  title: z.string().min(1),
+  kind: z.enum(["course", "series", "pool", "ordered_list", "onboarding"]),
+  description: z.string().min(1),
+  totalCards: z.number().int().nonnegative(),
+  cards: z.array(composerAvailabilityCardSchema),
+  generatedAt: isoDateSchema
+});
+
+export const composerAvailabilityResponseSchema = z.object({
+  request: composerAvailabilityRequestSchema,
+  collection: composerAvailabilityCollectionSchema
+});
+
+export const composerSelectionRequestSchema = composerAvailabilityRequestSchema.extend({
+  userKey: idSchema,
+  selectionDate: dateOnlySchema.optional(),
+  count: z.number().int().min(1).max(12).default(5),
+  eligibility: jsonObjectSchema.default({})
+});
+
+export const composerSelectionResponseSchema = z.object({
+  id: idSchema,
+  request: composerSelectionRequestSchema,
+  availability: composerAvailabilityResponseSchema,
+  selectedCards: z.array(composerAvailabilityCardSchema),
+  generatedAt: isoDateSchema,
+  reasonCode: z.string().min(1),
+  selectionMode: z.enum(["deterministic", "script", "llm"]).default("deterministic")
+});
+
 export type AstraUser = z.infer<typeof userSchema>;
 export type AstraCard = z.infer<typeof cardSchema>;
 export type StreamItem = z.infer<typeof streamItemSchema>;
@@ -553,6 +615,13 @@ export type ComposerVoiceCard = z.infer<typeof composerVoiceCardSchema>;
 export type ComposerVoiceValidationError = z.infer<typeof composerVoiceValidationErrorSchema>;
 export type ComposerArtifactRationale = z.infer<typeof composerArtifactRationaleSchema>;
 export type ComposerStreamArtifact = z.infer<typeof composerStreamArtifactSchema>;
+export type ComposerCardOntologyType = z.infer<typeof composerCardOntologyTypeSchema>;
+export type ComposerAvailabilityRequest = z.infer<typeof composerAvailabilityRequestSchema>;
+export type ComposerAvailabilityCard = z.infer<typeof composerAvailabilityCardSchema>;
+export type ComposerAvailabilityCollection = z.infer<typeof composerAvailabilityCollectionSchema>;
+export type ComposerAvailabilityResponse = z.infer<typeof composerAvailabilityResponseSchema>;
+export type ComposerSelectionRequest = z.infer<typeof composerSelectionRequestSchema>;
+export type ComposerSelectionResponse = z.infer<typeof composerSelectionResponseSchema>;
 
 export const foundationSeedSchema = z.object({
   user: userSchema,

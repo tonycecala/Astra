@@ -1,0 +1,379 @@
+{
+  "schemaVersion": "astra-composer-card-import-v1",
+  "title": "Astra Astrology 101 - Planets Module",
+  "series": {
+    "id": "astra_astrology_101",
+    "title": "ASTRA Astrology 101",
+    "lane": "astrology_101",
+    "defaultDifficulty": "beginner"
+  },
+  "version": "0.3",
+  "notes": [
+    "Planets module cards 25-34. Imported cards remain drafts until reviewed in Composer.",
+    "Use artPrompt for image generation prompts.",
+    "Use kind planet for planetary lesson cards.",
+    "Each card is individually authored; no repeated lesson boilerplate."
+  ],
+  "allowed": {
+    "energy": [
+      "grounding",
+      "activating",
+      "reflective",
+      "relational",
+      "instructional",
+      "calming",
+      "mystical",
+      "mythic",
+      "practical",
+      "cosmic",
+      "playful"
+    ],
+    "difficulty": [
+      "beginner",
+      "beginner_plus",
+      "intermediate"
+    ],
+    "kind": [
+      "welcome",
+      "reflection",
+      "zodiac",
+      "planet",
+      "house",
+      "portrait",
+      "profile",
+      "report_continue",
+      "portrait_gallery",
+      "person",
+      "learning",
+      "timing",
+      "bridge",
+      "question",
+      "quiz",
+      "test",
+      "certification",
+      "faceoff",
+      "offer",
+      "gift",
+      "system"
+    ]
+  },
+  "cards": [
+    {
+      "id": "astrology_101_m03_025_sun_center_identity_vitality",
+      "kind": "planet",
+      "status": "draft",
+      "title": "The Sun: Center, Identity, and Vitality",
+      "subtitle": "The Sun describes what wants to become conscious.",
+      "body": "The Sun is the easiest planet-symbol to overuse and the easiest one to misunderstand. Most people meet astrology through the Sun sign, then mistake it for the whole person. In a chart, the Sun matters deeply, but it does not carry the entire life by itself.\n\nThe Sun describes vitality, identity, creative direction, and the part of a person that wants to stand in the open. It often points toward what feels life-giving when someone acts from a clearer sense of self.\n\nThis does not always arrive automatically. Many people grow into their Sun slowly. Early life may show the awkward version: trying too hard to be seen, hiding from visibility, imitating confidence, or chasing approval from the wrong audience.\n\nThe mature Sun feels less like performance and more like inner alignment. It asks: what kind of person are you becoming when you stop outsourcing permission?\n\nIn chart interpretation, the Sun is not a slogan. It is a central fire. It shows where a person may need courage, presence, and a stronger relationship with their own becoming.",
+      "excerpt": "The Sun is not the whole chart. It is the central fire of identity, vitality, and conscious becoming.",
+      "eyebrow": "Astrology 101 - Planets",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 25,
+      "energy": [
+        "activating",
+        "instructional"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner",
+        "module_03",
+        "planets",
+        "sun",
+        "identity"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra Astrology 101 premium course card artwork, vertical mobile hero image, theme: the Sun as conscious identity and inner vitality. A radiant solar disk rises behind a calm human silhouette at the center of a faint chart wheel; warm rays illuminate twelve subtle paths without literal zodiac text. Electric aquarian line art blended with mythic editorial realism, luminous celestial geometry, subtle chart-wheel arcs, elegant constellations, soft gold on deep indigo and warm charcoal, cinematic but calm, no text, no letters, no numbers, no UI, no watermark."
+    },
+    {
+      "id": "astrology_101_m03_026_moon_emotion_memory_need",
+      "kind": "planet",
+      "status": "draft",
+      "title": "The Moon: Emotion, Memory, and Need",
+      "subtitle": "The Moon describes what seeks safety and belonging.",
+      "body": "The Moon is the part of astrology that feels close to the body. It describes emotional weather, instinctive reactions, memory, habit, and the private ways a person seeks comfort.\n\nIf the Sun asks, “Who am I becoming?” the Moon asks, “What helps me feel safe enough to live?”\n\nMoon symbolism often shows up before conscious choice. It appears in the first reaction, the old protective reflex, the food someone wants when tired, the silence they need after stress, or the type of tenderness that actually reaches them.\n\nThis is why Moon interpretation needs care. The Moon does not merely describe mood. It points toward emotional conditioning, early impressions, family atmosphere, and the kind of inner shelter a person may spend years learning to build for themselves.\n\nA strong Moon is not childish. It is emotionally intelligent. It knows that people do not become wise by ignoring need. They become steadier by understanding what their nervous system keeps asking for.",
+      "excerpt": "The Moon describes emotional need, memory, instinct, and the private search for safety.",
+      "eyebrow": "Astrology 101 - Planets",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 26,
+      "energy": [
+        "reflective",
+        "calming"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner",
+        "module_03",
+        "planets",
+        "moon",
+        "emotion"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra Astrology 101 premium course card artwork, vertical mobile hero image, theme: the Moon as emotional memory and inner safety. A luminous moon hangs above a quiet interior landscape of water, home lights, and soft clouds; a faint human figure rests beside a reflective pool inside a transparent chart circle. Electric aquarian line art blended with mythic editorial realism, luminous celestial geometry, subtle chart-wheel arcs, elegant constellations, soft gold on deep indigo and warm charcoal, cinematic but calm, no text, no letters, no numbers, no UI, no watermark."
+    },
+    {
+      "id": "astrology_101_m03_027_mercury_mind_language_translation",
+      "kind": "planet",
+      "status": "draft",
+      "title": "Mercury: Mind, Language, and Translation",
+      "subtitle": "Mercury describes how experience becomes thought and speech.",
+      "body": "Mercury is the messenger function. It describes how a person thinks, listens, names things, asks questions, makes connections, and translates experience into language.\n\nMercury is not only intelligence. Someone can be highly intelligent and still communicate poorly. Another person may not sound scholarly, yet understand people quickly because their Mercury works through observation, timing, humor, or pattern recognition.\n\nIn a chart, Mercury shows the style of mind: fast or careful, literal or symbolic, analytical or associative, private or conversational. It also shows how someone learns. Some people need diagrams. Some need debate. Some need repetition. Some only understand once they explain the idea out loud.\n\nMercury becomes distorted when the mind outruns the body, when language turns defensive, or when cleverness replaces honesty. Its healthier expression brings curiosity, precision, wit, and the ability to bridge one world of meaning to another.\n\nMercury asks a practical question: how do you turn what you notice into something clear enough to share?",
+      "excerpt": "Mercury describes thinking, language, learning style, and the way experience becomes communicable.",
+      "eyebrow": "Astrology 101 - Planets",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 27,
+      "energy": [
+        "instructional",
+        "playful"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner",
+        "module_03",
+        "planets",
+        "mercury",
+        "communication"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra Astrology 101 premium course card artwork, vertical mobile hero image, theme: Mercury as mind language and translation. A quicksilver messenger path arcs between stars, books, speech-like ribbons, and small glowing nodes; delicate wing motifs appear abstractly, not as literal costume. Electric aquarian line art blended with mythic editorial realism, luminous celestial geometry, subtle chart-wheel arcs, elegant constellations, soft gold on deep indigo and warm charcoal, cinematic but calm, no text, no letters, no numbers, no UI, no watermark."
+    },
+    {
+      "id": "astrology_101_m03_028_venus_attraction_value_connection",
+      "kind": "planet",
+      "status": "draft",
+      "title": "Venus: Attraction, Value, and Connection",
+      "subtitle": "Venus describes what draws the heart and refines desire.",
+      "body": "Venus is often introduced as the planet of love, but that definition becomes richer when you include value. Venus describes what someone finds beautiful, what they are drawn toward, how they give and receive affection, and what feels worth choosing.\n\nAttraction is not random in Venus language. It reveals taste, preference, longing, self-worth, and the kinds of connection a person recognizes as nourishing. Venus can show romantic style, but it can also describe art, pleasure, money, friendship, social grace, and the atmosphere someone wants around them.\n\nThe immature version of Venus may chase approval, confuse desirability with love, or trade authenticity for harmony. The mature version knows that beauty without truth eventually becomes exhausting.\n\nVenus asks: what do you keep choosing because it genuinely enriches your life?\n\nThis planet is not shallow. It teaches discernment. It helps a person notice where pleasure, peace, devotion, aesthetics, and self-respect belong in the same conversation.",
+      "excerpt": "Venus describes attraction, beauty, affection, value, and what feels worth choosing.",
+      "eyebrow": "Astrology 101 - Planets",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 28,
+      "energy": [
+        "relational",
+        "calming"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner",
+        "module_03",
+        "planets",
+        "venus",
+        "love",
+        "values"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra Astrology 101 premium course card artwork, vertical mobile hero image, theme: Venus as attraction beauty and value. A serene celestial garden with a glowing evening star, rose-gold orbital lines, paired figures at a respectful distance, and symbols of art and harmony woven into the sky. Electric aquarian line art blended with mythic editorial realism, luminous celestial geometry, subtle chart-wheel arcs, elegant constellations, soft gold on deep indigo and warm charcoal, cinematic but calm, no text, no letters, no numbers, no UI, no watermark."
+    },
+    {
+      "id": "astrology_101_m03_029_mars_action_desire_conflict",
+      "kind": "planet",
+      "status": "draft",
+      "title": "Mars: Action, Desire, and Conflict",
+      "subtitle": "Mars describes how energy becomes movement.",
+      "body": "Mars is the part of astrology that does not want to wait forever. It describes drive, desire, assertion, anger, courage, competition, protection, and the willingness to act.\n\nWithout Mars, a person may understand everything and still never move. Mars gives heat to intention. It says yes, no, now, stop, go, fight, build, defend, begin.\n\nThis energy can become destructive when it loses consciousness. Unexamined Mars may turn into impatience, aggression, cruelty, burnout, or the habit of treating every disagreement as a battlefield. But Mars is not the enemy. Repressed Mars often causes its own problems: resentment, passivity, collapse, or the inability to defend what matters.\n\nA healthy Mars knows how to use force cleanly. It can take action without needing to dominate. It can protect boundaries without making war out of every boundary.\n\nMars asks: where does life require movement, honesty, and courage rather than endless analysis?",
+      "excerpt": "Mars describes action, desire, courage, anger, boundaries, and the clean use of force.",
+      "eyebrow": "Astrology 101 - Planets",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 29,
+      "energy": [
+        "activating",
+        "practical"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner",
+        "module_03",
+        "planets",
+        "mars",
+        "action",
+        "desire"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra Astrology 101 premium course card artwork, vertical mobile hero image, theme: Mars as action desire and conflict. A red-orange planet glows above a mountain pass; a single figure steps forward with a lantern and shield-like geometry, suggesting courage without violence. Electric aquarian line art blended with mythic editorial realism, luminous celestial geometry, subtle chart-wheel arcs, elegant constellations, soft gold on deep indigo and warm charcoal, cinematic but calm, no text, no letters, no numbers, no UI, no watermark."
+    },
+    {
+      "id": "astrology_101_m03_030_jupiter_growth_meaning_belief",
+      "kind": "planet",
+      "status": "draft",
+      "title": "Jupiter: Growth, Meaning, and Belief",
+      "subtitle": "Jupiter describes how life gets larger.",
+      "body": "Jupiter is the principle of expansion. It describes growth, faith, generosity, learning, opportunity, confidence, travel, teaching, and the search for meaning beyond immediate survival.\n\nWhen Jupiter works well, it helps a person imagine a larger life. It opens doors through optimism, curiosity, goodwill, and the willingness to keep learning. It reminds people that experience can become wisdom rather than merely memory.\n\nBut Jupiter can also exaggerate. Too much expansion without discernment becomes overpromising, excess, inflated certainty, or the belief that enthusiasm alone can replace discipline. Jupiter can bless, but it can also make someone believe they are above limits.\n\nA mature Jupiter does not merely say “more.” It asks what kind of more actually makes life meaningful. More truth. More perspective. More generosity. More courage to leave a smaller worldview behind.\n\nJupiter asks: what vision is large enough to help you grow, but honest enough to keep you wise?",
+      "excerpt": "Jupiter describes expansion, learning, opportunity, belief, and the search for meaning.",
+      "eyebrow": "Astrology 101 - Planets",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 30,
+      "energy": [
+        "mythic",
+        "activating"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner",
+        "module_03",
+        "planets",
+        "jupiter",
+        "growth",
+        "meaning"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra Astrology 101 premium course card artwork, vertical mobile hero image, theme: Jupiter as expansion wisdom and meaning. A vast golden planet rises over open roads, libraries, distant mountains, and star maps; the composition feels generous, spacious, and philosophical. Electric aquarian line art blended with mythic editorial realism, luminous celestial geometry, subtle chart-wheel arcs, elegant constellations, soft gold on deep indigo and warm charcoal, cinematic but calm, no text, no letters, no numbers, no UI, no watermark."
+    },
+    {
+      "id": "astrology_101_m03_031_saturn_structure_maturity_time",
+      "kind": "planet",
+      "status": "draft",
+      "title": "Saturn: Structure, Maturity, and Time",
+      "subtitle": "Saturn describes what becomes real through commitment.",
+      "body": "Saturn is often feared because it deals with limits, pressure, delay, consequence, responsibility, and time. But Saturn is also the reason anything durable can exist.\n\nWhere Jupiter expands, Saturn gives shape. It asks what can be built, sustained, practiced, repaired, and proven. Saturn is the difference between wanting mastery and actually becoming disciplined enough to earn it.\n\nIn early life, Saturn may feel like fear, inadequacy, restriction, authority, or the place where a person believes they are not enough. Over time, the same symbol can become competence, boundaries, patience, self-respect, and mature authority.\n\nSaturn does not usually hand out quick rewards. It prefers evidence. It respects repetition. It teaches through friction, not because life should be joyless, but because strength without structure rarely lasts.\n\nSaturn asks: what are you willing to practice long enough for it to become real?",
+      "excerpt": "Saturn describes limits, responsibility, discipline, maturity, and what becomes real over time.",
+      "eyebrow": "Astrology 101 - Planets",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 31,
+      "energy": [
+        "grounding",
+        "practical"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner",
+        "module_03",
+        "planets",
+        "saturn",
+        "maturity",
+        "time"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra Astrology 101 premium course card artwork, vertical mobile hero image, theme: Saturn as structure maturity and time. A ringed planet hovers above ancient stone steps, architectural lines, hourglass shadows, and a slowly illuminated doorway; dignified and austere, not gloomy. Electric aquarian line art blended with mythic editorial realism, luminous celestial geometry, subtle chart-wheel arcs, elegant constellations, soft gold on deep indigo and warm charcoal, cinematic but calm, no text, no letters, no numbers, no UI, no watermark."
+    },
+    {
+      "id": "astrology_101_m03_032_uranus_change_freedom_awakening",
+      "kind": "planet",
+      "status": "draft",
+      "title": "Uranus: Change, Freedom, and Awakening",
+      "subtitle": "Uranus describes the part that refuses stale reality.",
+      "body": "Uranus is the symbol of disruption, awakening, invention, rebellion, independence, and sudden change. It often appears where life refuses to remain asleep inside old forms.\n\nThis planet does not move politely. Uranus can arrive as insight, rupture, restlessness, breakthrough, or the uncomfortable realization that a life structure no longer fits. It breaks the spell of repetition.\n\nAt its best, Uranus liberates. It helps people question inherited rules, imagine alternatives, and recognize the cost of staying acceptable at the expense of aliveness.\n\nAt its worst, Uranus can mistake reaction for freedom. It may disrupt without building, detach before feeling, or reject everything simply because it came from the past.\n\nThe mature expression of Uranus is not chaos for its own sake. It is intelligent liberation. It asks: what needs to change because truth has outgrown the old container?",
+      "excerpt": "Uranus describes disruption, awakening, freedom, originality, and intelligent liberation.",
+      "eyebrow": "Astrology 101 - Planets",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 32,
+      "energy": [
+        "activating",
+        "cosmic"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_03",
+        "planets",
+        "uranus",
+        "change",
+        "freedom"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra Astrology 101 premium course card artwork, vertical mobile hero image, theme: Uranus as awakening and liberation. Electric blue-white arcs crack open a dark celestial sphere, revealing new constellations and futuristic geometric pathways; dynamic, clean, visionary. Electric aquarian line art blended with mythic editorial realism, luminous celestial geometry, subtle chart-wheel arcs, elegant constellations, soft gold on deep indigo and warm charcoal, cinematic but calm, no text, no letters, no numbers, no UI, no watermark."
+    },
+    {
+      "id": "astrology_101_m03_033_neptune_imagination_dream_spirit",
+      "kind": "planet",
+      "status": "draft",
+      "title": "Neptune: Imagination, Dream, and Spirit",
+      "subtitle": "Neptune describes where boundaries soften.",
+      "body": "Neptune is the planet-symbol of imagination, longing, compassion, dreams, spirituality, music, mystery, and dissolution. It describes the places where ordinary boundaries become porous.\n\nNeptune can make life feel enchanted. It opens the door to art, prayer, empathy, intuition, and the sense that reality contains more than surfaces. It helps people feel connected to something larger than personal ambition.\n\nBut Neptune also requires discernment. When boundaries soften too much, confusion enters. Fantasy may replace truth. Avoidance may disguise itself as spirituality. A person may idealize someone, ignore evidence, or drift away from practical life while believing they are becoming more elevated.\n\nHealthy Neptune does not require abandoning reality. It asks for imagination with honesty, compassion with boundaries, and mystery without self-deception.\n\nNeptune asks: where does your soul need wonder, and where does your life still need clarity?",
+      "excerpt": "Neptune describes imagination, compassion, dreams, spirituality, longing, and the need for discernment.",
+      "eyebrow": "Astrology 101 - Planets",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 33,
+      "energy": [
+        "mystical",
+        "reflective"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_03",
+        "planets",
+        "neptune",
+        "imagination",
+        "spirit"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra Astrology 101 premium course card artwork, vertical mobile hero image, theme: Neptune as imagination dream and spirit. A deep ocean merges into a starfield, with translucent veils, music-like wave lines, and a distant luminous planet; dreamy but refined, not foggy clutter. Electric aquarian line art blended with mythic editorial realism, luminous celestial geometry, subtle chart-wheel arcs, elegant constellations, soft gold on deep indigo and warm charcoal, cinematic but calm, no text, no letters, no numbers, no UI, no watermark."
+    },
+    {
+      "id": "astrology_101_m03_034_pluto_depth_power_transformation",
+      "kind": "planet",
+      "status": "draft",
+      "title": "Pluto: Depth, Power, and Transformation",
+      "subtitle": "Pluto describes what changes by going underneath.",
+      "body": "Pluto is not a light symbol. It describes depth, power, compulsion, endings, survival, hidden material, and transformation that cannot be faked.\n\nWhere Pluto appears, astrology often points toward intensity. Something may need to be confronted rather than decorated. Pluto asks people to look beneath the official story: beneath politeness, beneath control, beneath fear, beneath the identity that no longer tells the truth.\n\nThis symbol can show where someone feels magnetized, threatened, obsessed, guarded, or unusually capable of regeneration. It can also describe places where control becomes a defense against vulnerability.\n\nPluto’s healthier expression is not domination. It is depth with honesty. It is the strength that emerges after a person stops pretending nothing is happening underneath.\n\nTransformation, in Pluto language, is rarely cosmetic. It usually means something false has to die so something more real can live.\n\nPluto asks: what truth has been waiting below the surface for enough courage to meet it?",
+      "excerpt": "Pluto describes depth, power, shadow, endings, survival, and transformation through honesty.",
+      "eyebrow": "Astrology 101 - Planets",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 34,
+      "energy": [
+        "reflective",
+        "mythic"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_03",
+        "planets",
+        "pluto",
+        "transformation",
+        "shadow"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra Astrology 101 premium course card artwork, vertical mobile hero image, theme: Pluto as depth power and transformation. A dark distant world glows at the edge of a subterranean cosmic cavern; roots, obsidian, stars, and a small emerging light suggest regeneration after descent. Electric aquarian line art blended with mythic editorial realism, luminous celestial geometry, subtle chart-wheel arcs, elegant constellations, soft gold on deep indigo and warm charcoal, cinematic but calm, no text, no letters, no numbers, no UI, no watermark."
+    }
+  ]
+}

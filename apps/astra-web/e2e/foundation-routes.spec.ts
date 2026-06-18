@@ -9,7 +9,7 @@ const routes = [
   { path: "/self", heading: "Sign in to see your Astra" },
   { path: "/library", heading: "Artifacts worth keeping" },
   { path: "/gifts", heading: "Stars stay accountable" },
-  { path: "/login", heading: "Email code sign-in" }
+  { path: "/login", heading: "Welcome back to Astra" }
 ];
 
 function findOtp(value: unknown): string | null {
@@ -118,16 +118,17 @@ test.describe("clean-start routes", () => {
     await expect(page.locator(".status-strip")).toContainText("12 cards");
     await expect(page.getByLabel("Journey state")).toContainText("A public sample, not your private Journey");
     await page.getByRole("tab", { name: "Practice" }).click();
-    await expect(page.getByRole("button", { name: /Aries is ignition/ })).toBeVisible();
-    await expect(page.getByRole("button", { name: /Cleopatra: image/ })).toHaveCount(0);
-    await page.getByRole("button", { name: /Aries is ignition/ }).click();
+    const ariesCard = page.locator(".stream-card-open").filter({ hasText: "Aries is ignition" });
+    await expect(ariesCard).toBeVisible();
+    await expect(page.locator(".stream-card-open").filter({ hasText: "Cleopatra: image" })).toHaveCount(0);
+    await ariesCard.click();
     await expect(page.getByLabel("Card detail")).toContainText("Aries is ignition");
   });
 
   test("reader surfaces public fallback metadata", async ({ page }) => {
     await page.goto("/journey");
     await page.getByRole("tab", { name: "Myth and symbol" }).click();
-    await page.getByRole("button", { name: /Cleopatra: image/ }).click();
+    await page.locator(".stream-card-open").filter({ hasText: "Cleopatra: image" }).click();
     await expect(page.getByLabel("Card detail")).toContainText("Cleopatra: image, strategy, and survival");
     await expect(page.getByLabel("Card metadata")).toContainText("Card");
     await expect(page.getByLabel("Card metadata")).toContainText("Public fallback");

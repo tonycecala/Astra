@@ -4,12 +4,18 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "echo 'Composer is intentionally placeholder-only in the clean-start foundation. Reserved local port: 3012.'",
-    "build": "echo 'Composer placeholder build complete.'",
+    "dev": "COMPOSER_REQUIRE_AUTH=0 next dev --port 3012",
+    "build": "next build",
     "lint": "echo 'Composer placeholder lint complete.'",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@astra/contracts": "file:../../packages/contracts"
+    "@astra/contracts": "file:../../packages/contracts",
+    "@astra/db": "file:../../packages/db",
+    "@astra/ui": "file:../../packages/ui",
+    "lucide-react": "^1.16.0",
+    "next": "^16.2.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   }
 }

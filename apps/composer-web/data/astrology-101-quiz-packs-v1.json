@@ -1,0 +1,1128 @@
+{
+  "cards": [
+    {
+      "id": "astro101_073",
+      "kind": "quiz",
+      "status": "draft",
+      "title": "Quiz Pack 01 — Zodiac Foundations",
+      "subtitle": "Test your understanding of signs, elements, and modalities.",
+      "body": "Foundational zodiac quiz covering signs, elements, and modalities.",
+      "excerpt": "Foundational zodiac quiz covering signs, elements, and modalities.",
+      "eyebrow": "Astrology 101 - Quiz Pack 01",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 73,
+      "energy": [
+        "instructional",
+        "playful"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "quiz",
+        "zodiac",
+        "elements",
+        "modalities"
+      ],
+      "ctaLabel": "Take quiz",
+      "ctaAction": "quiz_start",
+      "href": "/learn/astrology-101/quiz-01",
+      "artPrompt": "Elegant celestial quiz card with zodiac wheel fragments, gold and graphite linework, mystical classroom atmosphere, subtle constellation glow, no words, no letters, no numbers.",
+      "quiz": {
+        "format": "multiple_choice",
+        "questions": [
+          {
+            "id": "question_1",
+            "prompt": "Which zodiac sign is traditionally associated with stability and persistence?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Aries",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Taurus",
+                "isCorrect": true
+              },
+              {
+                "id": "c",
+                "label": "Gemini",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Sagittarius",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_2",
+            "prompt": "Which element is associated with emotional intuition and feeling?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Fire",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Air",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Water",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Earth",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_3",
+            "prompt": "Which modality is connected with initiating action?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Mutable",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Fixed",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Cardinal",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Reflective",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_4",
+            "prompt": "Which sign is traditionally ruled by the Moon?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Cancer",
+                "isCorrect": true
+              },
+              {
+                "id": "b",
+                "label": "Virgo",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Libra",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Capricorn",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_5",
+            "prompt": "Which zodiac sign is commonly associated with balance and partnership?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Leo",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Scorpio",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Libra",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Pisces",
+                "isCorrect": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "astro101_074",
+      "kind": "quiz",
+      "status": "draft",
+      "title": "Quiz Pack 02 — Planetary Meanings",
+      "subtitle": "Explore the symbolic meanings of the planets.",
+      "body": "Planetary symbolism and archetypal meanings quiz.",
+      "excerpt": "Planetary symbolism and archetypal meanings quiz.",
+      "eyebrow": "Astrology 101 - Quiz Pack 02",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 74,
+      "energy": [
+        "instructional",
+        "cosmic"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "quiz",
+        "planets",
+        "planetary_meanings"
+      ],
+      "ctaLabel": "Take quiz",
+      "ctaAction": "quiz_start",
+      "href": "/learn/astrology-101/quiz-02",
+      "artPrompt": "Celestial planetary teaching artwork with orbit lines, glowing spheres, antique astronomy textures, warm paper tones, no words, no letters, no numbers.",
+      "quiz": {
+        "format": "multiple_choice",
+        "questions": [
+          {
+            "id": "question_1",
+            "prompt": "Which planet is most associated with communication and thinking?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Venus",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Mercury",
+                "isCorrect": true
+              },
+              {
+                "id": "c",
+                "label": "Mars",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Saturn",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_2",
+            "prompt": "Which planet is traditionally connected with structure and responsibility?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Jupiter",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Neptune",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Saturn",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Uranus",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_3",
+            "prompt": "Which planet is linked with attraction, harmony, and aesthetics?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Venus",
+                "isCorrect": true
+              },
+              {
+                "id": "b",
+                "label": "Pluto",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Mercury",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Mars",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_4",
+            "prompt": "Which planet is associated with drive and assertive energy?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Mars",
+                "isCorrect": true
+              },
+              {
+                "id": "b",
+                "label": "Jupiter",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Moon",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Neptune",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_5",
+            "prompt": "Which celestial body represents emotional instincts in astrology?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Mercury",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Venus",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Moon",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Saturn",
+                "isCorrect": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "astro101_075",
+      "kind": "quiz",
+      "status": "draft",
+      "title": "Quiz Pack 03 — Houses & Chart Structure",
+      "subtitle": "Learn the symbolic meanings of the astrological houses.",
+      "body": "Astrological houses and chart structure quiz.",
+      "excerpt": "Astrological houses and chart structure quiz.",
+      "eyebrow": "Astrology 101 - Quiz Pack 03",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 75,
+      "energy": [
+        "instructional",
+        "reflective"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "quiz",
+        "houses",
+        "birth_chart"
+      ],
+      "ctaLabel": "Take quiz",
+      "ctaAction": "quiz_start",
+      "href": "/learn/astrology-101/quiz-03",
+      "artPrompt": "Mystical astrological chart divided into twelve symbolic houses, elegant celestial geometry, graphite and gold textures, no words, no letters, no numbers.",
+      "quiz": {
+        "format": "multiple_choice",
+        "questions": [
+          {
+            "id": "question_1",
+            "prompt": "What does the First House primarily relate to?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Career reputation",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Personal identity",
+                "isCorrect": true
+              },
+              {
+                "id": "c",
+                "label": "Shared resources",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Spiritual retreat",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_2",
+            "prompt": "Which house is commonly associated with partnerships?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Fourth House",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Fifth House",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Seventh House",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Eleventh House",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_3",
+            "prompt": "Which house traditionally relates to career and public life?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Sixth House",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Eighth House",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Tenth House",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Twelfth House",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_4",
+            "prompt": "Which house is connected with home and roots?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Second House",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Fourth House",
+                "isCorrect": true
+              },
+              {
+                "id": "c",
+                "label": "Ninth House",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Eleventh House",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_5",
+            "prompt": "Which house is often associated with learning and travel?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Third House",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Fifth House",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Ninth House",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Twelfth House",
+                "isCorrect": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "astro101_076",
+      "kind": "quiz",
+      "status": "draft",
+      "title": "Quiz Pack 04 — Elements & Modalities",
+      "subtitle": "Understand the energetic foundations of the zodiac.",
+      "body": "Quiz covering astrological elements and modalities.",
+      "excerpt": "Quiz covering astrological elements and modalities.",
+      "eyebrow": "Astrology 101 - Quiz Pack 04",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 76,
+      "energy": [
+        "instructional",
+        "grounding"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "quiz",
+        "elements",
+        "modalities"
+      ],
+      "ctaLabel": "Take quiz",
+      "ctaAction": "quiz_start",
+      "href": "/learn/astrology-101/quiz-04",
+      "artPrompt": "Four classical elements represented symbolically in celestial harmony, sacred geometry and zodiac motifs, soft glowing cosmic textures, no words, no letters, no numbers.",
+      "quiz": {
+        "format": "multiple_choice",
+        "questions": [
+          {
+            "id": "question_1",
+            "prompt": "Which element is associated with inspiration and enthusiasm?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Earth",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Fire",
+                "isCorrect": true
+              },
+              {
+                "id": "c",
+                "label": "Water",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Air",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_2",
+            "prompt": "Which modality is associated with adaptability and transition?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Cardinal",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Fixed",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Mutable",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Solar",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_3",
+            "prompt": "Air signs are most commonly connected with which qualities?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Emotion and memory",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Action and instinct",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Thought and communication",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Endurance and caution",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_4",
+            "prompt": "Fixed signs are traditionally associated with:",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Adaptability",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Persistence",
+                "isCorrect": true
+              },
+              {
+                "id": "c",
+                "label": "Curiosity",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Spontaneity",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_5",
+            "prompt": "Earth signs are most commonly associated with:",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Imagination and fantasy",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Intuition and dreams",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Practicality and stability",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Exploration and philosophy",
+                "isCorrect": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "astro101_077",
+      "kind": "quiz",
+      "status": "draft",
+      "title": "Quiz Pack 05 — Reading the Chart",
+      "subtitle": "Explore how astrologers interpret the whole chart.",
+      "body": "Quiz covering chart interpretation fundamentals.",
+      "excerpt": "Quiz covering chart interpretation fundamentals.",
+      "eyebrow": "Astrology 101 - Quiz Pack 05",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 77,
+      "energy": [
+        "instructional",
+        "mystical"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "quiz",
+        "chart_reading",
+        "sun_sign",
+        "rising_sign"
+      ],
+      "ctaLabel": "Take quiz",
+      "ctaAction": "quiz_start",
+      "href": "/learn/astrology-101/quiz-05",
+      "artPrompt": "Symbolic birth chart interpretation scene with layered zodiac rings, celestial parchment textures, glowing starfield atmosphere, no words, no letters, no numbers.",
+      "quiz": {
+        "format": "multiple_choice",
+        "questions": [
+          {
+            "id": "question_1",
+            "prompt": "In astrology, the Sun sign usually represents:",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Communication style",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Core identity",
+                "isCorrect": true
+              },
+              {
+                "id": "c",
+                "label": "Financial habits",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Friendship patterns",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_2",
+            "prompt": "The Rising sign is most connected with:",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Outer presentation",
+                "isCorrect": true
+              },
+              {
+                "id": "b",
+                "label": "Childhood memory",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Career ambition",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Relationship history",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_3",
+            "prompt": "A birth chart is based primarily on:",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Favorite personality traits",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Exact birth time and location",
+                "isCorrect": true
+              },
+              {
+                "id": "c",
+                "label": "Relationship compatibility",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Daily horoscope categories",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_4",
+            "prompt": "Astrology works best when interpreted as:",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Fixed destiny",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Literal prediction",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Symbolic pattern language",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Guaranteed outcomes",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_5",
+            "prompt": "Why do astrologers examine the entire chart instead of one placement?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Single placements are random",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Charts must be balanced manually",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Symbols gain meaning through context",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Planets change signs every hour",
+                "isCorrect": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "astro101_078",
+      "kind": "test",
+      "status": "draft",
+      "title": "Astrology 101 Final Certification Test",
+      "subtitle": "Complete the final assessment to earn your Astrology 101 certification.",
+      "body": "Final Astrology 101 certification assessment.",
+      "excerpt": "Final Astrology 101 certification assessment.",
+      "eyebrow": "Astrology 101 - Final Certification",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 78,
+      "energy": [
+        "instructional",
+        "cosmic",
+        "playful"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "test",
+        "certification",
+        "final_exam"
+      ],
+      "ctaLabel": "Begin final test",
+      "ctaAction": "test_start",
+      "href": "/learn/astrology-101/final-test",
+      "artPrompt": "Grand celestial certification scene with radiant zodiac wheel, elegant cosmic parchment, subtle gold illumination and mystical geometry, no words, no letters, no numbers.",
+      "quiz": {
+        "format": "multiple_choice",
+        "questions": [
+          {
+            "id": "question_1",
+            "prompt": "Which planet is associated with communication and thinking?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Mercury",
+                "isCorrect": true
+              },
+              {
+                "id": "b",
+                "label": "Venus",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Mars",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Neptune",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_2",
+            "prompt": "Which zodiac sign is traditionally associated with balance and partnership?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Scorpio",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Libra",
+                "isCorrect": true
+              },
+              {
+                "id": "c",
+                "label": "Aries",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Capricorn",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_3",
+            "prompt": "What does the First House primarily relate to?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Personal identity",
+                "isCorrect": true
+              },
+              {
+                "id": "b",
+                "label": "Shared finances",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Career status",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Group friendships",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_4",
+            "prompt": "Which modality is connected with initiating action?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Fixed",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Mutable",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Cardinal",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Lunar",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_5",
+            "prompt": "The Rising sign is most associated with:",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Emotional memory",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Public reputation",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Outer presentation",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Relationship history",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_6",
+            "prompt": "Which element is associated with emotional intuition?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Fire",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Air",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Water",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Earth",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_7",
+            "prompt": "Which planet is connected with structure and responsibility?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Jupiter",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Saturn",
+                "isCorrect": true
+              },
+              {
+                "id": "c",
+                "label": "Venus",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Uranus",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_8",
+            "prompt": "Astrology works best when interpreted as:",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Literal prediction",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Fixed destiny",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Symbolic pattern language",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Personality ranking",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_9",
+            "prompt": "Which house is commonly associated with partnerships?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Third House",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Fifth House",
+                "isCorrect": false
+              },
+              {
+                "id": "c",
+                "label": "Seventh House",
+                "isCorrect": true
+              },
+              {
+                "id": "d",
+                "label": "Tenth House",
+                "isCorrect": false
+              }
+            ]
+          },
+          {
+            "id": "question_10",
+            "prompt": "Why do astrologers interpret the whole chart together?",
+            "choices": [
+              {
+                "id": "a",
+                "label": "Charts require balancing",
+                "isCorrect": false
+              },
+              {
+                "id": "b",
+                "label": "Symbols gain meaning through context",
+                "isCorrect": true
+              },
+              {
+                "id": "c",
+                "label": "One sign changes daily",
+                "isCorrect": false
+              },
+              {
+                "id": "d",
+                "label": "Houses override planets",
+                "isCorrect": false
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "schemaVersion": "astra-composer-card-import-v1",
+  "title": "Astra Astrology 101 - Quiz Packs and Final Test",
+  "series": {
+    "id": "astra_astrology_101",
+    "title": "ASTRA Astrology 101",
+    "lane": "astrology_101",
+    "defaultDifficulty": "beginner"
+  },
+  "version": "0.1",
+  "notes": [
+    "Additional Astrology 101 quiz packs and final certification test.",
+    "Quiz and test answer keys are stored in structured quiz fields for Composer review and future runtime UI."
+  ]
+}

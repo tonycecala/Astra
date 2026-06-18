@@ -4,6 +4,8 @@ import {
   type AstrologyReportRequest,
   type AstrologyReportResult,
   type ComposerDecision,
+  type ComposerAvailabilityCollection,
+  type ComposerAvailabilityResponse,
   type CreateComposerDecision,
   type CreateUserFeedItem,
   type ComposerStreamArtifact,
@@ -48,7 +50,12 @@ import {
   cards,
   chartRequests,
   chartResults,
+  composerCardQueryCaches,
   composerDecisions,
+  composerLibraryCollectionCards,
+  composerLibraryCollections,
+  composerQueueDrafts,
+  composerQueuePublishPlans,
   gifts,
   publicStreamItems,
   sourceCards,
@@ -108,6 +115,79 @@ export type RecordAstrologyReportResultInput = RecordAstrologyReportResult;
 export type UpsertComposerStreamArtifactInput = ComposerStreamArtifact;
 export type CreateUserFeedItemInput = CreateUserFeedItem;
 export type CreateComposerDecisionInput = CreateComposerDecision;
+
+export type ComposerCardQueryCacheInput = {
+  cacheKey: string;
+  scope: string;
+  fingerprint: string;
+  page: number;
+  pageSize: number;
+  totalCards: number;
+  windowStart: number;
+  windowEnd: number;
+  cardIds: string[];
+  facets: Record<string, unknown>;
+};
+
+export type ComposerCardQueryCacheRecord = ComposerCardQueryCacheInput & {
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ComposerQueueDraftInput = {
+  id?: string;
+  operatorKey: string;
+  scope: string;
+  status?: string;
+  targetUserId?: string;
+  selectedCards: Record<string, unknown>;
+  queueStates: Record<string, unknown>;
+  decisionNotes: Record<string, unknown>;
+  queryCacheKeys?: string[];
+  lastPlanId?: string;
+  lastPlanSummary?: Record<string, unknown>;
+};
+
+export type ComposerQueueDraftRecord = Required<Omit<ComposerQueueDraftInput, "id" | "status" | "targetUserId" | "queryCacheKeys" | "lastPlanId" | "lastPlanSummary">> & {
+  id: string;
+  status: string;
+  targetUserId?: string;
+  queryCacheKeys: string[];
+  lastPlanId?: string;
+  lastPlanSummary: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ComposerQueuePublishPlanInput = {
+  id: string;
+  operatorKey: string;
+  scope: string;
+  draftId?: string;
+  targetUserId: string;
+  status?: string;
+  summary: Record<string, unknown>;
+  issues: unknown[];
+  items: unknown[];
+  selectedCardIds: string[];
+  queryCacheKeys?: string[];
+};
+
+export type ComposerQueuePublishPlanRecord = Required<Omit<ComposerQueuePublishPlanInput, "draftId" | "status" | "queryCacheKeys">> & {
+  draftId?: string;
+  status: string;
+  queryCacheKeys: string[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ComposerLibraryCollectionRecord = ComposerAvailabilityCollection & {
+  source: string;
+  status: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};
 
 function toDate(value: string) {
   return new Date(value);
@@ -295,6 +375,109 @@ function composerDecisionFromRow(row: typeof composerDecisions.$inferSelect): Co
     safetyNotes: row.safetyNotes,
     createdAt: toIsoDate(row.createdAt)
   });
+}
+
+function composerCardQueryCacheFromRow(row: typeof composerCardQueryCaches.$inferSelect): ComposerCardQueryCacheRecord {
+  return {
+    cacheKey: row.cacheKey,
+    scope: row.scope,
+    fingerprint: row.fingerprint,
+    page: row.page,
+    pageSize: row.pageSize,
+    totalCards: row.totalCards,
+    windowStart: row.windowStart,
+    windowEnd: row.windowEnd,
+    cardIds: Array.isArray(row.cardIds) ? row.cardIds.filter((id): id is string => typeof id === "string") : [],
+    facets: typeof row.facets === "object" && row.facets !== null && !Array.isArray(row.facets) ? (row.facets as Record<string, unknown>) : {},
+    createdAt: toIsoDate(row.createdAt),
+    updatedAt: toIsoDate(row.updatedAt)
+  };
+}
+
+function composerQueueDraftFromRow(row: typeof composerQueueDrafts.$inferSelect): ComposerQueueDraftRecord {
+  return {
+    id: row.id,
+    operatorKey: row.operatorKey,
+    scope: row.scope,
+    status: row.status,
+    targetUserId: row.targetUserId ?? undefined,
+    selectedCards: typeof row.selectedCards === "object" && row.selectedCards !== null && !Array.isArray(row.selectedCards) ? (row.selectedCards as Record<string, unknown>) : {},
+    queueStates: typeof row.queueStates === "object" && row.queueStates !== null && !Array.isArray(row.queueStates) ? (row.queueStates as Record<string, unknown>) : {},
+    decisionNotes: typeof row.decisionNotes === "object" && row.decisionNotes !== null && !Array.isArray(row.decisionNotes) ? (row.decisionNotes as Record<string, unknown>) : {},
+    queryCacheKeys: Array.isArray(row.queryCacheKeys) ? row.queryCacheKeys.filter((key): key is string => typeof key === "string") : [],
+    lastPlanId: row.lastPlanId ?? undefined,
+    lastPlanSummary: typeof row.lastPlanSummary === "object" && row.lastPlanSummary !== null && !Array.isArray(row.lastPlanSummary) ? (row.lastPlanSummary as Record<string, unknown>) : {},
+    createdAt: toIsoDate(row.createdAt),
+    updatedAt: toIsoDate(row.updatedAt)
+  };
+}
+
+function composerQueuePublishPlanFromRow(row: typeof composerQueuePublishPlans.$inferSelect): ComposerQueuePublishPlanRecord {
+  return {
+    id: row.id,
+    operatorKey: row.operatorKey,
+    scope: row.scope,
+    draftId: row.draftId ?? undefined,
+    targetUserId: row.targetUserId,
+    status: row.status,
+    summary: typeof row.summary === "object" && row.summary !== null && !Array.isArray(row.summary) ? (row.summary as Record<string, unknown>) : {},
+    issues: Array.isArray(row.issues) ? row.issues : [],
+    items: Array.isArray(row.items) ? row.items : [],
+    selectedCardIds: Array.isArray(row.selectedCardIds) ? row.selectedCardIds.filter((id): id is string => typeof id === "string") : [],
+    queryCacheKeys: Array.isArray(row.queryCacheKeys) ? row.queryCacheKeys.filter((key): key is string => typeof key === "string") : [],
+    createdAt: toIsoDate(row.createdAt),
+    updatedAt: toIsoDate(row.updatedAt)
+  };
+}
+
+function composerLibraryCardFromRow(row: typeof composerLibraryCollectionCards.$inferSelect): ComposerAvailabilityCollection["cards"][number] {
+  const payload = typeof row.cardPayload === "object" && row.cardPayload !== null && !Array.isArray(row.cardPayload) ? (row.cardPayload as Record<string, unknown>) : {};
+  return {
+    id: row.cardId,
+    title: row.title,
+    subtitle: typeof payload.subtitle === "string" ? payload.subtitle : undefined,
+    body: row.body,
+    excerpt: typeof payload.excerpt === "string" ? payload.excerpt : undefined,
+    kind: row.kind,
+    ontologyType: row.ontologyType as ComposerAvailabilityCollection["cards"][number]["ontologyType"],
+    status: row.status,
+    order: row.orderIndex,
+    collectionId: row.collectionId,
+    collectionTitle: typeof payload.collectionTitle === "string" ? payload.collectionTitle : "",
+    sectionId: row.sectionId ?? undefined,
+    sectionTitle: row.sectionTitle ?? undefined,
+    lane: typeof payload.lane === "string" ? payload.lane : undefined,
+    tags: Array.isArray(row.tags) ? row.tags.filter((tag): tag is string => typeof tag === "string") : [],
+    imageUrl: row.imageUrl ?? undefined,
+    quiz: typeof payload.quiz === "object" && payload.quiz !== null && !Array.isArray(payload.quiz) ? (payload.quiz as Record<string, unknown>) : undefined,
+    source: typeof payload.source === "string" ? payload.source : undefined
+  };
+}
+
+async function composerLibraryCollectionFromRow(database: AstraDb, row: typeof composerLibraryCollections.$inferSelect): Promise<ComposerLibraryCollectionRecord> {
+  const cardRows = await database
+    .select()
+    .from(composerLibraryCollectionCards)
+    .where(eq(composerLibraryCollectionCards.collectionId, row.id))
+    .orderBy(asc(composerLibraryCollectionCards.orderIndex));
+  const metadata = typeof row.metadata === "object" && row.metadata !== null && !Array.isArray(row.metadata) ? (row.metadata as Record<string, unknown>) : {};
+  return {
+    id: row.id,
+    title: row.title,
+    kind: row.kind as ComposerAvailabilityCollection["kind"],
+    description: row.description,
+    totalCards: row.totalCards,
+    generatedAt: toIsoDate(row.generatedAt),
+    cards: cardRows.map((cardRow) => ({
+      ...composerLibraryCardFromRow(cardRow),
+      collectionTitle: row.title
+    })),
+    source: row.source,
+    status: row.status,
+    metadata,
+    createdAt: toIsoDate(row.createdAt),
+    updatedAt: toIsoDate(row.updatedAt)
+  };
 }
 
 export function seedSnapshot(): FoundationSnapshot {
@@ -571,6 +754,11 @@ export async function seedFoundationData(
 }
 
 export async function resetFoundationData(database: AstraDb): Promise<FoundationResetResult> {
+  await database.delete(composerLibraryCollectionCards);
+  await database.delete(composerLibraryCollections);
+  await database.delete(composerQueuePublishPlans);
+  await database.delete(composerQueueDrafts);
+  await database.delete(composerCardQueryCaches);
   await database.delete(composerDecisions);
   await database.delete(userFeedItems);
   await database.delete(publicStreamItems);
@@ -590,6 +778,268 @@ export async function resetFoundationData(database: AstraDb): Promise<Foundation
   await database.delete(user);
 
   return { cleared: true };
+}
+
+export async function upsertComposerCardQueryCache(
+  database: AstraDb,
+  input: ComposerCardQueryCacheInput
+): Promise<ComposerCardQueryCacheRecord> {
+  const now = new Date();
+  const [row] = await database
+    .insert(composerCardQueryCaches)
+    .values({
+      cacheKey: input.cacheKey,
+      scope: input.scope,
+      fingerprint: input.fingerprint,
+      page: input.page,
+      pageSize: input.pageSize,
+      totalCards: input.totalCards,
+      windowStart: input.windowStart,
+      windowEnd: input.windowEnd,
+      cardIds: input.cardIds,
+      facets: input.facets,
+      updatedAt: now
+    })
+    .onConflictDoUpdate({
+      target: composerCardQueryCaches.cacheKey,
+      set: {
+        scope: input.scope,
+        fingerprint: input.fingerprint,
+        page: input.page,
+        pageSize: input.pageSize,
+        totalCards: input.totalCards,
+        windowStart: input.windowStart,
+        windowEnd: input.windowEnd,
+        cardIds: input.cardIds,
+        facets: input.facets,
+        updatedAt: now
+      }
+    })
+    .returning();
+
+  return composerCardQueryCacheFromRow(row);
+}
+
+export async function getComposerCardQueryCache(
+  database: AstraDb,
+  cacheKey: string
+): Promise<ComposerCardQueryCacheRecord | null> {
+  const [row] = await database
+    .select()
+    .from(composerCardQueryCaches)
+    .where(eq(composerCardQueryCaches.cacheKey, cacheKey))
+    .limit(1);
+
+  return row ? composerCardQueryCacheFromRow(row) : null;
+}
+
+export async function upsertComposerQueueDraft(
+  database: AstraDb,
+  input: ComposerQueueDraftInput
+): Promise<ComposerQueueDraftRecord> {
+  const now = new Date();
+  const id = input.id ?? `composer_queue_draft:${input.operatorKey}:${input.scope}`;
+  const [row] = await database
+    .insert(composerQueueDrafts)
+    .values({
+      id,
+      operatorKey: input.operatorKey,
+      scope: input.scope,
+      status: input.status ?? "draft",
+      targetUserId: input.targetUserId ?? null,
+      selectedCards: input.selectedCards,
+      queueStates: input.queueStates,
+      decisionNotes: input.decisionNotes,
+      queryCacheKeys: input.queryCacheKeys ?? [],
+      lastPlanId: input.lastPlanId ?? null,
+      lastPlanSummary: input.lastPlanSummary ?? {},
+      updatedAt: now
+    })
+    .onConflictDoUpdate({
+      target: [composerQueueDrafts.operatorKey, composerQueueDrafts.scope],
+      set: {
+        id,
+        operatorKey: input.operatorKey,
+        scope: input.scope,
+        status: input.status ?? "draft",
+        targetUserId: input.targetUserId ?? null,
+        selectedCards: input.selectedCards,
+        queueStates: input.queueStates,
+        decisionNotes: input.decisionNotes,
+        queryCacheKeys: input.queryCacheKeys ?? [],
+        lastPlanId: input.lastPlanId ?? null,
+        lastPlanSummary: input.lastPlanSummary ?? {},
+        updatedAt: now
+      }
+    })
+    .returning();
+
+  return composerQueueDraftFromRow(row);
+}
+
+export async function getComposerQueueDraft(
+  database: AstraDb,
+  input: { operatorKey: string; scope: string }
+): Promise<ComposerQueueDraftRecord | null> {
+  const [row] = await database
+    .select()
+    .from(composerQueueDrafts)
+    .where(and(eq(composerQueueDrafts.operatorKey, input.operatorKey), eq(composerQueueDrafts.scope, input.scope)))
+    .limit(1);
+
+  return row ? composerQueueDraftFromRow(row) : null;
+}
+
+export async function deleteComposerQueueDraft(
+  database: AstraDb,
+  input: { operatorKey: string; scope: string }
+): Promise<void> {
+  await database.delete(composerQueueDrafts).where(and(eq(composerQueueDrafts.operatorKey, input.operatorKey), eq(composerQueueDrafts.scope, input.scope)));
+}
+
+export async function upsertComposerQueuePublishPlan(
+  database: AstraDb,
+  input: ComposerQueuePublishPlanInput
+): Promise<ComposerQueuePublishPlanRecord> {
+  const now = new Date();
+  const [row] = await database
+    .insert(composerQueuePublishPlans)
+    .values({
+      id: input.id,
+      operatorKey: input.operatorKey,
+      scope: input.scope,
+      draftId: input.draftId ?? null,
+      targetUserId: input.targetUserId,
+      status: input.status ?? "prepared",
+      summary: input.summary,
+      issues: input.issues,
+      items: input.items,
+      selectedCardIds: input.selectedCardIds,
+      queryCacheKeys: input.queryCacheKeys ?? [],
+      updatedAt: now
+    })
+    .onConflictDoUpdate({
+      target: composerQueuePublishPlans.id,
+      set: {
+        operatorKey: input.operatorKey,
+        scope: input.scope,
+        draftId: input.draftId ?? null,
+        targetUserId: input.targetUserId,
+        status: input.status ?? "prepared",
+        summary: input.summary,
+        issues: input.issues,
+        items: input.items,
+        selectedCardIds: input.selectedCardIds,
+        queryCacheKeys: input.queryCacheKeys ?? [],
+        updatedAt: now
+      }
+    })
+    .returning();
+
+  return composerQueuePublishPlanFromRow(row);
+}
+
+export async function getComposerQueuePublishPlan(
+  database: AstraDb,
+  id: string
+): Promise<ComposerQueuePublishPlanRecord | null> {
+  const [row] = await database
+    .select()
+    .from(composerQueuePublishPlans)
+    .where(eq(composerQueuePublishPlans.id, id))
+    .limit(1);
+
+  return row ? composerQueuePublishPlanFromRow(row) : null;
+}
+
+export async function deleteComposerQueuePublishPlan(database: AstraDb, id: string): Promise<void> {
+  await database.delete(composerQueuePublishPlans).where(eq(composerQueuePublishPlans.id, id));
+}
+
+export async function upsertComposerLibraryAvailability(
+  database: AstraDb,
+  availability: ComposerAvailabilityResponse,
+  options: { source?: string; status?: string; metadata?: Record<string, unknown> } = {}
+): Promise<ComposerLibraryCollectionRecord> {
+  const now = new Date();
+  const collection = availability.collection;
+  await database.transaction(async (tx) => {
+    await tx
+      .insert(composerLibraryCollections)
+      .values({
+        id: collection.id,
+        kind: collection.kind,
+        title: collection.title,
+        description: collection.description,
+        status: options.status ?? "available",
+        source: options.source ?? "composer",
+        totalCards: collection.totalCards,
+        generatedAt: toDate(collection.generatedAt),
+        metadata: {
+          ...(options.metadata ?? {}),
+          request: availability.request
+        },
+        updatedAt: now
+      })
+      .onConflictDoUpdate({
+        target: composerLibraryCollections.id,
+        set: {
+          kind: collection.kind,
+          title: collection.title,
+          description: collection.description,
+          status: options.status ?? "available",
+          source: options.source ?? "composer",
+          totalCards: collection.totalCards,
+          generatedAt: toDate(collection.generatedAt),
+          metadata: {
+            ...(options.metadata ?? {}),
+            request: availability.request
+          },
+          updatedAt: now
+        }
+      });
+
+    await tx.delete(composerLibraryCollectionCards).where(eq(composerLibraryCollectionCards.collectionId, collection.id));
+    if (collection.cards.length) {
+      await tx.insert(composerLibraryCollectionCards).values(
+        collection.cards.map((card, index) => ({
+          id: `composer_library_card:${collection.id}:${card.id}`,
+          collectionId: collection.id,
+          cardId: card.id,
+          orderIndex: card.order ?? index,
+          ontologyType: card.ontologyType,
+          kind: card.kind,
+          status: card.status,
+          title: card.title,
+          body: card.body,
+          sectionId: card.sectionId ?? null,
+          sectionTitle: card.sectionTitle ?? null,
+          imageUrl: card.imageUrl ?? null,
+          tags: card.tags,
+          cardPayload: card,
+          updatedAt: now
+        }))
+      );
+    }
+  });
+
+  const saved = await getComposerLibraryCollection(database, collection.id);
+  if (!saved) throw new Error(`Composer library collection ${collection.id} was not saved.`);
+  return saved;
+}
+
+export async function getComposerLibraryCollection(database: AstraDb, id: string): Promise<ComposerLibraryCollectionRecord | null> {
+  const [row] = await database
+    .select()
+    .from(composerLibraryCollections)
+    .where(eq(composerLibraryCollections.id, id))
+    .limit(1);
+
+  return row ? composerLibraryCollectionFromRow(database, row) : null;
+}
+
+export async function deleteComposerLibraryCollection(database: AstraDb, id: string): Promise<void> {
+  await database.delete(composerLibraryCollections).where(eq(composerLibraryCollections.id, id));
 }
 
 export async function upsertSourceCard(database: AstraDb, input: SourceCard): Promise<SourceCard> {

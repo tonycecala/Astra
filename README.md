@@ -5,13 +5,20 @@ Astra Clean Start is a lean symbolic reader/account foundation.
 Local defaults:
 
 - Astra web: `http://localhost:3011`
-- Composer reserved: `http://localhost:3012`
+- Composer web: `http://localhost:3012`
 
 Useful commands:
 
 ```bash
 npm install
 npm run dev
+npm run dev:status
+npm run composer:dev
+npm run composer:up
+npm run composer:status
+npm run composer:restart
+npm run composer:stop
+npm run composer:logs
 npm run lint
 npm run typecheck
 npm run test
@@ -27,7 +34,9 @@ npm run db:reset:local -- --execute
 
 The first foundation intentionally uses seeded data and clean boundaries before extracting old Astria machinery.
 
-UI handles and route chrome live in `apps/astra-web/lib/i18n.ts`; route components should consume that dictionary instead of hardcoding navigation labels, headings, aria labels, or button text.
+For normal local review, use the durable launchers: `npm run dev:up` for Astra on `3011` and `npm run composer:up` for Composer on `3012`. Use `composer:dev` only for short foreground iteration. Durable status checks verify both the reserved port listener and a real route response.
+
+UI handles and route chrome live in app-local i18n dictionaries: `apps/astra-web/lib/i18n.ts` for Astra and `apps/composer-web/lib/i18n.ts` for Composer. Route components should consume those dictionaries instead of hardcoding navigation labels, headings, aria labels, status text, form labels, or button text.
 
 Database commands are dry-run by default where destructive or mutating behavior is involved. Point `ASTRA_DATABASE_URL` at a disposable local Postgres database before running mutating commands. `db:reset:local -- --execute` refuses non-local database hosts unless `ASTRA_ALLOW_DB_RESET=1` is set for a disposable database.
 

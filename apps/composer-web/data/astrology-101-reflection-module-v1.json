@@ -1,0 +1,204 @@
+{
+  "schemaVersion": "astra-composer-card-import-v1",
+  "title": "Astra Astrology 101 - Reflection Module",
+  "series": {
+    "id": "astra_astrology_101",
+    "title": "ASTRA Astrology 101",
+    "lane": "astrology_101",
+    "defaultDifficulty": "beginner"
+  },
+  "version": "0.3",
+  "notes": [
+    "Reflection module cards 61-66. Individually authored. Imported cards remain drafts until reviewed in Composer."
+  ],
+  "cards": [
+    {
+      "id": "astro101_061_reflection_what_pattern_keeps_returning",
+      "kind": "reflection",
+      "status": "draft",
+      "title": "Reflection: What Pattern Keeps Returning?",
+      "subtitle": "The first sign of awareness is noticing the repetition.",
+      "body": "Some patterns announce themselves loudly. Others return so quietly that they start to feel like personality, fate, or just ‘how life goes.’\n\nThink about a situation that seems to repeat in your life. It may be relational, emotional, creative, financial, or spiritual. Maybe you keep choosing the same kind of partner. Maybe you avoid the same kind of risk. Maybe you outgrow a role but keep performing it because other people expect it from you.\n\nAstrology becomes useful here because it gives pattern a symbolic shape. It does not say, ‘You are doomed to repeat this.’ It says, ‘Look here. Something keeps arranging itself this way.’\n\nTry naming the pattern without blaming yourself for it. Blame usually shuts down observation. Curiosity keeps the door open.\n\nA useful question: when this pattern begins, what is the first tiny signal? A feeling in the body? A familiar thought? A person you want to impress? A pressure to be useful, lovable, impressive, safe, or free?\n\nThe earlier you can recognize the beginning of a pattern, the more choice you have before it becomes the whole story.",
+      "excerpt": "Some patterns announce themselves loudly. Others return so quietly that they start to feel like personality, fate, or just ‘how life goes.’ Think about a situation that seems to repeat…",
+      "eyebrow": "Astrology 101 - Reflection Module",
+      "lane": "know_yourself",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 61,
+      "energy": [
+        "reflective",
+        "psychological"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_reflection",
+        "patterns",
+        "self_inquiry",
+        "awareness"
+      ],
+      "ctaLabel": "Save reflection",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course card hero image, a luminous spiral path returning through a subtle natal chart wheel, small constellation markers repeating along the path, reflective mythic atmosphere, electric aquarian line art, deep indigo and warm gold, premium contemplative editorial illustration, no text, no letters, no numbers."
+    },
+    {
+      "id": "astro101_062_reflection_where_do_you_over_identify",
+      "kind": "reflection",
+      "status": "draft",
+      "title": "Reflection: Where Do You Over-Identify?",
+      "subtitle": "A symbol can reveal you, but it should not imprison you.",
+      "body": "One quiet risk in astrology is over-identification. A person reads one placement, recognizes themselves in it, and then begins using it as a sealed identity.\n\n‘I’m just like this.’\n\n‘I can’t help it.’\n\n‘That’s my sign.’\n\nRecognition feels powerful, especially when a symbol names something you have carried for years without language. But the goal is not to trade one cage for a prettier one. A chart should widen self-understanding, not reduce your future to a label.\n\nChoose one astrological description that feels true about you. Then ask a second question: where has this description become too convenient?\n\nMaybe independence protects you from intimacy. Maybe sensitivity protects you from directness. Maybe practicality protects you from imagination. Maybe intensity protects you from ordinary trust.\n\nThe point is not to reject the symbol. The point is to hold it with enough space that growth can still happen.\n\nA placement can describe a tendency. It does not have to become a permanent excuse.",
+      "excerpt": "One quiet risk in astrology is over-identification. A person reads one placement, recognizes themselves in it, and then begins using it as a sealed identity. ‘I’m just like this.’ ‘I ca…",
+      "eyebrow": "Astrology 101 - Reflection Module",
+      "lane": "know_yourself",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 62,
+      "energy": [
+        "reflective",
+        "grounding"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_reflection",
+        "identity",
+        "free_will",
+        "self_awareness"
+      ],
+      "ctaLabel": "Save reflection",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course card hero image, a figure gently holding a glowing zodiac mask away from their face, starfield behind, subtle mirror geometry, electric aquarian line art, sophisticated symbolic psychology, luminous gold and indigo, premium mystical-modern illustration, no text, no letters, no numbers."
+    },
+    {
+      "id": "astro101_063_reflection_how_do_you_seek_safety",
+      "kind": "reflection",
+      "status": "draft",
+      "title": "Reflection: How Do You Seek Safety?",
+      "subtitle": "Every chart has strategies for protection, comfort, and control.",
+      "body": "People often talk about growth as if it means becoming bolder, freer, more expressive, or more powerful. But before growth, most people need to understand safety.\n\nThe chart can show many styles of protection. One person seeks safety through control. Another through charm. Another through distance. Another through usefulness, achievement, solitude, knowledge, humor, money, loyalty, or spiritual meaning.\n\nNone of these strategies are automatically wrong. Most began for a reason. At some point, they may have helped you stay steady, belong, survive disappointment, or avoid pain that felt too large to handle.\n\nThe deeper question is whether the old strategy still serves the life you are building now.\n\nWhere do you go when you feel uncertain? Do you explain? Withdraw? Perform? Fix? Research? Please? Attack? Disappear?\n\nTry to notice your first movement toward safety without judging it. That first movement often reveals a hidden architecture in the personality.\n\nAstrology becomes more compassionate when it helps you see protection before it asks you to change.",
+      "excerpt": "People often talk about growth as if it means becoming bolder, freer, more expressive, or more powerful. But before growth, most people need to understand safety. The chart can show man…",
+      "eyebrow": "Astrology 101 - Reflection Module",
+      "lane": "know_yourself",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 63,
+      "energy": [
+        "calming",
+        "reflective"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_reflection",
+        "safety",
+        "emotional_patterns",
+        "self_inquiry"
+      ],
+      "ctaLabel": "Save reflection",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course card hero image, a small illuminated sanctuary inside a circular birth chart, protective lunar glow, soft constellation architecture, mythic shelter feeling, electric aquarian line art, warm gold, violet, deep indigo, premium contemplative app artwork, no text, no letters, no numbers."
+    },
+    {
+      "id": "astro101_064_reflection_what_do_you_call_strength",
+      "kind": "reflection",
+      "status": "draft",
+      "title": "Reflection: What Do You Call Strength?",
+      "subtitle": "Different charts define courage in different ways.",
+      "body": "Strength does not look the same in every person.\n\nFor one person, strength means taking action before fear talks them out of it. For another, it means staying still long enough to feel the truth. For another, it means setting a boundary, telling the truth, asking for help, finishing the work, leaving the room, staying in the room, or choosing tenderness when pride wants armor.\n\nAstrology becomes interesting because each sign, planet, house, and aspect imagines strength differently. Mars may call strength decisive movement. Saturn may call it discipline. Venus may call it receptivity. The Moon may call it emotional honesty. Mercury may call it naming what is happening clearly.\n\nThink about the kind of strength you admire most. Then ask whether you actually practice that strength, or simply respect it from a distance.\n\nAlso ask what kind of strength you undervalue. Some people dismiss gentleness because it does not look dramatic. Others dismiss patience because it does not look powerful. Others dismiss joy because it does not look serious.\n\nYour definition of strength reveals a great deal about the life you are trying to become worthy of.",
+      "excerpt": "Strength does not look the same in every person. For one person, strength means taking action before fear talks them out of it. For another, it means staying still long enough to feel t…",
+      "eyebrow": "Astrology 101 - Reflection Module",
+      "lane": "know_yourself",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 64,
+      "energy": [
+        "reflective",
+        "activating"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_reflection",
+        "strength",
+        "values",
+        "self_inquiry"
+      ],
+      "ctaLabel": "Save reflection",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course card hero image, symbolic figure standing at the center of a subtle zodiac wheel, different planetary lights forming many kinds of strength around them, elegant mythic editorial style, electric aquarian line art, cinematic celestial glow, no text, no letters, no numbers."
+    },
+    {
+      "id": "astro101_065_reflection_where_do_relationships_reveal_you",
+      "kind": "reflection",
+      "status": "draft",
+      "title": "Reflection: Where Do Relationships Reveal You?",
+      "subtitle": "Other people often show us the parts we cannot see alone.",
+      "body": "Relationships are one of astrology’s most revealing classrooms. Not only romantic relationships — friendships, family bonds, creative partnerships, work alliances, rivalries, and even brief encounters can all show pieces of the chart in motion.\n\nIt is easy to know who you are in solitude. It is harder to know who you become when someone disappoints you, desires you, misunderstands you, needs you, praises you, competes with you, or asks more intimacy from you than you expected.\n\nThis is where astrology becomes less abstract. Venus is no longer just attraction. Mars is no longer just action. The Moon is no longer just feeling. Saturn is no longer just responsibility. In relationship, these symbols become lived behavior.\n\nThink of one recurring relationship pattern. Do you over-give? Test people? Avoid asking directly? Need admiration? Fear dependence? Rush closeness? Retreat when things become ordinary?\n\nThe point is not to accuse yourself. The point is to see the pattern with enough honesty that another choice becomes possible.\n\nA chart can describe relational instincts, but relationship itself reveals how conscious those instincts have become.",
+      "excerpt": "Relationships are one of astrology’s most revealing classrooms. Not only romantic relationships — friendships, family bonds, creative partnerships, work alliances, rivalries, and even b…",
+      "eyebrow": "Astrology 101 - Reflection Module",
+      "lane": "know_yourself",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 65,
+      "energy": [
+        "relational",
+        "reflective"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_reflection",
+        "relationships",
+        "venus",
+        "mars",
+        "patterns"
+      ],
+      "ctaLabel": "Save reflection",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course card hero image, two luminous figures connected by orbital lines inside a delicate chart wheel, Venus and Mars symbolism implied through light and motion, relational mirror atmosphere, electric aquarian line art, premium mystical-modern editorial illustration, no text, no letters, no numbers."
+    },
+    {
+      "id": "astro101_066_reflection_what_would_awareness_change",
+      "kind": "reflection",
+      "status": "draft",
+      "title": "Reflection: What Would Awareness Change?",
+      "subtitle": "Insight matters when it changes your next honest choice.",
+      "body": "Astrology can become beautiful, fascinating, and endlessly complex. It can also become another way to avoid making a clear choice.\n\nA person can study their chart for years and still not tell the truth, make the call, change the habit, rest the body, finish the project, forgive the old story, or stop giving power to a pattern they already understand.\n\nThis is why awareness matters more than information. Information says, ‘I know what this means.’ Awareness asks, ‘What changes because I know?’\n\nChoose one insight from Astrology 101 that feels personally relevant. It may involve a sign, planet, house, aspect, timing principle, or reflection question. Now bring it down to one practical level.\n\nWhat would you do differently this week if you honored that insight?\n\nNot dramatically. Not perfectly. Just honestly.\n\nMaybe you would pause before reacting. Ask a clearer question. Stop hiding behind competence. Make room for beauty. Finish one unfinished task. Rest without earning it. Admit what you want.\n\nThe chart may open the mirror. Your life answers through action.",
+      "excerpt": "Astrology can become beautiful, fascinating, and endlessly complex. It can also become another way to avoid making a clear choice. A person can study their chart for years and still not…",
+      "eyebrow": "Astrology 101 - Reflection Module",
+      "lane": "know_yourself",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 66,
+      "energy": [
+        "grounding",
+        "reflective"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_reflection",
+        "awareness",
+        "choice",
+        "integration",
+        "practice"
+      ],
+      "ctaLabel": "Save reflection",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course card hero image, an open celestial mirror reflecting a small practical path on earth beneath a star map, symbolic integration of sky and daily life, electric aquarian line art, warm gold and indigo, premium contemplative editorial illustration, no text, no letters, no numbers."
+    }
+  ]
+}

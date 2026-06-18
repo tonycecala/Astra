@@ -1,0 +1,302 @@
+{
+  "schemaVersion": "astra-composer-card-import-v1",
+  "title": "Astra Astrology 101 - Aspects Module",
+  "series": {
+    "id": "astra_astrology_101",
+    "title": "ASTRA Astrology 101",
+    "lane": "astrology_101",
+    "defaultDifficulty": "beginner"
+  },
+  "version": "0.3",
+  "notes": [
+    "Return valid JSON only. Imported cards remain drafts until reviewed in Composer.",
+    "Use artPrompt for image generation prompts. The importer also accepts image_prompt for loose external packs.",
+    "Use kind learning for lessons. The importer also accepts lesson and maps it to learning.",
+    "For ordered courses, include seriesId and seriesOrder on every card. Composer uses seriesOrder as durable lesson order metadata."
+  ],
+  "allowed": {
+    "energy": [
+      "grounding",
+      "activating",
+      "reflective",
+      "relational",
+      "instructional",
+      "calming",
+      "mystical",
+      "mythic",
+      "practical",
+      "cosmic",
+      "playful"
+    ],
+    "difficulty": [
+      "beginner",
+      "beginner_plus",
+      "intermediate"
+    ],
+    "kind": [
+      "welcome",
+      "reflection",
+      "zodiac",
+      "planet",
+      "house",
+      "portrait",
+      "profile",
+      "report_continue",
+      "portrait_gallery",
+      "person",
+      "learning",
+      "timing",
+      "bridge",
+      "question",
+      "quiz",
+      "test",
+      "certification",
+      "faceoff",
+      "offer",
+      "gift",
+      "system"
+    ]
+  },
+  "cards": [
+    {
+      "id": "astro101_047_aspects_how_chart_parts_speak_to_each_other",
+      "kind": "learning",
+      "status": "draft",
+      "title": "Aspects: How Chart Parts Speak to Each Other",
+      "subtitle": "An aspect describes relationship, not a standalone trait.",
+      "body": "Aspects are one of the first places astrology becomes truly alive. A planet in a sign tells you something important. A planet in a house adds context. But an aspect shows how one part of the chart relates to another part.\n\nThis matters because people do not live as isolated traits. Desire talks to fear. Confidence negotiates with caution. Affection runs into independence. Ambition meets sensitivity. The chart becomes more human when its parts start speaking, arguing, supporting, interrupting, or amplifying one another.\n\nAn aspect is created by angular distance. In plain language, it describes how far apart two planets are in the circle of the chart. Certain distances carry traditional meanings because they create recognizable patterns of cooperation, friction, intensity, or awareness.\n\nA good astrologer does not read an aspect like a slogan. Venus square Saturn is not simply “bad at love.” Mars trine Jupiter is not automatically “successful.” The question is subtler: how do these two functions interact, and what kind of life experience does that interaction tend to produce?\n\nAspects remind us that a person may contain competing truths. One part may want closeness while another part protects independence. One part may seek recognition while another doubts whether visibility feels safe. The aspect does not erase either side. It shows the relationship between them.\n\nThis is why aspects often describe the living tension inside a person better than single placements do.",
+      "excerpt": "Aspects are one of the first places astrology becomes truly alive. A planet in a sign tells you something important. A planet in a house adds context. But an aspect shows how one p.",
+      "eyebrow": "Astrology 101 - Aspects Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 47,
+      "energy": [
+        "instructional",
+        "grounding"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_aspects",
+        "aspects",
+        "chart_synthesis"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Premium Astra course card artwork for Aspects: How Chart Parts Speak to Each Other. Vertical mobile hero image. Electric aquarian line art blended with mythic editorial illustration. Abstract natal chart geometry, fine luminous aspect lines between planetary points, layered constellations, deep indigo and soft gold atmosphere, elegant contemplative composition, no words, no letters, no numbers, no UI, symbolic and sophisticated."
+    },
+    {
+      "id": "astro101_048_conjunctions_when_two_functions_fuse",
+      "kind": "learning",
+      "status": "draft",
+      "title": "Conjunctions: When Two Functions Fuse",
+      "subtitle": "A conjunction intensifies whatever it joins.",
+      "body": "A conjunction happens when two planets stand close together in the chart. Symbolically, their functions become fused. They do not operate as strangers. They share a room, a microphone, and often the same emotional volume.\n\nConjunctions can feel powerful because the planets involved tend to reinforce one another. If Mercury and Mars are joined, thought and action may move quickly together. Words may come with force. Decisions may form rapidly. The mind may prefer directness over delay.\n\nBut intensity is not the same as maturity. A conjunction can create natural talent, but it can also create blind spots because the person may not easily separate the two functions. If the Moon is joined with Saturn, emotional life may become tied to responsibility, caution, or self-control. That can create steadiness, but it can also make vulnerability feel like something that must be earned.\n\nThe key question with a conjunction is not simply “what does each planet mean?” It is: what happens when these two parts of life act as one combined force?\n\nSome conjunctions feel like a gift the person can use early. Others feel like a knot that takes time to understand. Many are both.\n\nA conjunction concentrates energy. Awareness teaches that concentrated energy how to become useful rather than automatic.",
+      "excerpt": "A conjunction happens when two planets stand close together in the chart. Symbolically, their functions become fused. They do not operate as strangers. They share a room, a microph.",
+      "eyebrow": "Astrology 101 - Aspects Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 48,
+      "energy": [
+        "instructional",
+        "activating"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_aspects",
+        "aspects",
+        "conjunction"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Premium Astra course card artwork for Conjunctions: When Two Functions Fuse. Vertical mobile hero image. Electric aquarian line art blended with mythic editorial illustration. Abstract natal chart geometry, fine luminous aspect lines between planetary points, layered constellations, deep indigo and soft gold atmosphere, elegant contemplative composition, no words, no letters, no numbers, no UI, symbolic and sophisticated."
+    },
+    {
+      "id": "astro101_049_sextiles_opportunity_through_participation",
+      "kind": "learning",
+      "status": "draft",
+      "title": "Sextiles: Opportunity Through Participation",
+      "subtitle": "A sextile opens a door, but usually asks you to walk through it.",
+      "body": "A sextile is often described as a helpful aspect, but it is a quieter kind of helpfulness than most beginners expect. It does not usually arrive as a guaranteed outcome. It behaves more like an available opportunity.\n\nTwo planets in sextile can cooperate if the person participates. The potential may be there, but it often needs choice, curiosity, practice, or initiative before it becomes visible. This is why sextiles can be underestimated. They may not shout. They invite.\n\nFor example, Mercury sextile Venus may support pleasant speech, artistic thinking, diplomacy, or social ease. But the person still has to use the gift. If ignored, it may remain a soft possibility rather than a developed skill.\n\nSextiles often describe talents that grow through engagement. They can show where life becomes easier once someone notices the opening and takes it seriously. The ease is real, but it is not always dramatic.\n\nThis aspect teaches a useful lesson about astrology: supportive does not mean passive. Some of the best chart potentials require attention precisely because they feel natural enough to overlook.\n\nA sextile says: there is a door here. It may not force itself open. But if you reach for the handle, something can move.",
+      "excerpt": "A sextile is often described as a helpful aspect, but it is a quieter kind of helpfulness than most beginners expect. It does not usually arrive as a guaranteed outcome. It behaves.",
+      "eyebrow": "Astrology 101 - Aspects Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 49,
+      "energy": [
+        "instructional",
+        "playful"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_aspects",
+        "aspects",
+        "sextile"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Premium Astra course card artwork for Sextiles: Opportunity Through Participation. Vertical mobile hero image. Electric aquarian line art blended with mythic editorial illustration. Abstract natal chart geometry, fine luminous aspect lines between planetary points, layered constellations, deep indigo and soft gold atmosphere, elegant contemplative composition, no words, no letters, no numbers, no UI, symbolic and sophisticated."
+    },
+    {
+      "id": "astro101_050_squares_friction_that_builds_strength",
+      "kind": "learning",
+      "status": "draft",
+      "title": "Squares: Friction That Builds Strength",
+      "subtitle": "A square creates pressure that cannot be ignored forever.",
+      "body": "Squares have a difficult reputation, and for good reason: they often describe real friction. Two planets in square tend to operate at cross-purposes. One part of life pushes while another resists. The result can feel like pressure, irritation, conflict, or a repeating problem that refuses to disappear politely.\n\nBut squares are not simply “bad.” They are developmental. They generate movement because they make unconscious tension harder to ignore. A person with a strong square may not be allowed to stay vague about the issue forever. Life keeps asking for adjustment.\n\nA Venus-Mars square, for example, may create friction between affection and desire, harmony and assertion, attraction and conflict. The person may need to learn how to want something without turning connection into a battleground, or how to preserve closeness without suppressing honest desire.\n\nSquares often become more useful with age because the person gains language, skill, and self-observation. What begins as reactivity can become discipline. What begins as conflict can become creative force. What begins as repeated frustration can become a hard-won form of competence.\n\nA square is not a punishment in the chart. It is a place where life asks for integration through effort.\n\nThe friction is real. So is the strength it can build.",
+      "excerpt": "Squares have a difficult reputation, and for good reason: they often describe real friction. Two planets in square tend to operate at cross-purposes. One part of life pushes while.",
+      "eyebrow": "Astrology 101 - Aspects Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 50,
+      "energy": [
+        "reflective",
+        "activating"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_aspects",
+        "aspects",
+        "square"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Premium Astra course card artwork for Squares: Friction That Builds Strength. Vertical mobile hero image. Electric aquarian line art blended with mythic editorial illustration. Abstract natal chart geometry, fine luminous aspect lines between planetary points, layered constellations, deep indigo and soft gold atmosphere, elegant contemplative composition, no words, no letters, no numbers, no UI, symbolic and sophisticated."
+    },
+    {
+      "id": "astro101_051_trines_natural_flow_and_easy_access",
+      "kind": "learning",
+      "status": "draft",
+      "title": "Trines: Natural Flow and Easy Access",
+      "subtitle": "A trine shows what may come easily enough to miss.",
+      "body": "A trine is usually considered one of the smoother aspects. Two planets in trine tend to cooperate naturally. Their functions seem to understand each other without much negotiation, as if one part of the person already knows how to support another.\n\nThis can feel like ease, talent, trust, or flow. A Moon-Jupiter trine may support emotional generosity. A Mercury-Uranus trine may bring quick insight or unconventional thinking. A Sun-Mars trine may make action feel more directly connected to identity and vitality.\n\nBut ease has its own shadow. People do not always value what comes naturally. A trine can become underdeveloped because it does not demand attention the way a square does. The person may assume everyone has the same access, or may lean on the gift without refining it.\n\nTrines are beautiful when consciously used. They can show where life replenishes itself, where confidence grows without constant struggle, and where a person may possess an instinctive form of wisdom.\n\nThe question is not only “what flows?” It is also “what do you do with what flows?”\n\nA trine is not a certificate of superiority. It is a current. The art lies in learning how to sail it rather than sleep through it.",
+      "excerpt": "A trine is usually considered one of the smoother aspects. Two planets in trine tend to cooperate naturally. Their functions seem to understand each other without much negotiation,.",
+      "eyebrow": "Astrology 101 - Aspects Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 51,
+      "energy": [
+        "calming",
+        "grounding"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_aspects",
+        "aspects",
+        "trine"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Premium Astra course card artwork for Trines: Natural Flow and Easy Access. Vertical mobile hero image. Electric aquarian line art blended with mythic editorial illustration. Abstract natal chart geometry, fine luminous aspect lines between planetary points, layered constellations, deep indigo and soft gold atmosphere, elegant contemplative composition, no words, no letters, no numbers, no UI, symbolic and sophisticated."
+    },
+    {
+      "id": "astro101_052_oppositions_awareness_through_polarity",
+      "kind": "learning",
+      "status": "draft",
+      "title": "Oppositions: Awareness Through Polarity",
+      "subtitle": "An opposition teaches through the tension of two sides.",
+      "body": "An opposition happens when two planets face each other across the chart. Symbolically, this creates polarity. One side of life looks across at another side and says: you cannot ignore me.\n\nOppositions often involve projection. A person may identify strongly with one end of the aspect while meeting the other end through relationships, conflict, attraction, competition, or repeated outside circumstances. What feels like “other people” may eventually reveal something that also belongs to the self.\n\nFor example, Mars opposite Venus can bring tension between assertion and harmony, pursuit and receptivity, desire and cooperation. The person may swing between pushing too hard and yielding too much until a more conscious balance develops.\n\nOppositions can feel uncomfortable because they ask for both-and thinking. They rarely mature well through total victory of one side over the other. If one planet always wins, the other tends to return through symptoms, partners, resentment, or longing.\n\nThe gift of an opposition is perspective. It can teach someone to hold complexity, negotiate difference, and recognize that life often develops through relationship with what seems opposite.\n\nAn opposition is not just conflict. It is a mirror stretched across the chart.",
+      "excerpt": "An opposition happens when two planets face each other across the chart. Symbolically, this creates polarity. One side of life looks across at another side and says: you cannot ign.",
+      "eyebrow": "Astrology 101 - Aspects Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 52,
+      "energy": [
+        "reflective",
+        "relational"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_aspects",
+        "aspects",
+        "opposition"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Premium Astra course card artwork for Oppositions: Awareness Through Polarity. Vertical mobile hero image. Electric aquarian line art blended with mythic editorial illustration. Abstract natal chart geometry, fine luminous aspect lines between planetary points, layered constellations, deep indigo and soft gold atmosphere, elegant contemplative composition, no words, no letters, no numbers, no UI, symbolic and sophisticated."
+    },
+    {
+      "id": "astro101_053_orbs_why_exactness_matters",
+      "kind": "learning",
+      "status": "draft",
+      "title": "Orbs: Why Exactness Matters",
+      "subtitle": "The closer the aspect, the louder the conversation.",
+      "body": "An aspect does not have to be mathematically perfect to matter. Astrologers use the word orb to describe how close an aspect is to exact.\n\nIf two planets are exactly ninety degrees apart, the square is exact. If they are eighty-seven or ninety-three degrees apart, many astrologers may still read the square, depending on the planets involved and the system being used. The difference between exact and loose matters because closeness often changes intensity.\n\nA tight aspect usually speaks more loudly. It may feel central, immediate, and difficult to miss. A wider aspect may still matter, but it might operate more subtly, or become more noticeable when other chart factors repeat the same story.\n\nThis is one reason beginners can get overwhelmed by software-generated aspect lists. Not every listed aspect deserves equal interpretive weight. Some are central. Some are supporting details. Some may be technically present but not especially important in the overall reading.\n\nGood interpretation requires judgment. Exactness, planet importance, house placement, repetition, and life context all matter.\n\nOrbs teach an important discipline: astrology is not just collecting every possible symbol. It is learning which signals deserve attention.",
+      "excerpt": "An aspect does not have to be mathematically perfect to matter. Astrologers use the word orb to describe how close an aspect is to exact..",
+      "eyebrow": "Astrology 101 - Aspects Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 53,
+      "energy": [
+        "instructional",
+        "practical"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_aspects",
+        "aspects",
+        "orbs"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Premium Astra course card artwork for Orbs: Why Exactness Matters. Vertical mobile hero image. Electric aquarian line art blended with mythic editorial illustration. Abstract natal chart geometry, fine luminous aspect lines between planetary points, layered constellations, deep indigo and soft gold atmosphere, elegant contemplative composition, no words, no letters, no numbers, no UI, symbolic and sophisticated."
+    },
+    {
+      "id": "astro101_054_aspect_patterns_when_the_chart_becomes_a_conversation",
+      "kind": "learning",
+      "status": "draft",
+      "title": "Aspect Patterns: When the Chart Becomes a Conversation",
+      "subtitle": "Multiple aspects can form a larger story.",
+      "body": "Individual aspects matter, but charts often become most interesting when several aspects begin telling a larger story together.\n\nA single square may describe friction. A trine may describe ease. An opposition may describe polarity. But when several planets connect in a pattern, the chart begins to feel less like separate sentences and more like a conversation with recurring themes.\n\nThis is where astrology requires synthesis. You do not simply stack meanings. You listen for repetition. If multiple factors point toward independence, visibility, emotional reserve, or relational intensity, the reading gains confidence. If one symbol says something but nothing else supports it, the interpretation should remain lighter.\n\nAspect patterns also help explain why people can feel internally complex. One part of the chart may create urgency. Another offers restraint. A third seeks beauty. A fourth wants truth at any cost. The person lives inside the negotiation among these forces.\n\nFor beginners, the best practice is simple: do not rush to interpret everything. Start with the clearest aspects. Notice the repeated themes. Ask what keeps returning.\n\nA chart is not a pile of definitions. It is a symbolic ecosystem. Aspects show how the living parts communicate.",
+      "excerpt": "Individual aspects matter, but charts often become most interesting when several aspects begin telling a larger story together..",
+      "eyebrow": "Astrology 101 - Aspects Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 54,
+      "energy": [
+        "instructional",
+        "cosmic"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_aspects",
+        "aspects",
+        "chart_synthesis"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Premium Astra course card artwork for Aspect Patterns: When the Chart Becomes a Conversation. Vertical mobile hero image. Electric aquarian line art blended with mythic editorial illustration. Abstract natal chart geometry, fine luminous aspect lines between planetary points, layered constellations, deep indigo and soft gold atmosphere, elegant contemplative composition, no words, no letters, no numbers, no UI, symbolic and sophisticated."
+    }
+  ]
+}

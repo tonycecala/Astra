@@ -399,6 +399,127 @@ export const userFeedItems = pgTable(
   })
 );
 
+export const composerCardQueryCaches = pgTable(
+  "composer_card_query_caches",
+  {
+    cacheKey: text("cache_key").primaryKey(),
+    scope: text("scope").notNull(),
+    fingerprint: text("fingerprint").notNull(),
+    page: integer("page").notNull(),
+    pageSize: integer("page_size").notNull(),
+    totalCards: integer("total_cards").notNull(),
+    windowStart: integer("window_start").notNull(),
+    windowEnd: integer("window_end").notNull(),
+    cardIds: jsonb("card_ids").notNull().default(sql`'[]'::jsonb`),
+    facets: jsonb("facets").notNull().default(sql`'{}'::jsonb`),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    scopeIdx: index("composer_card_query_caches_scope_idx").on(table.scope, table.updatedAt),
+    fingerprintIdx: index("composer_card_query_caches_fingerprint_idx").on(table.fingerprint)
+  })
+);
+
+export const composerQueueDrafts = pgTable(
+  "composer_queue_drafts",
+  {
+    id: text("id").primaryKey(),
+    operatorKey: text("operator_key").notNull(),
+    scope: text("scope").notNull(),
+    status: text("status").notNull().default("draft"),
+    targetUserId: text("target_user_id"),
+    selectedCards: jsonb("selected_cards").notNull().default(sql`'{}'::jsonb`),
+    queueStates: jsonb("queue_states").notNull().default(sql`'{}'::jsonb`),
+    decisionNotes: jsonb("decision_notes").notNull().default(sql`'{}'::jsonb`),
+    queryCacheKeys: jsonb("query_cache_keys").notNull().default(sql`'[]'::jsonb`),
+    lastPlanId: text("last_plan_id"),
+    lastPlanSummary: jsonb("last_plan_summary").notNull().default(sql`'{}'::jsonb`),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    operatorScopeIdx: uniqueIndex("composer_queue_drafts_operator_scope_idx").on(table.operatorKey, table.scope),
+    statusIdx: index("composer_queue_drafts_status_idx").on(table.status, table.updatedAt)
+  })
+);
+
+export const composerQueuePublishPlans = pgTable(
+  "composer_queue_publish_plans",
+  {
+    id: text("id").primaryKey(),
+    operatorKey: text("operator_key").notNull(),
+    scope: text("scope").notNull(),
+    draftId: text("draft_id"),
+    targetUserId: text("target_user_id").notNull(),
+    status: text("status").notNull().default("prepared"),
+    summary: jsonb("summary").notNull().default(sql`'{}'::jsonb`),
+    issues: jsonb("issues").notNull().default(sql`'[]'::jsonb`),
+    items: jsonb("items").notNull().default(sql`'[]'::jsonb`),
+    selectedCardIds: jsonb("selected_card_ids").notNull().default(sql`'[]'::jsonb`),
+    queryCacheKeys: jsonb("query_cache_keys").notNull().default(sql`'[]'::jsonb`),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    operatorScopeIdx: index("composer_queue_publish_plans_operator_scope_idx").on(table.operatorKey, table.scope, table.updatedAt),
+    statusIdx: index("composer_queue_publish_plans_status_idx").on(table.status, table.updatedAt),
+    targetUserIdx: index("composer_queue_publish_plans_target_user_idx").on(table.targetUserId, table.updatedAt)
+  })
+);
+
+export const composerLibraryCollections = pgTable(
+  "composer_library_collections",
+  {
+    id: text("id").primaryKey(),
+    kind: text("kind").notNull(),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    status: text("status").notNull().default("available"),
+    source: text("source").notNull().default("composer"),
+    totalCards: integer("total_cards").notNull().default(0),
+    generatedAt: timestamp("generated_at", { withTimezone: true }).notNull(),
+    metadata: jsonb("metadata").notNull().default(sql`'{}'::jsonb`),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    kindStatusIdx: index("composer_library_collections_kind_status_idx").on(table.kind, table.status, table.updatedAt),
+    sourceIdx: index("composer_library_collections_source_idx").on(table.source, table.updatedAt)
+  })
+);
+
+export const composerLibraryCollectionCards = pgTable(
+  "composer_library_collection_cards",
+  {
+    id: text("id").primaryKey(),
+    collectionId: text("collection_id")
+      .notNull()
+      .references(() => composerLibraryCollections.id, { onDelete: "cascade" }),
+    cardId: text("card_id").notNull(),
+    orderIndex: integer("order_index").notNull(),
+    ontologyType: text("ontology_type").notNull(),
+    kind: text("kind").notNull(),
+    status: text("status").notNull(),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    sectionId: text("section_id"),
+    sectionTitle: text("section_title"),
+    imageUrl: text("image_url"),
+    tags: jsonb("tags").notNull().default(sql`'[]'::jsonb`),
+    cardPayload: jsonb("card_payload").notNull().default(sql`'{}'::jsonb`),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    collectionOrderIdx: uniqueIndex("composer_library_collection_cards_collection_order_idx").on(table.collectionId, table.orderIndex),
+    collectionCardIdx: uniqueIndex("composer_library_collection_cards_collection_card_idx").on(table.collectionId, table.cardId),
+    ontologyIdx: index("composer_library_collection_cards_ontology_idx").on(table.ontologyType, table.collectionId),
+    sectionIdx: index("composer_library_collection_cards_section_idx").on(table.collectionId, table.sectionId, table.orderIndex),
+    statusIdx: index("composer_library_collection_cards_status_idx").on(table.status, table.collectionId)
+  })
+);
+
 export const composerDecisions = pgTable(
   "composer_decisions",
   {

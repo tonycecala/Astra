@@ -1,0 +1,155 @@
+.astraPublishedCard {
+  min-height: 340px;
+  display: grid;
+  align-content: start;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(216, 177, 94, 0.13);
+  background: radial-gradient(circle at 12% 0, rgba(216, 177, 94, 0.06), transparent 34%), rgba(255, 255, 255, 0.035);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
+}
+
+html[data-astra-theme="day"] .astraPublishedCard,
+html[data-composer-theme="light"] .astraPublishedCard {
+  background: radial-gradient(circle at 12% 0, rgba(157, 110, 21, 0.08), transparent 34%), rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 34px rgba(64, 45, 25, 0.1);
+}
+
+.astraPublishedCard:focus-visible,
+.astraPublishedCard:hover,
+html[data-astra-theme="day"] .astraPublishedCard:focus-visible,
+html[data-astra-theme="day"] .astraPublishedCard:hover,
+html[data-composer-theme="light"] .astraPublishedCard:focus-visible,
+html[data-composer-theme="light"] .astraPublishedCard:hover {
+  border-color: rgba(216, 177, 94, 0.28);
+  background-color: rgba(255, 255, 255, 0.052);
+}
+
+.astraPublishedCardOpen {
+  width: 100%;
+  display: grid;
+  gap: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+button.astraPublishedCardOpen {
+  cursor: pointer;
+}
+
+.astraPublishedCardOpen:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--gold, #a66f2d) 55%, transparent);
+  outline-offset: -2px;
+}
+
+.astraPublishedCardContent {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px 14px 12px;
+}
+
+.astraPublishedCardHeader {
+  display: grid;
+  gap: 4px;
+}
+
+.astraPublishedCardEyebrow {
+  margin: 0;
+  color: var(--muted, #625a50);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astraPublishedCardTitle,
+.astraPublishedCardBody {
+  display: block;
+}
+
+.astraPublishedCardTitle {
+  margin-top: 4px;
+  color: color-mix(in srgb, var(--gold, #a66f2d) 80%, var(--ink, #171412));
+  font-size: clamp(1.18rem, 2.4vw, 1.55rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.astraPublishedCardBody {
+  margin-top: 10px;
+  color: var(--muted, #625a50);
+  line-height: 1.5;
+}
+
+.astraPublishedCardBodyWrap {
+  display: grid;
+  gap: 4px;
+}
+
+.astraPublishedCardBody-clamped {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.astraPublishedCardReadMore {
+  display: inline-flex;
+  justify-self: start;
+  border: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--gold, #a66f2d) 88%, var(--ink, #171412));
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 800;
+  padding: 0;
+}
+
+.astraPublishedCardReadMore:hover,
+.astraPublishedCardReadMore:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.astraPublishedCardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.astraPublishedCardMeta span {
+  border: 1px solid var(--line, #ded8ce);
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: var(--muted, #625a50);
+  background: var(--soft, #f4efe6);
+  font-size: 12px;
+}
+
+.astraPublishedCardMedia {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  min-height: 168px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: #19172b;
+  background-position: center;
+  background-size: cover;
+}
+
+.astraPublishedCardImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}

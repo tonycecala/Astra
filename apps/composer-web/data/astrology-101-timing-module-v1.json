@@ -1,0 +1,196 @@
+{
+  "schemaVersion": "astra-composer-card-import-v1",
+  "title": "Astra Astrology 101 - Timing Module",
+  "series": {
+    "id": "astra_astrology_101",
+    "title": "ASTRA Astrology 101",
+    "lane": "astrology_101",
+    "defaultDifficulty": "beginner"
+  },
+  "version": "0.3",
+  "notes": [
+    "Timing module cards 55-60. Individually authored. Imported cards remain drafts until reviewed in Composer."
+  ],
+  "cards": [
+    {
+      "id": "astro101_055_transits_are_weather_not_orders",
+      "kind": "timing",
+      "status": "draft",
+      "title": "Transits Are Weather, Not Orders",
+      "subtitle": "Timing describes conditions. It does not remove choice.",
+      "body": "A transit happens when a planet moving through the sky forms a meaningful relationship to something in your birth chart. This is one of the main ways astrologers talk about timing.\n\nA helpful way to think about transits is weather. Rain does not decide what kind of person you are, but it does change the conditions around you. You may bring an umbrella, delay a trip, plant seeds, stay inside, or go outside anyway because the moment calls for it.\n\nAstrological timing works best when held with that same practical humility. A transit can describe pressure, opportunity, friction, review, expansion, or release. It does not dictate the only possible outcome.\n\nThis distinction matters. When timing gets treated as fate, people surrender responsibility. When timing gets treated as information, people become more observant.\n\nThe question is not, ‘What will happen to me?’\n\nA better question is, ‘What kind of season am I in, and what would wisdom look like inside it?’",
+      "excerpt": "Transits describe symbolic weather. They show conditions, not commandments.",
+      "eyebrow": "Astrology 101 - Timing Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 55,
+      "energy": [
+        "instructional",
+        "grounding"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_timing",
+        "transits",
+        "timing"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course card hero image, symbolic celestial weather over a subtle natal chart wheel, fine electric aquarian line art, luminous clouds, small planets moving across elegant orbital arcs, warm gold and deep indigo, premium mystical-modern editorial illustration, no text, no letters, no numbers."
+    },
+    {
+      "id": "astro101_056_cycles_make_growth_visible",
+      "kind": "timing",
+      "status": "draft",
+      "title": "Cycles Make Growth Visible",
+      "subtitle": "Astrology often teaches through recurrence.",
+      "body": "One reason astrology feels useful to many people is that it gives language to cycles. Life rarely moves in a perfectly straight line. Themes return, but they do not always return in the same form.\n\nYou may meet the same kind of relationship lesson at different ages. You may face the same question about courage, work, grief, ambition, trust, or belonging with more maturity than you had the first time.\n\nA cycle does not mean you failed because something came back. Sometimes recurrence means the subject has reached a deeper layer. The first pass may reveal the pattern. The second may reveal the cost. The third may show you what freedom requires.\n\nThis is where astrology can become less theatrical and more useful. It helps you notice the difference between repetition and development.\n\nRepeating a lesson unconsciously feels like being trapped in the same room.\n\nMeeting it with awareness feels more like finding another door.",
+      "excerpt": "A cycle returning does not always mean regression. Sometimes it means the lesson has deepened.",
+      "eyebrow": "Astrology 101 - Timing Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 56,
+      "energy": [
+        "reflective",
+        "calming"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_timing",
+        "cycles",
+        "growth"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra symbolic education artwork, spiral of seasons encircling a delicate chart wheel, recurring lunar phases and tiny constellation markers, contemplative luminous atmosphere, fine line art with soft gold accents, mythic but grounded, vertical mobile card, no text, no letters, no numbers."
+    },
+    {
+      "id": "astro101_057_retrogrades_invite_review",
+      "kind": "timing",
+      "status": "draft",
+      "title": "Retrogrades Invite Review",
+      "subtitle": "Backward motion is symbolic, not catastrophic.",
+      "body": "A retrograde happens when a planet appears to move backward from our point of view on Earth. The planet is not literally reversing through space. The apparent reversal comes from perspective and orbital motion.\n\nSymbolically, astrology treats retrogrades as periods of review, return, revision, and reorientation. This does not mean everything collapses. It means the usual forward rhythm may become less direct.\n\nMercury retrograde, for example, became famous because Mercury relates to communication, logistics, writing, travel, messages, and ordinary coordination. During such periods, people often find value in slowing down, checking details, revisiting assumptions, and not treating every delay as an omen of doom.\n\nThe healthier interpretation is not panic.\n\nIt is attention.\n\nRetrogrades ask a simple human question: what needs another look before you keep moving?",
+      "excerpt": "Retrogrades are not cosmic punishment. They are symbolic invitations to review.",
+      "eyebrow": "Astrology 101 - Timing Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 57,
+      "energy": [
+        "instructional",
+        "reflective"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_timing",
+        "retrograde",
+        "mercury"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Elegant Astra course card image of a planet on an orbital path appearing to loop backward, clean celestial diagram aesthetic without labels, luminous graphite and gold linework, soft starfield, calm intelligent mood, no text, no letters, no numbers."
+    },
+    {
+      "id": "astro101_058_the_moon_teaches_short_cycles",
+      "kind": "timing",
+      "status": "draft",
+      "title": "The Moon Teaches Short Cycles",
+      "subtitle": "Not every timing pattern takes years to notice.",
+      "body": "The Moon gives astrology one of its most accessible timing lessons because its cycle is visible and relatively quick. It grows, becomes full, fades, disappears, and begins again.\n\nThat rhythm is simple enough to observe without advanced technique. New Moons often get associated with beginnings, seeds, quiet intentions, and the first movement of a theme. Full Moons often bring visibility, culmination, heightened feeling, or a moment when something becomes harder to ignore.\n\nYou do not need to make the Moon dramatic for it to be useful. The point is not that every lunar phase controls your life. The point is that attention to rhythm can change how you relate to time.\n\nSome days favor beginning.\n\nSome days favor seeing clearly.\n\nSome days favor releasing what has already completed its work.\n\nThe Moon teaches that change does not have to be random to remain mysterious.",
+      "excerpt": "The Moon makes timing visible through growth, fullness, release, and return.",
+      "eyebrow": "Astrology 101 - Timing Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 58,
+      "energy": [
+        "calming",
+        "cosmic"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner",
+        "module_timing",
+        "moon",
+        "lunar_cycle"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra mystical-modern course artwork showing lunar phases arcing above a quiet landscape and faint chart wheel, soft silver glow with gold constellation details, poetic but clean, vertical mobile hero image, no text, no letters, no numbers."
+    },
+    {
+      "id": "astro101_059_timing_needs_context",
+      "kind": "timing",
+      "status": "draft",
+      "title": "Timing Needs Context",
+      "subtitle": "One transit never tells the whole story.",
+      "body": "A common beginner mistake is taking one transit, one Moon phase, or one planetary keyword and treating it as the entire explanation for life. Astrology becomes unreliable when used that way.\n\nTiming always needs context. The same transit can feel different depending on the natal chart, the person’s age, choices, responsibilities, relationships, health, resources, and current circumstances.\n\nFor one person, a Saturn transit may feel like pressure and limitation. For another, it may describe structure, discipline, sobriety, and the satisfaction of finally taking something seriously. For another, it may bring both at once.\n\nThis is why good interpretation resists dramatic shortcuts.\n\nA symbol gains meaning from relationship: to the chart, to the moment, to the person, and to reality.\n\nAstrology should sharpen discernment, not replace it with cosmic certainty.",
+      "excerpt": "A timing symbol becomes meaningful only when interpreted in context.",
+      "eyebrow": "Astrology 101 - Timing Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 59,
+      "energy": [
+        "practical",
+        "instructional"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_timing",
+        "context",
+        "interpretation"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Premium Astra astrology education illustration, layered translucent chart wheels over a human silhouette and horizon line, symbols connected by fine luminous threads, context and perspective theme, sophisticated editorial celestial style, no text, no letters, no numbers."
+    },
+    {
+      "id": "astro101_060_timing_as_participation",
+      "kind": "timing",
+      "status": "draft",
+      "title": "Timing Is Participation",
+      "subtitle": "The question is how you meet the moment.",
+      "body": "The deepest value of astrological timing is not knowing exactly what will happen next. That promise is too small, too brittle, and too easy to misuse.\n\nThe better use is participation. Timing asks you to notice the quality of the moment and respond with more awareness than habit.\n\nIf a period emphasizes review, you can slow down and listen. If it emphasizes action, you can move with courage rather than panic. If it emphasizes pressure, you can build structure instead of only resenting the weight. If it emphasizes endings, you can ask what has completed its purpose.\n\nThis keeps astrology adult. It does not make the planets responsible for your life. It makes timing one more language for reflection, preparation, and choice.\n\nThe sky may describe the season.\n\nYou still decide how to walk through it.",
+      "excerpt": "Astrological timing works best when it supports wiser participation in the moment.",
+      "eyebrow": "Astrology 101 - Timing Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 60,
+      "energy": [
+        "grounding",
+        "reflective"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_timing",
+        "participation",
+        "free_will"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Astra course hero image, figure walking under a vast symbolic sky with planetary arcs and constellations, path through changing seasons, luminous gold and indigo electric line art, reflective and empowering mood, no text, no letters, no numbers."
+    }
+  ]
+}

@@ -1,0 +1,220 @@
+{
+  "pack_id": "astra_astrology_101_first_12_cards_v0_2",
+  "title": "Astra Astrology 101 — First 12 Cards",
+  "version": "0.2",
+  "created_for": "Codex production and evaluation",
+  "notes": [
+    "Each card includes a gpt-image-v2-ready image_prompt.",
+    "Prompts are square 1:1 and include no text/logo/UI constraints.",
+    "Energy field is present. Difficulty intentionally omitted for later."
+  ],
+  "cards": [
+    {
+      "id": "astro101_001",
+      "title": "Astrology Is a Language of Patterns",
+      "kind": "lesson",
+      "lane": "astrology_101",
+      "energy": [
+        "grounding",
+        "instructional"
+      ],
+      "tags": [
+        "astrology teaching",
+        "know yourself",
+        "symbolic intelligence",
+        "beginner"
+      ],
+      "body": "Astrology is not really about predicting doom, assigning destiny, or putting people into tiny personality boxes.\n\nAt its best, astrology works more like a symbolic language — a way of describing patterns that already exist inside human experience.\n\nSome people discover parts of themselves through therapy. Others through religion, philosophy, art, relationships, or long conversations late at night. Astrology belongs to that same family of mirrors.\n\nA birth chart does not erase free will. It does not tell you who you must become. It simply describes recurring tendencies, tensions, strengths, instincts, and ways of responding to life.\n\nA placement is not a verdict.\n\nIt is a question.",
+      "image_prompt": "Create a square 1:1 Astra Academy lesson-card image for “Astrology Is a Language of Patterns.” Visualize a luminous circular birth-chart diagram as a symbolic language map, with fine constellation lines, soft handwritten glyph marks, and a calm human silhouette looking into a mirror made of stars. Mood: grounding, intelligent, contemplative. Style: lucid dream-real, elegant editorial mysticism, refined celestial design, warm dark-indigo-to-gold atmosphere, not horror, not occult cliché, not cartoon. No readable text, no logos, no UI, no watermark."
+    },
+    {
+      "id": "astro101_002",
+      "title": "The Sky Was Once the Original Clock",
+      "kind": "lesson",
+      "lane": "astrology_101",
+      "energy": [
+        "grounding",
+        "mythic"
+      ],
+      "tags": [
+        "astrology teaching",
+        "celestial",
+        "learn the sky",
+        "beginner"
+      ],
+      "body": "Long before smartphones, calendars, or electric lights, people watched the sky carefully because survival depended on it.\n\nThe stars marked seasons. The Moon shaped tides and planting cycles. The Sun determined work, migration, harvests, and rest.\n\nAstrology emerged from thousands of years of humans noticing that life seemed to move in rhythms.\n\nThe ancient idea was not:\n“The planets force things to happen.”\n\nIt was closer to:\n“Life above and life below appear connected through timing and pattern.”\n\nWhether someone believes astrology is symbolic, spiritual, psychological, or poetic, the foundation begins with attention.\n\nHuman beings looked upward for a very long time before they looked down at screens.",
+      "image_prompt": "Create a square 1:1 Astra Academy lesson-card image for “The Sky Was Once the Original Clock.” Show an ancient horizon under a clear night sky, with the Moon, bright stars, seasonal constellations, and subtle sundial/calendar geometry integrated into the landscape. Include a small human figure watching the sky with reverence. Mood: mythic, grounding, ancient, observational. Style: lucid dream-real, cinematic but calm, refined celestial editorial illustration, warm starlight, no readable text, no logos, no UI, no watermark."
+    },
+    {
+      "id": "astro101_003",
+      "title": "Your Sun Sign Is Only One Small Piece",
+      "kind": "lesson",
+      "lane": "astrology_101",
+      "energy": [
+        "instructional",
+        "grounding"
+      ],
+      "tags": [
+        "zodiac teaching",
+        "beginner",
+        "sun sign",
+        "know yourself"
+      ],
+      "body": "Most people know their Sun sign.\n\nThat is the sign astrology places the Sun in at the moment you were born. It matters — but it is only one part of a much larger picture.\n\nA full birth chart includes:\n- planets\n- signs\n- houses\n- angles\n- aspects\n- timing cycles\n\nTwo people can share the same Sun sign and still feel completely different from each other.\n\nOne Cancer may feel quiet and protective.\n\nAnother may feel ambitious, sharp, and intensely public-facing.\n\nThe chart becomes interesting when the pieces begin interacting with each other rather than standing alone.\n\nAstrology gets deeper the moment you stop asking:\n“What sign am I?”\n\nand begin asking:\n“How do all these parts work together?”",
+      "image_prompt": "Create a square 1:1 Astra Academy lesson-card image for “Your Sun Sign Is Only One Small Piece.” Show a radiant Sun glyph as one jewel in a larger intricate celestial mandala containing planets, houses, angles, and aspect lines. The Sun should be important but visibly only one part of the whole system. Mood: clear, educational, elegant, expansive. Style: lucid dream-real, refined celestial interface aesthetic without looking like SaaS, soft gold and midnight tones, no readable text, no logos, no UI, no watermark."
+    },
+    {
+      "id": "astro101_004",
+      "title": "The Zodiac Is a Circle of Perspectives",
+      "kind": "lesson",
+      "lane": "astrology_101",
+      "energy": [
+        "instructional",
+        "reflective"
+      ],
+      "tags": [
+        "zodiac teaching",
+        "symbols",
+        "astrology teaching"
+      ],
+      "body": "The zodiac is divided into twelve signs, but the signs are not “good” or “bad.”\n\nEach one represents a different way of approaching life.\n\nAries pushes forward.\n\nTaurus stabilizes.\n\nGemini explores.\n\nCancer protects.\n\nLeo expresses.\n\nVirgo refines.\n\nLibra balances.\n\nScorpio penetrates.\n\nSagittarius searches.\n\nCapricorn structures.\n\nAquarius questions.\n\nPisces dissolves.\n\nEvery person contains multiple signs in their chart. Astrology becomes much more useful when you stop treating signs like stereotypes and start seeing them as different modes of consciousness.\n\nSometimes life asks for courage.\n\nSometimes patience.\n\nSometimes honesty.\n\nSometimes surrender.\n\nThe zodiac is less like a ranking system and more like a wheel of human experience.",
+      "image_prompt": "Create a square 1:1 Astra Academy lesson-card image for “The Zodiac Is a Circle of Perspectives.” Show twelve distinct symbolic windows arranged in a luminous zodiac wheel, each suggesting a different human posture or life perspective without using readable labels. The wheel should feel inclusive, balanced, and alive rather than stereotyped. Mood: reflective, instructional, humane. Style: lucid dream-real, elegant mythic-cosmic editorial art, subtle zodiac glyph motifs allowed but no readable text, no logos, no UI, no watermark."
+    },
+    {
+      "id": "astro101_005",
+      "title": "Planets Describe Functions Inside the Psyche",
+      "kind": "lesson",
+      "lane": "astrology_101",
+      "energy": [
+        "instructional",
+        "grounding"
+      ],
+      "tags": [
+        "planet teaching",
+        "beginner",
+        "psychology"
+      ],
+      "body": "In astrology, planets are not merely physical objects in the sky.\n\nThey also symbolize functions inside human life.\n\nThe Moon relates to emotional experience.\n\nMercury relates to thought and communication.\n\nVenus relates to attraction and connection.\n\nMars relates to action and desire.\n\nSaturn relates to structure, pressure, and responsibility.\n\nThe planets do not remove individuality. They describe recurring human experiences that show up differently from person to person.\n\nYou do not “become” Mars or Venus.\n\nYou already contain those functions.\n\nAstrology simply gives language to them.",
+      "image_prompt": "Create a square 1:1 Astra Academy lesson-card image for “Planets Describe Functions Inside the Psyche.” Show several planets orbiting around or within a translucent human head/heart silhouette, each planet connected to a subtle psychological symbol: emotion, speech, attraction, action, structure. Mood: intelligent, grounded, psychologically rich. Style: lucid dream-real, refined celestial psychology illustration, soft luminous lines, no creepy anatomy, no readable text, no logos, no UI, no watermark."
+    },
+    {
+      "id": "astro101_006",
+      "title": "Houses Describe Where Life Happens",
+      "kind": "lesson",
+      "lane": "astrology_101",
+      "energy": [
+        "instructional",
+        "grounding"
+      ],
+      "tags": [
+        "house teaching",
+        "astrology teaching",
+        "beginner"
+      ],
+      "body": "If signs describe style, and planets describe functions, houses describe areas of life.\n\nOne house relates to identity.\n\nAnother to relationships.\n\nAnother to work, home, creativity, friendship, resources, or inner life.\n\nThink of houses as stages where planetary energies express themselves.\n\nFor example:\n\nMars in one house may fight publicly.\n\nIn another, it may fight internally.\n\nIn another, it may become competitive in career or leadership.\n\nThe same planetary function changes depending on where it operates.\n\nThis is one reason astrology becomes richer the deeper you study it:\ncontext changes meaning.",
+      "image_prompt": "Create a square 1:1 Astra Academy lesson-card image for “Houses Describe Where Life Happens.” Visualize a circular astrological chart as a beautiful twelve-room house or theater, with subtle scenes for identity, home, work, relationship, creativity, friendship, and inner life. A small red Mars-like spark appears in one room to imply context changes expression. Mood: clear, grounded, architectural, symbolic. Style: lucid dream-real, elegant celestial architecture, no readable text, no logos, no UI, no watermark."
+    },
+    {
+      "id": "astro101_007",
+      "title": "Astrology Becomes Interesting Through Contradiction",
+      "kind": "reflection",
+      "lane": "know_yourself",
+      "energy": [
+        "reflective",
+        "introspective"
+      ],
+      "tags": [
+        "reflection",
+        "know yourself",
+        "psychological"
+      ],
+      "body": "One of the strangest parts of astrology is that people often recognize opposite traits inside themselves.\n\nSomeone may crave stability and freedom simultaneously.\n\nAnother may want intimacy while also fearing vulnerability.\n\nA person may appear confident socially while privately doubting themselves constantly.\n\nAstrology becomes more realistic when it allows contradiction instead of flattening people into one clean personality type.\n\nHuman beings are layered.\n\nMost charts are not simple.\n\nMost lives are not either.",
+      "image_prompt": "Create a square 1:1 Astra Academy reflection-card image for “Astrology Becomes Interesting Through Contradiction.” Show a layered human portrait made of transparent overlapping celestial masks or reflections: one calm, one bold, one uncertain, one free. Integrate gentle chart lines and opposing constellations without making the image dark or fractured. Mood: introspective, humane, psychologically nuanced. Style: lucid dream-real, refined symbolic portraiture, soft depth, no readable text, no logos, no UI, no watermark."
+    },
+    {
+      "id": "astro101_008",
+      "title": "Elements Describe Temperament",
+      "kind": "lesson",
+      "lane": "astrology_101",
+      "energy": [
+        "instructional",
+        "grounding"
+      ],
+      "tags": [
+        "elements",
+        "zodiac teaching",
+        "beginner"
+      ],
+      "body": "The zodiac signs are grouped into four elements:\n- fire\n- earth\n- air\n- water\n\nFire signs tend toward action, momentum, and expression.\n\nEarth signs often focus on stability, practicality, and tangible results.\n\nAir signs emphasize ideas, language, systems, and connection.\n\nWater signs move through emotion, intuition, memory, and sensitivity.\n\nMost people contain a mixture of elements.\n\nSometimes balance exists naturally.\n\nSometimes one element dominates while another feels underdeveloped.\n\nAstrology can become surprisingly practical when viewed this way.\n\nA chart heavy in air may need grounding.\n\nA chart heavy in earth may need inspiration.\n\nThe imbalance itself often becomes part of the story.",
+      "image_prompt": "Create a square 1:1 Astra Academy lesson-card image for “Elements Describe Temperament.” Show four elemental forces — fire, earth, air, and water — arranged as balanced quadrants around a subtle zodiac circle. Each element should feel like a temperament: motion, stability, thought, feeling. Mood: clear, elegant, practical, symbolic. Style: lucid dream-real, refined elemental-celestial art, luminous but not flashy, no readable text, no logos, no UI, no watermark."
+    },
+    {
+      "id": "astro101_009",
+      "title": "Aspects Describe Relationship Between Parts",
+      "kind": "lesson",
+      "lane": "astrology_101",
+      "energy": [
+        "instructional",
+        "reflective"
+      ],
+      "tags": [
+        "aspects",
+        "astrology teaching",
+        "beginner"
+      ],
+      "body": "Astrology is not only about individual placements.\n\nIt is also about relationship.\n\nAspects describe how different parts of the chart interact with each other.\n\nSometimes two functions cooperate naturally.\n\nSometimes they create tension.\n\nSometimes they pull life in conflicting directions until greater awareness develops.\n\nThis matters because people are rarely defined by one trait alone.\n\nA person may think quickly but struggle emotionally.\n\nAnother may love deeply but fear commitment.\n\nAnother may appear calm while carrying enormous internal pressure.\n\nThe chart becomes alive through interaction.\n\nJust like people do.",
+      "image_prompt": "Create a square 1:1 Astra Academy lesson-card image for “Aspects Describe Relationship Between Parts.” Show a celestial chart with several planetary points connected by luminous geometric lines: some harmonious curves, some tense angular lines. The image should imply conversation, friction, and cooperation between inner parts. Mood: reflective, instructional, relational. Style: lucid dream-real, elegant sacred-geometry-meets-psychology aesthetic, no readable text, no logos, no UI, no watermark."
+    },
+    {
+      "id": "astro101_010",
+      "title": "A Birth Chart Is a Snapshot of Timing",
+      "kind": "lesson",
+      "lane": "astrology_101",
+      "energy": [
+        "grounding",
+        "celestial"
+      ],
+      "tags": [
+        "natal chart",
+        "timing",
+        "beginner"
+      ],
+      "body": "A birth chart is created using:\n- date\n- time\n- location\n\nTogether, these create a snapshot of the sky at a specific moment.\n\nAstrology assumes that moments carry qualities, much like seasons do.\n\nWinter does not “cause” introspection in every person equally, but many people still feel its influence.\n\nLikewise, astrology suggests that birth moments carry symbolic structure.\n\nThe chart is not a prison.\n\nIt is closer to a map of tendencies, themes, strengths, and recurring lessons that unfold over time.\n\nMaps do not walk for you.\n\nBut they can help you recognize where you are.",
+      "image_prompt": "Create a square 1:1 Astra Academy lesson-card image for “A Birth Chart Is a Snapshot of Timing.” Show a luminous moment frozen in the sky: horizon, stars, planets, and a circular chart overlay aligned to a specific place on Earth. Include subtle map contours and clock-like celestial geometry, but no readable numbers or text. Mood: grounding, celestial, precise, poetic. Style: lucid dream-real, elegant astro-cartographic illustration, no logos, no UI, no watermark."
+    },
+    {
+      "id": "astro101_011",
+      "title": "Reflection Question — Which Part Feels Familiar?",
+      "kind": "reflection",
+      "lane": "know_yourself",
+      "energy": [
+        "reflective",
+        "calming"
+      ],
+      "tags": [
+        "reflection",
+        "beginner",
+        "self inquiry"
+      ],
+      "body": "Even without knowing your chart deeply yet, you probably already recognize certain tendencies inside yourself.\n\nMaybe you move quickly and decide instinctively.\n\nMaybe you observe carefully before acting.\n\nMaybe relationships shape your emotional world strongly.\n\nMaybe freedom matters more to you than certainty.\n\nWhich descriptions in astrology feel strangely familiar to you already?\n\nAnd which ones feel incomplete?\n\nSometimes the useful part of astrology is not agreement.\n\nSometimes it is the questions that linger afterward.",
+      "image_prompt": "Create a square 1:1 Astra Academy reflection-card image for “Reflection Question — Which Part Feels Familiar?” Show a calm person seated near a window under a starry sky, with faint zodiac and planetary symbols reflected in glass like possible selves. The image should feel quiet, questioning, and self-aware rather than dramatic. Mood: calming, reflective, intimate. Style: lucid dream-real, refined contemplative celestial portrait, soft interior light, no readable text, no logos, no UI, no watermark."
+    },
+    {
+      "id": "astro101_012",
+      "title": "Astrology Is Meant to Increase Awareness",
+      "kind": "lesson",
+      "lane": "astrology_101",
+      "energy": [
+        "grounding",
+        "reflective"
+      ],
+      "tags": [
+        "symbolic intelligence",
+        "awareness",
+        "beginner"
+      ],
+      "body": "The healthiest use of astrology is not obsession.\n\nIt is awareness.\n\nGood astrology should help someone:\n- notice patterns\n- understand reactions\n- recognize strengths\n- navigate tensions\n- communicate more honestly\n- reflect more deeply\n\nIt should not remove responsibility.\n\nIt should not become an excuse.\n\nAnd it should never replace direct experience with life itself.\n\nA chart may describe possibilities.\n\nBut awareness still matters more than symbolism alone.",
+      "image_prompt": "Create a square 1:1 Astra Academy lesson-card image for “Astrology Is Meant to Increase Awareness.” Show a person gently holding a translucent birth chart like a compass, with the chart illuminating their path but not controlling it. Include open sky, subtle constellations, and grounded earth beneath their feet. Mood: reflective, responsible, hopeful, clear. Style: lucid dream-real, elegant symbolic realism, warm luminous detail, no readable text, no logos, no UI, no watermark."
+    }
+  ]
+}

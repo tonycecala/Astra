@@ -1,3 +1,5 @@
+@import "../../../packages/ui/src/published-card.css";
+
 :root {
   color-scheme: light;
   --paper: #fbfaf7;

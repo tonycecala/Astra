@@ -6,6 +6,7 @@ import {
   type UserFeedItem,
   sourceCardSchema
 } from "@astra/contracts";
+import seedPayload from "../data/stream-cards.seed.json";
 import { publishComposerPrivateFeedItem } from "./publishPrivateFeedItem";
 
 type ComposerOnboardingIssue = {
@@ -34,53 +35,29 @@ export type ComposerOnboardingBatchResult =
   | { ok: true; batch: ComposerOnboardingCardsWrite }
   | { ok: false; error: "COMPOSER_ONBOARDING_BATCH_FAILED"; issues: ComposerOnboardingIssue[] };
 
-const composerOnboardingSeedCards: ComposerOnboardingSeedCard[] = [
-  {
-    id: "welcome-to-astra",
-    title: "Welcome to Astra",
-    subtitle: "Start with the chart",
-    body: "Start with your chart, then let Astra gather portraits, people, and timing into one quieter mirror.",
-    order: 1,
-    lane: "today",
-    ctaLabel: "Begin"
-  },
-  {
-    id: "create-your-first-chart",
-    title: "Create your first chart",
-    subtitle: "Date-only is enough",
-    body: "Your chart is the starting point for the personal stream. Exact time helps, but Astra can begin with a birth date.",
-    order: 2,
-    lane: "know_yourself",
-    ctaLabel: "Open Self"
-  },
-  {
-    id: "generate-first-portrait",
-    title: "Generate your first portrait",
-    subtitle: "Save the durable reading",
-    body: "Portraits are Astra's durable readings: personal, visual, and built to be reopened when the pattern matters again.",
-    order: 3,
-    lane: "know_yourself",
-    ctaLabel: "Generate"
-  },
-  {
-    id: "private-reflection-space",
-    title: "A private reflection space",
-    subtitle: "Private by default",
-    body: "Astra is private by default. Save, reflect, and notice patterns without turning your inner life into public content.",
-    order: 4,
-    lane: "practice",
-    ctaLabel: "Reflect"
-  },
-  {
-    id: "stars-and-constellations",
-    title: "Stars and constellations",
-    subtitle: "Progress without pressure",
-    body: "Stars unlock deeper portraits and mark real engagement. They are progress symbols, not pressure mechanics.",
-    order: 5,
-    lane: "gift",
-    ctaLabel: "View gifts"
-  }
-];
+type QuarryOnboardingCard = {
+  id?: string;
+  title?: string;
+  body?: string;
+  subtitle?: string;
+  isOnboarding?: boolean;
+  onboardingOrder?: number;
+  lane?: string;
+  ctaLabel?: string;
+};
+
+const composerOnboardingSeedCards: ComposerOnboardingSeedCard[] = ((seedPayload as { cards?: QuarryOnboardingCard[] }).cards ?? [])
+  .filter((card) => card.isOnboarding)
+  .sort((a, b) => (a.onboardingOrder ?? 999) - (b.onboardingOrder ?? 999))
+  .map((card, index) => ({
+    id: card.id ?? `onboarding-${index + 1}`,
+    title: card.title ?? `Onboarding ${index + 1}`,
+    subtitle: card.subtitle,
+    body: card.body ?? "",
+    order: card.onboardingOrder ?? index + 1,
+    lane: card.lane === "practice" || card.lane === "gift" || card.lane === "know_yourself" ? card.lane : "today",
+    ctaLabel: card.ctaLabel ?? "Open"
+  }));
 
 function nowIso() {
   return new Date().toISOString();

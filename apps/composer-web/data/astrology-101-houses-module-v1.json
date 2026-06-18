@@ -1,0 +1,401 @@
+{
+  "schemaVersion": "astra-composer-card-import-v1",
+  "title": "Astra Astrology 101 — Houses Module",
+  "series": {
+    "id": "astra_astrology_101",
+    "title": "ASTRA Astrology 101",
+    "lane": "astrology_101",
+    "defaultDifficulty": "beginner"
+  },
+  "version": "0.3",
+  "notes": [
+    "Individually authored Houses module cards, seriesOrder 35–46. Imported cards remain drafts until reviewed in Composer."
+  ],
+  "cards": [
+    {
+      "id": "astrology_101_m04_first_house_identity",
+      "kind": "house",
+      "status": "draft",
+      "title": "The First House: How You Enter Life",
+      "subtitle": "The doorway of identity, instinct, and presence",
+      "body": "The First House is the front door of the chart. It describes the way life seems to meet you first, and the way you often meet life before you have had time to edit yourself.\n\nThis house is connected with presence, instinct, physical bearing, first impressions, and the immediate feeling of being a self in the world. It is not the whole personality, but it often describes the tone people notice quickly: direct or cautious, bright or contained, guarded or open, forceful or receptive.\n\nA strong First House emphasis can make identity feel immediate. The person may learn by stepping into experience directly, sometimes before they fully understand what they are entering. When handled unconsciously, this can become over-identification with persona: the face shown to the world starts feeling like the whole self.\n\nThe useful question here is simple: when you walk into a room, what part of you arrives first?",
+      "excerpt": "The First House is the front door of the chart. It describes the way life seems to meet you first, and the way you often meet life before you have had time to edit yourself.",
+      "eyebrow": "Astrology 101 - Houses Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 35,
+      "energy": [
+        "instructional",
+        "grounding"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_04",
+        "houses",
+        "house",
+        "instructional",
+        "personal"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "A mythic figure standing at the threshold of a luminous circular astrological temple, sunrise behind them, subtle natal chart wheel etched into the stone doorway, cinematic vertical mobile art, electric aquarian linework, warm gold and deep indigo, no text, no letters, no numbers."
+    },
+    {
+      "id": "astrology_101_m04_second_house_resources",
+      "kind": "house",
+      "status": "draft",
+      "title": "The Second House: What You Value",
+      "subtitle": "Resources, self-worth, money, appetite, and steadiness",
+      "body": "The Second House describes value in the most grounded sense. It includes money and possessions, but it also reaches into appetite, security, self-worth, skill, and the question of what makes life feel stable enough to inhabit.\n\nThis house asks how a person builds a relationship with the tangible world. What do you keep? What do you protect? What do you spend freely? What do you fear losing? The answers often reveal more than financial style. They reveal the emotional logic beneath security.\n\nA person with strong Second House themes may learn through the body, through craft, through ownership, or through the slow construction of confidence. The risk is confusing worth with accumulation, or mistaking temporary comfort for real steadiness.\n\nThe deeper work of this house is learning what cannot be taken from you, even when circumstances change.",
+      "excerpt": "The Second House describes value in the most grounded sense. It includes money and possessions, but it also reaches into appetite, security, self-worth, skill, and the question of what makes life feel stable enough to inhabit.",
+      "eyebrow": "Astrology 101 - Houses Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 36,
+      "energy": [
+        "practical",
+        "grounding"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_04",
+        "houses",
+        "house",
+        "values",
+        "practical"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "A beautiful still life of celestial coins, seeds, crystals, bread, and a glowing small star arranged on a dark wooden table beneath a faint zodiac wheel, tactile and grounded, mythic editorial illustration, cinematic vertical mobile composition, no text, no letters, no numbers."
+    },
+    {
+      "id": "astrology_101_m04_third_house_mind",
+      "kind": "house",
+      "status": "draft",
+      "title": "The Third House: How the Mind Moves",
+      "subtitle": "Language, curiosity, siblings, neighborhood, and daily perception",
+      "body": "The Third House describes the nearby world: the street, the sibling, the message, the errand, the phrase that changes the day. It is the house of ordinary perception, and ordinary perception shapes far more of life than people usually realize.\n\nThis house relates to learning style, language, conversation, local movement, early education, and the mind’s habit of linking one thing to another. It shows how a person gathers information before turning it into belief.\n\nWhen the Third House is active, life often teaches through conversation and proximity. The person may learn by asking, comparing, naming, joking, reading, noticing, and testing ideas in motion. The shadow appears when the mind stays busy but never becomes clear.\n\nThe question here: what does your attention keep returning to, even when nothing dramatic is happening?",
+      "excerpt": "The Third House describes the nearby world: the street, the sibling, the message, the errand, the phrase that changes the day. It is the house of ordinary perception, and ordinary perception shapes far more of life than people usually realize.",
+      "eyebrow": "Astrology 101 - Houses Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 37,
+      "energy": [
+        "instructional",
+        "playful"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_04",
+        "houses",
+        "house",
+        "mind",
+        "communication"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "A luminous neighborhood at twilight seen from above, streets forming subtle constellation lines, floating letters dissolved into stars without readable text, messenger birds and small glowing windows, electric aquarian line art, cinematic vertical mobile art, no words, no letters, no numbers."
+    },
+    {
+      "id": "astrology_101_m04_fourth_house_roots",
+      "kind": "house",
+      "status": "draft",
+      "title": "The Fourth House: Roots Beneath the Self",
+      "subtitle": "Home, ancestry, private life, memory, and belonging",
+      "body": "The Fourth House sits at the base of the chart. It describes the private foundation: home, family atmosphere, ancestry, emotional roots, and the inner room a person returns to when the public self goes quiet.\n\nThis house is not only about where someone grew up. It is about what “home” feels like inside the nervous system. Some people inherit steadiness. Others inherit vigilance, silence, longing, or the feeling that they must build belonging from scratch.\n\nA strong Fourth House can create deep attachment to place, memory, and family history. It can also produce a private intensity that outsiders never fully see. The work here often involves separating inherited atmosphere from chosen inner life.\n\nThe Fourth House asks: what part of your story still lives underneath your adult choices?",
+      "excerpt": "The Fourth House sits at the base of the chart. It describes the private foundation: home, family atmosphere, ancestry, emotional roots, and the inner room a person returns to when the public self goes quiet.",
+      "eyebrow": "Astrology 101 - Houses Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 38,
+      "energy": [
+        "reflective",
+        "calming"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_04",
+        "houses",
+        "house",
+        "roots",
+        "home"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "A quiet ancestral house under a vast night sky, roots glowing beneath the foundation like constellations underground, moonlit garden, subtle chart wheel in the stars, intimate and cinematic, mythic editorial illustration, no text, no letters, no numbers."
+    },
+    {
+      "id": "astrology_101_m04_fifth_house_expression",
+      "kind": "house",
+      "status": "draft",
+      "title": "The Fifth House: The Courage to Express",
+      "subtitle": "Creativity, joy, romance, play, children, and visibility",
+      "body": "The Fifth House is where life wants to be expressed rather than merely managed. It relates to creativity, play, romance, performance, children, pleasure, and the vulnerable courage of showing what comes from the heart.\n\nThis house is often misunderstood as frivolous. It is not. Joy has structure. Art requires risk. Romance requires exposure. Play reveals the self before it becomes defensive.\n\nWhen the Fifth House is strong, a person may feel called to make, perform, love dramatically, entertain, teach children, or place something personal into public view. The shadow appears when expression becomes dependent on applause, or when fear of being seen blocks the creative current entirely.\n\nThe Fifth House asks: what wants to come through you, not because it is efficient, but because it is alive?",
+      "excerpt": "The Fifth House is where life wants to be expressed rather than merely managed. It relates to creativity, play, romance, performance, children, pleasure, and the vulnerable courage of showing what comes from the heart.",
+      "eyebrow": "Astrology 101 - Houses Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 39,
+      "energy": [
+        "activating",
+        "playful"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_04",
+        "houses",
+        "house",
+        "creativity",
+        "joy"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "A radiant artist-performer beneath a golden zodiac sun, theatrical curtains opening into a starfield, paint, music, and small sparks of light swirling from the heart, cinematic vertical mobile art, electric aquarian linework, no text, no letters, no numbers."
+    },
+    {
+      "id": "astrology_101_m04_sixth_house_craft",
+      "kind": "house",
+      "status": "draft",
+      "title": "The Sixth House: The Practice of Daily Life",
+      "subtitle": "Work, health, service, routines, craft, and improvement",
+      "body": "The Sixth House brings astrology down to the floorboards of life. It describes routines, work habits, health patterns, service, skill-building, and the small repeated actions that quietly create a person’s lived reality.\n\nThis is the house of practice. Not glamour. Not reputation. Practice. It asks how someone cares for the body, handles responsibility, improves a craft, and responds to the needs immediately in front of them.\n\nA strong Sixth House can produce devotion, competence, humility, and precision. It can also become overwork, self-criticism, or the belief that worth must be earned through usefulness. The lesson is not perfection. It is intelligent care.\n\nThe Sixth House asks: what daily rhythm would make your life more honest, healthier, and less chaotic?",
+      "excerpt": "The Sixth House brings astrology down to the floorboards of life. It describes routines, work habits, health patterns, service, skill-building, and the small repeated actions that quietly create a person’s lived reality.",
+      "eyebrow": "Astrology 101 - Houses Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 40,
+      "energy": [
+        "practical",
+        "instructional"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_04",
+        "houses",
+        "house",
+        "practice",
+        "health"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "A warm apothecary-workshop with herbs, tools, notebooks, a small lamp, and a subtle celestial chart projected across the worktable, practical sacred craft atmosphere, cinematic vertical mobile composition, no readable writing, no letters, no numbers."
+    },
+    {
+      "id": "astrology_101_m04_seventh_house_partnership",
+      "kind": "house",
+      "status": "draft",
+      "title": "The Seventh House: The Mirror of Relationship",
+      "subtitle": "Partnership, projection, negotiation, attraction, and the other",
+      "body": "The Seventh House is where the self meets the other. It describes partnership, attraction, contracts, open conflict, negotiation, and the qualities we often notice first in people across from us.\n\nThis house is not only about romance. It includes any meaningful one-to-one bond where another person changes the shape of our awareness. Friends, spouses, business partners, rivals, clients, and collaborators can all activate Seventh House material.\n\nThe mystery of this house is projection. We may admire in others what we have not claimed in ourselves. We may also criticize qualities outside us that live quietly within us. Relationship becomes a mirror, but not always a comfortable one.\n\nThe Seventh House asks: what do your closest relationships keep teaching you about yourself?",
+      "excerpt": "The Seventh House is where the self meets the other. It describes partnership, attraction, contracts, open conflict, negotiation, and the qualities we often notice first in people across from us.",
+      "eyebrow": "Astrology 101 - Houses Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 41,
+      "energy": [
+        "relational",
+        "reflective"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_04",
+        "houses",
+        "house",
+        "relationship",
+        "mirror"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "Two figures facing each other across a luminous circular mirror filled with stars and subtle zodiac geometry, balanced composition, elegant relational symbolism, cinematic vertical mobile artwork, mythic editorial style, no text, no letters, no numbers."
+    },
+    {
+      "id": "astrology_101_m04_eighth_house_depth",
+      "kind": "house",
+      "status": "draft",
+      "title": "The Eighth House: Where Things Get Real",
+      "subtitle": "Trust, intimacy, shared resources, shadow, loss, and transformation",
+      "body": "The Eighth House is not casual territory. It describes intimacy, trust, shared resources, inheritance, fear, grief, psychological depth, and the places where life strips away the surface story.\n\nThis house often appears wherever control becomes impossible. Another person’s money, another person’s loyalty, mortality, desire, betrayal, trauma, secrecy, and deep healing all belong to its landscape. That does not make it “bad.” It makes it serious.\n\nA strong Eighth House can give someone unusual emotional perception. They may sense what others avoid saying. They may also struggle with suspicion, intensity, or the need to protect themselves from vulnerability.\n\nThe deeper teaching is transformation through honesty. The Eighth House asks: what changes when you stop pretending the hidden thing is not there?",
+      "excerpt": "The Eighth House is not casual territory. It describes intimacy, trust, shared resources, inheritance, fear, grief, psychological depth, and the places where life strips away the surface story.",
+      "eyebrow": "Astrology 101 - Houses Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 42,
+      "energy": [
+        "reflective",
+        "mystical"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_04",
+        "houses",
+        "house",
+        "shadow",
+        "intimacy"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "A dark luminous underworld chamber with a river of stars, two hands holding a shared glowing ember, serpent-like constellation lines, psychological depth, elegant shadow work atmosphere, cinematic vertical mobile art, no text, no letters, no numbers."
+    },
+    {
+      "id": "astrology_101_m04_ninth_house_meaning",
+      "kind": "house",
+      "status": "draft",
+      "title": "The Ninth House: The Search for Meaning",
+      "subtitle": "Belief, travel, philosophy, teaching, faith, and horizons",
+      "body": "The Ninth House looks beyond the familiar road. It describes belief, philosophy, higher learning, long-distance travel, religion, law, publishing, teaching, and the hunger to place personal experience inside a larger frame of meaning.\n\nThis house asks what expands the mind. For some, that comes through study. For others, pilgrimage, foreign cultures, spiritual practice, wild landscapes, or conversations that permanently change the scale of the world.\n\nA strong Ninth House can produce wisdom, optimism, teaching ability, and adventurous intelligence. Its shadow appears as certainty without humility: the belief that one viewpoint has become the whole sky.\n\nThe Ninth House asks: what idea, journey, or truth has made your world larger than it used to be?",
+      "excerpt": "The Ninth House looks beyond the familiar road. It describes belief, philosophy, higher learning, long-distance travel, religion, law, publishing, teaching, and the hunger to place personal experience inside a larger frame of meaning.",
+      "eyebrow": "Astrology 101 - Houses Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 43,
+      "energy": [
+        "mythic",
+        "cosmic"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_04",
+        "houses",
+        "house",
+        "meaning",
+        "belief"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "A traveler on a high ridge beneath an enormous star map, distant roads and oceans glowing with constellation lines, open horizon, mythic pilgrimage mood, cinematic vertical mobile artwork, electric aquarian detail, no text, no letters, no numbers."
+    },
+    {
+      "id": "astrology_101_m04_tenth_house_calling",
+      "kind": "house",
+      "status": "draft",
+      "title": "The Tenth House: The Life That Becomes Visible",
+      "subtitle": "Calling, career, reputation, authority, and contribution",
+      "body": "The Tenth House sits high in the chart. It describes public life, vocation, reputation, authority, achievement, responsibility, and the shape a person’s work takes in the wider world.\n\nThis house is often reduced to “career,” but it is larger than employment. It concerns visible contribution. What are you known for? What do others rely on you to carry? What kind of responsibility slowly forms around your name?\n\nA strong Tenth House can create ambition, leadership, discipline, and a desire to build something that matters. The shadow appears when public image becomes heavier than inner truth, or when success becomes a substitute for actual purpose.\n\nThe Tenth House asks: what are you building that will stand where others can see it?",
+      "excerpt": "The Tenth House sits high in the chart. It describes public life, vocation, reputation, authority, achievement, responsibility, and the shape a person’s work takes in the wider world.",
+      "eyebrow": "Astrology 101 - Houses Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 44,
+      "energy": [
+        "practical",
+        "activating"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_04",
+        "houses",
+        "house",
+        "career",
+        "calling"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "A mountain summit observatory-city under a golden noon star, a figure looking over roads and structures below, subtle chart meridian lines in the sky, dignified public calling mood, cinematic vertical mobile art, no text, no letters, no numbers."
+    },
+    {
+      "id": "astrology_101_m04_eleventh_house_network",
+      "kind": "house",
+      "status": "draft",
+      "title": "The Eleventh House: The Future We Build Together",
+      "subtitle": "Friendship, community, networks, hopes, and collective vision",
+      "body": "The Eleventh House describes friendship, community, networks, audiences, groups, social ideals, and the future a person imagines beyond private success.\n\nThis is the house of belonging by shared direction rather than bloodline or obligation. It asks what circles you enter, what causes you support, what audiences you serve, and what kind of future feels worth contributing to.\n\nA strong Eleventh House can bring unusual allies, wide social reach, visionary thinking, and the ability to connect people around an idea. The shadow appears when belonging becomes performative, or when group identity replaces personal conscience.\n\nThe Eleventh House asks: who helps you become more than you could become alone?",
+      "excerpt": "The Eleventh House describes friendship, community, networks, audiences, groups, social ideals, and the future a person imagines beyond private success.",
+      "eyebrow": "Astrology 101 - Houses Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 45,
+      "energy": [
+        "relational",
+        "cosmic"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_04",
+        "houses",
+        "house",
+        "community",
+        "future"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "A circle of diverse silhouetted figures beneath a network of glowing constellation threads, futuristic celestial community garden, stars forming subtle connection lines, hopeful and spacious, cinematic vertical mobile composition, no text, no letters, no numbers."
+    },
+    {
+      "id": "astrology_101_m04_twelfth_house_inner_ocean",
+      "kind": "house",
+      "status": "draft",
+      "title": "The Twelfth House: The Inner Ocean",
+      "subtitle": "Solitude, dreams, surrender, hidden patterns, and spiritual depth",
+      "body": "The Twelfth House is the ocean behind the ordinary self. It describes solitude, dreams, spiritual life, hidden fears, unconscious patterns, compassion, retreat, and the strange material that rises when the ego finally gets quiet.\n\nThis house can be difficult because it does not always speak directly. It appears through dreams, moods, longings, avoidance, private grief, mystical openings, and the sense that some part of life remains larger than personal control.\n\nA strong Twelfth House can bring imagination, empathy, spiritual sensitivity, and profound inner life. It can also bring escapism, confusion, secrecy, or the tendency to disappear when life becomes too sharp.\n\nThe Twelfth House asks: what do you meet when there is no audience, no role, and nowhere left to perform?",
+      "excerpt": "The Twelfth House is the ocean behind the ordinary self. It describes solitude, dreams, spiritual life, hidden fears, unconscious patterns, compassion, retreat, and the strange material that rises when the ego finally gets quiet.",
+      "eyebrow": "Astrology 101 - Houses Module",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 46,
+      "energy": [
+        "reflective",
+        "mystical",
+        "calming"
+      ],
+      "difficulty": "beginner_plus",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner_plus",
+        "module_04",
+        "houses",
+        "house",
+        "dreams",
+        "inner life"
+      ],
+      "ctaLabel": "Save insight",
+      "ctaAction": "save",
+      "href": "/me/saved",
+      "artPrompt": "A solitary figure at the edge of a vast cosmic ocean under moonlight, dreams rising as translucent constellations from the water, soft mystical atmosphere, cinematic vertical mobile art, electric aquarian linework, no text, no letters, no numbers."
+    }
+  ]
+}

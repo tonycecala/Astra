@@ -28,10 +28,12 @@ export const ui = {
     dbBackedStream: "DB-backed stream",
     privateFeed: "Private journey",
     publicFallback: "Public fallback",
+    composerSelected: "Composer selected",
     reportSignalsReady: "Report signals ready",
     composerDefaultPath: "Composer-authored feed",
     noLegacyData: "No legacy data",
     cardCount: (count: number) => `${count} cards`,
+    selectionMode: (mode: string) => `${mode} selection`,
     stateLabel: "Journey state",
     signInCta: "Sign in",
     states: {
@@ -49,6 +51,11 @@ export const ui = {
         eyebrow: "Private feed",
         title: "Composer is shaping this Journey",
         body: "These cards are user-owned private feed projections. Source material and decision traces stay behind the Composer boundary."
+      },
+      composer_selected: {
+        eyebrow: "Selected course cards",
+        title: "Astra selected these from Composer availability",
+        body: "These cards come from Composer's course or pool availability. They are not user-owned private feed writes yet."
       }
     },
     streamCardsLabel: "Stream cards",
@@ -57,6 +64,12 @@ export const ui = {
     savedCount: (count: number) => `${count} saved`,
     reflectedCount: (count: number) => `${count} reflected`,
     openCard: "Open card",
+    showLess: "Show less",
+    showMore: "Show more",
+    socialActionsFor: (title: string) => `Social actions for ${title}`,
+    likeCard: (title: string) => `Like ${title}`,
+    commentOnCard: (title: string) => `Comment on ${title}`,
+    saveCardAria: (title: string) => `Save ${title}`,
     saveCard: "Save",
     savedCard: "Saved",
     reflectCard: "Reflect",
@@ -81,14 +94,16 @@ export const ui = {
       artifact: "Report signal",
       gift: "Gift",
       ally: "Ally",
-      manual: "Manual"
+      manual: "Manual",
+      composer_selected: "Composer selected"
     },
     audiences: {
       all: "All readers",
       new_user: "New readers",
       returning_user: "Returning readers",
       private: "Private journey",
-      public_fallback: "Public fallback"
+      public_fallback: "Public fallback",
+      composer_selected: "Composer selected"
     },
     statuses: {
       draft: "Draft",

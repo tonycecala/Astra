@@ -29,6 +29,27 @@
       "when": 1781625684837,
       "tag": "0003_round_hellcat",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1781733193738,
+      "tag": "0004_cuddly_smasher",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1781733595978,
+      "tag": "0005_bent_rawhide_kid",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1781738886319,
+      "tag": "0006_closed_lizard",
+      "breakpoints": true
     }
   ]
 }

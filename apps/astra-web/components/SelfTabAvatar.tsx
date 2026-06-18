@@ -173,7 +173,6 @@ export function SelfTabAvatar({ className = "", email, initial, size = 20 }: Sel
   useEffect(() => {
     let active = true;
     if (!email) {
-      setState({ email: null, index: 0, urls: [] });
       return;
     }
 

@@ -30,3 +30,4 @@
 - Also obey `/Users/tony/Documents/Projects/Astra/AGENTS.md`; root Astra rules remain binding.
 - Composer composes private, user-scoped feed projections through explicit contracts. Astra consumes those projections without importing Composer internals.
 - Astra is not a newspaper. Public/shared cards are source or fallback material; the core stream is a private personal feed assembled from public source material, personal state, timing, progress, and explicit permissions.
+- Composer UI handles, route headings, navigation labels, button text, form labels, status text, and empty/error/loading copy must flow through Composer's local i18n dictionary before they appear in route components.

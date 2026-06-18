@@ -1,0 +1,1284 @@
+[
+  {
+    "sign": "Aries",
+    "source": "AstroSisters.r3-FINAL.zip",
+    "core": {
+      "polarity": "Positive",
+      "mode": "Cardinal",
+      "element": "Fire",
+      "rulingPlanet": "Mars",
+      "stone": "Red Jasper",
+      "planetForPrompt": "Mars",
+      "symbolicRepresentation": "Use bold, angular shapes and warm, fiery colors like red and orange. Incorporate ram horns or a charging ram silhouette to symbolize Aries' initiating energy.",
+      "anthropomorphicRepresentation": "A fiery, dynamic woman, dressed in red armor and wielding a bronze spear, charging forward with a look of fierce determination.",
+      "characterIdeas": [
+        "Gladiator",
+        "Amazon",
+        "Spartan",
+        "Berserker",
+        "Crusader",
+        "Soldier"
+      ],
+      "clothingStyle": "Battle-worn leather armor, spiked shoulder guards",
+      "bodyType": "Athletic",
+      "skinColor": "Warm Beige",
+      "age": "23 - Young and full of energy, embodying the fiery spirit and youthful courage of a warrior.",
+      "eyeColor": "Amber",
+      "reasoning": "Bold and fiery, amber eyes mirror Aries' strong-willed and determined nature"
+    },
+    "physicalTraits": {
+      "eyeColor": "Amber",
+      "eyeReasoning": "Bold and fiery, amber eyes mirror Aries' strong-willed and determined nature",
+      "skinColor": "Warm Beige",
+      "skinReasoning": "Reflects the fiery energy and vibrant spirit of Aries",
+      "hair": "Fiery Red, Short and Spiky",
+      "hairReasoning": "Matches Aries' fiery personality and passion. Red symbolizes their bold, pioneering spirit.",
+      "bodyType": "Athletic",
+      "bodyReasoning": "Muscular and athletic build due to Aries' dynamic and active nature."
+    },
+    "clothing": {
+      "topWear": "Gladiator Armor",
+      "topWearMaterial": "Leather, Metal",
+      "topWearColors": "Red, Bronze",
+      "topWearMotifs": "Rugged, Metallic, Battle-worn",
+      "sensualAttire": "Structured Gladiator Bodice",
+      "sensualMaterial": "Leather, Silk",
+      "sensualColors": "Bold Red, Black",
+      "sensualMotifs": "Metallic Accents"
+    },
+    "adornment": {
+      "makeupStyle": "Bold eyeliner, Light eyeshadow, Matte lipstick",
+      "makeupPalette": "Reds, Blacks, Whites",
+      "makeupReasoning": "To represent their fiery and bold nature",
+      "jewelry": "Thumb Ring",
+      "jewelryReasoning": "As a symbol of willpower and strength",
+      "talismanObject": "Torch or Spear",
+      "talismanReasoning": "Symbolizes their fiery spirit, warrior-like nature",
+      "tattoos": "A ram or a warrior's helmet (On shoulder or bicep)",
+      "tattooReasoning": "As a symbol of their strength and leadership, Aries may opt for a bold and daring tattoo that represents their sign or their warrior spirit."
+    },
+    "environment": {
+      "backgroundImagery": "Flames",
+      "colorPalette": "Red hues",
+      "lighting": "Bright, direct",
+      "texture": "Rough, dynamic",
+      "weather": "Clear skies",
+      "symbolicMotifs": "Ram motifs",
+      "companionAnimals": "Ram: Because the ram is the symbol of Aries, they share the traits of courage and leadership. Hawk: Hawks symbolize vision and intensity which aligns with the Aries spirit."
+    },
+    "pose": {
+      "primaryPose": "Strong stance, with a fist clenched in determination.",
+      "primaryReasoning": "Representing Aries' ambitious, energetic nature.",
+      "alternatePose": "Hand resting on a helmet.",
+      "alternateReasoning": "Aries is a sign of leadership and warrior spirit, the helmet represents their readiness for battle.",
+      "description": "A determined 22-year-old gladiator with amber eyes, warm beige skin, wearing a battle-worn leather armor, ready to confront whatever comes her way."
+    },
+    "referenceFigures": {
+      "primaryActress": "Jessica Chastain",
+      "primaryReasoning": "Her red hair and sharp features evoke the fiery and bold nature of Aries.",
+      "additionalActresses": [
+        "Emma Watson",
+        "Keira Knightley"
+      ],
+      "additionalReasoning": "Both actresses have sharp and striking features representing the fiery and assertive nature of Aries.",
+      "mythologicalFigure": "Penthesilea (Greek Mythology)",
+      "mythologicalReasoning": "As a queen of the Amazons, Penthesilea represents the bold and brave warrior spirit of Aries."
+    },
+    "lightingScenario": {
+      "rating": "5",
+      "reasoning": "Energetic, Direct",
+      "scenario": "Direct, hard lighting to emphasize their energetic and direct nature."
+    },
+    "headshotPrompt": {
+      "prompt": "Powerful Head shot cover painting of an Athletic, Determined, Angry, Tattooed Nude, Ginger-Hair Warrior on Fiery Battlefield! Dirty Tan Skin. Braids. Body Paint. EvaGreen/MaggieQ/TildaSwinton. By daVinci/Frazetta/Vallejo. Aries-Leather-Outfit-Horns. Intricate artwork masterpiece. Digital professional photography with 1000mm Zeiss lens @f/22. Ultra-high definition. Bold Cinematic Scene.",
+      "negativePrompt": "misshapen fingers, unformed fingers, six fingers, five fingers, plastic skin, two heads, two face, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, poorly drawn eyes, double heads, double faces, two heads, two faces, ugly eyes, misshapen eyes, out of frame, blurry",
+      "model": "deliberate21",
+      "steps": "12",
+      "sampler": "ddim",
+      "config": "10"
+    },
+    "tarotPrompt": {
+      "prompt": "Powerful Fantasy Masterpiece 3/4 pose sketch of an Athletic, Determined, Angry, Tattooed, Ginger-Hair Barbarian in Studio! Dirty Tan Skin. Braids. Body Paint.  Glistening Tan Skin. Slender/Muscular build. Perfect Eyes. EvaGreen/MaggieQ/TildaSwinton. In style of AlexGrey/daVinci. Leather Battle Armor. Intricate fiery masterpiece. Colored Pencil. UHD. Bold Stylized Tarot Card Art. Colors: Scarlet Fury, Sun-Kissed Bronze, Obsidian Noir. Ambient light.",
+      "negativePrompt": "<EasyNegative>, two heads, two faces, plastic, too long neck, Deformed, large breasts, cleavage, blurry, bad anatomy, bad eyes, crossed eyes, disfigured, poorly drawn face, mutation, mutated, ((extra limb)), ugly, poorly drawn hands, missing limb, blurry, floating limbs, disconnected limbs, malformed hands, blur, out of focus, long neck, long body, ((((mutated hands and fingers)))), (((out of frame))), blender, doll, cropped, low-res, close-up, poorly-drawn face, out of frame double, ugly, disfigured, too many fingers, deformed, repetitive, black and white, grainy, extra limbs, bad anatomy, smooth skin, deformed, extra limbs, extra fingers, mutated hands, bad proportions, blind, bad eyes, ugly eyes, dead eyes, out of shot, out of focus, monochrome, noisy, writing, logo, oversaturation, over shadow, text",
+      "model": "deliberate21",
+      "steps": "20",
+      "sampler": "ddim",
+      "config": "7"
+    }
+  },
+  {
+    "sign": "Taurus",
+    "source": "AstroSisters.r3-FINAL.zip",
+    "core": {
+      "polarity": "Negative",
+      "mode": "Fixed",
+      "element": "Earth",
+      "rulingPlanet": "Venus",
+      "stone": "Emerald",
+      "planetForPrompt": "",
+      "symbolicRepresentation": "Utilize solid, grounded forms and earthy colors like green and brown. Include the bull's horns or a strong, sturdy tree to symbolize Taurus' stability and strength.",
+      "anthropomorphicRepresentation": "A robust, serene woman, surrounded by flourishing nature, sitting solidly on the earth, a vibrant emerald pendant around her neck.",
+      "characterIdeas": [
+        "Druid",
+        "Nature Spirit",
+        "Gaia",
+        "Tree Nymph (Dryad)",
+        "Green Witch",
+        "Earth Mother"
+      ],
+      "clothingStyle": "Flowing gown adorned with green leaves and flowers, earth-toned shawl",
+      "bodyType": "Robust",
+      "skinColor": "Earthy Brown",
+      "age": "29 - Mature, but still quite young, representing the grounded, earthly stability of this sign.",
+      "eyeColor": "Hazel",
+      "reasoning": "Grounded and natural, hazel eyes resonate with Taurus' connection to the Earth"
+    },
+    "physicalTraits": {
+      "eyeColor": "Hazel",
+      "eyeReasoning": "Grounded and natural, hazel eyes resonate with Taurus' connection to the Earth",
+      "skinColor": "Earthy Brown",
+      "skinReasoning": "Mirrors the grounded nature and earth element of Taurus",
+      "hair": "Earthy Brown, Long and Wavy",
+      "hairReasoning": "Brown symbolizes their earthy, grounded nature. The long, wavy style matches their appreciation for beauty.",
+      "bodyType": "Robust",
+      "bodyReasoning": "Strong, solid, and robust, much like the Taurus bull."
+    },
+    "clothing": {
+      "topWear": "Embroidered Bodice",
+      "topWearMaterial": "Cotton, Silk",
+      "topWearColors": "Earthy Greens and Browns",
+      "topWearMotifs": "Smooth, Earthy, Floral motifs",
+      "sensualAttire": "Embroidered Lace Bodice",
+      "sensualMaterial": "Lace, Silk",
+      "sensualColors": "Earthy Greens and Browns",
+      "sensualMotifs": "Delicate, Floral Lace"
+    },
+    "adornment": {
+      "makeupStyle": "Natural makeup, subtle blush, nude lipstick",
+      "makeupPalette": "Earth tones (Browns, Greens, Nudes)",
+      "makeupReasoning": "To symbolize their connection with the Earth and their practical nature",
+      "jewelry": "Choker Necklace",
+      "jewelryReasoning": "Represents their sensuality and love for comfort",
+      "talismanObject": "Rose or Jade Pendant",
+      "talismanReasoning": "Represents beauty, sensuality and connection to Earth",
+      "tattoos": "A bull or a flowering plant (On the back or upper arm)",
+      "tattooReasoning": "Taurus may choose a tattoo that reflects their connection to earth and their practical, steadfast nature."
+    },
+    "environment": {
+      "backgroundImagery": "Green fields",
+      "colorPalette": "Earth tones",
+      "lighting": "Soft, warm",
+      "texture": "Smooth, grounded",
+      "weather": "Gentle rain",
+      "symbolicMotifs": "Bull, or vine patterns",
+      "companionAnimals": "Bull: Bulls are the symbol of Taurus, embodying the strength and persistence of this sign. Deer: Known for their gentle, steady nature, reflecting the Taurus temperament."
+    },
+    "pose": {
+      "primaryPose": "Calm pose, hands gently holding a flowering plant.",
+      "primaryReasoning": "Showcasing Taurus' patient, nurturing side.",
+      "alternatePose": "Hands molding clay.",
+      "alternateReasoning": "Represents Taurus' patient, hardworking, and creative nature.",
+      "description": "A steadfast 28-year-old agricultural goddess with deep green eyes, earthy brown skin, adorned in a sturdy yet comfortable work dress, exuding calm and strength."
+    },
+    "referenceFigures": {
+      "primaryActress": "Selena Gomez",
+      "primaryReasoning": "Her earthy beauty and robust features resonate with the grounded nature of Taurus.",
+      "additionalActresses": [
+        "Salma Hayek",
+        "Kate Winslet"
+      ],
+      "additionalReasoning": "Their robust features and sensual beauty resonate with the earthy and sensual nature of Taurus.",
+      "mythologicalFigure": "Demeter (Greek Mythology)",
+      "mythologicalReasoning": "The goddess of harvest and agriculture, Demeter embodies the earthy, nurturing, and patient aspects of Taurus."
+    },
+    "lightingScenario": {
+      "rating": "7",
+      "reasoning": "Grounded, Resilient",
+      "scenario": "Warm, ambient lighting with deep shadows for their grounded and resilient character."
+    },
+    "headshotPrompt": {
+      "prompt": "29YO Strong Brown-Eyed Samoan Earth Mother. Emerald Jewelry. Wavy Brown Locks. Cotton Bodice. Leafy. Brown. Forest. By da Vinci. Digital professional photography with 100mm Zeiss lens @f/5.6. Intricate artwork masterpiece. GoldenRatio.",
+      "negativePrompt": "logo, type, text, misshapen fingers, unformed fingers, six fingers, five fingers, open mouth, showing teeth, plastic skin, two heads, two face, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, poorly drawn eyes, double heads, double faces, two heads, two faces, ugly eyes, misshapen eyes, out of frame, ugly, blurry",
+      "model": "",
+      "steps": "",
+      "sampler": "",
+      "config": ""
+    },
+    "tarotPrompt": {
+      "prompt": "29YO Strong Brown-Eyed Samoan Earth Mother. Emerald Jewelry. Wavy Brown Locks. Cotton Bodice. Leafy. Brown. Forest. By da Vinci. Digital professional photography with 100mm Zeiss lens @f/5.6. Intricate artwork masterpiece. GoldenRatio.",
+      "negativePrompt": "logo, type, text, misshapen fingers, unformed fingers, six fingers, five fingers, open mouth, showing teeth, plastic skin, two heads, two face, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, poorly drawn eyes, double heads, double faces, two heads, two faces, ugly eyes, misshapen eyes, out of frame, ugly, blurry",
+      "model": "",
+      "steps": "",
+      "sampler": "",
+      "config": ""
+    }
+  },
+  {
+    "sign": "Gemini",
+    "source": "AstroSisters.r3-FINAL.zip",
+    "core": {
+      "polarity": "Positive",
+      "mode": "Mutable",
+      "element": "Air",
+      "rulingPlanet": "Mercury",
+      "stone": "Agate",
+      "planetForPrompt": "Mercury",
+      "symbolicRepresentation": "Feature fluid, airy shapes and light colors like yellow and white. Incorporate the symbol of twins or entwined ribbons to represent Gemini's adaptability and duality.",
+      "anthropomorphicRepresentation": "A light, agile woman, depicted as twins, in a flowing yellow dress, sharing whispers while holding the caduceus of Mercury.",
+      "characterIdeas": [
+        "Trickster",
+        "Shapeshifter",
+        "Doppelganger",
+        "Scribe"
+      ],
+      "clothingStyle": "Flowing yellow dress, airy twin-layer cloak",
+      "bodyType": "Slim",
+      "skinColor": "Light Ivory",
+      "age": "19 - The lively, playful, and youthful energy of Gemini would be well represented in the late teens.",
+      "eyeColor": "Light Blue",
+      "reasoning": "Bright and mutable, light blue eyes reflect Gemini's lively and changeable spirit"
+    },
+    "physicalTraits": {
+      "eyeColor": "Light Blue",
+      "eyeReasoning": "Bright and mutable, light blue eyes reflect Gemini's lively and changeable spirit",
+      "skinColor": "Light Ivory",
+      "skinReasoning": "Suits the adaptable and changeable air nature of Gemini",
+      "hair": "Light Blonde, Pixie Cut",
+      "hairReasoning": "The light, youthful color matches Gemini's airy, playful nature, and the pixie cut reflects their ever-changing spirit.",
+      "bodyType": "Slim",
+      "bodyReasoning": "Slim and youthful in appearance, reflecting Gemini's vibrant and energetic personality."
+    },
+    "clothing": {
+      "topWear": "Scholar's Robe",
+      "topWearMaterial": "Cotton, Silk",
+      "topWearColors": "Light Yellow, White",
+      "topWearMotifs": "Smooth, Flowy, Academic",
+      "sensualAttire": "Satin Blouse with Deep V-Neck",
+      "sensualMaterial": "Silk, Satin",
+      "sensualColors": "Light Yellow, White",
+      "sensualMotifs": "Silky, Flowy, Light"
+    },
+    "adornment": {
+      "makeupStyle": "Playful, Colorful eyeshadow, Glossy lipstick",
+      "makeupPalette": "Yellows, Light blues",
+      "makeupReasoning": "Represents their playful, communicative, and versatile nature",
+      "jewelry": "Multiple Earrings",
+      "jewelryReasoning": "Reflects their multifaceted nature",
+      "talismanObject": "Quill Pen or Book",
+      "talismanReasoning": "Reflects their communicative and intellectual nature",
+      "tattoos": "Twin faces or abstract designs (On the wrist or forearm)",
+      "tattooReasoning": "Gemini, being communicative and versatile, may go for something symbolizing duality or their intellectual interests."
+    },
+    "environment": {
+      "backgroundImagery": "Airy clouds",
+      "colorPalette": "Pastels, light blues",
+      "lighting": "Bright, playful",
+      "texture": "Light, airy",
+      "weather": "Breezy, partly cloudy",
+      "symbolicMotifs": "Twins, or butterfly motifs",
+      "companionAnimals": "Magpie: Known for their intelligence and curiosity, similar to the Gemini sign. Squirrel: Agile and fast animals symbolizing Gemini's quick thinking."
+    },
+    "pose": {
+      "primaryPose": "Dynamic pose, both hands manipulating floating spheres (symbolizing communication).",
+      "primaryReasoning": "Representing Gemini's versatile, communicative nature.",
+      "alternatePose": "Juggling glowing orbs of light.",
+      "alternateReasoning": "Showcasing Gemini's adaptability, and their ability to manage different ideas at once.",
+      "description": "Twin 16-year-old scholars with gray eyes, light ivory skin, donning matching silk tunics, their expressions mirroring each other's curiosity and brightness."
+    },
+    "referenceFigures": {
+      "primaryActress": "Mary-Kate and Ashley Olsen",
+      "primaryReasoning": "The twins represent the dual nature of Gemini perfectly.",
+      "additionalActresses": [
+        "Natalie Portman",
+        "Scarlett Johansson"
+      ],
+      "additionalReasoning": "Both actresses have versatile looks that can switch between innocent and edgy, resonating with the dual nature of Gemini.",
+      "mythologicalFigure": "Athena (Greek Mythology)",
+      "mythologicalReasoning": "The goddess of wisdom and strategic war, Athena symbolizes Gemini's intellect and versatility."
+    },
+    "lightingScenario": {
+      "rating": "2",
+      "reasoning": "Social, Communicative",
+      "scenario": "Broad lighting with high contrast to enhance their sociable and communicative vibe."
+    },
+    "headshotPrompt": {
+      "prompt": "Beautiful detailed close-up cover painting of genius, playful, dynamic, nude Swedish Twin Hermes. Insanely Detailed Blue Eyes. Sly Grin. Short Champagne Blonde Pixie-punk Hair. Caduceus, Hermes. Clouds. Silk Scarf. Fantasy masterpiece by Alex Grey, Frank Frazetta, James Jean. Soft lighting. Pale-Yellow/Whisper-blue. UHD. 16K. Canon50.",
+      "negativePrompt": "open mouth, three girls, forehead tattoo,  forehead pendant, blue face, teeth showing, cross-eyed, misshapen fingers, unformed fingers, six fingers, five fingers, plastic skin, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, poorly drawn eyes, two heads, two faces, ugly eyes, misshapen eyes, out of frame, blurry, logo, writing",
+      "model": "deliberate21",
+      "steps": "30",
+      "sampler": "ddim",
+      "config": "10"
+    },
+    "tarotPrompt": {
+      "prompt": "Beautiful detailed close-up cover painting of genius, playful, curious, nude 21YO Swedish Twin Wizards. Insanely Detailed Blue Eyes. Sly Grin. Short Champagne Blonde Pixie-punk Hair. Telescope. Clouds. Silk Scarf. Hermes. Fantasy masterpiece by AlexGrey/Vallejo/JamesJean. Soft lighting. Pale-Yellow/Whisper-blue. UHD. 16K. Canon50.",
+      "negativePrompt": "open mouth, three girls, forehead tattoo,  forehead pendant, blue face, teeth showing, cross-eyed, misshapen fingers, unformed fingers, six fingers, five fingers, plastic skin, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, poorly drawn eyes, two heads, two faces, ugly eyes, misshapen eyes, out of frame, blurry, logo, writing",
+      "model": "deliberate21",
+      "steps": "30",
+      "sampler": "ddim",
+      "config": "10"
+    }
+  },
+  {
+    "sign": "Cancer",
+    "source": "AstroSisters.r3-FINAL.zip",
+    "core": {
+      "polarity": "Negative",
+      "mode": "Cardinal",
+      "element": "Water",
+      "rulingPlanet": "Moon",
+      "stone": "Moonstone",
+      "planetForPrompt": "Moon",
+      "symbolicRepresentation": "Use soft, flowing forms and cool, watery colors like blue and silver. Include a crab or crescent moon to symbolize Cancer's nurturing, initiating energy.",
+      "anthropomorphicRepresentation": "An ethereal, nurturing woman, cloaked in a gown of flowing water, sitting beneath the moonlight, cradling a pearl.",
+      "characterIdeas": [
+        "Siren",
+        "Mermaid",
+        "Sea Witch",
+        "Oracle",
+        "Moon Goddess",
+        "Water Sprite"
+      ],
+      "clothingStyle": "Flowy dress made of sheer, wave-like material, pearl-adorned shawl",
+      "bodyType": "Curvy",
+      "skinColor": "Moonlit Pale",
+      "age": "33 - A nurturing age that embodies the motherly, protective nature of Cancer.",
+      "eyeColor": "Gray",
+      "reasoning": "Soft and moody, gray eyes echo Cancer's sensitive and emotional nature"
+    },
+    "physicalTraits": {
+      "eyeColor": "Gray",
+      "eyeReasoning": "Soft and moody, gray eyes echo Cancer's sensitive and emotional nature",
+      "skinColor": "Moonlit Pale",
+      "skinReasoning": "Represents the lunar rule and the sensitive water element of Cancer",
+      "hair": "Silver, Long and Straight",
+      "hairReasoning": "Silver matches Cancer's association with the Moon. The long, straight style reflects their deep, introspective nature.",
+      "bodyType": "Curvy",
+      "bodyReasoning": "Soft and curvy, reflecting Cancer's nurturing and motherly nature."
+    },
+    "clothing": {
+      "topWear": "Silk Shawl",
+      "topWearMaterial": "Silk",
+      "topWearColors": "Silver, White",
+      "topWearMotifs": "Soft, Flowing, Moon motifs",
+      "sensualAttire": "Moonlit Chiffon Top",
+      "sensualMaterial": "Chiffon, Silk",
+      "sensualColors": "Silver, Pale Blue",
+      "sensualMotifs": "Soft, Flowing, Iridescent"
+    },
+    "adornment": {
+      "makeupStyle": "Subtle, Smoky eyeshadow, Moisturizing lipstick",
+      "makeupPalette": "Silvers, Whites, Light Blues",
+      "makeupReasoning": "To symbolize their connection with the Moon and their caring, nurturing nature",
+      "jewelry": "Pearl Bracelet",
+      "jewelryReasoning": "Aligns with their love for vintage and sentimental items",
+      "talismanObject": "Silver Locket or Pearl",
+      "talismanReasoning": "Symbolizes their sentimental, nurturing side",
+      "tattoos": "A crab or a moon (On the chest or shoulder)",
+      "tattooReasoning": "Cancer may choose a tattoo that represents their sign or their deep connection to their emotions and the moon."
+    },
+    "environment": {
+      "backgroundImagery": "Moonlit sea",
+      "colorPalette": "Silver, blues, whites",
+      "lighting": "Soft, reflective",
+      "texture": "Smooth, fluid",
+      "weather": "Mist or light rain",
+      "symbolicMotifs": "Crab, or moon motifs",
+      "companionAnimals": "Crab: As the symbol of Cancer, they represent the hard exterior and soft interior of this sign. Dove: Known for their nurturing nature, reflecting the Cancer temperament."
+    },
+    "pose": {
+      "primaryPose": "Gentle pose, cradling a silver moon in her hands.",
+      "primaryReasoning": "Symbolizing Cancer's nurturing, intuitive personality.",
+      "alternatePose": "Fingers dipped into a pool of water, creating ripples.",
+      "alternateReasoning": "Emphasizing Cancer's emotional, intuitive connection to feelings and their ripple effect.",
+      "description": "A nurturing 36-year-old mother with luminescent silver eyes, moonlit pale skin, draped in a flowing watercolor gown, her face showing love and compassion."
+    },
+    "referenceFigures": {
+      "primaryActress": "Lupita Nyong'o",
+      "primaryReasoning": "Her round face and expressive eyes capture the emotive and sensitive qualities of Cancer.",
+      "additionalActresses": [
+        "Liv Tyler",
+        "Julianne Moore"
+      ],
+      "additionalReasoning": "Their soft features and expressive eyes encapsulate the nurturing and sensitive nature of Cancer.",
+      "mythologicalFigure": "Hestia (Greek Mythology)",
+      "mythologicalReasoning": "Hestia, the goddess of hearth and home, reflects Cancer's love for home and their nurturing nature."
+    },
+    "lightingScenario": {
+      "rating": "8",
+      "reasoning": "Protective, Intuitive",
+      "scenario": "Soft, low-key lighting with cooler tones to represent their protective and intuitive nature."
+    },
+    "headshotPrompt": {
+      "prompt": "Beautiful Close-up hyper-detailed fantasy portrait of a curvy, loving, nurturing, emotional, kind 35YO Moon/Water Goddess. Insanely-detailed silver eyes. UHD. 16K. Canon50. Pale skin. Soft, Flowing, silk gown. Intricate-Iridescent-Silver Hair. Pearls. Lake ripples. Graceful Fantasy Masterpiece by Alex Grey, Alex Grey. Low-key lighting silver-white.",
+      "negativePrompt": "",
+      "model": "deliberate21",
+      "steps": "15",
+      "sampler": "ddim",
+      "config": "10"
+    },
+    "tarotPrompt": {
+      "prompt": "Beautiful Close-up hyper-detailed fantasy portrait of a curvy, loving, nurturing, emotional, kind 35YO Moon/Water Goddess. Insanely-detailed silver eyes. UHD. 16K. Canon50. Pale skin. Soft, Flowing, silk gown. Intricate-Iridescent-Silver Hair. Pearls. Lake ripples. Graceful Fantasy Masterpiece by Alex Grey, Alex Grey. Low-key lighting silver-white.",
+      "negativePrompt": "",
+      "model": "deliberate21",
+      "steps": "15",
+      "sampler": "ddim",
+      "config": "10"
+    }
+  },
+  {
+    "sign": "Leo",
+    "source": "AstroSisters.r3-FINAL.zip",
+    "core": {
+      "polarity": "Positive",
+      "mode": "Fixed",
+      "element": "Fire",
+      "rulingPlanet": "Sun",
+      "stone": "Sunstone",
+      "planetForPrompt": "Sun",
+      "symbolicRepresentation": "Utilize bold, radiant shapes and warm, golden colors. Incorporate a lion's mane or a sun to symbolize Leo's confidence and fixed, fiery nature.",
+      "anthropomorphicRepresentation": "A radiant, regal woman, surrounded by golden light, wearing a sun-embroidered cloak and a crown adorned with a sunstone.",
+      "characterIdeas": [
+        "Sun Goddess",
+        "Lioness",
+        "Empress",
+        "Diva",
+        "Fire Dancer",
+        "Pyromancer"
+      ],
+      "clothingStyle": "Regal gold armor with lion-themed details, silk sash with sun motifs",
+      "bodyType": "Regal",
+      "skinColor": "Sun-Kissed Gold",
+      "age": "28 - The age of someone fully embracing their bold, regal presence, yet still exuding youthful charisma.",
+      "eyeColor": "Gold",
+      "reasoning": "Regal and warm, golden eyes mirror Leo's radiant and commanding personality"
+    },
+    "physicalTraits": {
+      "eyeColor": "Gold",
+      "eyeReasoning": "Regal and warm, golden eyes mirror Leo's radiant and commanding personality",
+      "skinColor": "Sun-Kissed Gold",
+      "skinReasoning": "Echoes the sunny warmth and commanding fire element of Leo",
+      "hair": "Golden Blonde, Mane-like",
+      "hairReasoning": "The golden color and lion's mane-like style match Leo's sunny disposition and royal status.",
+      "bodyType": "Regal",
+      "bodyReasoning": "Majestic and regal, reflecting Leo's royal nature."
+    },
+    "clothing": {
+      "topWear": "Regal Cloak",
+      "topWearMaterial": "Velvet, Silk",
+      "topWearColors": "Gold, Red, Purple",
+      "topWearMotifs": "Rich, Majestic, Royal Insignia",
+      "sensualAttire": "Golden Velvet Bustier",
+      "sensualMaterial": "Velvet, Silk",
+      "sensualColors": "Gold, Red",
+      "sensualMotifs": "Rich, Shimmery, Luxurious"
+    },
+    "adornment": {
+      "makeupStyle": "Shimmering gold eyeshadow, Bold lipstick",
+      "makeupPalette": "Golds, Oranges, Reds",
+      "makeupReasoning": "To symbolize their connection with the Sun and their charismatic and theatrical nature",
+      "jewelry": "Large Statement Necklace",
+      "jewelryReasoning": "Reflects their bold and outgoing personality",
+      "talismanObject": "Gold Crown or Scepter",
+      "talismanReasoning": "Represents their regal, leadership qualities",
+      "tattoos": "A lion or a sun (On the back or chest)",
+      "tattooReasoning": "Leos are likely to choose a bold, large tattoo that represents their sign or their radiant, dominant personality."
+    },
+    "environment": {
+      "backgroundImagery": "Sun",
+      "colorPalette": "Gold, orange, yellow",
+      "lighting": "Bright, dramatic",
+      "texture": "Bold, expressive",
+      "weather": "Sunny",
+      "symbolicMotifs": "Lion, or sun motifs",
+      "companionAnimals": "Lion: The symbol of Leo, representing pride, strength, and royal demeanor of this sign. Peacock: Known for their flamboyance and display, much like the Leo's love for the spotlight."
+    },
+    "pose": {
+      "primaryPose": "Dramatic pose, hand holding up a flaming torch.",
+      "primaryReasoning": "Representing Leo's bold, leader-like nature.",
+      "alternatePose": "Fingers touching the mane of a lion etched in gold.",
+      "alternateReasoning": "Showcasing Leo's bold, royal nature and connection to their symbol, the lion.",
+      "description": "A charismatic 30-year-old queen with golden eyes, sun-kissed gold skin, decked in regal finery and a majestic fur mantle, exuding confidence and command."
+    },
+    "referenceFigures": {
+      "primaryActress": "Jennifer Lopez",
+      "primaryReasoning": "Her radiant beauty and fierce confidence embody the charismatic and bold nature of Leo.",
+      "additionalActresses": [
+        "Charlize Theron",
+        "Halle Berry"
+      ],
+      "additionalReasoning": "Their radiant beauty and confident demeanor mirror the charismatic and bold nature of Leo.",
+      "mythologicalFigure": "Sekhmet (Egyptian Mythology)",
+      "mythologicalReasoning": "Known as the lioness goddess, Sekhmet personifies Leo's fiery, assertive, and dominant characteristics."
+    },
+    "lightingScenario": {
+      "rating": "6",
+      "reasoning": "Charismatic, Confident",
+      "scenario": "Dramatic, high contrast lighting to highlight their charismatic and confident demeanor."
+    },
+    "headshotPrompt": {
+      "prompt": "Beautiful hyper-detailed cover portrait of a charismatic, confident Queen with Insanely-Detailed Golden eyes. Wavy Golden Blonde Tresses. Regal See-through Shoulderless silk gown. UHD. 16K. Canon50. Dramatic, high-contrast lighting: Golds, Reds, Oranges. Bold Elegant Masterpiece by daVinci, daVinci, Alex Grey.",
+      "negativePrompt": "",
+      "model": "deliberate21",
+      "steps": "15",
+      "sampler": "ddim",
+      "config": "7.5"
+    },
+    "tarotPrompt": {
+      "prompt": "Beautiful hyper-detailed cover portrait of a charismatic, confident Queen with Insanely-Detailed Golden eyes. Wavy Golden Blonde Tresses. Regal See-through Shoulderless silk gown. UHD. 16K. Canon50. Dramatic, high-contrast lighting: Golds, Reds, Oranges. Bold Elegant Masterpiece by daVinci, daVinci, Alex Grey.",
+      "negativePrompt": "",
+      "model": "deliberate21",
+      "steps": "15",
+      "sampler": "ddim",
+      "config": "7.5"
+    }
+  },
+  {
+    "sign": "Virgo",
+    "source": "AstroSisters.r3-FINAL.zip",
+    "core": {
+      "polarity": "Negative",
+      "mode": "Mutable",
+      "element": "Earth",
+      "rulingPlanet": "Mercury",
+      "stone": "Amazonite",
+      "planetForPrompt": "",
+      "symbolicRepresentation": "Feature delicate, intricate forms and earthy, muted colors like beige and green. Include a sheaf of wheat or a precise, detailed pattern to represent Virgo's adaptability.",
+      "anthropomorphicRepresentation": "An elegant, graceful woman, in a detailed earth-toned gown, inspecting a sheaf of wheat with a small, mercury-winged pendant.",
+      "characterIdeas": [
+        "Healer",
+        "Alchemist",
+        "Nun",
+        "Sage",
+        "Herbalist",
+        "Librarian"
+      ],
+      "clothingStyle": "Simple, yet elegant robe with intricate herbal embroidery, shawl with healing symbols",
+      "bodyType": "Toned",
+      "skinColor": "Fresh Olive",
+      "age": "26 - An age of a thoughtful, mature, yet young adult embodying the meticulous and caring nature of Virgo.",
+      "eyeColor": "Green",
+      "reasoning": "Calm and natural, green eyes resonate with Virgo's earthy, practical nature"
+    },
+    "physicalTraits": {
+      "eyeColor": "Green",
+      "eyeReasoning": "Calm and natural, green eyes resonate with Virgo's earthy, practical nature",
+      "skinColor": "Fresh Olive",
+      "skinReasoning": "Resonates with the earthy and practical nature of Virgo",
+      "hair": "Natural Brown, Braided Bun",
+      "hairReasoning": "Brown symbolizes their earthy, grounded nature. The braided bun reflects their meticulous and organized character.",
+      "bodyType": "Toned",
+      "bodyReasoning": "Lean and well-toned, Virgo's disciplined nature makes for a healthy body."
+    },
+    "clothing": {
+      "topWear": "Priestess Robe",
+      "topWearMaterial": "Linen, Silk",
+      "topWearColors": "Navy, White",
+      "topWearMotifs": "Flowing, Modest, Spiritual symbols",
+      "sensualAttire": "Delicate Lace Blouse",
+      "sensualMaterial": "Lace, Silk",
+      "sensualColors": "Navy, White",
+      "sensualMotifs": "Modest, Intricate Lacing"
+    },
+    "adornment": {
+      "makeupStyle": "Natural makeup, Subtle eyeliner, Lip balm",
+      "makeupPalette": "Greens, Browns, Nudes",
+      "makeupReasoning": "Represents their love for natural, earthy elements and their practical, organized nature",
+      "jewelry": "Delicate Ankle Chain",
+      "jewelryReasoning": "Shows their attention to detail and love for subtle beauty",
+      "talismanObject": "Feather or Crystal Prism",
+      "talismanReasoning": "Reflects their attention to detail, purity, clarity",
+      "tattoos": "A maiden or a detailed plant/flower (On the ankle or forearm)",
+      "tattooReasoning": "Virgos might prefer a subtle and intricate tattoo that signifies their sign or their meticulous, nature-loving side."
+    },
+    "environment": {
+      "backgroundImagery": "Harvest fields",
+      "colorPalette": "Greens, browns",
+      "lighting": "Soft, natural",
+      "texture": "Detailed, meticulous",
+      "weather": "Clear, crisp day",
+      "symbolicMotifs": "Maiden, or wheat motifs",
+      "companionAnimals": "Rabbit: Known for their quiet and modest nature, reflecting the Virgo temperament. Swan: Symbolizing grace and beauty, resonating with Virgo's love for perfection."
+    },
+    "pose": {
+      "primaryPose": "Delicate pose, hands examining a harvested grain.",
+      "primaryReasoning": "Showcasing Virgo's detail-oriented, meticulous nature.",
+      "alternatePose": "Sifting grains of sand through fingers.",
+      "alternateReasoning": "Represents Virgo's discerning, meticulous nature and their connection to earth.",
+      "description": "A diligent 40-year-old healer with earthy brown eyes, fresh olive skin, clad in a simple linen dress, her expression thoughtful and focused."
+    },
+    "referenceFigures": {
+      "primaryActress": "Natalie Dormer",
+      "primaryReasoning": "Her symmetrical features and understated elegance resonate with the meticulous and balanced nature of Virgo.",
+      "additionalActresses": [
+        "Gwyneth Paltrow",
+        "Alicia Vikander"
+      ],
+      "additionalReasoning": "Both actresses possess a refined elegance that reflects the meticulous and analytical nature of Virgo.",
+      "mythologicalFigure": "Vesta (Roman Mythology)",
+      "mythologicalReasoning": "As the goddess of hearth, home, and family, Vesta represents Virgo's traits of diligence, service, and modesty."
+    },
+    "lightingScenario": {
+      "rating": "9",
+      "reasoning": "Analytical, Reserved",
+      "scenario": "Soft and diffused lighting with emphasis on natural tones for their analytical and reserved character."
+    },
+    "headshotPrompt": {
+      "prompt": "Beautiful hyper-detailed cover portrait of a graceful, thoughtful, focused, diligent 40-year-old healer with green eyes. Auburn Hair, Braided Bun. Simple linen Dress. UHD. 16K. Canon50. Soft, diffuse lighting: Greens, browns. Graceful Masterpiece by daVinci, daVinci, David Hamilton.",
+      "negativePrompt": "",
+      "model": "deliberate22",
+      "steps": "15",
+      "sampler": "ddim",
+      "config": "7.5"
+    },
+    "tarotPrompt": {
+      "prompt": "Beautiful hyper-detailed cover portrait of a graceful, thoughtful, focused, diligent 40-year-old healer with green eyes. Auburn Hair, Braided Bun. Simple linen Dress. UHD. 16K. Canon50. Soft, diffuse lighting: Greens, browns. Graceful Masterpiece by daVinci, daVinci, David Hamilton.",
+      "negativePrompt": "",
+      "model": "deliberate22",
+      "steps": "15",
+      "sampler": "ddim",
+      "config": "7.5"
+    }
+  },
+  {
+    "sign": "Libra",
+    "source": "AstroSisters.r3-FINAL.zip",
+    "core": {
+      "polarity": "Positive",
+      "mode": "Cardinal",
+      "element": "Air",
+      "rulingPlanet": "Venus",
+      "stone": "Rose Quartz",
+      "planetForPrompt": "Venus",
+      "symbolicRepresentation": "Use balanced, symmetrical shapes and pastel, airy colors like pink and light blue. Incorporate the scales of justice or a harmonious, geometric design to symbolize Libra's energy.",
+      "anthropomorphicRepresentation": "A balanced, harmonious woman, standing against a pastel sky, holding a set of balanced scales with a rose quartz in the center.",
+      "characterIdeas": [
+        "Peacemaker",
+        "Judge",
+        "Dove",
+        "Mediator",
+        "Fair Maiden",
+        "Justice Deity"
+      ],
+      "clothingStyle": "Velvet gown with balance-scale patterns, fine silk scarf with dove motifs",
+      "bodyType": "Symmetrical",
+      "skinColor": "Soft Peach",
+      "age": "30 - Reflects the balance of youth and maturity, in line with Libra's balanced nature.",
+      "eyeColor": "Clear Blue",
+      "reasoning": "Balanced and serene, clear blue eyes mirror Libra's peaceful and harmonious nature"
+    },
+    "physicalTraits": {
+      "eyeColor": "Clear Blue",
+      "eyeReasoning": "Balanced and serene, clear blue eyes mirror Libra's peaceful and harmonious nature",
+      "skinColor": "Soft Peach",
+      "skinReasoning": "Emphasizes the harmonious and balance-seeking air nature of Libra",
+      "hair": "Ash Blonde, Bob Cut",
+      "hairReasoning": "The balanced ash blonde color and evenly cut style reflect Libra's sense of harmony and balance.",
+      "bodyType": "Symmetrical",
+      "bodyReasoning": "Balanced and symmetrical, like the scales that symbolize Libra."
+    },
+    "clothing": {
+      "topWear": "Diplomat's Suit",
+      "topWearMaterial": "Silk, Wool",
+      "topWearColors": "Pastel Blue, Pink",
+      "topWearMotifs": "Tailored, Balance Scale motifs",
+      "sensualAttire": "Elegant Silk Blouse",
+      "sensualMaterial": "Silk, Satin",
+      "sensualColors": "Pastel Blue, Pink",
+      "sensualMotifs": "Tailored, Soft, Refined"
+    },
+    "adornment": {
+      "makeupStyle": "Balanced makeup, Light blush, Pink lipstick",
+      "makeupPalette": "Pinks, Light Blues",
+      "makeupReasoning": "To symbolize their love for beauty, harmony, and balance",
+      "jewelry": "Balance Scale Pendant",
+      "jewelryReasoning": "Represents their sign symbol and love for balance",
+      "talismanObject": "Scales or Opal Pendant",
+      "talismanReasoning": "Symbolizes their search for balance, fairness, harmony",
+      "tattoos": "Scales or a simple, balanced design (On the back or forearm)",
+      "tattooReasoning": "Libras may opt for a tattoo that represents balance and harmony, two qualities they deeply value."
+    },
+    "environment": {
+      "backgroundImagery": "Scales/balance",
+      "colorPalette": "Pastels, blues",
+      "lighting": "Balanced, soft",
+      "texture": "Smooth, balanced",
+      "weather": "Clear skies",
+      "symbolicMotifs": "Scale motifs",
+      "companionAnimals": "Dove: Represents peace and harmony which aligns with the balance-seeking Libra. Panda: Known for their calm, balanced nature."
+    },
+    "pose": {
+      "primaryPose": "Balanced pose, holding scales in equilibrium.",
+      "primaryReasoning": "Representing Libra's fair, balanced nature.",
+      "alternatePose": "Finger gently touching a crystal prism, refracting light.",
+      "alternateReasoning": "Represents Libra's association with balance, harmony, and their ability to see all sides.",
+      "description": "A graceful 28-year-old diplomat with opalescent eyes, soft peach skin, dressed in a flowing silk gown, her face reflecting serenity and harmony."
+    },
+    "referenceFigures": {
+      "primaryActress": "Emily Blunt",
+      "primaryReasoning": "Her refined features and graceful beauty encapsulate the harmonious and aesthetic-oriented nature of Libra.",
+      "additionalActresses": [
+        "Rachel Weisz",
+        "Anne Hathaway"
+      ],
+      "additionalReasoning": "Their symmetrical features and graceful demeanor capture the balance and harmony of Libra.",
+      "mythologicalFigure": "Aphrodite (Greek Mythology)",
+      "mythologicalReasoning": "The goddess of love and beauty, Aphrodite exemplifies Libra's affinity for balance, harmony, and aesthetic beauty."
+    },
+    "lightingScenario": {
+      "rating": "1",
+      "reasoning": "Diplomatic, Harmonious",
+      "scenario": "High-key lighting with soft shadows to reflect their diplomatic nature and love of harmony."
+    },
+    "headshotPrompt": {
+      "prompt": "Beautiful close-up portrait of a lovely, balanced, poised, elegant 17YO Ginger Model. Insanely-detailed hazel eyes. Rose Gold Hair, Bob Cut. Tailored business suit. Opal necklace. UHD. 16K. Canon50. Soft lighting with color palette of Blush Pink, Powder Blue, Soft Gold. Masterpiece by daVinci, Alex Grey",
+      "negativePrompt": "",
+      "model": "",
+      "steps": "",
+      "sampler": "",
+      "config": ""
+    },
+    "tarotPrompt": {
+      "prompt": "Beautiful close-up portrait of a lovely, balanced, poised, elegant 17YO Ginger Model. Insanely-detailed hazel eyes. Rose Gold Hair, Bob Cut. Tailored business suit. Opal necklace. UHD. 16K. Canon50. Soft lighting with color palette of Blush Pink, Powder Blue, Soft Gold. Masterpiece by daVinci, Alex Grey",
+      "negativePrompt": "",
+      "model": "",
+      "steps": "",
+      "sampler": "",
+      "config": ""
+    }
+  },
+  {
+    "sign": "Scorpio",
+    "source": "AstroSisters.r3-FINAL.zip",
+    "core": {
+      "polarity": "Negative",
+      "mode": "Fixed",
+      "element": "Water",
+      "rulingPlanet": "Pluto, Mars",
+      "stone": "Obsidian",
+      "planetForPrompt": "Pluto",
+      "symbolicRepresentation": "Utilize deep, fluid forms and dark, intense colors like maroon and black. Include a scorpion or a coiled snake to symbolize Scorpio's transformative, fixed nature.",
+      "anthropomorphicRepresentation": "A mysterious, intense woman, cloaked in a deep red dress, holding a obsidian pendant, with a scorpion tattoo on her arm.",
+      "characterIdeas": [
+        "Vampiress",
+        "Banshee",
+        "Necromancer",
+        "Shadow",
+        "Enchantress",
+        "Femme Fatale"
+      ],
+      "clothingStyle": "Dark, form-fitting dress with lace details, studded leather collar",
+      "bodyType": "Powerful",
+      "skinColor": "Deep Espresso",
+      "age": "35 - A more mature age, reflecting the deep, intense, and transformative qualities of Scorpio.",
+      "eyeColor": "Deep Brown",
+      "reasoning": "Intense and mysterious, deep brown eyes echo Scorpio's secretive and magnetic personality"
+    },
+    "physicalTraits": {
+      "eyeColor": "Deep Brown",
+      "eyeReasoning": "Intense and mysterious, deep brown eyes echo Scorpio's secretive and magnetic personality",
+      "skinColor": "Deep Espresso",
+      "skinReasoning": "Complements the intense, mysterious water element of Scorpio",
+      "hair": "Black, Long and Wavy",
+      "hairReasoning": "The black color symbolizes Scorpio's intense, mysterious nature. The long, wavy style adds to their allure.",
+      "bodyType": "Powerful",
+      "bodyReasoning": "Powerful and strong, reflecting Scorpio's passionate and resilient nature."
+    },
+    "clothing": {
+      "topWear": "Leather Corset",
+      "topWearMaterial": "Leather",
+      "topWearColors": "Black, Dark Red",
+      "topWearMotifs": "Fitted, Intricate lacing, Mystical",
+      "sensualAttire": "Leather Corset Top",
+      "sensualMaterial": "Leather, Silk",
+      "sensualColors": "Black, Dark Red",
+      "sensualMotifs": "Form-fitting, Alluring"
+    },
+    "adornment": {
+      "makeupStyle": "Intense, Dark eyeshadow, Dark lipstick",
+      "makeupPalette": "Reds, Blacks, Purples",
+      "makeupReasoning": "Represents their passionate, powerful, and transformative nature",
+      "jewelry": "Stinger Pendant or Choker",
+      "jewelryReasoning": "To represent their sign, mystery and power",
+      "talismanObject": "Scorpion Pendant or Obsidian Crystal",
+      "talismanReasoning": "Reflects their intense, mysterious nature",
+      "tattoos": "A scorpion or a Phoenix (On the upper arm or back)",
+      "tattooReasoning": "Scorpios might choose a tattoo that signifies their sign or their resilient, transformative nature."
+    },
+    "environment": {
+      "backgroundImagery": "Dark water depths",
+      "colorPalette": "Deep red, black",
+      "lighting": "Low, secretive",
+      "texture": "Intense, deep",
+      "weather": "Stormy",
+      "symbolicMotifs": "Scorpion, or phoenix motifs",
+      "companionAnimals": "Scorpion: The symbol of Scorpio, representing the sign's mysterious and resilient nature. Snake: Known for transformation and rebirth, reflecting Scorpio's ability to evolve."
+    },
+    "pose": {
+      "primaryPose": "Intense pose, hand clutching a phoenix feather.",
+      "primaryReasoning": "Symbolizing Scorpio's passionate, transformative nature.",
+      "alternatePose": "Holding a jeweled scorpion pendant.",
+      "alternateReasoning": "Showcasing Scorpio's connection to their symbol, the scorpion, and their mysterious, powerful nature.",
+      "description": "A mysterious 35-year-old sorceress with deep-set, black eyes, dark espresso skin, donning an enigmatic cloak, her gaze intense and penetrating."
+    },
+    "referenceFigures": {
+      "primaryActress": "Eva Green",
+      "primaryReasoning": "Her striking eyes and intense aura echo the passionate and mysterious nature of Scorpio.",
+      "additionalActresses": [
+        "Megan Fox",
+        "Penélope Cruz"
+      ],
+      "additionalReasoning": "Both actresses have an intense and magnetic beauty, resonating with the passionate and mysterious nature of Scorpio.",
+      "mythologicalFigure": "Kali (Hindu Mythology)",
+      "mythologicalReasoning": "Kali, a fierce and powerful goddess, represents Scorpio's intensity, transformative power, and depth of emotions."
+    },
+    "lightingScenario": {
+      "rating": "12",
+      "reasoning": "Intense, Secretive",
+      "scenario": "Very low-key, almost noir-like lighting with deep shadows to reflect their intensity and secrecy."
+    },
+    "headshotPrompt": {
+      "prompt": "Beautiful Close-up hyper-detailed fantasy portrait of a mysterious, intense, emotional 30YO dark-skinned Sorceress. Insanely-Detailed Dark-Brown eyes. Hooded Cloak. Powerful body. Intricate Leather-Silk Bodice. Topaz Gemstone. Jet-Black wavy hair. UHD. 16K. Canon50. Subdued low-key lighting crimson-red & obsidian palette. Mysterious Astrological Masterpiece by Alex Grey, Alex Grey.",
+      "negativePrompt": "",
+      "model": "deliberate21",
+      "steps": "15",
+      "sampler": "",
+      "config": "7.5"
+    },
+    "tarotPrompt": {
+      "prompt": "Beautiful Close-up hyper-detailed fantasy portrait of a mysterious, intense, emotional 30YO dark-skinned Sorceress. Insanely-Detailed Dark-Brown eyes. Hooded Cloak. Powerful body. Intricate Leather-Silk Bodice. Topaz Gemstone. Jet-Black wavy hair. UHD. 16K. Canon50. Subdued low-key lighting crimson-red & obsidian palette. Mysterious Astrological Masterpiece by Alex Grey, Alex Grey.",
+      "negativePrompt": "",
+      "model": "deliberate21",
+      "steps": "15",
+      "sampler": "",
+      "config": "7.5"
+    }
+  },
+  {
+    "sign": "Sagittarius",
+    "source": "AstroSisters.r3-FINAL.zip",
+    "core": {
+      "polarity": "Positive",
+      "mode": "Mutable",
+      "element": "Fire",
+      "rulingPlanet": "Jupiter",
+      "stone": "Lapis Lazuli",
+      "planetForPrompt": "",
+      "symbolicRepresentation": "Feature dynamic, expansive shapes and bright, fiery colors like purple and orange. Incorporate an archer's bow or a galloping horse to represent Sagittarius' adventurous spirit.",
+      "anthropomorphicRepresentation": "A vibrant, adventurous woman, with a bow and arrow in hand, ready to leap into action, a pendant with the symbol of Jupiter around her neck.",
+      "characterIdeas": [
+        "Gypsy",
+        "Nomad",
+        "Hunter",
+        "Archer",
+        "Voyager",
+        "Prophetess"
+      ],
+      "clothingStyle": "Explorer's leather tunic, quilted shoulder cape with feather trim",
+      "bodyType": "Lean",
+      "skinColor": "Bronzed Tan",
+      "age": "24 - Exuding the vibrant energy of someone in their mid-twenties, with the free-spirited, adventurous nature of Sagittarius.",
+      "eyeColor": "Bright Hazel",
+      "reasoning": "Adventurous and optimistic, bright hazel eyes reflect Sagittarius' enthusiasm for life"
+    },
+    "physicalTraits": {
+      "eyeColor": "Bright Hazel",
+      "eyeReasoning": "Adventurous and optimistic, bright hazel eyes reflect Sagittarius' enthusiasm for life",
+      "skinColor": "Bronzed Tan",
+      "skinReasoning": "Reflects the adventurous spirit and the fire element of Sagittarius",
+      "hair": "Auburn, Loose and Wavy",
+      "hairReasoning": "Auburn matches Sagittarius' adventurous, fiery spirit. The loose, wavy style reflects their free-spirited nature.",
+      "bodyType": "Lean",
+      "bodyReasoning": "Tall and lean, like the Sagittarius archer."
+    },
+    "clothing": {
+      "topWear": "Archer's Tunic",
+      "topWearMaterial": "Leather, Cotton",
+      "topWearColors": "Royal Blue, White",
+      "topWearMotifs": "Practical, Quiver & Bow motifs",
+      "sensualAttire": "Leather Vest with Adventurous Accents",
+      "sensualMaterial": "Leather, Cotton",
+      "sensualColors": "Royal Blue, White",
+      "sensualMotifs": "Practical, Bold, Free-spirited"
+    },
+    "adornment": {
+      "makeupStyle": "Adventurous, Colorful eyeliner, Vibrant lipstick",
+      "makeupPalette": "Purples, Blues, Reds",
+      "makeupReasoning": "Represents their love for adventure, freedom, and knowledge",
+      "jewelry": "Arm Band",
+      "jewelryReasoning": "Symbolic of their free-spirited and adventurous nature",
+      "talismanObject": "Arrow or Traveller's Compass",
+      "talismanReasoning": "Symbolizes their adventurous, freedom-loving spirit",
+      "tattoos": "An archer or a compass (On the shoulder or forearm)",
+      "tattooReasoning": "Sagittarius might opt for a tattoo representing their sign or their love for exploration and adventure."
+    },
+    "environment": {
+      "backgroundImagery": "Forest/Archer's bow",
+      "colorPalette": "Purples, blues",
+      "lighting": "Adventurous, dynamic",
+      "texture": "Expansive, energetic",
+      "weather": "Clear, windy",
+      "symbolicMotifs": "Archer, or horse motifs",
+      "companionAnimals": "Horse: Symbolizing the spirit of adventure and freedom, much like Sagittarians. Wolf: Known for their love of exploration and strong social bonds."
+    },
+    "pose": {
+      "primaryPose": "Adventurous pose, preparing to shoot an arrow.",
+      "primaryReasoning": "Representing Sagittarius' adventurous, freedom-loving spirit.",
+      "alternatePose": "Hands open, holding a compass.",
+      "alternateReasoning": "Demonstrates Sagittarius' love for exploration and adventure.",
+      "description": "An adventurous 24-year-old archer with deep blue eyes, bronzed tan skin, wearing leather hunting gear, her face bright with a desire for exploration."
+    },
+    "referenceFigures": {
+      "primaryActress": "Zoe Saldana",
+      "primaryReasoning": "Her adventurous look and athletic build resonate with the bold and optimistic nature of Sagittarius.",
+      "additionalActresses": [
+        "Cameron Diaz",
+        "Gal Gadot"
+      ],
+      "additionalReasoning": "Their athletic build and adventurous look align with the optimistic and adventurous nature of Sagittarius.",
+      "mythologicalFigure": "Artemis (Greek Mythology)",
+      "mythologicalReasoning": "As the goddess of the hunt, wild animals, and wilderness, Artemis symbolizes Sagittarius' love for freedom, exploration, and the wild."
+    },
+    "lightingScenario": {
+      "rating": "3",
+      "reasoning": "Optimistic, Adventurous",
+      "scenario": "High-key lighting with bright colors to match their optimism and sense of adventure."
+    },
+    "headshotPrompt": {
+      "prompt": "Beautiful Close-up fantasy portrait of adventurous nude 26YO Hunter. Insanely detailed hazel eyes. Wavy Brown-Burgundy Tresses. Warm Tan skin. Lean, flat chest. Leather Vest. Lapis Lazuli necklace. Masterpiece by daVinci, Frazetta, Annie Leibovitz. High-key lighting Earthy-Umber/Burgundy Color Palette. UHD. 16K. Canon50.",
+      "negativePrompt": "two heads, two face, out of frame, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, ugly, blurry, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, long neck, poorly drawn eyes, double heads, double faces, two heads, two faces, ugly eyes, misshapen eyes",
+      "model": "",
+      "steps": "",
+      "sampler": "",
+      "config": ""
+    },
+    "tarotPrompt": {
+      "prompt": "Beautiful Close-up fantasy portrait of adventurous nude 26YO Hunter. Insanely detailed hazel eyes. Wavy Brown-Burgundy Tresses. Warm Tan skin. Lean, flat chest. Leather Vest. Lapis Lazuli necklace. Masterpiece by daVinci, Frazetta, Annie Leibovitz. High-key lighting Earthy-Umber/Burgundy Color Palette. UHD. 16K. Canon50.",
+      "negativePrompt": "two heads, two face, out of frame, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, ugly, blurry, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, long neck, poorly drawn eyes, double heads, double faces, two heads, two faces, ugly eyes, misshapen eyes",
+      "model": "",
+      "steps": "",
+      "sampler": "",
+      "config": ""
+    }
+  },
+  {
+    "sign": "Capricorn",
+    "source": "AstroSisters.r3-FINAL.zip",
+    "core": {
+      "polarity": "Negative",
+      "mode": "Cardinal",
+      "element": "Earth",
+      "rulingPlanet": "Saturn",
+      "stone": "Garnet",
+      "planetForPrompt": "",
+      "symbolicRepresentation": "Use structured, geometric forms and dark, earthy colors like grey and brown. Include a mountain goat or a strong, architectural design to symbolize Capricorn's ambitious energy.",
+      "anthropomorphicRepresentation": "A disciplined, ambitious woman, dressed in structured attire, standing atop a mountain with a pendant adorned with a symbol of Saturn.",
+      "characterIdeas": [
+        "Wise Woman",
+        "Witch",
+        "Matron",
+        "Crone",
+        "Hermit",
+        "Sage"
+      ],
+      "clothingStyle": "Woolen dress in earthy tones, cloak with mountainous embroidery",
+      "bodyType": "Structured",
+      "skinColor": "Rich Walnut",
+      "age": "50 - Capricorn's wisdom, discipline, and authority could be well represented by a middle-aged woman.",
+      "eyeColor": "Dark Gray",
+      "reasoning": "Serious and grounded, dark gray eyes mirror Capricorn's determined and disciplined nature"
+    },
+    "physicalTraits": {
+      "eyeColor": "Dark Gray",
+      "eyeReasoning": "Serious and grounded, dark gray eyes mirror Capricorn's determined and disciplined nature",
+      "skinColor": "Rich Walnut",
+      "skinReasoning": "Mirrors the earth element and the practical, grounded nature of Capricorn",
+      "hair": "Dark Brown, Tied Up",
+      "hairReasoning": "Dark brown signifies Capricorn's earthy, practical nature. The tied-up style represents their organized demeanor.",
+      "bodyType": "Structured",
+      "bodyReasoning": "Structured and slender, reflecting Capricorn's disciplined and serious nature."
+    },
+    "clothing": {
+      "topWear": "Fur-lined Cape",
+      "topWearMaterial": "Wool, Fur",
+      "topWearColors": "Dark Green, Brown",
+      "topWearMotifs": "Cozy, Durable, Earthy",
+      "sensualAttire": "High Collar Silk Blouse with Fur Detail",
+      "sensualMaterial": "Silk, Fur",
+      "sensualColors": "Dark Green, Brown",
+      "sensualMotifs": "Cozy, Sensual, Luxurious"
+    },
+    "adornment": {
+      "makeupStyle": "Simple, Subtle eyeshadow, Natural lipstick",
+      "makeupPalette": "Browns, Blacks, Greys",
+      "makeupReasoning": "To symbolize their disciplined, practical, and hardworking nature",
+      "jewelry": "Simple, Elegant Ring",
+      "jewelryReasoning": "Aligns with their practical and disciplined nature",
+      "talismanObject": "Vintage Timepiece or Key",
+      "talismanReasoning": "Represents their disciplined, ambitious nature",
+      "tattoos": "A mountain goat or a tree (On the calf or back)",
+      "tattooReasoning": "Capricorns might select a tattoo that embodies their sign or their determined, resilient nature."
+    },
+    "environment": {
+      "backgroundImagery": "Mountain",
+      "colorPalette": "Greys, earth tones",
+      "lighting": "Steady, calm",
+      "texture": "Rugged, enduring",
+      "weather": "Snowy",
+      "symbolicMotifs": "Goat, or mountain motifs",
+      "companionAnimals": "Goat: The symbol of Capricorn, representing the determined and ambitious nature of this sign. Ox: Known for their hardworking and reliable nature."
+    },
+    "pose": {
+      "primaryPose": "Enduring pose, steadying a model mountain peak.",
+      "primaryReasoning": "Showcasing Capricorn's disciplined, ambitious nature.",
+      "alternatePose": "Palm supporting a crystal globe.",
+      "alternateReasoning": "Represents Capricorn's ambition, and their role as carriers of responsibility.",
+      "description": "A wise 70-year-old crone with clear gray eyes, rich walnut skin, adorned in a modest yet elegant woolen robe, her expression full of knowledge and understanding."
+    },
+    "referenceFigures": {
+      "primaryActress": "Viola Davis",
+      "primaryReasoning": "Her strong facial features and intense gaze capture the ambitious and disciplined nature of Capricorn.",
+      "additionalActresses": [
+        "Cate Blanchett",
+        "Toni Collette"
+      ],
+      "additionalReasoning": "Their strong facial features and commanding presence align with the ambitious and disciplined nature of Capricorn.",
+      "mythologicalFigure": "Amaterasu (Japanese Mythology)",
+      "mythologicalReasoning": "The sun goddess who is disciplined and responsible for keeping the universe in order, Amaterasu reflects Capricorn's discipline, ambition, and responsibility."
+    },
+    "lightingScenario": {
+      "rating": "10",
+      "reasoning": "Ambitious, Disciplined",
+      "scenario": "High contrast, low-key lighting with sharp shadows for their ambitious and disciplined demeanor."
+    },
+    "headshotPrompt": {
+      "prompt": "Intricate Capricorn fantasy art portrait. Beautiful closeup oil painting of an elegant 60YO Wizard with clear gray eyes, dark rich walnut skin confidently looking into camera while sitting in a library. LupitaNyong'o. Silver-brown hair, platinum highlights. Hair tied back elegantly. She is adorned in an elegant ornate warm woolen robe, her expression full of knowledge and understanding. High contrast, low-key lighting. Ultra-high definition.16K. Unreal Engine. by daVinci/Dittman.",
+      "negativePrompt": "open mouth, two heads, misshapen fingers, unformed fingers, six fingers, five fingers, plastic skin, two heads, two face, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, poorly drawn eyes, double heads, double faces, two heads, two faces, ugly eyes, misshapen eyes, out of frame, blurry",
+      "model": "",
+      "steps": "",
+      "sampler": "",
+      "config": ""
+    },
+    "tarotPrompt": {
+      "prompt": "Intricate Capricorn fantasy art portrait. Beautiful closeup oil painting of an elegant 60YO Wizard with clear gray eyes, dark rich walnut skin confidently looking into camera while sitting in a library. LupitaNyong'o. Silver-brown hair, platinum highlights. Hair tied back elegantly. She is adorned in an elegant ornate warm woolen robe, her expression full of knowledge and understanding. High contrast, low-key lighting. Ultra-high definition.16K. Unreal Engine. by daVinci/Dittman.",
+      "negativePrompt": "open mouth, two heads, misshapen fingers, unformed fingers, six fingers, five fingers, plastic skin, two heads, two face, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, poorly drawn eyes, double heads, double faces, two heads, two faces, ugly eyes, misshapen eyes, out of frame, blurry",
+      "model": "",
+      "steps": "",
+      "sampler": "",
+      "config": ""
+    }
+  },
+  {
+    "sign": "Aquarius",
+    "source": "AstroSisters.r3-FINAL.zip",
+    "core": {
+      "polarity": "Positive",
+      "mode": "Fixed",
+      "element": "Air",
+      "rulingPlanet": "Uranus, Saturn",
+      "stone": "Amethyst",
+      "planetForPrompt": "Uranus",
+      "symbolicRepresentation": "Utilize innovative, futuristic shapes and electric, cool colors like blue and silver. Incorporate a water bearer or a lightning bolt to symbolize Aquarius' visionary nature.",
+      "anthropomorphicRepresentation": "An innovative, visionary woman, in a futuristic outfit, holding a vessel of water with a lightning bolt pendant glowing with the colors of Uranus.",
+      "characterIdeas": [
+        "Time Traveler",
+        "Alien",
+        "Rebel",
+        "Astronaut",
+        "Technomancer",
+        "Cyborg"
+      ],
+      "clothingStyle": "Futuristic, metallic jumpsuit, holographic cape",
+      "bodyType": "Unique",
+      "skinColor": "Luminous Pearl",
+      "age": "22 - The innovative, unconventional, and youthful energy of Aquarius might be well represented in the early twenties.",
+      "eyeColor": "Electric Blue",
+      "reasoning": "Unique and visionary, electric blue eyes resonate with Aquarius' innovative and independent spirit"
+    },
+    "physicalTraits": {
+      "eyeColor": "Electric Blue",
+      "eyeReasoning": "Unique and visionary, electric blue eyes resonate with Aquarius' innovative and independent spirit",
+      "skinColor": "Luminous Pearl",
+      "skinReasoning": "Represents the innovative and unique air nature of Aquarius",
+      "hair": "Electric Blue, Asymmetrical",
+      "hairReasoning": "The unconventional color and style match Aquarius' individualistic, innovative spirit.",
+      "bodyType": "Unique",
+      "bodyReasoning": "Unique and unconventional, reflecting Aquarius's individualistic and innovative nature."
+    },
+    "clothing": {
+      "topWear": "Sci-fi Jumpsuit",
+      "topWearMaterial": "Synthetic",
+      "topWearColors": "Light Blue, Silver",
+      "topWearMotifs": "Smooth, Futuristic, Star motifs",
+      "sensualAttire": "Futuristic Metallic Top",
+      "sensualMaterial": "Synthetic, Metallic",
+      "sensualColors": "Light Blue, Silver",
+      "sensualMotifs": "Smooth, Sleek, Shiny"
+    },
+    "adornment": {
+      "makeupStyle": "Futuristic, Metallic eyeshadow, Unique lipstick shades",
+      "makeupPalette": "Blues, Aquas, Silvers",
+      "makeupReasoning": "Represents their innovative, humanitarian, and unique nature",
+      "jewelry": "Nose Ring",
+      "jewelryReasoning": "Reflects their unconventional and forward-thinking nature",
+      "talismanObject": "Amethyst or Water Bearer Jar",
+      "talismanReasoning": "Reflects their innovative, humanitarian spirit",
+      "tattoos": "Water bearer or an abstract, futuristic design (On the forearm or back)",
+      "tattooReasoning": "Aquarians may prefer a unique or unconventional tattoo that showcases their sign or their innovative and forward-thinking nature."
+    },
+    "environment": {
+      "backgroundImagery": "Stars/sky",
+      "colorPalette": "Electric blues, silvers",
+      "lighting": "Bright, innovative",
+      "texture": "Smooth, flowing",
+      "weather": "Clear, starry night",
+      "symbolicMotifs": "Water bearer, or star motifs",
+      "companionAnimals": "Otter: Symbolizing playfulness and innovation, which aligns with the Aquarius nature. Hummingbird: Known for their agility and seeking out the sweetest things in life."
+    },
+    "pose": {
+      "primaryPose": "Innovative pose, hands shaping a spark of electricity.",
+      "primaryReasoning": "Representing Aquarius' inventive, forward-thinking nature.",
+      "alternatePose": "Fingers tracing a map of the stars.",
+      "alternateReasoning": "Showcasing Aquarius' inventive, forward-thinking nature and connection to the cosmos.",
+      "description": "A visionary 38-year-old inventor with electric blue eyes, luminous pearl skin, wearing a chic, avant-garde ensemble, her face bright with innovative ideas."
+    },
+    "referenceFigures": {
+      "primaryActress": "Tilda Swinton",
+      "primaryReasoning": "Her androgynous beauty and unique look echo the innovative and unconventional nature of Aquarius.",
+      "additionalActresses": [
+        "Tilda Swinton",
+        "Cara Delevingne"
+      ],
+      "additionalReasoning": "Both actresses have unique and androgynous looks, echoing the innovative and unconventional nature of Aquarius.",
+      "mythologicalFigure": "Nüwa (Chinese Mythology)",
+      "mythologicalReasoning": "Known for creating mankind and repairing the wall of heaven, Nüwa embodies Aquarius's innovation, altruism, and humanitarian spirit."
+    },
+    "lightingScenario": {
+      "rating": "4",
+      "reasoning": "Idealistic, Altruistic",
+      "scenario": "Soft, diffuse lighting with a mix of cool and warm tones to represent their idealism and altruism."
+    },
+    "headshotPrompt": {
+      "prompt": "Detailed electric closeup painting of a Confident Bold Smug Pale unclothed MaggieQ/MaggieQ/OliviaWilde time-traveller smirking. Electrified. Electric bodypaint. Piercings. Electric-blue eyes. Short Side-Swept Undercut Silver Hair. By AlexGrey/daVinci/DavidHamilton. Zeiss Lens @f/22. Soft Ambient light. Ultra-high definition.16K. Unreal Engine. Silver-Violet Duotone spaceship.",
+      "negativePrompt": "open mouth, two heads, misshapen fingers, unformed fingers, six fingers, five fingers, plastic skin, two heads, two face, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, poorly drawn eyes, double heads, double faces, two heads, two faces, ugly eyes, misshapen eyes, out of frame, blurry",
+      "model": "deliberate21",
+      "steps": "15",
+      "sampler": "",
+      "config": "7.3"
+    },
+    "tarotPrompt": {
+      "prompt": "Detailed electric closeup painting of a Confident Bold Smug Pale unclothed MaggieQ/MaggieQ/OliviaWilde time-traveller smirking. Electrified. Electric bodypaint. Piercings. Electric-blue eyes. Short Side-Swept Undercut Silver Hair. By AlexGrey/daVinci/DavidHamilton. Zeiss Lens @f/22. Soft Ambient light. Ultra-high definition.16K. Unreal Engine. Silver-Violet Duotone spaceship.",
+      "negativePrompt": "open mouth, two heads, misshapen fingers, unformed fingers, six fingers, five fingers, plastic skin, two heads, two face, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, poorly drawn eyes, double heads, double faces, two heads, two faces, ugly eyes, misshapen eyes, out of frame, blurry",
+      "model": "deliberate21",
+      "steps": "15",
+      "sampler": "",
+      "config": "7.3"
+    }
+  },
+  {
+    "sign": "Pisces",
+    "source": "AstroSisters.r3-FINAL.zip",
+    "core": {
+      "polarity": "Negative",
+      "mode": "Mutable",
+      "element": "Water",
+      "rulingPlanet": "Neptune, Jupiter",
+      "stone": "Aquamarine",
+      "planetForPrompt": "",
+      "symbolicRepresentation": "Feature soft, dreamy forms and cool, watery colors like sea green and lavender. Include two fish swimming in opposite directions or a mystical, fluid pattern to represent Pisces.",
+      "anthropomorphicRepresentation": "An ethereal, dreamy woman, in a flowing gown adorned with iridescent scales, holding a trident, a pendant with the symbol of Neptune around her neck.",
+      "characterIdeas": [
+        "Mystic",
+        "Seer",
+        "Sibyl",
+        "Dream Weaver",
+        "Ghost",
+        "Mirage"
+      ],
+      "clothingStyle": "Iridescent, scale-patterned dress, sheer, flowy scarf like a water veil",
+      "bodyType": "Delicate",
+      "skinColor": "Opalescent Pale Blue",
+      "age": "40 - An age reflecting the wise, compassionate, and spiritually mature energy of Pisces.",
+      "eyeColor": "Sea-Green",
+      "reasoning": "Dreamy and compassionate, sea-green eyes reflect Pisces' deep emotional nature and connection to water"
+    },
+    "physicalTraits": {
+      "eyeColor": "Sea-Green",
+      "eyeReasoning": "Dreamy and compassionate, sea-green eyes reflect Pisces' deep emotional nature and connection to water",
+      "skinColor": "Opalescent Pale Blue",
+      "skinReasoning": "Echoes the dreamy, emotional water element of Pisces",
+      "hair": "Light Purple, Long and Flowy",
+      "hairReasoning": "The dreamy purple color and flowing style represent Pisces' spiritual, artistic nature.",
+      "bodyType": "Delicate",
+      "bodyReasoning": "Soft and delicate, reflecting Pisces's sensitive and empathetic nature."
+    },
+    "clothing": {
+      "topWear": "Nymph's Gown",
+      "topWearMaterial": "Silk, Chiffon",
+      "topWearColors": "Sea Green, Light Purple",
+      "topWearMotifs": "Flowing, Dreamy, Water motifs",
+      "sensualAttire": "Ethereal Silk Top with Translucent Accents",
+      "sensualMaterial": "Silk, Chiffon",
+      "sensualColors": "Sea Green, Light Purple",
+      "sensualMotifs": "Flowing, Dreamy, Ethereal"
+    },
+    "adornment": {
+      "makeupStyle": "Dreamy, Glittery eyeshadow, Glossy lipstick",
+      "makeupPalette": "Purples, Light Greens, Light Blues",
+      "makeupReasoning": "Represents their compassionate, artistic, and intuitive nature",
+      "jewelry": "Ankle Bracelet with Charms",
+      "jewelryReasoning": "Aligns with their dreamy, whimsical nature",
+      "talismanObject": "Dreamcatcher or Selenite Wand",
+      "talismanReasoning": "Symbolizes their dreamy, spiritual nature",
+      "tattoos": "Two fish or a dreamy seascape (On the foot or forearm)",
+      "tattooReasoning": "Pisces might go for a tattoo that represents their sign or their deep, imaginative, and intuitive nature."
+    },
+    "environment": {
+      "backgroundImagery": "Ocean/sea life",
+      "colorPalette": "Blues, sea greens",
+      "lighting": "Soft, dreamy",
+      "texture": "Fluid, dreamy",
+      "weather": "Misty, oceanic",
+      "symbolicMotifs": "Fish, or dream motifs",
+      "companionAnimals": "Fish: As the symbol of Pisces, they represent the sign's intuitive and empathetic nature. Seahorse: Known for their gentle, dreamy nature, reflecting the Pisces temperament."
+    },
+    "pose": {
+      "primaryPose": "Dreamy pose, cupping water and fish in hands.",
+      "primaryReasoning": "Symbolizing Pisces' imaginative, empathetic spirit.",
+      "alternatePose": "Hands releasing a butterfly.",
+      "alternateReasoning": "Represents Pisces' imaginative, empathetic spirit and their connection to transformation and the ethereal.",
+      "description": "A dreamy 32-year-old nymph with sea-green eyes, opalescent pale blue skin, clad in a gossamer gown, her expression serene and ethereal."
+    },
+    "referenceFigures": {
+      "primaryActress": "Mila Kunis",
+      "primaryReasoning": "Her dreamy eyes and ethereal beauty embody the intuitive and mystical nature of Pisces.",
+      "additionalActresses": [
+        "Zooey Deschanel",
+        "Kirsten Dunst"
+      ],
+      "additionalReasoning": "Their dreamy eyes and soft features embody the mystical and intuitive nature of Pisces.",
+      "mythologicalFigure": "Nerthus (Norse Mythology)",
+      "mythologicalReasoning": "Nerthus, a goddess associated with water and fertility, symbolizes Pisces' fluidity, intuition, and compassionate nature."
+    },
+    "lightingScenario": {
+      "rating": "11",
+      "reasoning": "Sensitive, Mysterious",
+      "scenario": "Low-key lighting with a hint of cool, mystical colors for their sensitive and mysterious nature."
+    },
+    "headshotPrompt": {
+      "prompt": "Beautiful Close-up hyper-detailed fantasy portrait of a curvy, loving, nurturing, emotional, kind 35YO Moon/Water Goddess. Insanely-detailed silver eyes. UHD. 16K. Canon50. Pale skin. Soft, Flowing, silk gown. Intricate-Iridescent-Silver Hair. Pearls. Lake ripples. Graceful Fantasy Masterpiece by Alex Grey, Alex Grey. Low-key lighting silver-white.",
+      "negativePrompt": "misshapen fingers, unformed fingers, six fingers, five fingers, open mouth, showing teeth, plastic skin, two heads, two face, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, poorly drawn eyes, double heads, double faces, two heads, two faces, ugly eyes, misshapen eyes, out of frame, ugly, blurry",
+      "model": "AZphotoReal",
+      "steps": "10,12",
+      "sampler": "ddim",
+      "config": "10"
+    },
+    "tarotPrompt": {
+      "prompt": "Beautiful Closeup of a Pale Contemplative Mature 40YO Hawaiian-Tahitian Fish-Queen-Crone with Dreamy Eyes with Swirling Fractal Fish. Ornate Jewelry & Body Scales. Wavy Cobalt/Ocean-Blue SeaGreen-Highlight Hair. By AlexGrey/AnnaDittman. Insanely Intricate water magic fantasy art portrait. Insanely Intricate Arabesque artwork masterpiece. Ultra-high definition. Cool Low-Key Cobalt/Ocean-Blue Lighting. 16K, Watercolor. Night Ocean Scene.",
+      "negativePrompt": "misshapen fingers, unformed fingers, six fingers, five fingers, open mouth, showing teeth, plastic skin, two heads, two face, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, out of frame, ugly, extra limbs, bad anatomy, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, fused fingers, too many fingers, poorly drawn eyes, double heads, double faces, two heads, two faces, ugly eyes, misshapen eyes, out of frame, ugly, blurry",
+      "model": "AZphotoReal",
+      "steps": "10,12",
+      "sampler": "ddim",
+      "config": "10"
+    }
+  }
+]

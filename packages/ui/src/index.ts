@@ -10,3 +10,5 @@ export const astraUiTokens = {
     rose: "#8b4b55"
   }
 };
+
+export { PublishedCardBody } from "./PublishedCardBody";

@@ -1,5 +1,6 @@
 "use client";
 
+import { PublishedCardBody } from "@astra/ui";
 import { Bookmark, Heart, MessageCircle, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ui } from "../lib/i18n";
@@ -74,29 +75,31 @@ export function StreamReader({ streamCards }: { streamCards: JourneyStreamCard[]
               const isSaved = savedCardIds.has(card.id);
               const isReflected = reflectedCardIds.has(card.id);
               return (
-                <article className="card stream-card" key={item.id}>
-                  <button className="stream-card-open" onClick={() => setActiveCardId(card.id)} type="button">
-                    <span className="stream-card-content">
-                      <span className="stream-card-header">
-                        <span className="eyebrow stream-card-eyebrow">{laneLabel(card.lane)}</span>
-                        <span className="stream-card-title">{card.title}</span>
+                <article className="card stream-card astraPublishedCard" key={item.id}>
+                  <button className="stream-card-open astraPublishedCardOpen" onClick={() => setActiveCardId(card.id)} type="button">
+                    <span className="stream-card-content astraPublishedCardContent">
+                      <span className="stream-card-header astraPublishedCardHeader">
+                        <span className="eyebrow stream-card-eyebrow astraPublishedCardEyebrow">{laneLabel(card.lane)}</span>
+                        <span className="stream-card-title astraPublishedCardTitle">{card.title}</span>
                       </span>
-                      <span className="stream-card-body">{card.body}</span>
-                      <span className="stream-card-meta">
+                      <span className="stream-card-body">
+                        <PublishedCardBody text={card.body} showLessLabel={ui.journey.showLess} showMoreLabel={ui.journey.showMore} />
+                      </span>
+                      <span className="stream-card-meta astraPublishedCardMeta">
                         <span>{itemKindLabel(item.kind)}</span>
                         <span>{audienceLabel(item.audience)}</span>
                         <span>{publishedDate(item.publishedAt)}</span>
                       </span>
                     </span>
-                    <span className="stream-card-media astraStreamArtFrame" aria-hidden="true">
-                      {card.imageUrl ? <img alt="" className="stream-card-image" src={card.imageUrl} /> : null}
+                    <span className="stream-card-media astraStreamArtFrame astraPublishedCardMedia" aria-hidden="true">
+                      {card.imageUrl ? <img alt="" className="stream-card-image astraPublishedCardImage" src={card.imageUrl} /> : null}
                     </span>
                   </button>
-                  <div className="astraStreamSocialBlock astraFeedCardActions" aria-label={`Social actions for ${card.title}`}>
+                  <div className="astraStreamSocialBlock astraFeedCardActions" aria-label={ui.journey.socialActionsFor(card.title)}>
                     <div className="astraStreamSocialActions astraStreamSocialActionsBar">
                       <div className="astraStreamSocialActionsLeft">
                         <button
-                          aria-label={`Like ${card.title}`}
+                          aria-label={ui.journey.likeCard(card.title)}
                           aria-pressed={isReflected}
                           className={`astraStreamIconAction${isReflected ? " astraStreamIconActionActive" : ""}`}
                           onClick={() => toggleSet(card.id, setReflectedCardIds, reflectedCardIds)}
@@ -105,7 +108,7 @@ export function StreamReader({ streamCards }: { streamCards: JourneyStreamCard[]
                           <Heart size={20} aria-hidden="true" />
                         </button>
                         <button
-                          aria-label={`Comment on ${card.title}`}
+                          aria-label={ui.journey.commentOnCard(card.title)}
                           aria-pressed={isReflected}
                           className={`astraStreamIconAction${isReflected ? " astraStreamIconActionActive" : ""}`}
                           onClick={() => toggleSet(card.id, setReflectedCardIds, reflectedCardIds)}
@@ -116,7 +119,7 @@ export function StreamReader({ streamCards }: { streamCards: JourneyStreamCard[]
                       </div>
                       <div className="astraStreamSocialActionsRight">
                         <button
-                          aria-label={`Save ${card.title}`}
+                          aria-label={ui.journey.saveCardAria(card.title)}
                           aria-pressed={isSaved}
                           className={`astraStreamIconAction${isSaved ? " astraStreamIconActionActive" : ""}`}
                           onClick={() => toggleSet(card.id, setSavedCardIds, savedCardIds)}

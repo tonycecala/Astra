@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "astra-composer-card-import-v1",
+  "title": "Astra Astrology 101 - Certification Module",
+  "series": {
+    "id": "astra_astrology_101",
+    "title": "ASTRA Astrology 101",
+    "lane": "astrology_101",
+    "defaultDifficulty": "beginner"
+  },
+  "version": "0.3",
+  "notes": [
+    "Certification module for Astrology 101.",
+    "Imported cards remain drafts until reviewed in Composer.",
+    "Uses seriesOrder 72 as the closing card in the 72-card curriculum prototype."
+  ],
+  "cards": [
+    {
+      "id": "astrology_101_m08_certification_astrology_101_complete",
+      "kind": "certification",
+      "status": "draft",
+      "title": "Astrology 101 Certification",
+      "subtitle": "You have learned the first language of the chart.",
+      "body": "You have completed the foundational Astrology 101 sequence. That means you now have the beginning vocabulary for reading a chart as a living symbolic system rather than a pile of disconnected definitions.\n\nYou have met the signs as styles of expression, the planets as inner functions, the houses as fields of life, the aspects as relationships between parts, and timing as a way of noticing seasons rather than forcing predictions.\n\nThe deeper achievement is not memorization. It is discernment. You have started learning how to pause before turning a symbol into a verdict. You have practiced asking better questions: What is this pointing toward? Where does this show up in lived experience? What changes when awareness enters the picture?\n\nAstra treats certification as a marker of participation, attention, and symbolic literacy. It does not mean the mystery has been solved. It means you have earned the next doorway.\n\nFrom here, astrology becomes less about asking, ‘What am I?’ and more about asking, ‘How do these parts of life speak to one another — and how can I respond with more honesty, freedom, and care?’",
+      "excerpt": "You have completed Astrology 101 and earned the next doorway into symbolic literacy.",
+      "eyebrow": "Astrology 101 - Certification",
+      "lane": "astrology_101",
+      "seriesId": "astra_astrology_101",
+      "seriesOrder": 72,
+      "energy": [
+        "mythic",
+        "grounding",
+        "cosmic"
+      ],
+      "difficulty": "beginner",
+      "tags": [
+        "astrology_101",
+        "course",
+        "beginner",
+        "module_08",
+        "certification",
+        "symbolic_literacy",
+        "completion"
+      ],
+      "ctaLabel": "Claim certificate",
+      "ctaAction": "claim_certification",
+      "href": "/me/certifications/astrology-101",
+      "artPrompt": "Astra Astrology 101 certification artwork, vertical premium mobile card, luminous celestial certificate without readable text, elegant circular chart wheel as a seal, constellation garland, subtle gold and indigo glow, mythic academy feeling, refined electric aquarian line art, soft parchment texture, ceremonial but modern, no words, no letters, no numbers."
+    }
+  ]
+}
