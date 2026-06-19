@@ -12,6 +12,13 @@ function clean(value: string | undefined) {
   return value?.trim().replace(/^['"]|['"]$/g, "") || "";
 }
 
+function localDateOnly(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 async function requestJson(url: string) {
   const response = await fetch(url);
   const text = await response.text();
@@ -59,6 +66,12 @@ try {
   const second = parseSelection(secondResponse.payload, "Second selection");
   if (first.selectedCards.map((card) => card.id).join(",") !== second.selectedCards.map((card) => card.id).join(",")) {
     throw new Error("Expected Composer selection to be deterministic for the same user/date/query.");
+  }
+
+  const defaultDateResponse = await requestJson(`${astraBaseUrl}/api/composer/selection?userKey=${encodeURIComponent(userKey)}&requestType=course&id=astrology_101&count=5&limit=100`);
+  const defaultDateSelection = parseSelection(defaultDateResponse.payload, "Default-date selection");
+  if (defaultDateSelection.request.selectionDate !== localDateOnly()) {
+    throw new Error(`Expected default Composer selection date to use local date ${localDateOnly()}, received ${defaultDateSelection.request.selectionDate}.`);
   }
 
   const nextDayResponse = await requestJson(`${astraBaseUrl}/api/composer/selection?userKey=${encodeURIComponent(userKey)}&requestType=course&id=astrology_101&selectionDate=2026-06-18&count=5&limit=100`);

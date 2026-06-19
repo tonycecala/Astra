@@ -107,6 +107,10 @@ input {
   min-width: 0;
 }
 
+.composer-mobile-route-title {
+  display: none;
+}
+
 .composer-brand strong {
   font-size: 20px;
 }
@@ -596,76 +600,27 @@ textarea:focus {
 }
 
 .courseAssessmentMain {
-  display: grid;
-  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
-  gap: 14px;
-  align-items: start;
+  min-width: 0;
 }
 
 .courseAssessmentMedia {
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border-color: var(--line);
   background: var(--rail);
 }
 
-.courseAssessmentMedia img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.courseAssessmentImageFallback {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  place-items: center;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 850;
-  padding: 14px;
-  text-align: center;
-  text-transform: capitalize;
-}
-
 .courseAssessmentCopy,
-.courseAssessmentBody {
+.courseAssessmentCopy .astraPublishedCardBody {
   display: grid;
   gap: 10px;
 }
 
-.courseAssessmentBody {
+.courseAssessmentCopy .astraPublishedCardBody {
   color: var(--muted);
   line-height: 1.55;
 }
 
-.courseAssessmentBody p {
+.courseAssessmentCopy .astraPublishedCardBody p {
   margin: 0;
-}
-
-.quiz-widget-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.quiz-widget-heading > div {
-  min-width: 0;
-}
-
-.quiz-widget-heading span {
-  flex: 0 0 auto;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--soft-success);
-  color: var(--muted);
-  padding: 5px 9px;
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: capitalize;
 }
 
 .assessment-detail-link,
@@ -1619,18 +1574,33 @@ textarea:focus {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .courseAssessmentMain {
-    grid-template-columns: 1fr;
-  }
-
   .courseAssessmentMedia {
-    width: min(100%, 320px);
+    width: 100%;
   }
 }
 
 @media (max-width: 560px) {
   .composer-main {
     padding: 18px 14px;
+  }
+
+  .composer-brand-row {
+    align-items: center;
+    padding: 8px;
+  }
+
+  .composer-brand {
+    display: none;
+  }
+
+  .composer-mobile-route-title {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--ink);
+    font-size: 1.08rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .composer-nav {
@@ -1642,7 +1612,7 @@ textarea:focus {
   }
 
   .page-header {
-    display: grid;
+    display: none;
   }
 
   .dense-table [role="row"],

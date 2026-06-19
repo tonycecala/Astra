@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Home } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { AppNavigation } from "../components/AppNavigation";
-import { ThemeToggle } from "../components/ThemeToggle";
+import { SidebarAccountControls, TopBar } from "../components/TopBar";
 import { ui } from "../lib/i18n";
 import "./globals.css";
 
@@ -36,19 +36,18 @@ try {
         <div className="shell">
           <aside className="sidebar">
             <div className="brand-row">
-              <Link className="brand" href="/">
-                <Home size={24} aria-hidden="true" />
+              <Link className="brand" href="/journey" aria-label={ui.shell.brand}>
+                <Sparkles size={24} aria-hidden="true" />
                 <strong>{ui.shell.brand}</strong>
-                <span>{ui.shell.tagline}</span>
               </Link>
-              <ThemeToggle />
             </div>
             <AppNavigation />
+            <SidebarAccountControls />
           </aside>
-          <main className="main">{children}</main>
-          <div className="mobile-theme-toggle">
-            <ThemeToggle />
-          </div>
+          <main className="main">
+            <TopBar />
+            {children}
+          </main>
           <AppNavigation mobile />
         </div>
       </body>
