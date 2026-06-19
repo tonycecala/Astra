@@ -3,12 +3,12 @@ import { expect, test } from "@playwright/test";
 type JsonObject = Record<string, unknown>;
 
 const routes = [
-  { path: "/", heading: "A living stream" },
-  { path: "/journey", heading: "A living stream" },
-  { path: "/allies", heading: "Companions with clear names" },
-  { path: "/self", heading: "Sign in to see your Astra" },
-  { path: "/library", heading: "Artifacts worth keeping" },
-  { path: "/gifts", heading: "Stars stay accountable" },
+  { path: "/", heading: "A living stream", mobileHeading: "Journey" },
+  { path: "/journey", heading: "A living stream", mobileHeading: "Journey" },
+  { path: "/allies", heading: "Companions with clear names", mobileHeading: "Allies" },
+  { path: "/self", heading: "Sign in to see your Astra", mobileHeading: "Self" },
+  { path: "/library", heading: "Artifacts worth keeping", mobileHeading: "Library" },
+  { path: "/gifts", heading: "Stars stay accountable", mobileHeading: "Gifts" },
   { path: "/login", heading: "Welcome back to Astra" }
 ];
 
@@ -69,7 +69,7 @@ async function readOtpFromMailpit(email: string) {
 
 test.describe("clean-start routes", () => {
   for (const route of routes) {
-    test(`${route.path} renders without console errors`, async ({ page }) => {
+    test(`${route.path} renders without console errors`, async ({ page }, testInfo) => {
       const errors: string[] = [];
       page.on("console", (message) => {
         if (message.type() === "error") errors.push(message.text());
@@ -77,7 +77,11 @@ test.describe("clean-start routes", () => {
       page.on("pageerror", (error) => errors.push(error.message));
 
       await page.goto(route.path);
-      await expect(page.getByRole("heading", { name: route.heading })).toBeVisible();
+      if (testInfo.project.name === "mobile" && route.mobileHeading) {
+        await expect(page.locator(".topbar-route-title")).toHaveText(route.mobileHeading);
+      } else {
+        await expect(page.getByRole("heading", { name: route.heading })).toBeVisible();
+      }
       expect(errors).toEqual([]);
     });
   }
@@ -104,19 +108,18 @@ test.describe("clean-start routes", () => {
     await expect(mobileLibrary).toHaveCSS("font-weight", "700");
   });
 
-  test("primary journey reaches adjacent clean-start areas", async ({ page }) => {
+  test("primary journey reaches adjacent clean-start areas", async ({ page }, testInfo) => {
     await page.goto("/journey");
     await page.locator('a[href="/allies"]:visible').click();
-    await expect(page.getByRole("heading", { name: "Companions with clear names" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: testInfo.project.name === "mobile" ? "Allies" : "Companions with clear names" })).toBeVisible();
     await page.locator('a[href="/self"]:visible').click();
-    await expect(page.getByRole("heading", { name: "Sign in to see your Astra" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: testInfo.project.name === "mobile" ? "Self" : "Sign in to see your Astra" })).toBeVisible();
   });
 
   test("reader filters lanes and opens card detail", async ({ page }) => {
     await page.goto("/journey");
-    await expect(page.locator(".status-strip").getByText("Public fallback")).toBeVisible();
-    await expect(page.locator(".status-strip")).toContainText("12 cards");
     await expect(page.getByLabel("Journey state")).toContainText("A public sample, not your private Journey");
+    await expect(page.locator(".stream-card")).toHaveCount(12);
     await page.getByRole("tab", { name: "Practice" }).click();
     const ariesCard = page.locator(".stream-card-open").filter({ hasText: "Aries is ignition" });
     await expect(ariesCard).toBeVisible();
@@ -178,12 +181,11 @@ test.describe("clean-start routes", () => {
     await page.getByRole("button", { name: "Verify code" }).click();
 
     await page.goto("/journey");
-    const statusStrip = page.locator(".status-strip");
-    const statusStripText = (await statusStrip.textContent()) ?? "";
-    const isSignedOut = statusStripText.includes("Public fallback");
+    const journeyState = page.getByLabel("Journey state");
+    const journeyStateText = (await journeyState.textContent()) ?? "";
+    const isSignedOut = journeyStateText.includes("A public sample, not your private Journey");
     test.skip(isSignedOut, "Journey is in signed-out preview mode; onboarding test requires private auth state.");
-    await expect(statusStrip).toContainText("Private journey");
-    await expect(page.getByLabel("Journey state")).toContainText("First private runComposer will generate your onboarding cards");
+    await expect(journeyState).toContainText("First private runComposer will generate your onboarding cards");
     await expect(page.getByRole("heading", { name: "No cards in this lane" })).toBeVisible();
 
     await page.goto("/self");

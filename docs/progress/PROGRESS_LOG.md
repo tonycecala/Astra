@@ -13,6 +13,50 @@ summary: "Durable session-by-session memory for Astra repo work."
 
 ## Entries
 
+### 2026-06-19 - Shared Card Face And Mobile Chrome Stabilization
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** Astra/Composer card and shell polish
+**Status:** complete
+
+#### What Changed
+
+- Added Composer availability selection into Astra Journey so `/journey?composerSelected=1&course=astrology_101&count=5` can render deterministic Composer-selected Astrology 101 cards without writing private feed rows.
+- Fixed Composer selection default dates to use local calendar time instead of UTC day slicing.
+- Removed visible debug metadata pills from selected Journey cards while preserving hover/debug titles and the social action bar.
+- Moved Astra account/avatar controls into the lower-left sidebar whenever the sidebar is visible; mobile keeps a compact top account strip.
+- Replaced the Astra sidebar home icon with the Stars mark plus Astra wordmark, and documented the product rule that there is no Home in this UI: Self is closest to home, and Journey is the metaphor for going home with Allies, Resources, and Gifts.
+- Added shared `@astra/ui` `PublishedCard` structure so Astra Journey and Composer Course render the same card face: copy first, image second, shared media/body/read-more styling, no Workbench/Explorer drift.
+- Fixed Composer dark-theme refresh flash by applying `data-composer-theme` before paint and moving the toggle to the same stable external-store pattern used by Astra.
+- Updated Astra mobile chrome so the active route title is the leftmost top-bar item, the duplicate page header is hidden on mobile, and the topbar is fixed instead of sticky to remove scroll jitter.
+- Added a future evaluation note: mobile chrome may eventually appear/disappear based on scroll direction, but only after testing card-reading calm, orientation, and accidental navigation risk.
+- Fixed an auth-panel hydration mismatch discovered by route e2e using a deterministic client-ready snapshot.
+
+#### Lessons And Notes
+
+- Browser-visible truth won this session: several shell and card decisions looked plausible from CSS but needed mobile/desktop measurement to catch duplicate controls, breakpoint mismatches, hidden mobile headings, and sticky topbar jitter.
+- Shared card structure belongs in `@astra/ui`; Composer may wrap it with quiz/workbench controls, but the published card face should stay one renderer and one class contract.
+- Mobile route chrome is now the page title surface. Tests should assert `.topbar-route-title` on mobile and body headings on desktop/tablet.
+- Fixed top/bottom mobile chrome should be stable before experimenting with scroll-direction hiding. Scroll-responsive chrome is a future UX evaluation, not a default.
+- Composer theme must be seeded before paint. Client-only theme correction causes visible white flash in dark mode, especially in Arc.
+
+#### Validation
+
+- Browser QA verified Astra `/journey`, `/self`, and Composer `/course` across mobile/desktop as relevant: no console errors, no horizontal overflow, copy-before-image card order, fixed mobile topbar position, and stable dark Composer refresh.
+- `npm run typecheck` passed.
+- `npm run lint` passed with the two known/shared `<img>` warnings only.
+- `npm run check:no-supabase` passed.
+- `npm run check:boundaries` passed.
+- `npm run test:composer-selection-api` passed.
+- `npm run test:e2e` passed: 45 passed, 3 skipped.
+- `npm run build` passed for Astra.
+- `npm --workspace apps/composer-web run build` passed for Composer.
+
+#### Next Copy/Paste Goal
+
+Review the polished mobile shell and shared card face in Astra Journey and Composer Course, then decide whether the next pass should tune mobile chrome density, author/avatar card rows, or scroll-direction chrome behavior.
+
 ### 2026-06-18 - Composer Course Assessment UX Matches V1
 
 **Report Level:** 3 - Workflow & QA View

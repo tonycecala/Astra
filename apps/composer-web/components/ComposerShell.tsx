@@ -4,6 +4,7 @@ import { getComposerAccessState } from "../lib/config";
 import { composerUi } from "../lib/i18n";
 import { ComposerNav } from "./ComposerNav";
 import { ComposerThemeToggle } from "./ComposerThemeToggle";
+import { ComposerTopRouteTitle } from "./ComposerTopRouteTitle";
 
 type ComposerShellProps = {
   brand: string;
@@ -31,6 +32,7 @@ export function ComposerShell({ brand, tagline, children }: ComposerShellProps) 
     <div className="composer-shell">
       <aside className="composer-sidebar">
         <div className="composer-brand-row">
+          <ComposerTopRouteTitle />
           <div className="composer-brand">
             <strong>{brand}</strong>
             <span>{tagline}</span>

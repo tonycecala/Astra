@@ -12,3 +12,4 @@ export const astraUiTokens = {
 };
 
 export { PublishedCardBody } from "./PublishedCardBody";
+export { PublishedCard } from "./PublishedCard";

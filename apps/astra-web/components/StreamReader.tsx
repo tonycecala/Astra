@@ -1,6 +1,6 @@
 "use client";
 
-import { PublishedCardBody } from "@astra/ui";
+import { PublishedCard } from "@astra/ui";
 import { Bookmark, Heart, MessageCircle, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ui } from "../lib/i18n";
@@ -25,7 +25,17 @@ function audienceLabel(audience: JourneyStreamCard["item"]["audience"]) {
 }
 
 function publishedDate(value: string) {
+  const dateOnly = value.match(/^(\d{4})-(\d{2})-(\d{2})/)?.[0];
+  if (dateOnly) {
+    const [year, month, day] = dateOnly.split("-").map(Number);
+    return new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(year, month - 1, day));
+  }
   return new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(value));
+}
+
+function cardDebugTitle(item: JourneyStreamCard["item"]) {
+  const labels = [itemKindLabel(item.kind), audienceLabel(item.audience), ui.journey.statuses[item.status], publishedDate(item.publishedAt)];
+  return [...new Set(labels)].join(" | ");
 }
 
 export function StreamReader({ streamCards }: { streamCards: JourneyStreamCard[] }) {
@@ -33,6 +43,7 @@ export function StreamReader({ streamCards }: { streamCards: JourneyStreamCard[]
   const [activeCardId, setActiveCardId] = useState(streamCards[0]?.card.id ?? "");
   const [savedCardIds, setSavedCardIds] = useState<Set<string>>(() => new Set());
   const [reflectedCardIds, setReflectedCardIds] = useState<Set<string>>(() => new Set());
+  const isComposerSelection = streamCards.length > 0 && streamCards.every(({ item }) => item.source === "composer_selection");
 
   const visibleCards = useMemo(() => {
     if (activeLane === "all") return streamCards;
@@ -53,7 +64,7 @@ export function StreamReader({ streamCards }: { streamCards: JourneyStreamCard[]
   }
 
   return (
-    <div className="reader-shell">
+    <div className={isComposerSelection ? "reader-shell reader-shell-composer" : "reader-shell"}>
       <div className="reader-toolbar">
         <div aria-label={ui.journey.laneFilterLabel} className="lane-tabs" role="tablist">
           {laneOrder.map((lane) => (
@@ -62,39 +73,35 @@ export function StreamReader({ streamCards }: { streamCards: JourneyStreamCard[]
             </button>
           ))}
         </div>
-        <div className="reader-stats" aria-live="polite">
-          <span className="pill">{ui.journey.savedCount(savedCardIds.size)}</span>
-          <span className="pill">{ui.journey.reflectedCount(reflectedCardIds.size)}</span>
-        </div>
+        {isComposerSelection ? null : (
+          <div className="reader-stats" aria-live="polite">
+            <span className="pill">{ui.journey.savedCount(savedCardIds.size)}</span>
+            <span className="pill">{ui.journey.reflectedCount(reflectedCardIds.size)}</span>
+          </div>
+        )}
       </div>
 
       <div className="reader-layout">
-        <section className="grid" aria-label={ui.journey.streamCardsLabel}>
+        <section className={isComposerSelection ? "grid composer-card-grid" : "grid"} aria-label={ui.journey.streamCardsLabel}>
           {visibleCards.length ? (
             visibleCards.map(({ item, card }) => {
               const isSaved = savedCardIds.has(card.id);
               const isReflected = reflectedCardIds.has(card.id);
               return (
                 <article className="card stream-card astraPublishedCard" key={item.id}>
-                  <button className="stream-card-open astraPublishedCardOpen" onClick={() => setActiveCardId(card.id)} type="button">
-                    <span className="stream-card-content astraPublishedCardContent">
-                      <span className="stream-card-header astraPublishedCardHeader">
-                        <span className="eyebrow stream-card-eyebrow astraPublishedCardEyebrow">{laneLabel(card.lane)}</span>
-                        <span className="stream-card-title astraPublishedCardTitle">{card.title}</span>
-                      </span>
-                      <span className="stream-card-body">
-                        <PublishedCardBody text={card.body} showLessLabel={ui.journey.showLess} showMoreLabel={ui.journey.showMore} />
-                      </span>
-                      <span className="stream-card-meta astraPublishedCardMeta">
-                        <span>{itemKindLabel(item.kind)}</span>
-                        <span>{audienceLabel(item.audience)}</span>
-                        <span>{publishedDate(item.publishedAt)}</span>
-                      </span>
-                    </span>
-                    <span className="stream-card-media astraStreamArtFrame astraPublishedCardMedia" aria-hidden="true">
-                      {card.imageUrl ? <img alt="" className="stream-card-image astraPublishedCardImage" src={card.imageUrl} /> : null}
-                    </span>
-                  </button>
+                  <PublishedCard
+                    bodyText={card.body}
+                    className="stream-card-open"
+                    contentClassName="stream-card-content"
+                    eyebrow={laneLabel(card.lane)}
+                    imageUrl={card.imageUrl}
+                    mediaClassName="stream-card-media astraStreamArtFrame"
+                    onOpen={() => setActiveCardId(card.id)}
+                    showLessLabel={ui.journey.showLess}
+                    showMoreLabel={ui.journey.showMore}
+                    title={card.title}
+                    titleAttribute={cardDebugTitle(item)}
+                  />
                   <div className="astraStreamSocialBlock astraFeedCardActions" aria-label={ui.journey.socialActionsFor(card.title)}>
                     <div className="astraStreamSocialActions astraStreamSocialActionsBar">
                       <div className="astraStreamSocialActionsLeft">
@@ -141,7 +148,7 @@ export function StreamReader({ streamCards }: { streamCards: JourneyStreamCard[]
           )}
         </section>
 
-        {activeCard ? (
+        {activeCard && !isComposerSelection ? (
           <aside aria-label={ui.journey.detailLabel} className="card reader-detail">
             <button aria-label={ui.journey.closeDetail} className="detail-close" onClick={() => setActiveCardId("")} type="button">
               <X size={17} aria-hidden="true" />

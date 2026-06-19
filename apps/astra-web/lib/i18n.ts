@@ -16,6 +16,22 @@ export const ui = {
     brand: "Astra",
     tagline: "Clean start foundation"
   },
+  account: {
+    account: "Account",
+    currentSection: (section: string) => `Current section: ${section}`,
+    guestName: "Guest",
+    help: "Help",
+    menuLabel: "Account menu",
+    noNotifications: "No notifications",
+    settings: "Settings",
+    signIn: "Sign in",
+    signedOut: "Signed out",
+    signOut: "Sign out",
+    sidebarLabel: "Account utilities",
+    stars: "Stars",
+    starsLabel: (count: number) => `${count} Stars`,
+    mobileTopbarLabel: "Mobile account bar"
+  },
   theme: {
     switchToLight: "Switch to light mode",
     switchToDark: "Switch to dark mode"

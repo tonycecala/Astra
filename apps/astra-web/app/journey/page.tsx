@@ -57,13 +57,6 @@ export default async function JourneyPage({ searchParams }: JourneyPageProps) {
       <PageHeader eyebrow={ui.journey.eyebrow} title={ui.journey.title}>
         {ui.journey.intro}
       </PageHeader>
-      <div className="status-strip">
-        <span className="pill">{view.mode === "private" ? ui.journey.privateFeed : view.mode === "composer_selected" ? ui.journey.composerSelected : ui.journey.publicFallback}</span>
-        <span className="pill">{ui.journey.composerDefaultPath}</span>
-        <span className="pill">{ui.journey.noLegacyData}</span>
-        <span className="pill">{ui.journey.cardCount(view.streamCards.length)}</span>
-        {view.composerSelection ? <span className="pill">{ui.journey.selectionMode(view.composerSelection.selectionMode)}</span> : null}
-      </div>
       <section className="journey-state-card" aria-label={ui.journey.stateLabel}>
         <div>
           <p className="eyebrow">{ui.journey.states[view.feedState].eyebrow}</p>

@@ -1,5 +1,6 @@
 "use client";
 
+import { PublishedCard } from "@astra/ui";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { ComposerCardQuiz } from "../lib/cardLibrary";
@@ -12,6 +13,8 @@ type CourseAssessmentLabels = {
   question: string;
   questions: string;
   showAnswer: string;
+  showLess: string;
+  showMore: string;
 };
 
 export type CourseAssessmentCardModel = {
@@ -56,22 +59,20 @@ export function CourseAssessmentCard({ card, labels }: CourseAssessmentCardProps
   return (
     <article className="courseAssessmentCard">
       <div className="courseAssessmentMain">
-        <div className="courseAssessmentMedia" aria-label={card.title}>
-          {card.imageUrl ? <img src={card.imageUrl} alt="" loading="lazy" /> : <div className="courseAssessmentImageFallback">{card.ontologyType}</div>}
-        </div>
-        <div className="courseAssessmentCopy">
-          <div className="quiz-widget-heading">
-            <div>
-              <p className="eyebrow">{card.courseSectionTitle ?? card.ontologyType}</p>
-              <h3>{card.title}</h3>
-              {deck ? <p>{deck}</p> : null}
-            </div>
-            <span className="assessment-type-pill">{card.quiz ? questionCountLabel(questionCount, labels) : card.ontologyType}</span>
-          </div>
-          <div className="courseAssessmentBody">
-            {copy.length > 0 ? copy.map((paragraph) => <p key={paragraph}>{paragraph}</p>) : <p>{labels.noCards}</p>}
-          </div>
-        </div>
+        <PublishedCard
+          body={copy.length > 0 ? copy.map((paragraph) => <p key={paragraph}>{paragraph}</p>) : <p>{labels.noCards}</p>}
+          className="courseAssessmentPublishedFace"
+          contentClassName="courseAssessmentCopy"
+          eyebrow={card.courseSectionTitle ?? card.ontologyType}
+          imageFallback={card.ontologyType}
+          imageUrl={card.imageUrl}
+          mediaClassName="courseAssessmentMedia"
+          meta={<span>{card.quiz ? questionCountLabel(questionCount, labels) : card.ontologyType}</span>}
+          showLessLabel={labels.showLess}
+          showMoreLabel={labels.showMore}
+          subtitle={deck}
+          title={card.title}
+        />
       </div>
       {card.quiz ? (
         <section className="composerQuizReview" aria-label={`${card.title} ${labels.questions}`}>

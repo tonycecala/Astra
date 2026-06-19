@@ -1,14 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useSyncExternalStore } from "react";
 import { authClient } from "../lib/auth/client";
 import { ui } from "../lib/i18n";
 
 type AuthStep = "email" | "code";
 
+function subscribeToClientReady() {
+  return () => {};
+}
+
+function clientReady() {
+  return true;
+}
+
+function serverNotReady() {
+  return false;
+}
+
 export function AuthPanel() {
   const { data: session, isPending } = authClient.useSession();
+  const mounted = useSyncExternalStore(subscribeToClientReady, clientReady, serverNotReady);
   const [step, setStep] = useState<AuthStep>("email");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -56,7 +69,7 @@ export function AuthPanel() {
     setMessage(ui.login.signedOut);
   }
 
-  if (isPending) {
+  if (!mounted || isPending) {
     return (
       <section className="loginPanel" aria-label={ui.login.authPanelLabel}>
         <p className="loginStatus loginStatus-loading">{ui.login.loadingSession}</p>
