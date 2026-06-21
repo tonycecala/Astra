@@ -22,6 +22,7 @@
 - Direct-edit central Akashic only when deliberately promoting a lesson into canonical cross-project guidance; then run `ak repomap build && ak validate`.
 - When unsure, capture locally first, ingest centrally second, and promote canonically only after the lesson proves reusable.
 - Use `ak notify <repo-path> <title> --body <text> [--priority high] [--type warning]` when another repo's agent needs to know something; do not rely on Tony as the message carrier.
+- Follow `/Users/tony/Documents/Projects/Akashic/akashic/principles/PONYTAIL_YAGNI_CODEX_CONTRACT.md`: prefer the smallest correct patch, avoid speculative architecture, and use REPOMAP/JCodeMunch before broad file reads.
 - Preserve local repo instructions first when they are stricter or more specific.
 
 ## Composer Context

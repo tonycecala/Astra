@@ -16,6 +16,12 @@
 - Level 0 is a governing constraint and escalation level only. Use it only when technical work threatens mission, user promise, trust, privacy, economics, public/private boundaries, or strategic direction.
 - Do not install stronger hooks, gates, or aggressive blocking without Tony approval. Report existing `.codex/config.toml`, hooks, and PreToolUse gates before recommending changes.
 
+## Ponytail YAGNI Contract
+
+- Follow `/Users/tony/Documents/Projects/Akashic/akashic/principles/PONYTAIL_YAGNI_CODEX_CONTRACT.md`.
+- Prefer the smallest correct patch. Do not add speculative architecture, migration frameworks, plugin systems, provider abstractions, generic engines, broad config layers, or new dependencies unless the current task clearly requires them.
+- Treat JCodeMunch/JCM and REPOMAP as the default navigation path before broad file reads whenever available.
+
 ## Akashic Knowledge Source
 
 - Treat `/Users/tony/Documents/Projects/Akashic` as the shared engineering knowledge source before broad implementation or debugging.
