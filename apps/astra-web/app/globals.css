@@ -801,6 +801,82 @@ a.card-link:focus-visible {
   margin: 0;
 }
 
+.libraryControls {
+  display: grid;
+  gap: 12px;
+  width: min(1120px, 100%);
+  margin-bottom: 4px;
+}
+
+.librarySearchForm {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--gold) 16%, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 94%, transparent);
+}
+
+.librarySearchForm label {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 5px;
+}
+
+.librarySearchForm span {
+  color: var(--muted);
+  font-size: 0.73rem;
+  font-weight: 780;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.librarySearchForm input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: var(--soft);
+  color: var(--text);
+}
+
+.libraryFilterNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.libraryFilterChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  border: 1px solid color-mix(in srgb, var(--gold) 16%, var(--line));
+  border-radius: 999px;
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 760;
+  text-decoration: none;
+}
+
+.libraryFilterChip strong {
+  color: var(--gold);
+  font-size: 0.8rem;
+}
+
+.libraryFilterChip:hover,
+.libraryFilterChip:focus-visible,
+.libraryFilterChipActive {
+  border-color: color-mix(in srgb, var(--gold) 40%, var(--line));
+  background: color-mix(in srgb, var(--gold) 10%, var(--panel));
+  color: var(--text);
+  outline: none;
+}
+
 .library-report-card-meta {
   display: flex;
   flex-wrap: wrap;
@@ -874,6 +950,59 @@ a.card-link:focus-visible {
 
 html[data-astra-theme="dark"] .reportReaderDocument {
   box-shadow: 0 28px 84px rgba(0, 0, 0, 0.3);
+}
+
+.reportDebugDetails {
+  margin: 4px 0 18px;
+  border: 1px solid color-mix(in srgb, var(--gold) 20%, var(--line));
+  border-radius: 8px;
+  padding: 12px;
+  background: color-mix(in srgb, var(--soft) 84%, transparent);
+}
+
+.reportDebugDetails summary {
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  list-style: none;
+  text-transform: uppercase;
+}
+
+.reportDebugDetails summary::-webkit-details-marker {
+  display: none;
+}
+
+.reportDebugDetails dl {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0;
+}
+
+.reportDebugDetails dl > div {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.35fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.reportDebugDetails dt {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 780;
+  text-transform: uppercase;
+}
+
+.reportDebugDetails dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+
+.reportDebugDetails ul {
+  margin: 0;
+  padding-left: 18px;
 }
 
 .reportActionsStack {

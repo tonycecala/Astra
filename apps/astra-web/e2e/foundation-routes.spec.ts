@@ -1,5 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
-import { appUserProfiles, creditLedgerEntries, db, mirrorCreditBalanceToProfile } from "@astra/db";
+import { randomUUID } from "node:crypto";
+import { ASTRA_REPORT_WRITER_ENV, LOCAL_DETERMINISTIC_REPORT_WRITER, buildAstrologyReportResultAsync } from "@astra/astrology";
+import { appUserProfiles, createAstrologyReportRequest, createAstrologyReportShare, creditLedgerEntries, db, mirrorCreditBalanceToProfile, recordAstrologyReportResult } from "@astra/db";
 import { eq } from "drizzle-orm";
 
 type JsonObject = Record<string, unknown>;
@@ -97,6 +99,41 @@ async function makeProfileAdmin(email: string) {
       userId: profile.userId
     });
   await mirrorCreditBalanceToProfile(db, profile.userId);
+}
+
+async function createCompletedReport(email: string, input: { name: string; reportType?: "core" | "deep" | "identity" }) {
+  const [profile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
+  if (!profile) throw new Error(`Expected profile for ${email}.`);
+  const request = await createAstrologyReportRequest(db, {
+    id: randomUUID(),
+    userId: profile.userId,
+    reportType: input.reportType ?? "core",
+    subjectName: input.name,
+    birthData: {
+      date: "1961-05-23",
+      time: "09:30",
+      timezone: "America/New_York",
+      location: "New York, NY, USA",
+      latitude: 40.7128,
+      longitude: -74.006
+    },
+    intent: "playwright-library-filter-qa",
+    context: {
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+      subject: { subjectType: "self", displayName: input.name }
+    },
+    source: "self"
+  });
+  const result = await recordAstrologyReportResult(
+    db,
+    await buildAstrologyReportResultAsync(request, {
+      env: {
+        ...process.env,
+        [ASTRA_REPORT_WRITER_ENV]: LOCAL_DETERMINISTIC_REPORT_WRITER
+      }
+    })
+  );
+  return { request, result };
 }
 
 test.describe("clean-start routes", () => {
@@ -283,6 +320,29 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("button", { name: "Run Replay" }).first()).toBeVisible();
     await expect(page.getByText("npm run report:bakeoff -- --profiles debug,production")).toBeVisible();
     await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText("Playwright admin parity grant");
+
+    const completedReport = await createCompletedReport(email, { name, reportType: "core" });
+    await page.goto("/library");
+    const reportFilters = page.getByRole("navigation", { name: "Report filters" });
+    await expect(reportFilters).toBeVisible();
+    await expect(reportFilters.getByRole("link", { name: /Core/ })).toBeVisible();
+    await reportFilters.getByRole("link", { name: /Core/ }).click();
+    await expect(page).toHaveURL(/filter=core/);
+    await expect(page.getByText(`${name} — Core Report`)).toBeVisible();
+    await page.getByLabel("Search Library").fill(name);
+    await page.getByRole("button", { name: "Search" }).click();
+    await expect(page).toHaveURL(/q=Astra/);
+    await createAstrologyReportShare(db, { requestId: completedReport.request.id, userId: completedReport.request.userId, baseUrl: "http://localhost:3011" });
+    await page.goto("/library?filter=shared");
+    await expect(page.getByText(`${name} — Core Report`)).toBeVisible();
+    await page.getByRole("link", { name: new RegExp(`View report: ${name}`) }).first().click();
+    await expect(page.getByRole("heading", { name: `${name} — Core Report` })).toBeVisible();
+    const debugDetails = page.locator("details.reportDebugDetails");
+    await expect(debugDetails).toContainText("Report debug details");
+    await debugDetails.locator("summary").click();
+    await expect(debugDetails).toContainText(completedReport.request.id);
+    await expect(debugDetails).toContainText("local-chart-routine");
+    await expect(debugDetails).toContainText("local-deterministic-writer");
 
     await page.goto("/self#self-birth-onboarding");
     await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();

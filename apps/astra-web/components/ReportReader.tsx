@@ -12,12 +12,14 @@ export function ReportReader({
   request,
   backHref,
   actions = false,
+  debug = false,
   shared = false
 }: {
   report: AstrologyReportResult;
   request: AstrologyReportRequest | null;
   backHref?: string;
   actions?: boolean;
+  debug?: boolean;
   shared?: boolean;
 }) {
   const subject = reportSubjectContext(request);
@@ -83,6 +85,7 @@ export function ReportReader({
 
       <article className="reportReaderDocument">
         <ReportChartPlate request={request} chart={chartSnapshot} />
+        {debug ? <ReportDebugDetails report={report} request={request} /> : null}
         {report.sections.length ? (
           <ReportMarkdown markdown={sectionMarkdown} evidenceByTitle={evidenceByTitle} />
         ) : (
@@ -90,6 +93,43 @@ export function ReportReader({
         )}
       </article>
     </section>
+  );
+}
+
+function ReportDebugDetails({ report, request }: { report: AstrologyReportResult; request: AstrologyReportRequest | null }) {
+  const provenance = Array.isArray(report.provenance) ? report.provenance : [];
+  const rows = [
+    [ui.library.debugRequestId, report.requestId],
+    [ui.library.debugStatus, report.status],
+    [ui.library.debugReportType, reportTypeLabel(request?.reportType)],
+    [ui.library.debugCost, String(request?.costCredits ?? 0)],
+    [ui.library.debugEngine, report.engine],
+    [ui.library.debugEngineVersion, report.engineVersion],
+    [ui.library.debugChartRequest, request?.chartRequestId ?? ui.library.reportUnknownChartValue],
+    [ui.library.debugSource, request?.source ?? ui.library.reportUnknownChartValue]
+  ];
+
+  return (
+    <details className="reportDebugDetails">
+      <summary>{ui.library.debugTitle}</summary>
+      <dl>
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+      {provenance.length ? (
+        <ul>
+          {provenance.map((item, index) => (
+            <li key={`${index}-${item.id}`}>
+              <strong>{item.label}</strong>: {item.summary}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </details>
   );
 }
 
