@@ -323,6 +323,96 @@ export const starTransactions = pgTable(
   })
 );
 
+export const products = pgTable(
+  "products",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+    key: text("key").notNull(),
+    name: text("name").notNull(),
+    productType: text("product_type").notNull(),
+    stripeProductId: text("stripe_product_id"),
+    stripePriceId: text("stripe_price_id"),
+    active: boolean("active").notNull().default(true),
+    metadata: jsonb("metadata").notNull().default(sql`'{}'::jsonb`),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    keyIdx: uniqueIndex("products_key_idx").on(table.key),
+    activeIdx: index("products_active_idx").on(table.active, table.productType)
+  })
+);
+
+export const purchases = pgTable(
+  "purchases",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    productId: text("product_id").references(() => products.id, { onDelete: "set null" }),
+    provider: text("provider").notNull().default("stripe"),
+    stripeCustomerId: text("stripe_customer_id"),
+    stripeCheckoutSessionId: text("stripe_checkout_session_id"),
+    stripePaymentIntentId: text("stripe_payment_intent_id"),
+    stripeEventId: text("stripe_event_id"),
+    amountMinor: integer("amount_minor"),
+    currency: text("currency"),
+    status: text("status").notNull().default("pending"),
+    purchasedAt: timestamp("purchased_at", { withTimezone: true }),
+    rawEvent: jsonb("raw_event").notNull().default(sql`'{}'::jsonb`),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    userIdx: index("purchases_user_idx").on(table.userId, table.createdAt),
+    checkoutIdx: uniqueIndex("purchases_stripe_checkout_idx").on(table.stripeCheckoutSessionId)
+  })
+);
+
+export const stripeEvents = pgTable(
+  "stripe_events",
+  {
+    id: text("id").primaryKey(),
+    eventType: text("event_type").notNull(),
+    objectId: text("object_id"),
+    processedAt: timestamp("processed_at", { withTimezone: true }).notNull().defaultNow(),
+    rawEvent: jsonb("raw_event").notNull().default(sql`'{}'::jsonb`)
+  },
+  (table) => ({
+    typeIdx: index("stripe_events_type_idx").on(table.eventType, table.processedAt)
+  })
+);
+
+export const creditLedgerEntries = pgTable(
+  "credit_ledger_entries",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    amount: integer("amount").notNull(),
+    eventType: text("event_type").notNull(),
+    source: text("source").notNull(),
+    description: text("description"),
+    relatedReportRequestId: text("related_report_request_id").references(() => astrologyReportRequests.id, { onDelete: "set null" }),
+    relatedReportResultId: text("related_report_result_id").references(() => astrologyReportResults.id, { onDelete: "set null" }),
+    relatedReportDocumentId: text("related_report_document_id"),
+    relatedReportVersionId: text("related_report_version_id"),
+    stripeCustomerId: text("stripe_customer_id"),
+    stripeCheckoutSessionId: text("stripe_checkout_session_id"),
+    stripeEventId: text("stripe_event_id"),
+    idempotencyKey: text("idempotency_key").notNull(),
+    metadata: jsonb("metadata").notNull().default(sql`'{}'::jsonb`),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    userIdx: index("credit_ledger_entries_user_idx").on(table.userId, table.createdAt),
+    reportRequestIdx: index("credit_ledger_entries_report_request_idx").on(table.relatedReportRequestId, table.createdAt),
+    idempotencyIdx: uniqueIndex("credit_ledger_entries_idempotency_idx").on(table.idempotencyKey)
+  })
+);
+
 export const sourceCards = pgTable(
   "source_cards",
   {

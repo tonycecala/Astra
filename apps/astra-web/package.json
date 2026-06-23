@@ -13,6 +13,7 @@
   "dependencies": {
     "@astra/contracts": "file:../../packages/contracts",
     "@astra/db": "file:../../packages/db",
+    "@astra/astrology": "file:../../packages/astrology",
     "@astra/testkit": "file:../../packages/testkit",
     "@astra/ui": "file:../../packages/ui",
     "@better-auth/drizzle-adapter": "^1.6.11",

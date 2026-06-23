@@ -8,7 +8,7 @@ type JsonObject = Record<string, unknown>;
 const appBaseUrl = clean(process.env.ASTRA_APP_SMOKE_BASE_URL) || "http://localhost:3011";
 const authBaseUrl = `${appBaseUrl}/api/auth`;
 const mailpitUrl = clean(process.env.MAILPIT_API_URL) || "http://localhost:8025";
-const email = clean(process.env.ASTRA_TONY_DEEP_SMOKE_EMAIL) || `tony-deep-sonnet-${Date.now()}@example.com`;
+const email = clean(process.env.ASTRA_TONY_DEEP_SMOKE_EMAIL) || "astra-report-parity@example.com";
 const name = "Tony Cecala";
 const outputDir = join(process.cwd(), "output", "playwright");
 
@@ -270,8 +270,8 @@ for (const heading of expectedHeadings) {
 
 const totalWords = sections.reduce((total, section) => total + wordCount(section.body), 0);
 const identityWords = wordCount(sections.find((section) => section.title === "Identity")?.body);
-if (totalWords < 800) throw new Error(`Tony Deep Sonnet report is too thin to review: ${totalWords} words.`);
-if (identityWords < 120) throw new Error(`Tony Deep Sonnet Identity section is too thin to review: ${identityWords} words.`);
+if (totalWords < 2400) throw new Error(`Tony Deep Sonnet report is too thin to review: ${totalWords} words.`);
+if (identityWords < 350) throw new Error(`Tony Deep Sonnet Identity section is too thin to review: ${identityWords} words.`);
 
 const provenance = JSON.stringify(result.provenance ?? []);
 if (!provenance.includes("anthropic/claude-sonnet")) {
@@ -299,7 +299,7 @@ try {
     if (response.status() >= 400) failedResponses.push(`${response.status()} ${response.url()}`);
   });
   await page.goto(reportUrl, { waitUntil: "networkidle" });
-  await page.getByRole("heading", { name: "Deep Report" }).waitFor();
+  await page.getByText("Deep Portrait").first().waitFor();
   await page.getByRole("heading", { name: "Identity" }).waitFor();
   await page.getByRole("heading", { name: "Right Now" }).waitFor();
   await page.screenshot({
@@ -320,7 +320,7 @@ try {
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(reportUrl, { waitUntil: "networkidle" });
-  await page.getByRole("heading", { name: "Deep Report" }).waitFor();
+  await page.getByText("Deep Portrait").first().waitFor();
   await page.screenshot({
     path: join(outputDir, "job1-tony-deep-sonnet-report-mobile.png"),
     fullPage: true

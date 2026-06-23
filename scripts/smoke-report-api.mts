@@ -7,6 +7,8 @@ import {
   buildAstrologyReportResult
 } from "@astra/astrology";
 import { astrologyReportRequestSchema } from "@astra/contracts";
+import { appUserProfiles, creditLedgerEntries, db, getCreditBalance, mirrorCreditBalanceToProfile } from "@astra/db";
+import { eq } from "drizzle-orm";
 
 type JsonObject = Record<string, unknown>;
 
@@ -83,6 +85,18 @@ async function expectStatus(url: string, expectedStatus: number, init?: RequestI
   }
 }
 
+async function expectAuthedStatus(url: string, expectedStatus: number, init?: RequestInit) {
+  const headers = new Headers(init?.headers);
+  headers.set("origin", appBaseUrl);
+  if (cookieHeader) headers.set("cookie", cookieHeader);
+  if (init?.body && !headers.has("content-type")) headers.set("content-type", "application/json");
+
+  const response = await fetch(url, { ...init, headers });
+  if (response.status !== expectedStatus) {
+    throw new Error(`${url} expected ${expectedStatus} but returned ${response.status}: ${await response.text()}`);
+  }
+}
+
 function findOtp(value: unknown): string | null {
   if (typeof value === "string") return value.match(/\b\d{6}\b/)?.[0] ?? null;
   if (Array.isArray(value)) {
@@ -142,6 +156,37 @@ await requestJson(`${authBaseUrl}/sign-in/email-otp`, {
   method: "POST",
   body: JSON.stringify({ email, otp: await readOtpFromMailpit(), name })
 });
+await requestJson(`${appBaseUrl}/api/reports`);
+const [smokeProfile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
+if (!smokeProfile) throw new Error(`Smoke profile was not created for ${email}.`);
+await db.update(appUserProfiles).set({ role: "customer", updatedAt: new Date() }).where(eq(appUserProfiles.userId, smokeProfile.userId));
+await db
+  .insert(creditLedgerEntries)
+  .values({
+    userId: smokeProfile.userId,
+    amount: 10,
+    eventType: "admin_adjustment",
+    source: "report_api_smoke",
+    description: "Report API smoke Stars grant",
+    idempotencyKey: `report_api_smoke_grant:${smokeProfile.userId}`,
+    metadata: { actor: "script" }
+  })
+  .onConflictDoNothing();
+await mirrorCreditBalanceToProfile(db, smokeProfile.userId);
+const startingBalance = await getCreditBalance(db, smokeProfile.userId);
+if (startingBalance < 10) throw new Error(`Expected at least 10 ledger Stars for report smoke, found ${startingBalance}.`);
+
+await expectAuthedStatus(`${appBaseUrl}/api/reports`, 403, {
+  method: "POST",
+  body: JSON.stringify({
+    reportType: "deep",
+    subjectName: name,
+    birthData: {
+      date: "1961-05-23"
+    },
+    source: "self"
+  })
+});
 
 const created = await requestJson(`${appBaseUrl}/api/reports`, {
   method: "POST",
@@ -159,7 +204,11 @@ const created = await requestJson(`${appBaseUrl}/api/reports`, {
     question: "What report shape should Astra preserve for the stream?",
     intent: "tony-report-api-smoke",
     context: {
-      source: "test:report-api"
+      source: "test:report-api",
+      chartSettings: {
+        zodiacMode: "tropical",
+        houseSystem: "whole-sign"
+      }
     },
     source: "self"
   })
@@ -193,9 +242,39 @@ const requestId = (created.request as JsonObject | undefined)?.id;
 if (!requestId) throw new Error("Report API did not return a request id.");
 const publicRequestId = (publicCreated.request as JsonObject | undefined)?.id;
 if (!publicRequestId) throw new Error("Report API did not return a public sample request id.");
+const endingBalance = await getCreditBalance(db, smokeProfile.userId);
+if (endingBalance !== startingBalance - 10) {
+  throw new Error(`Report creation did not debit two Core report spends from the ledger: started ${startingBalance}, ended ${endingBalance}.`);
+}
 const reportRequest = astrologyReportRequestSchema.parse(created.request);
 const previousEngine = process.env[ASTRA_EPHEMERIS_ENGINE_ENV];
 const previousWriter = process.env[ASTRA_REPORT_WRITER_ENV];
+process.env[ASTRA_EPHEMERIS_ENGINE_ENV] = LOCAL_CHART_ROUTINE_ENGINE;
+process.env[ASTRA_REPORT_WRITER_ENV] = LOCAL_DETERMINISTIC_REPORT_WRITER;
+const alternateChartSettingsPayload = buildAstrologyReportResult({
+  ...reportRequest,
+  id: `${reportRequest.id}:sidereal-placidus`,
+  context: {
+    ...(reportRequest.context ?? {}),
+    chartSettings: {
+      zodiacMode: "sidereal",
+      houseSystem: "placidus"
+    }
+  }
+});
+if (!String(alternateChartSettingsPayload.publicSignal?.provenanceSummary).includes("sidereal, placidus")) {
+  throw new Error("Report engine did not preserve sidereal + placidus chart settings.");
+}
+if (previousEngine === undefined) {
+  delete process.env[ASTRA_EPHEMERIS_ENGINE_ENV];
+} else {
+  process.env[ASTRA_EPHEMERIS_ENGINE_ENV] = previousEngine;
+}
+if (previousWriter === undefined) {
+  delete process.env[ASTRA_REPORT_WRITER_ENV];
+} else {
+  process.env[ASTRA_REPORT_WRITER_ENV] = previousWriter;
+}
 
 const listed = await requestJson(`${appBaseUrl}/api/reports`);
 const requests = Array.isArray(listed.requests) ? listed.requests : [];
@@ -212,9 +291,9 @@ if ((generated.result as JsonObject | undefined)?.status !== "completed") {
 if (!((generated.result as JsonObject).publicSignal as JsonObject | undefined)?.headline) {
   throw new Error("User report generation route did not return a public signal.");
 }
-if (((generated.result as JsonObject).publicSignal as JsonObject).headline !== "Gemini Sun, Virgo Moon, Cancer rising") {
+if (((generated.result as JsonObject).publicSignal as JsonObject).headline !== "Tony C — Core Report") {
   throw new Error(
-    `User report generation route returned the wrong Tony signature: ${((generated.result as JsonObject).publicSignal as JsonObject).headline}`
+    `User report generation route returned the wrong Tony report headline: ${((generated.result as JsonObject).publicSignal as JsonObject).headline}`
   );
 }
 if (!String(((generated.result as JsonObject).publicSignal as JsonObject).provenanceSummary).includes("tropical, whole-sign")) {
@@ -249,7 +328,7 @@ if (!sharedReportResponse.ok) {
   throw new Error(`Shared report page failed with ${sharedReportResponse.status}: ${await sharedReportResponse.text()}`);
 }
 const sharedReportHtml = await sharedReportResponse.text();
-if (!sharedReportHtml.includes("Shared Astra Report") || !sharedReportHtml.includes("Gemini Sun, Virgo Moon, Cancer rising")) {
+if (!sharedReportHtml.includes("Shared Astra Report") || !sharedReportHtml.includes("Tony C — Core Report")) {
   throw new Error("Shared report page did not render the shared report shell.");
 }
 await requestJson(`${appBaseUrl}/api/reports/${requestId}/share`, {
@@ -267,9 +346,12 @@ if (!revokedShareHtml.includes("Shared report unavailable")) {
 const publicGenerated = await requestJson(`${appBaseUrl}/api/reports/${publicRequestId}/generate`, {
   method: "POST"
 });
-if (((publicGenerated.result as JsonObject).publicSignal as JsonObject | undefined)?.headline !== "Pisces Sun, Sagittarius Moon, Cancer rising") {
+if ((publicGenerated.result as JsonObject | undefined)?.status !== "completed") {
+  throw new Error(`Einstein public generation did not complete: ${JSON.stringify(publicGenerated.result ?? publicGenerated)}`);
+}
+if (((publicGenerated.result as JsonObject).publicSignal as JsonObject | undefined)?.headline !== "Albert Einstein — Core Report") {
   throw new Error(
-    `User report generation route returned the wrong Einstein public signature: ${((publicGenerated.result as JsonObject).publicSignal as JsonObject | undefined)?.headline ?? "missing"}`
+    `User report generation route returned the wrong Einstein public headline: ${((publicGenerated.result as JsonObject).publicSignal as JsonObject | undefined)?.headline ?? "missing"}`
   );
 }
 
@@ -325,9 +407,9 @@ if ((result.result as JsonObject).engine !== LOCAL_CHART_ROUTINE_ENGINE) {
 if (!((result.result as JsonObject).publicSignal as JsonObject | undefined)?.headline) {
   throw new Error("Report result API did not preserve the public report signal.");
 }
-if (((result.result as JsonObject).publicSignal as JsonObject).headline !== "Gemini Sun, Virgo Moon, Cancer rising") {
+if (((result.result as JsonObject).publicSignal as JsonObject).headline !== "Tony C — Core Report") {
   throw new Error(
-    `Report result API preserved the wrong Tony signature: ${((result.result as JsonObject).publicSignal as JsonObject).headline}`
+    `Report result API preserved the wrong Tony report headline: ${((result.result as JsonObject).publicSignal as JsonObject).headline}`
   );
 }
 
@@ -343,3 +425,4 @@ if (previousWriter === undefined) {
 }
 
 console.log(`Report API smoke passed for ${email}: ${requestId}.`);
+process.exit(0);

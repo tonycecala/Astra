@@ -363,6 +363,7 @@ textarea {
 
 .self-profile-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
   width: min(100%, 680px);
@@ -370,7 +371,10 @@ textarea {
 }
 
 .self-profile-actions .button {
-  min-width: 150px;
+  flex: 1 1 150px;
+  max-width: 210px;
+  min-width: 0;
+  padding-inline: 12px;
 }
 
 .self-profile-actions .button svg {
@@ -1041,6 +1045,82 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   font-weight: 700;
 }
 
+.reportChartMini {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: visible;
+}
+
+.reportChartHalo {
+  fill: rgba(116, 173, 190, 0.05);
+  stroke: color-mix(in srgb, var(--muted) 24%, transparent);
+  stroke-width: 0.8;
+}
+
+.reportChartOuter {
+  fill: none;
+  stroke: color-mix(in srgb, var(--gold) 55%, transparent);
+  stroke-width: 1.05;
+}
+
+.reportChartInner {
+  fill: rgba(116, 173, 190, 0.08);
+  stroke: color-mix(in srgb, var(--muted) 45%, transparent);
+  stroke-width: 0.8;
+}
+
+.reportChartTick,
+.reportChartHouseLine {
+  stroke: color-mix(in srgb, var(--muted) 34%, transparent);
+  stroke-width: 0.45;
+}
+
+.reportChartHouseLine {
+  stroke-width: 0.55;
+}
+
+.reportChartAspect {
+  fill: none;
+  stroke-width: 0.45;
+  stroke-linecap: round;
+  opacity: 0.78;
+}
+
+.reportChartAspect-conjunction {
+  stroke: color-mix(in srgb, var(--gold) 52%, transparent);
+}
+
+.reportChartAspect-sextile,
+.reportChartAspect-trine {
+  stroke: rgba(116, 173, 190, 0.62);
+}
+
+.reportChartAspect-square,
+.reportChartAspect-opposition {
+  stroke: color-mix(in srgb, var(--gold) 52%, rgba(180, 75, 90, 0.55));
+}
+
+.reportChartSign,
+.reportChartGlyph {
+  fill: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.reportChartSign {
+  fill: var(--gold);
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.reportChartGlyph {
+  font-size: 5.4px;
+  font-weight: 800;
+}
+
 .reportDocumentPlateText {
   display: grid;
   gap: 3px;
@@ -1117,6 +1197,7 @@ html[data-astra-theme="dark"] .reportReaderDocument {
 }
 
 .reportMarkdown h2 {
+  color: var(--gold);
   margin: 30px 0 12px;
   font-size: clamp(1.45rem, 3vw, 1.9rem);
   line-height: 1.18;
@@ -1124,7 +1205,6 @@ html[data-astra-theme="dark"] .reportReaderDocument {
 
 .reportMarkdownPrimaryHeading,
 .reportMarkdown h2:first-child {
-  color: var(--gold);
   margin-top: 0;
 }
 
@@ -1136,6 +1216,43 @@ html[data-astra-theme="dark"] .reportReaderDocument {
 
 .reportMarkdown p {
   margin: 0 0 16px;
+}
+
+.reportMarkdown ul {
+  margin: 0 0 18px;
+  padding-left: 20px;
+}
+
+.reportMarkdownEvidence {
+  margin: 0 0 18px;
+  padding: 12px 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
+}
+
+.reportMarkdownEvidence summary {
+  color: color-mix(in srgb, var(--gold) 84%, var(--muted) 16%);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 760;
+  letter-spacing: 0.1em;
+  list-style: none;
+  text-transform: uppercase;
+}
+
+.reportMarkdownEvidence summary::-webkit-details-marker {
+  display: none;
+}
+
+.reportMarkdownEvidence summary::after {
+  content: " +";
+}
+
+.reportMarkdownEvidence[open] summary {
+  margin-bottom: 10px;
+}
+
+.reportMarkdownEvidence[open] summary::after {
+  content: " -";
 }
 
 .auth-panel {
@@ -2010,6 +2127,347 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
   outline: none;
 }
 
+.starsPage,
+.adminPage {
+  display: grid;
+  gap: 24px;
+}
+
+.starsHero,
+.adminHeader,
+.adminPanel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 92%, var(--paper));
+  box-shadow: var(--shadow);
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.starsHero h1,
+.adminHeader h1 {
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(2.5rem, 7vw, 4.4rem);
+  line-height: 0.96;
+}
+
+.starsHero p,
+.adminHeader p,
+.adminPanel p {
+  color: var(--muted);
+}
+
+.starsBalancePlate {
+  display: inline-grid;
+  gap: 4px;
+  min-width: min(100%, 280px);
+  margin-top: 14px;
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--line));
+  border-radius: 8px;
+  background: var(--soft);
+  padding: 14px 16px;
+}
+
+.starsBalancePlate span,
+.adminMetricGrid span,
+.adminCreditForm span,
+.adminSearchForm span,
+.adminCommandList dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.starsBalancePlate strong {
+  font-size: 2rem;
+}
+
+.starsHeroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.starsAddButton,
+.starsPackRow button,
+.adminCreditForm .button,
+.adminSearchForm .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--gold) 24%, var(--soft));
+  color: var(--ink);
+  cursor: pointer;
+  padding: 0 14px;
+}
+
+.starsAddButton:hover,
+.starsAddButton:focus-visible,
+.starsPackRow button:hover,
+.starsPackRow button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  outline-offset: 2px;
+}
+
+.starsCheckoutNotice {
+  margin: 14px 0 0;
+  border: 1px solid color-mix(in srgb, var(--green) 36%, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--green) 12%, var(--panel));
+  padding: 10px 12px;
+}
+
+.starsValueGrid,
+.adminMetricGrid,
+.adminOpsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.starsValueGrid article,
+.adminMetricGrid > div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 14px;
+}
+
+.starsValueGrid span,
+.starsValueGrid strong,
+.adminMetricGrid strong {
+  display: block;
+}
+
+.starsValueGrid span,
+.adminSubheading {
+  color: var(--gold);
+  font-weight: 820;
+}
+
+.starsPanelLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+}
+
+.starsPanelScrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.46);
+  cursor: pointer;
+}
+
+.starsPanel {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: min(440px, calc(100vw - 32px));
+  max-height: min(680px, calc(100vh - 32px));
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--gold) 34%, var(--line));
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.34);
+  padding: 18px;
+}
+
+.starsPanelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.starsPanelHeader h2,
+.adminPanel h2 {
+  margin: 0;
+  color: var(--gold);
+}
+
+.starsPanelClose {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.starsPackList {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.starsPackRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  padding: 12px;
+}
+
+.starsPackRow div {
+  display: grid;
+  gap: 2px;
+}
+
+.starsPackRow span,
+.starsPackRow small,
+.starsPanelStatus {
+  color: var(--muted);
+}
+
+.adminPanel {
+  display: grid;
+  gap: 16px;
+}
+
+.adminPanelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.adminSearchForm,
+.adminCreditForm {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.adminSearchForm {
+  grid-template-columns: minmax(240px, 1fr) auto;
+}
+
+.adminCreditForm label,
+.adminSearchForm label,
+.adminCommandList div {
+  display: grid;
+  gap: 6px;
+}
+
+.adminCreditForm input,
+.adminCreditForm select,
+.adminSearchForm input {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 0 12px;
+}
+
+.adminCount {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.adminTableShell {
+  max-width: 100%;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.adminTable {
+  min-width: 900px;
+}
+
+.adminRow {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.4fr) minmax(110px, 0.6fr) minmax(210px, 1fr) minmax(150px, 0.8fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.adminLedgerTable .adminRow {
+  grid-template-columns: minmax(140px, 0.8fr) minmax(110px, 0.5fr) minmax(220px, 1.2fr) minmax(170px, 0.8fr) minmax(220px, 1.1fr) minmax(150px, 0.8fr);
+}
+
+.adminRow:last-child {
+  border-bottom: 0;
+}
+
+.adminRowHeader {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.adminRowData {
+  background: var(--panel);
+}
+
+.adminRowData:hover,
+.adminRowActive {
+  background: color-mix(in srgb, var(--gold) 12%, var(--panel));
+}
+
+.adminRow strong,
+.adminRow p {
+  overflow-wrap: anywhere;
+}
+
+.adminRow p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.adminSubheading {
+  margin: 10px 0 0;
+}
+
+.adminOpsGrid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.adminCommandList {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.adminCommandList dd {
+  margin: 0;
+}
+
+.adminCommandList code {
+  display: block;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  padding: 10px;
+}
+
+.adminRoleForm {
+  grid-template-columns: minmax(180px, 1fr) minmax(140px, 0.7fr) auto;
+}
+
 .reader-detail {
   position: sticky;
   top: 24px;
@@ -2114,6 +2572,157 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
 
 .mobile-theme-toggle {
   display: none;
+}
+
+/* Birth intake visual guardrail: keep the alpha flow aligned with the approved generated mockup. */
+section[aria-label="Chart and portrait request"] > article:first-child,
+section[aria-label="Ally chart and portrait request"] > article:first-child {
+  border-color: color-mix(in srgb, var(--gold) 20%, var(--line));
+  background:
+    radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 34%),
+    radial-gradient(circle at 100% 12%, color-mix(in srgb, var(--blue) 11%, transparent), transparent 30%),
+    var(--panel);
+  overflow: hidden;
+}
+
+section[aria-label="Chart and portrait request"] > article:first-child > h2,
+section[aria-label="Ally chart and portrait request"] > article:first-child > h2 {
+  color: var(--gold);
+  text-align: center;
+  margin-top: 10px;
+}
+
+section[aria-label="Chart and portrait request"] > article:first-child > p,
+section[aria-label="Ally chart and portrait request"] > article:first-child > p {
+  text-align: center;
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
+[aria-label="Alpha onboarding guidance"],
+[aria-label="Chart generation flow"],
+[role="progressbar"][aria-label="Birth data onboarding steps"] {
+  display: none !important;
+}
+
+div[aria-label="Birth data onboarding steps"] {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 18px;
+}
+
+div[aria-label="Birth data onboarding steps"] > button {
+  display: grid !important;
+  justify-items: center;
+  gap: 7px;
+  min-height: 36px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 760;
+}
+
+div[aria-label="Birth data onboarding steps"] > button > span {
+  display: block !important;
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--muted) 24%, transparent);
+  color: transparent;
+  font-size: 0;
+}
+
+div[aria-label="Birth data onboarding steps"] > button[aria-current="step"],
+div[aria-label="Birth data onboarding steps"] > button:hover,
+div[aria-label="Birth data onboarding steps"] > button:focus-visible {
+  color: var(--gold);
+  outline: none;
+}
+
+div[aria-label="Birth data onboarding steps"] > button[aria-current="step"] > span,
+div[aria-label="Birth data onboarding steps"] > button:hover > span,
+div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
+  background: var(--gold);
+}
+
+[data-report-confirm-layer] {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: color-mix(in srgb, #02030a 62%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+[data-report-confirm-dialog] {
+  width: min(430px, 100%);
+  border: 1px solid color-mix(in srgb, var(--gold) 32%, var(--line));
+  border-radius: 8px;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 38%),
+    var(--panel);
+  box-shadow: 0 24px 80px color-mix(in srgb, #000 52%, transparent);
+}
+
+[data-report-confirm-dialog] h3 {
+  margin: 6px 0 8px;
+  color: var(--gold);
+  font-size: 1.45rem;
+}
+
+[data-report-confirm-dialog] p {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+[data-report-confirm-rows] {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+}
+
+[data-report-confirm-rows] div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--soft);
+}
+
+[data-report-confirm-rows] dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-report-confirm-rows] dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 800;
+  text-align: right;
+}
+
+[data-report-confirm-note] {
+  margin: 14px 0 0;
+}
+
+[data-report-confirm-actions] {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 @media (max-width: 760px) {
@@ -2221,6 +2830,35 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
   }
 
   .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .starsValueGrid,
+  .adminMetricGrid,
+  .adminOpsGrid,
+  .adminSearchForm,
+  .adminCreditForm,
+  .adminRoleForm {
+    grid-template-columns: 1fr;
+  }
+
+  .adminPanelHeader {
+    display: grid;
+  }
+
+  .adminTable {
+    min-width: 760px;
+  }
+
+  .starsPanel {
+    right: 10px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 82px);
+    left: 10px;
+    width: auto;
+    max-height: min(620px, calc(100vh - 112px));
+  }
+
+  .starsPackRow {
     grid-template-columns: 1fr;
   }
 

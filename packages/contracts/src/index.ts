@@ -299,9 +299,22 @@ export const chartSubjectContextSchema = z.object({
   note: z.string().min(1).optional()
 });
 
+export const chartSettingsSchema = z.object({
+  zodiacMode: z.enum(["tropical", "sidereal"]).default("tropical"),
+  houseSystem: z.enum(["whole-sign", "placidus"]).default("whole-sign")
+});
+
+export const synastryPartnerSchema = z.object({
+  chartRequestId: idSchema,
+  subjectName: z.string().min(1),
+  birthData: chartBirthDataSchema.optional()
+});
+
 export const chartRequestContextSchema = jsonObjectSchema.and(
   z.object({
-    subject: chartSubjectContextSchema.optional()
+    subject: chartSubjectContextSchema.optional(),
+    chartSettings: chartSettingsSchema.optional(),
+    synastryPartner: synastryPartnerSchema.optional()
   })
 );
 
@@ -331,7 +344,7 @@ export const chartMakerRequestSchema = z.object({
   birthData: chartBirthDataSchema,
   question: z.string().min(1).optional(),
   intent: z.string().min(1).optional(),
-  context: jsonObjectSchema.optional(),
+  context: chartRequestContextSchema.optional(),
   source: z.enum(["self", "ally", "composer", "import"]).default("self"),
   status: z.enum(["queued", "processing", "completed", "failed", "cancelled"]).default("queued"),
   createdAt: isoDateSchema,
@@ -445,7 +458,7 @@ export const astrologyReportRequestSchema = z.object({
   birthData: chartBirthDataSchema,
   question: z.string().min(1).optional(),
   intent: z.string().min(1).optional(),
-  context: jsonObjectSchema.optional(),
+  context: chartRequestContextSchema.optional(),
   source: z.enum(["self", "ally", "composer", "import"]).default("self"),
   boundary: z.literal("private").default("private"),
   status: astrologyReportStatusSchema.default("queued"),
@@ -628,6 +641,7 @@ export type ComposerOnboardingCardsWriteResponse = z.infer<typeof composerOnboar
 export type ChartBirthData = z.infer<typeof chartBirthDataSchema>;
 export type ChartSubjectType = z.infer<typeof chartSubjectTypeSchema>;
 export type ChartSubjectContext = z.infer<typeof chartSubjectContextSchema>;
+export type ChartSettings = z.infer<typeof chartSettingsSchema>;
 export type ChartRequestContext = z.infer<typeof chartRequestContextSchema>;
 export type BirthPlaceSearchQuery = z.infer<typeof birthPlaceSearchQuerySchema>;
 export type BirthPlaceSearchResult = z.infer<typeof birthPlaceSearchResultSchema>;

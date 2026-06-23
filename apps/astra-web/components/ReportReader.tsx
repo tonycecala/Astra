@@ -1,7 +1,9 @@
 import Link from "next/link";
 
+import { buildAstrologyChartSnapshot, buildAstrologyReportSectionEvidence } from "@astra/astrology";
 import type { AstrologyReportRequest, AstrologyReportResult } from "@astra/contracts";
 import { ui } from "../lib/i18n";
+import { ReportChartPlate } from "./ReportChartPlate";
 import { ReportMarkdown } from "./ReportMarkdown";
 import { ReportReaderActions } from "./ReportReaderActions";
 
@@ -20,9 +22,10 @@ export function ReportReader({
 }) {
   const subject = reportSubjectContext(request);
   const title = report.publicSignal?.headline ?? ui.library.selectedReportFallbackTitle;
-  const createdAt = formatReportDate(report.createdAt);
-  const reportMarkdown = reportMarkdownFrom(report, request, title, subject.name);
-  const sectionMarkdown = reportSectionsMarkdownFrom(report);
+  const evidenceByTitle = buildReportEvidenceByTitle(request, report);
+  const reportMarkdown = reportMarkdownFrom(report, request, title, subject.name, evidenceByTitle);
+  const sectionMarkdown = reportSectionsMarkdownFrom(report, evidenceByTitle);
+  const chartSnapshot = buildReportChartSnapshot(request);
 
   return (
     <section className="reportReaderShell" aria-label={shared ? ui.library.sharedReportLabel : ui.library.selectedReportLabel}>
@@ -79,31 +82,12 @@ export function ReportReader({
       ) : null}
 
       <article className="reportReaderDocument">
-        <aside className="reportDocumentPlate" aria-label={ui.library.reportPlateLabel}>
-          <div className="reportDocumentSeal" aria-hidden="true">
-            {subject.type === "ally" ? "A" : "S"}
-          </div>
-          <div className="reportDocumentPlateText">
-            <p className="reportDocumentPlateKicker">{ui.library.reportPlateSubject}</p>
-            <p className="reportDocumentPlatePrimary">{subject.name}</p>
-            {subject.relationship ? <p className="reportDocumentPlateSecondary">{subject.relationship}</p> : null}
-          </div>
-          <dl className="reportDocumentPlateFacts">
-            <div>
-              <dt>{ui.library.reportPlateType}</dt>
-              <dd>{reportTypeLabel(request?.reportType)}</dd>
-            </div>
-            <div>
-              <dt>{ui.library.reportPlateStatus}</dt>
-              <dd>{report.status}</dd>
-            </div>
-            <div>
-              <dt>{ui.library.reportPlateDate}</dt>
-              <dd>{createdAt}</dd>
-            </div>
-          </dl>
-        </aside>
-        {report.sections.length ? <ReportMarkdown markdown={sectionMarkdown} /> : <div className="reportMarkdown"><p>{ui.library.selectedReportNoSections}</p></div>}
+        <ReportChartPlate request={request} chart={chartSnapshot} />
+        {report.sections.length ? (
+          <ReportMarkdown markdown={sectionMarkdown} evidenceByTitle={evidenceByTitle} />
+        ) : (
+          <div className="reportMarkdown"><p>{ui.library.selectedReportNoSections}</p></div>
+        )}
       </article>
     </section>
   );
@@ -141,7 +125,15 @@ export function formatReportDate(value: string) {
   }).format(date);
 }
 
-function reportMarkdownFrom(report: AstrologyReportResult, request: AstrologyReportRequest | null, title: string, subjectName: string) {
+type ReportEvidenceByTitle = Record<string, Array<{ label: string; meaning: string }>>;
+
+function reportMarkdownFrom(
+  report: AstrologyReportResult,
+  request: AstrologyReportRequest | null,
+  title: string,
+  subjectName: string,
+  evidenceByTitle: ReportEvidenceByTitle
+) {
   const metadata = [
     `Subject: ${subjectName}`,
     `Type: ${reportTypeLabel(request?.reportType)}`,
@@ -149,12 +141,46 @@ function reportMarkdownFrom(report: AstrologyReportResult, request: AstrologyRep
     `Generated: ${formatReportDate(report.createdAt)}`
   ];
   const sections = report.sections
-    .map((section) => [`## ${section.title}`, section.body.trim()].filter(Boolean).join("\n\n"))
+    .map((section) => {
+      const evidence = evidenceMarkdownFor(section.title, evidenceByTitle);
+      return [`## ${section.title}`, section.body.trim(), evidence].filter(Boolean).join("\n\n");
+    })
     .join("\n\n");
 
   return [`# ${title}`, metadata.join("\n"), report.summary ? `> ${report.summary}` : "", sections].filter(Boolean).join("\n\n");
 }
 
-function reportSectionsMarkdownFrom(report: AstrologyReportResult) {
-  return report.sections.map((section) => [`## ${section.title}`, section.body.trim()].filter(Boolean).join("\n\n")).join("\n\n");
+function reportSectionsMarkdownFrom(report: AstrologyReportResult, evidenceByTitle: ReportEvidenceByTitle) {
+  return report.sections
+    .map((section) => [`## ${section.title}`, section.body.trim(), evidenceMarkdownFor(section.title, evidenceByTitle)].filter(Boolean).join("\n\n"))
+    .join("\n\n");
+}
+
+function buildReportChartSnapshot(request: AstrologyReportRequest | null) {
+  if (!request) return null;
+  try {
+    return buildAstrologyChartSnapshot(request);
+  } catch {
+    return null;
+  }
+}
+
+function buildReportEvidenceByTitle(request: AstrologyReportRequest | null, report: AstrologyReportResult): ReportEvidenceByTitle {
+  if (!request || !report.sections.length) return {};
+  try {
+    return Object.fromEntries(
+      buildAstrologyReportSectionEvidence(
+        request,
+        report.sections.map((section) => section.title)
+      ).map((section) => [section.title, section.evidenceBullets])
+    );
+  } catch {
+    return {};
+  }
+}
+
+function evidenceMarkdownFor(title: string, evidenceByTitle: ReportEvidenceByTitle) {
+  const evidence = evidenceByTitle[title] ?? [];
+  if (!evidence.length) return "";
+  return ["**Chart Evidence**", ...evidence.map((item) => `- **${item.label}**: ${item.meaning}`)].join("\n");
 }

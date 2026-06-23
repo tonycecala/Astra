@@ -1,9 +1,12 @@
+import { db } from "@astra/db";
+
 type JsonObject = Record<string, unknown>;
 
 const appBaseUrl = clean(process.env.ASTRA_APP_SMOKE_BASE_URL) || "http://localhost:3011";
 const authBaseUrl = `${appBaseUrl}/api/auth`;
 const mailpitUrl = clean(process.env.MAILPIT_API_URL) || "http://localhost:8025";
 const email = clean(process.env.ASTRA_REPORT_FAMILIES_SMOKE_EMAIL) || `report-families-${Date.now()}@example.com`;
+const internalToken = clean(process.env.ASTRA_INTERNAL_API_TOKEN);
 
 let cookieHeader = "";
 
@@ -120,6 +123,12 @@ await requestJson(`${authBaseUrl}/sign-in/email-otp`, {
   method: "POST",
   body: JSON.stringify({ email, otp: await readOtpFromMailpit(), name: "Astra Report Families Smoke" })
 });
+await requestJson(`${appBaseUrl}/api/reports`);
+await db.execute(`update app_user_profiles set role = 'admin', star_balance = 10, updated_at = now() where email = '${email}'`);
+
+if (!internalToken) {
+  throw new Error("ASTRA_INTERNAL_API_TOKEN is required for the report families smoke.");
+}
 
 const generatedIds: string[] = [];
 
@@ -152,8 +161,10 @@ for (const [reportType, headings] of Object.entries(expectedHeadings)) {
   const requestId = String((created.request as JsonObject | undefined)?.id ?? "");
   if (!requestId) throw new Error(`${reportType} report request did not return an id.`);
 
-  const generated = await requestJson(`${appBaseUrl}/api/reports/${requestId}/generate`, {
-    method: "POST"
+  const generated = await requestJson(`${appBaseUrl}/api/admin/replay-report`, {
+    method: "POST",
+    headers: { "x-astra-internal-token": internalToken },
+    body: JSON.stringify({ requestId, reportWriter: "local-deterministic-writer" })
   });
   const result = generated.result as JsonObject | undefined;
   if (result?.status !== "completed") {
@@ -178,3 +189,4 @@ for (const requestId of generatedIds) {
 }
 
 console.log(`Report families smoke passed for ${email}: ${generatedIds.join(", ")}.`);
+process.exit(0);

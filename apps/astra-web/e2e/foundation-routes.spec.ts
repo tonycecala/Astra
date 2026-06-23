@@ -165,7 +165,7 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("button", { name: "Send code" })).toBeVisible();
   });
 
-  test("signed-in self onboarding queues chart and report requests", async ({ page }, testInfo) => {
+  test("signed-in self onboarding requires report cost confirmation", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "desktop", "The auth-backed onboarding journey is covered on desktop in this regression test.");
 
     const email = `self-onboarding-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
@@ -179,67 +179,48 @@ test.describe("clean-start routes", () => {
 
     await page.getByLabel("Code").fill(await readOtpFromMailpit(email));
     await page.getByRole("button", { name: "Verify code" }).click();
+    await expect(page.getByRole("heading", { name })).toBeVisible();
+    await page.getByRole("link", { name: "Continue to Self" }).click();
 
-    await page.goto("/journey");
-    const journeyState = page.getByLabel("Journey state");
-    const journeyStateText = (await journeyState.textContent()) ?? "";
-    const isSignedOut = journeyStateText.includes("A public sample, not your private Journey");
-    test.skip(isSignedOut, "Journey is in signed-out preview mode; onboarding test requires private auth state.");
-    await expect(journeyState).toContainText("First private runComposer will generate your onboarding cards");
-    await expect(page.getByRole("heading", { name: "No cards in this lane" })).toBeVisible();
-
-    await page.goto("/self");
-    await page.reload();
     await expect(page.getByRole("heading", { name })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
-    await expect(page.getByLabel("Alpha onboarding guidance")).toContainText("Subject and birth date are enough");
+    await expect(page.getByLabel("Alpha onboarding guidance")).toHaveCount(0);
+    await expect(page.getByLabel("Chart generation flow")).toHaveCount(0);
     await expect(page.getByText("Step 1 of 4: Subject")).toBeVisible();
-    await expect(page.getByLabel("Chart generation flow")).toContainText("Birth data");
-    await expect(page.getByLabel("Chart generation flow")).toContainText("Saved in Library");
 
     const nextButton = page.getByRole("button", { exact: true, name: "Next" });
     await nextButton.click();
-    await page.getByLabel("Birth date").fill("1961-05-23");
+    await expect(page.getByText("Step 2 of 4: Report")).toBeVisible();
+    await expect(page.getByText("Core Report")).toBeVisible();
+    await expect(page.getByText("Chart settings")).toBeVisible();
     await nextButton.click();
-    await expect(page.getByText("Date-only is valid")).toBeVisible();
-    await page.getByLabel("Time and place").check();
-    await page.getByLabel("Search birth place").fill("New");
-    await page.getByRole("button", { exact: true, name: "Search" }).click();
-    await page.getByRole("button", { name: /New York, NY, USA/ }).click();
-    await page.getByLabel("Birth time (optional)").fill("09:30");
+    await expect(page.getByText("Step 3 of 4: Birth details")).toBeVisible();
+    await page.getByLabel("Birth date").fill("1961-05-23");
     await nextButton.click();
 
     await expect(page.getByLabel("Review birth data")).toContainText("1961-05-23");
-    await expect(page.getByLabel("Review birth data")).toContainText("New York, NY, USA");
+    await expect(page.getByLabel("Review birth data")).toContainText("Core Report");
     const queueButton = page.getByRole("button", { name: "Queue chart and report", exact: true });
-    if (await queueButton.isVisible()) {
-      await queueButton.click();
-    }
+    await queueButton.focus();
+    await page.keyboard.press("Enter");
+    const confirmDialog = page.getByRole("dialog", { name: "Confirm report" });
+    await expect(confirmDialog).toBeVisible();
+    await expect(confirmDialog).toContainText("Report selected");
+    await expect(confirmDialog).toContainText("Core Report");
+    await expect(confirmDialog).toContainText("Cost");
+    await expect(confirmDialog).toContainText("5 Stars");
+    await expect(confirmDialog).toContainText("Current balance");
+    await expect(confirmDialog.getByRole("button", { name: "OK" })).toBeVisible();
+    await confirmDialog.getByRole("button", { name: "Cancel" }).click();
+    await expect(confirmDialog).toHaveCount(0);
     const onboarding = page.locator('section[aria-label="Birth data onboarding"]');
     await expect(onboarding.getByRole("heading", { name: "Recent chart requests" })).toBeVisible();
     await expect(onboarding.getByRole("heading", { name: "Report status" })).toBeVisible();
-    await expect(onboarding).toContainText(name);
-    await expect(onboarding).toContainText("Generating");
-    await expect(onboarding).toContainText("Report generated");
-    await expect(onboarding).toContainText("Gemini Sun, Virgo Moon");
-    await expect(onboarding.getByLabel("Chart generation flow")).toContainText("Saved in Library");
-    await page.getByRole("button", { name: "Read report" }).click();
-    await expect(page).toHaveURL(/\/library\?reportId=/);
-    await expect(page.getByRole("link", { name: "Click/Tap to Close Report" })).toBeVisible();
 
     await page.goto("/library");
     await expect(page.getByRole("heading", { name: "Artifacts worth keeping" })).toBeVisible();
-    const libraryReportCards = page.getByRole("link", { name: /View report:/ });
-    await expect(libraryReportCards.first()).toBeVisible();
-    await expect(libraryReportCards.first()).toContainText("report");
-    await libraryReportCards.first().click();
-    await expect(page).toHaveURL(/\/library\?reportId=/);
-    await expect(page.getByRole("link", { name: "Click/Tap to Close Report" })).toBeVisible();
-    await page.getByRole("link", { name: "Click/Tap to Close Report" }).click();
-    await expect(page).toHaveURL(/\/library$/);
 
     await page.goto("/journey");
-    await expect(page.locator(".status-strip").getByText("Private journey")).toBeVisible();
-    await expect(page.getByLabel("Journey state")).toContainText("First private runComposer will generate your onboarding cards");
+    await expect(page.getByRole("heading", { name: "A living stream" })).toBeVisible();
   });
 });

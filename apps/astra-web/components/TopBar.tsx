@@ -3,6 +3,7 @@
 import { Bell, CircleHelp, Settings, Sparkles as Stars, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { authClient } from "../lib/auth/client";
 import { ui } from "../lib/i18n";
 import { ThemeToggle } from "./ThemeToggle";
@@ -38,9 +39,32 @@ function useAccountState() {
 
 function AccountMenu({ align = "right" }: { align?: "right" | "left" }) {
   const { accountEmail, accountName, signedIn, signOut } = useAccountState();
+  const menuRef = useRef<HTMLDetailsElement>(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function closeOnOutsideClick(event: PointerEvent) {
+      if (!menuRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
 
   return (
-    <details className="account-menu" data-align={align}>
+    <details className="account-menu" data-align={align} onToggle={(event) => setOpen(event.currentTarget.open)} open={open} ref={menuRef}>
       <summary className="account-profile-button" aria-label={ui.account.menuLabel} title={signedIn ? accountName : ui.account.signIn}>
         <span className="account-avatar" aria-hidden="true">
           {accountInitial(accountName)}
@@ -60,7 +84,7 @@ function AccountMenu({ align = "right" }: { align?: "right" | "left" }) {
           <UserRound size={16} aria-hidden="true" />
           <span>{ui.account.account}</span>
         </Link>
-        <Link href="/gifts" role="menuitem">
+        <Link href="/stars" role="menuitem">
           <Stars size={16} aria-hidden="true" />
           <span>{ui.account.stars}</span>
         </Link>
@@ -106,7 +130,7 @@ export function SidebarAccountControls() {
         <AccountMenu align="left" />
         <div className="sidebar-account-copy">
           <strong>{accountName}</strong>
-          <span>{ui.account.starsLabel(0)}</span>
+          <span>{ui.account.stars}</span>
         </div>
         <ThemeToggle />
       </div>
@@ -121,10 +145,10 @@ export function TopBar() {
     <header className="topbar" aria-label={ui.account.mobileTopbarLabel}>
       <h1 className="topbar-route-title">{activeRouteLabel(pathname)}</h1>
       <div className="topbar-actions">
-        <button className="topbar-icon-button topbar-stars-button" type="button" aria-label={ui.account.starsLabel(0)} title={ui.account.stars}>
+        <Link className="topbar-icon-button topbar-stars-button" href="/stars" aria-label={ui.account.stars} title={ui.account.stars}>
           <Stars size={17} aria-hidden="true" />
-          <span className="topbar-stars-count">0</span>
-        </button>
+          <span className="topbar-stars-count">+</span>
+        </Link>
         <button className="topbar-icon-button topbar-icon-button-disabled" type="button" aria-label={ui.account.noNotifications} title={ui.account.noNotifications} disabled>
           <Bell size={17} aria-hidden="true" />
         </button>

@@ -57,6 +57,13 @@
       "when": 1782182428171,
       "tag": "0007_sharp_the_leader",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1782226864446,
+      "tag": "0008_large_whirlwind",
+      "breakpoints": true
     }
   ]
 }

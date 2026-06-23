@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChartPie, ChevronRight, Pencil, Sparkles } from "lucide-react";
+import { ChartPie, ChevronRight, Pencil, ShieldCheck, Sparkles } from "lucide-react";
 import type { ChartMakerRequest } from "@astra/contracts";
 import { db, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests } from "@astra/db";
 import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
@@ -145,11 +145,17 @@ export default async function SelfPage() {
               <Sparkles aria-hidden="true" size={16} />
               {ui.self.createProfile}
             </Link>
+            {profile.role === "admin" ? (
+              <Link className="button secondary" href="/admin">
+                <ShieldCheck aria-hidden="true" size={16} />
+                {ui.account.admin}
+              </Link>
+            ) : null}
+            <a className="button secondary" href="#self-birth-onboarding">
+              <Pencil aria-hidden="true" size={16} />
+              {ui.self.editBirthDetails}
+            </a>
           </div>
-          <a className="button self-profile-edit-button" href="#self-birth-onboarding">
-            <Pencil aria-hidden="true" size={16} />
-            {ui.self.editBirthDetails}
-          </a>
         </article>
       </section>
       <section className="grid" aria-label={ui.self.timelineLabel}>
@@ -234,9 +240,12 @@ export default async function SelfPage() {
       <section id="self-birth-onboarding">
         <BirthOnboardingPanel
           displayName={profile.displayName}
+          role={profile.role}
+          starBalance={profile.starBalance}
           initialRequests={chartRequests}
           initialReportRequests={reportRequests}
           initialReportResults={reportResults}
+          initialBirthData={latestRequest?.birthData}
         />
       </section>
     </>

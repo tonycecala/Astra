@@ -1,6 +1,6 @@
 import "server-only";
 
-import { db, upsertAuthUserProfile } from "@astra/db";
+import { db, ensureBetaSignupCredits, getCreditBalance, upsertAuthUserProfile } from "@astra/db";
 import { getAstraSession } from "./server";
 
 export async function getAstraAuthContext() {
@@ -12,6 +12,8 @@ export async function getAstraAuthContext() {
     email: session.user.email,
     displayName: session.user.name || session.user.email
   });
+  await ensureBetaSignupCredits(db, profile.userId);
+  const starBalance = await getCreditBalance(db, profile.userId);
 
-  return { session, profile };
+  return { session, profile: { ...profile, starBalance } };
 }
