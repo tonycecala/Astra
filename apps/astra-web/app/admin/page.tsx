@@ -2,13 +2,32 @@ import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
+  ASTRA_REPORT_MODEL_ENV,
+  ASTRA_REPORT_MODEL_PROFILE_ENV,
+  ASTRA_REPORT_MODEL_PROVIDER_ENV,
+  ASTRA_REPORT_WRITER_ENV,
+  DEBUG_MODEL_REPORT_WRITER,
+  LOCAL_DETERMINISTIC_REPORT_WRITER,
+  buildAstrologyReportResultAsync,
+  reportModelProfileKeys,
+  reportModelProfileModels,
+  type ReportModelProfile
+} from "@astra/astrology";
+import { buildChartMakerRecordResult } from "@astra/chart-maker";
+import {
   adminAdjustCredits,
   adminUpdateUserRole,
+  astrologyReportRequests,
   db,
+  getAstrologyReportRequest,
   getCreditLedgerSummary,
+  getUserChartMakerRequest,
   listCreditUsers,
-  listRecentCreditLedger
+  listRecentCreditLedger,
+  recordAstrologyReportResult,
+  recordChartMakerResult
 } from "@astra/db";
+import { desc, eq } from "drizzle-orm";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
 
@@ -17,7 +36,22 @@ export const dynamic = "force-dynamic";
 type AdminSearchParams = {
   creditSearch?: string | string[];
   creditUser?: string | string[];
+  replayProfile?: string | string[];
+  replayRequest?: string | string[];
+  replayStatus?: string | string[];
 };
+
+const replayProfileOptions = reportModelProfileKeys;
+
+function normalizeModelProfile(value: FormDataEntryValue | null): ReportModelProfile {
+  const profile = String(value ?? "production");
+  return reportModelProfileKeys.includes(profile as ReportModelProfile) ? (profile as ReportModelProfile) : "production";
+}
+
+function optionalFormString(value: FormDataEntryValue | null) {
+  const clean = String(value ?? "").trim();
+  return clean || undefined;
+}
 
 async function adjustCreditsAction(formData: FormData) {
   "use server";
@@ -35,6 +69,49 @@ async function adjustCreditsAction(formData: FormData) {
     targetEmail: String(formData.get("targetEmail") ?? "")
   });
   revalidatePath("/admin");
+}
+
+async function replayReportAction(formData: FormData) {
+  "use server";
+  const { profile } = await getAstraAuthContext();
+  if (profile?.role !== "admin") throw new Error("Admin access is required.");
+
+  const requestId = optionalFormString(formData.get("requestId"));
+  const modelProfile = normalizeModelProfile(formData.get("modelProfile"));
+  const reportWriter = optionalFormString(formData.get("reportWriter")) ?? DEBUG_MODEL_REPORT_WRITER;
+  const modelProvider = optionalFormString(formData.get("modelProvider"));
+  const model = optionalFormString(formData.get("model"));
+
+  if (!requestId) {
+    redirect("/admin?replayStatus=missing-request");
+  }
+
+  const reportRequest = await getAstrologyReportRequest(db, requestId);
+  if (!reportRequest) {
+    redirect(`/admin?replayStatus=not-found&replayRequest=${encodeURIComponent(requestId)}&replayProfile=${modelProfile}`);
+  }
+
+  if (reportRequest.chartRequestId) {
+    const chartRequest = await getUserChartMakerRequest(db, {
+      requestId: reportRequest.chartRequestId,
+      userId: reportRequest.userId
+    });
+    if (chartRequest) {
+      await recordChartMakerResult(db, buildChartMakerRecordResult(chartRequest));
+    }
+  }
+
+  const env = {
+    ...process.env,
+    [ASTRA_REPORT_WRITER_ENV]: reportWriter,
+    [ASTRA_REPORT_MODEL_PROFILE_ENV]: modelProfile,
+    [ASTRA_REPORT_MODEL_PROVIDER_ENV]: modelProvider ?? (model ? process.env[ASTRA_REPORT_MODEL_PROVIDER_ENV] : undefined),
+    [ASTRA_REPORT_MODEL_ENV]: model
+  };
+  const resultPayload = await buildAstrologyReportResultAsync(reportRequest, { env });
+  const result = await recordAstrologyReportResult(db, resultPayload);
+  revalidatePath("/admin");
+  redirect(`/admin?replayStatus=${encodeURIComponent(result.status)}&replayRequest=${encodeURIComponent(requestId)}&replayProfile=${modelProfile}`);
 }
 
 async function updateUserRoleAction(formData: FormData) {
@@ -99,6 +176,18 @@ function ledgerRelatedObject(entry: { idempotencyKey: string; relatedReportDocum
   return entry.idempotencyKey.split(":").slice(0, 2).join(":");
 }
 
+function reportTypeLabel(reportType: string) {
+  if (reportType === "identity") return ui.library.reportTypeIdentity;
+  if (reportType === "deep") return ui.library.reportTypeDeep;
+  if (reportType === "progressed") return ui.library.reportTypeProgressed;
+  if (reportType === "synastry") return ui.library.reportTypeSynastry;
+  return ui.library.reportTypeCore;
+}
+
+function defaultModelFor(profile: ReportModelProfile) {
+  return reportModelProfileModels[profile][0] ?? "";
+}
+
 export default async function AdminPage({ searchParams }: { searchParams?: Promise<AdminSearchParams> }) {
   const { profile } = await getAstraAuthContext();
   if (!profile) redirect("/login?next=/admin");
@@ -118,12 +207,27 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
   const resolvedSearchParams = (await searchParams) ?? {};
   const creditSearch = firstSearchParam(resolvedSearchParams.creditSearch).trim();
   const requestedCreditUserId = firstSearchParam(resolvedSearchParams.creditUser).trim();
+  const replayStatus = firstSearchParam(resolvedSearchParams.replayStatus).trim();
+  const replayRequest = firstSearchParam(resolvedSearchParams.replayRequest).trim();
+  const replayProfile = firstSearchParam(resolvedSearchParams.replayProfile).trim() || "production";
   const creditUsers = await listCreditUsers(db, { limit: 100, search: creditSearch });
   const selectedCreditUser = creditUsers.find((user) => user.userId === requestedCreditUserId) ?? creditUsers[0] ?? null;
-  const [creditSummary, creditLedger] = await Promise.all([
+  const [creditSummary, creditLedger, selectedReportRequests] = await Promise.all([
     getCreditLedgerSummary(db, selectedCreditUser?.userId ?? null),
-    listRecentCreditLedger(db, { userId: selectedCreditUser?.userId ?? null, limit: 100 })
+    listRecentCreditLedger(db, { userId: selectedCreditUser?.userId ?? null, limit: 100 }),
+    selectedCreditUser
+      ? db
+          .select()
+          .from(astrologyReportRequests)
+          .where(eq(astrologyReportRequests.userId, selectedCreditUser.userId))
+          .orderBy(desc(astrologyReportRequests.createdAt))
+          .limit(20)
+      : []
   ]);
+  const defaultReplayRequestId = replayRequest || selectedReportRequests[0]?.id || "";
+  const normalizedReplayProfile = reportModelProfileKeys.includes(replayProfile as ReportModelProfile)
+    ? (replayProfile as ReportModelProfile)
+    : "production";
 
   return (
     <section className="adminPage" aria-labelledby="admin-title">
@@ -282,10 +386,54 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
         <div className="adminPanel">
           <h2>{ui.admin.bakeoffTitle}</h2>
           <p>{ui.admin.bakeoffBody}</p>
+          {replayStatus ? (
+            <p className="form-status" role="status">
+              {ui.admin.replayResult(replayStatus, replayRequest || "unknown request", replayProfile || "default profile")}
+            </p>
+          ) : null}
+          <form className="adminCreditForm adminReplayForm" action={replayReportAction}>
+            <label>
+              <span>{ui.admin.reportId}</span>
+              <input name="requestId" defaultValue={defaultReplayRequestId} required />
+            </label>
+            <label>
+              <span>{ui.admin.reportWriter}</span>
+              <select name="reportWriter" defaultValue={DEBUG_MODEL_REPORT_WRITER}>
+                <option value={LOCAL_DETERMINISTIC_REPORT_WRITER}>{ui.admin.reportWriters.deterministic}</option>
+                <option value={DEBUG_MODEL_REPORT_WRITER}>{ui.admin.reportWriters.debug}</option>
+              </select>
+            </label>
+            <label>
+              <span>{ui.admin.modelProfile}</span>
+              <select name="modelProfile" defaultValue={normalizedReplayProfile}>
+                {replayProfileOptions.map((profileKey) => (
+                  <option key={profileKey} value={profileKey}>
+                    {ui.admin.modelProfiles[profileKey]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>{ui.admin.modelProvider}</span>
+              <select name="modelProvider" defaultValue="openrouter">
+                <option value="openrouter">openrouter</option>
+                <option value="openai">openai</option>
+              </select>
+            </label>
+            <label>
+              <span>{ui.admin.model}</span>
+              <input name="model" defaultValue={defaultModelFor(normalizedReplayProfile)} />
+            </label>
+            <button className="button" type="submit">{ui.admin.runReplay}</button>
+          </form>
           <dl className="adminCommandList">
             <div>
               <dt>{ui.admin.bakeoffCommand}</dt>
               <dd><code>npm run report:bakeoff -- --profiles debug,production</code></dd>
+            </div>
+            <div>
+              <dt>{ui.admin.bakeoffCommandPreview}</dt>
+              <dd><code>{`ASTRA_REPORT_BAKEOFF_PROFILES=debug,production npm run report:bakeoff`}</code></dd>
             </div>
             <div>
               <dt>{ui.admin.bakeoffReplay}</dt>
@@ -309,6 +457,49 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
             </label>
             <button className="button secondary" type="submit">{ui.admin.roleSubmit}</button>
           </form>
+        </div>
+      </section>
+
+      <section className="adminPanel" aria-labelledby="admin-reports-heading">
+        <h2 id="admin-reports-heading">{ui.admin.recentReports}</h2>
+        <div className="adminTableShell">
+          <div className="adminTable adminReportTable" role="table" aria-label={ui.admin.recentReports}>
+            <div className="adminRow adminRowHeader" role="row">
+              <div role="columnheader">{ui.admin.reportId}</div>
+              <div role="columnheader">{ui.admin.event}</div>
+              <div role="columnheader">{ui.admin.adjustmentAmount}</div>
+              <time role="columnheader">{ui.admin.joined}</time>
+              <div role="columnheader">{ui.admin.bakeoffReplay}</div>
+            </div>
+            {selectedReportRequests.map((request) => (
+              <div className="adminRow adminRowData" key={request.id} role="row">
+                <div role="cell">
+                  <strong>{request.id.slice(0, 8)}</strong>
+                  <p>{request.subjectName}</p>
+                </div>
+                <div role="cell">
+                  <strong>{reportTypeLabel(request.reportType)}</strong>
+                  <p>{request.status}</p>
+                </div>
+                <div role="cell">
+                  <strong>{request.costCredits}</strong>
+                  <p>{request.source}</p>
+                </div>
+                <time role="cell">{formatAdminDate(request.createdAt)}</time>
+                <div role="cell">
+                  <form action={replayReportAction}>
+                    <input name="requestId" type="hidden" value={request.id} />
+                    <input name="reportWriter" type="hidden" value={DEBUG_MODEL_REPORT_WRITER} />
+                    <input name="modelProfile" type="hidden" value="debug" />
+                    <input name="modelProvider" type="hidden" value="openrouter" />
+                    <input name="model" type="hidden" value={defaultModelFor("debug")} />
+                    <button className="button secondary" type="submit">{ui.admin.runReplay}</button>
+                  </form>
+                </div>
+              </div>
+            ))}
+            {!selectedReportRequests.length ? <p>{ui.admin.noReports}</p> : null}
+          </div>
         </div>
       </section>
     </section>

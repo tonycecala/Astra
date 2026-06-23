@@ -210,16 +210,17 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
     await expect(page.getByLabel("Alpha onboarding guidance")).toHaveCount(0);
     await expect(page.getByLabel("Chart generation flow")).toHaveCount(0);
-    await expect(page.getByText("Step 1 of 4: Subject")).toBeVisible();
+    await expect(page.getByText("Step 1 of 4: Your name")).toBeVisible();
+    await expect(page.getByLabel("Your name")).toHaveValue(name);
 
     const nextButton = page.getByRole("button", { exact: true, name: "Next" });
     await nextButton.click();
-    await expect(page.getByText("Step 2 of 4: Report")).toBeVisible();
+    await expect(page.getByText("Step 2 of 4: Birth details")).toBeVisible();
+    await page.getByLabel("Birth date").fill("1961-05-23");
+    await nextButton.click();
+    await expect(page.getByText("Step 3 of 4: Report")).toBeVisible();
     await expect(page.getByText("Core Report")).toBeVisible();
     await expect(page.getByText("Chart settings")).toBeVisible();
-    await nextButton.click();
-    await expect(page.getByText("Step 3 of 4: Birth details")).toBeVisible();
-    await page.getByLabel("Birth date").fill("1961-05-23");
     await nextButton.click();
 
     await expect(page.getByLabel("Review birth data")).toContainText("1961-05-23");
@@ -276,6 +277,10 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("heading", { name: "Admin Console" })).toBeVisible();
     await expect(page.getByText(`Signed in as ${email} · Admin`)).toBeVisible();
     await expect(page.getByRole("heading", { name: "Report bakeoff controls" })).toBeVisible();
+    await expect(page.getByLabel("Report request id")).toBeVisible();
+    await expect(page.getByLabel("Writer")).toBeVisible();
+    await expect(page.getByLabel("Profile")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Run Replay" }).first()).toBeVisible();
     await expect(page.getByText("npm run report:bakeoff -- --profiles debug,production")).toBeVisible();
     await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText("Playwright admin parity grant");
 
@@ -283,11 +288,11 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
     const nextButton = page.getByRole("button", { exact: true, name: "Next" });
     await nextButton.click();
+    await page.getByLabel("Birth date").fill("1961-05-23");
+    await nextButton.click();
     await expect(page.getByText("Deep Report")).toBeVisible();
     await expect(page.getByText("Progressed Report")).toBeVisible();
     await expect(page.getByText("Synastry Report")).toHaveCount(0);
-    await nextButton.click();
-    await page.getByLabel("Birth date").fill("1961-05-23");
     await nextButton.click();
     await page.getByRole("button", { name: "Queue chart and report", exact: true }).focus();
     await page.keyboard.press("Enter");
@@ -296,6 +301,8 @@ test.describe("clean-start routes", () => {
     await expect(page.getByText("Report is generating")).toBeVisible();
 
     await page.getByRole("button", { name: "Start another report request" }).click();
+    await nextButton.click();
+    await page.getByLabel("Birth date").fill("1961-05-23");
     await nextButton.click();
     await page.getByLabel("Synastry Report").check();
     await expect(page.getByLabel("Comparison chart")).toBeVisible();

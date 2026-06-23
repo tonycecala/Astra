@@ -15,7 +15,7 @@ function supportedTimeZones() {
 }
 
 const timeZones = supportedTimeZones();
-const steps = ["subject", "report", "birth_details", "review"] as const;
+const steps = ["subject", "birth_details", "report", "review"] as const;
 
 const confirmLayerStyle: CSSProperties = {
   position: "fixed",
