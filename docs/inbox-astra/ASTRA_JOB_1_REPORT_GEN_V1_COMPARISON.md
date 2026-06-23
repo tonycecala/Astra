@@ -62,7 +62,7 @@ Still pending:
 - Full v1 `ChartFacts`/allowed-claims/evidence-completeness validation.
 - Full mode section cards for relationship/synastry, progressed, and event reports.
 - Admin-visible query/debug/bakeoff controls in the app UI.
-- Star deduction after the customer Stars gate, if alpha requires spend-on-run behavior.
+- Full admin in-app query/debug/bakeoff forms beyond the current admin-visible replay endpoint and bakeoff command surface.
 - Library query/filter behavior parity beyond the current short-list loading behavior.
 
 ## Rule Going Forward
@@ -76,4 +76,4 @@ Model quality tuning is set aside after the current Tony Sonnet and Haiku runs. 
 - Persistent test user: `astra-report-parity@example.com`, promoted to admin with 31 Stars for comparison/report QA.
 - Admin path: advanced report families plus internal replay/profile/bakeoff tools remain available behind admin/internal-token checks.
 - Customer path: minimal report choices only, currently Identity and Core, with Stars required before creation.
-- Current API behavior: non-admin Deep/Progressed/Synastry creation is rejected; minimal customer reports require enough Stars. Star deduction is not yet implemented.
+- Current API behavior: non-admin Deep/Progressed/Synastry creation is rejected; minimal customer reports require enough Stars and debit the ledger after confirmed creation. Admin report creation records cost metadata but does not debit Stars.

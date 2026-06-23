@@ -1,4 +1,6 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
+import { appUserProfiles, creditLedgerEntries, db, mirrorCreditBalanceToProfile } from "@astra/db";
+import { eq } from "drizzle-orm";
 
 type JsonObject = Record<string, unknown>;
 
@@ -65,6 +67,36 @@ async function readOtpFromMailpit(email: string) {
   }
 
   throw new Error(`No OTP found in Mailpit for ${email}.`);
+}
+
+async function signInWithOtp(page: Page, input: { email: string; name: string }) {
+  await page.goto("/login");
+  await page.getByLabel("Name").fill(input.name);
+  await page.getByLabel("Email").fill(input.email);
+  await page.getByRole("button", { name: "Send code" }).click();
+  await expect(page.getByText("Check email for the sign-in code")).toBeVisible();
+
+  await page.getByLabel("Code").fill(await readOtpFromMailpit(input.email));
+  await page.getByRole("button", { name: "Verify code" }).click();
+  await expect(page.getByRole("heading", { name: input.name })).toBeVisible();
+}
+
+async function makeProfileAdmin(email: string) {
+  const [profile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
+  if (!profile) throw new Error(`Expected profile for ${email}.`);
+  await db.update(appUserProfiles).set({ role: "admin", updatedAt: new Date() }).where(eq(appUserProfiles.userId, profile.userId));
+  await db
+    .insert(creditLedgerEntries)
+    .values({
+      amount: 20,
+      description: "Playwright admin parity grant",
+      eventType: "admin_adjustment",
+      idempotencyKey: `playwright_admin_grant:${profile.userId}:${Date.now()}`,
+      metadata: { actor: "playwright", reason: "Admin parity browser QA" },
+      source: "playwright_e2e",
+      userId: profile.userId
+    });
+  await mirrorCreditBalanceToProfile(db, profile.userId);
 }
 
 test.describe("clean-start routes", () => {
@@ -171,15 +203,7 @@ test.describe("clean-start routes", () => {
     const email = `self-onboarding-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
     const name = "Astra Onboarding Smoke";
 
-    await page.goto("/login");
-    await page.getByLabel("Name").fill(name);
-    await page.getByLabel("Email").fill(email);
-    await page.getByRole("button", { name: "Send code" }).click();
-    await expect(page.getByText("Check email for the sign-in code")).toBeVisible();
-
-    await page.getByLabel("Code").fill(await readOtpFromMailpit(email));
-    await page.getByRole("button", { name: "Verify code" }).click();
-    await expect(page.getByRole("heading", { name })).toBeVisible();
+    await signInWithOtp(page, { email, name });
     await page.getByRole("link", { name: "Continue to Self" }).click();
 
     await expect(page.getByRole("heading", { name })).toBeVisible();
@@ -222,5 +246,59 @@ test.describe("clean-start routes", () => {
 
     await page.goto("/journey");
     await expect(page.getByRole("heading", { name: "A living stream" })).toBeVisible();
+  });
+
+  test("admin Stars ledger and Synastry controls stay browser-visible", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "The auth-backed admin and Synastry parity journey is covered on desktop.");
+
+    const email = `alpha-parity-admin-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
+    const name = "Astra Alpha Admin";
+
+    await signInWithOtp(page, { email, name });
+    await page.goto("/self");
+    await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
+    await makeProfileAdmin(email);
+
+    await page.goto("/stars");
+    await expect(page.getByRole("heading", { name: "Stars" })).toBeVisible();
+    await expect(page.getByText("Current balance")).toBeVisible();
+    await expect(page.getByText("50 Stars")).toBeVisible();
+    await page.getByRole("button", { name: "Add Stars" }).click();
+    const starsDialog = page.getByRole("dialog", { name: "Choose a Star pack" });
+    await expect(starsDialog).toBeVisible();
+    await expect(starsDialog).toContainText("5 Stars");
+    await expect(starsDialog).toContainText("$9.99");
+    await expect(starsDialog).toContainText("30 Stars");
+    await page.keyboard.press("Escape");
+    await expect(starsDialog).toHaveCount(0);
+
+    await page.goto("/admin");
+    await expect(page.getByRole("heading", { name: "Admin Console" })).toBeVisible();
+    await expect(page.getByText(`Signed in as ${email} · Admin`)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Report bakeoff controls" })).toBeVisible();
+    await expect(page.getByText("npm run report:bakeoff -- --profiles debug,production")).toBeVisible();
+    await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText("Playwright admin parity grant");
+
+    await page.goto("/self#self-birth-onboarding");
+    await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
+    const nextButton = page.getByRole("button", { exact: true, name: "Next" });
+    await nextButton.click();
+    await expect(page.getByText("Deep Report")).toBeVisible();
+    await expect(page.getByText("Progressed Report")).toBeVisible();
+    await expect(page.getByText("Synastry Report")).toHaveCount(0);
+    await nextButton.click();
+    await page.getByLabel("Birth date").fill("1961-05-23");
+    await nextButton.click();
+    await page.getByRole("button", { name: "Queue chart and report", exact: true }).focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("dialog", { name: "Confirm report" })).toContainText("Admin mode records the report cost but does not debit Stars.");
+    await page.getByRole("button", { name: "OK" }).click();
+    await expect(page.getByText("Report is generating")).toBeVisible();
+
+    await page.getByRole("button", { name: "Start another report request" }).click();
+    await nextButton.click();
+    await page.getByLabel("Synastry Report").check();
+    await expect(page.getByLabel("Comparison chart")).toBeVisible();
+    await expect(page.getByLabel("Comparison chart")).toContainText(name);
   });
 });
