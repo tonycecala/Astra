@@ -421,6 +421,28 @@ export const composerCardQueryCaches = pgTable(
   })
 );
 
+export const astrologyReportShares = pgTable(
+  "astrology_report_shares",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+    requestId: text("request_id")
+      .notNull()
+      .references(() => astrologyReportRequests.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull(),
+    status: text("status").notNull().default("active"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true })
+  },
+  (table) => ({
+    requestIdx: uniqueIndex("astrology_report_shares_request_idx").on(table.requestId),
+    tokenHashIdx: uniqueIndex("astrology_report_shares_token_hash_idx").on(table.tokenHash),
+    statusIdx: index("astrology_report_shares_status_idx").on(table.status, table.createdAt)
+  })
+);
+
 export const composerQueueDrafts = pgTable(
   "composer_queue_drafts",
   {

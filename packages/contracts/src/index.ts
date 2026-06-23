@@ -57,6 +57,13 @@ export const allySchema = z.object({
   createdAt: isoDateSchema
 });
 
+export const createAllySchema = z.object({
+  name: z.string().trim().min(1),
+  kind: allySchema.shape.kind.default("person"),
+  relationship: z.string().trim().min(1),
+  note: z.string().trim().min(1).optional()
+});
+
 export const artifactSchema = z.object({
   id: idSchema,
   userId: idSchema,
@@ -281,6 +288,23 @@ export const chartBirthDataSchema = z
     }
   });
 
+export const chartSubjectTypeSchema = z.enum(["self", "ally"]);
+
+export const chartSubjectContextSchema = z.object({
+  subjectType: chartSubjectTypeSchema,
+  subjectId: idSchema.optional(),
+  allyId: idSchema.optional(),
+  displayName: z.string().min(1),
+  relationship: z.string().min(1).optional(),
+  note: z.string().min(1).optional()
+});
+
+export const chartRequestContextSchema = jsonObjectSchema.and(
+  z.object({
+    subject: chartSubjectContextSchema.optional()
+  })
+);
+
 export const birthPlaceSearchQuerySchema = z.object({
   query: z.string().trim().min(2).max(120),
   limit: z.number().int().min(1).max(10).default(5)
@@ -319,7 +343,7 @@ export const createChartMakerRequestSchema = z.object({
   birthData: chartBirthDataSchema,
   question: z.string().min(1).optional(),
   intent: z.string().min(1).optional(),
-  context: jsonObjectSchema.optional(),
+  context: chartRequestContextSchema.optional(),
   source: z.enum(["self", "ally", "composer", "import"]).default("self")
 });
 
@@ -372,7 +396,17 @@ export const recordChartMakerResultSchema = z.object({
 });
 
 export const astrologyReportStatusSchema = z.enum(["queued", "processing", "completed", "failed", "cancelled"]);
-export const astrologyReportTypeSchema = z.enum(["core_self", "chart_interpretation", "daily_stream", "question_intention"]);
+export const astrologyReportTypeSchema = z.enum([
+  "identity",
+  "core",
+  "deep",
+  "progressed",
+  "synastry",
+  "core_self",
+  "chart_interpretation",
+  "daily_stream",
+  "question_intention"
+]);
 export const reportBoundarySchema = z.enum(["private", "public_signal"]);
 
 export const astrologyReportSectionSchema = z.object({
@@ -424,12 +458,12 @@ export const astrologyReportRequestSchema = z.object({
 
 export const createAstrologyReportRequestSchema = z.object({
   chartRequestId: idSchema.optional(),
-  reportType: astrologyReportTypeSchema.default("core_self"),
+  reportType: astrologyReportTypeSchema.default("core"),
   subjectName: z.string().min(1),
   birthData: chartBirthDataSchema,
   question: z.string().min(1).optional(),
   intent: z.string().min(1).optional(),
-  context: jsonObjectSchema.optional(),
+  context: chartRequestContextSchema.optional(),
   source: z.enum(["self", "ally", "composer", "import"]).default("self")
 });
 
@@ -574,6 +608,7 @@ export type AstraCard = z.infer<typeof cardSchema>;
 export type StreamItem = z.infer<typeof streamItemSchema>;
 export type Achievement = z.infer<typeof achievementSchema>;
 export type Ally = z.infer<typeof allySchema>;
+export type CreateAlly = z.infer<typeof createAllySchema>;
 export type Artifact = z.infer<typeof artifactSchema>;
 export type Gift = z.infer<typeof giftSchema>;
 export type StarTransaction = z.infer<typeof starTransactionSchema>;
@@ -591,6 +626,9 @@ export type ComposerPrivateFeedWriteResponse = z.infer<typeof composerPrivateFee
 export type ComposerOnboardingCardsWrite = z.infer<typeof composerOnboardingCardsWriteSchema>;
 export type ComposerOnboardingCardsWriteResponse = z.infer<typeof composerOnboardingCardsWriteResponseSchema>;
 export type ChartBirthData = z.infer<typeof chartBirthDataSchema>;
+export type ChartSubjectType = z.infer<typeof chartSubjectTypeSchema>;
+export type ChartSubjectContext = z.infer<typeof chartSubjectContextSchema>;
+export type ChartRequestContext = z.infer<typeof chartRequestContextSchema>;
 export type BirthPlaceSearchQuery = z.infer<typeof birthPlaceSearchQuerySchema>;
 export type BirthPlaceSearchResult = z.infer<typeof birthPlaceSearchResultSchema>;
 export type BirthPlaceSearchResponse = z.infer<typeof birthPlaceSearchResponseSchema>;

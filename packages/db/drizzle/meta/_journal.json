@@ -50,6 +50,13 @@
       "when": 1781738886319,
       "tag": "0006_closed_lizard",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1782182428171,
+      "tag": "0007_sharp_the_leader",
+      "breakpoints": true
     }
   ]
 }

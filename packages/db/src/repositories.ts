@@ -1,11 +1,14 @@
 import { and, asc, desc, eq } from "drizzle-orm";
+import { createHash, randomBytes } from "node:crypto";
 import {
   type Artifact,
   type AstrologyReportRequest,
   type AstrologyReportResult,
+  type Ally,
   type ComposerDecision,
   type ComposerAvailabilityCollection,
   type ComposerAvailabilityResponse,
+  type CreateAlly,
   type CreateComposerDecision,
   type CreateUserFeedItem,
   type ComposerStreamArtifact,
@@ -19,6 +22,7 @@ import {
   type RecordAstrologyReportResult,
   type SourceCard,
   type UserFeedItem,
+  allySchema,
   artifactSchema,
   astrologyReportRequestSchema,
   astrologyReportResultSchema,
@@ -27,6 +31,7 @@ import {
   chartMakerResultSchema,
   composerDecisionSchema,
   createComposerDecisionSchema,
+  createAllySchema,
   createAstrologyReportRequestSchema,
   createUserFeedItemSchema,
   composerStreamArtifactSchema,
@@ -46,6 +51,7 @@ import {
   appUserProfiles,
   astrologyReportRequests,
   astrologyReportResults,
+  astrologyReportShares,
   artifacts,
   cards,
   chartRequests,
@@ -88,6 +94,11 @@ export type AuthUserProfileInput = {
   displayName: string;
 };
 
+export type CreateAllyInput = CreateAlly & {
+  userId: string;
+  id?: string;
+};
+
 export type CreateChartMakerRequestInput = {
   userId: string;
   subjectName: string;
@@ -112,6 +123,15 @@ export type CreateAstrologyReportRequestInput = {
 
 export type RecordChartMakerResultInput = RecordChartMakerResult;
 export type RecordAstrologyReportResultInput = RecordAstrologyReportResult;
+export type AstrologyReportShare = {
+  shareUrl: string;
+  subject: string;
+  body: string;
+};
+export type SharedAstrologyReport = {
+  request: AstrologyReportRequest;
+  result: AstrologyReportResult;
+};
 export type UpsertComposerStreamArtifactInput = ComposerStreamArtifact;
 export type CreateUserFeedItemInput = CreateUserFeedItem;
 export type CreateComposerDecisionInput = CreateComposerDecision;
@@ -273,6 +293,18 @@ function artifactFromRow(row: typeof artifacts.$inferSelect): Artifact {
     title: row.title,
     kind: row.kind,
     summary: row.summary,
+    createdAt: toIsoDate(row.createdAt)
+  });
+}
+
+function allyFromRow(row: typeof allies.$inferSelect): Ally {
+  return allySchema.parse({
+    id: row.id,
+    userId: row.userId,
+    name: row.name,
+    kind: row.kind,
+    relationship: row.relationship,
+    note: row.note ?? undefined,
     createdAt: toIsoDate(row.createdAt)
   });
 }
@@ -1258,6 +1290,36 @@ export async function upsertAuthUserProfile(database: AstraDb, input: AuthUserPr
   return profile;
 }
 
+export async function createAlly(database: AstraDb, input: CreateAllyInput): Promise<Ally> {
+  const parsed = createAllySchema.parse(input);
+  const now = new Date();
+
+  const [row] = await database
+    .insert(allies)
+    .values({
+      id: input.id ?? `ally:${input.userId}:${crypto.randomUUID()}`,
+      userId: input.userId,
+      name: parsed.name,
+      kind: parsed.kind,
+      relationship: parsed.relationship,
+      note: parsed.note ?? null,
+      createdAt: now
+    })
+    .returning();
+
+  return allyFromRow(row);
+}
+
+export async function listUserAllies(database: AstraDb, userId: string): Promise<Ally[]> {
+  const rows = await database
+    .select()
+    .from(allies)
+    .where(eq(allies.userId, userId))
+    .orderBy(desc(allies.createdAt));
+
+  return rows.map(allyFromRow);
+}
+
 export async function createChartMakerRequest(
   database: AstraDb,
   input: CreateChartMakerRequestInput
@@ -1292,6 +1354,22 @@ export async function listUserChartMakerRequests(database: AstraDb, userId: stri
     .orderBy(desc(chartRequests.createdAt));
 
   return rows.map(chartRequestFromRow);
+}
+
+export async function getUserChartMakerRequest(
+  database: AstraDb,
+  input: {
+    requestId: string;
+    userId: string;
+  }
+): Promise<ChartMakerRequest | null> {
+  const [row] = await database
+    .select()
+    .from(chartRequests)
+    .where(and(eq(chartRequests.id, input.requestId), eq(chartRequests.userId, input.userId)))
+    .limit(1);
+
+  return row ? chartRequestFromRow(row) : null;
 }
 
 export async function recordChartMakerResult(
@@ -1434,6 +1512,122 @@ export async function getUserAstrologyReportResult(
     .limit(1);
 
   return row ? astrologyReportResultFromRow(row) : null;
+}
+
+export async function deleteUserAstrologyReport(
+  database: AstraDb,
+  input: { requestId: string; userId: string }
+): Promise<boolean> {
+  return database.transaction(async (tx) => {
+    const [request] = await tx
+      .select({ id: astrologyReportRequests.id })
+      .from(astrologyReportRequests)
+      .where(and(eq(astrologyReportRequests.id, input.requestId), eq(astrologyReportRequests.userId, input.userId)))
+      .limit(1);
+
+    if (!request) return false;
+
+    await tx.delete(artifacts).where(and(eq(artifacts.id, `report:${input.requestId}`), eq(artifacts.userId, input.userId)));
+    await tx.delete(astrologyReportRequests).where(and(eq(astrologyReportRequests.id, input.requestId), eq(astrologyReportRequests.userId, input.userId)));
+
+    return true;
+  });
+}
+
+function astrologyReportShareTokenHash(token: string) {
+  return createHash("sha256").update(token).digest("hex");
+}
+
+function astrologyReportShareEmail(input: { title: string; shareUrl: string }) {
+  return {
+    subject: "Astra report shared with you",
+    body: ["Hi,", "", "I shared an Astra report with you:", "", input.title, input.shareUrl, "", "You can open the link to read the report online."].join("\n")
+  };
+}
+
+export async function createAstrologyReportShare(
+  database: AstraDb,
+  input: { requestId: string; userId: string; baseUrl: string }
+): Promise<AstrologyReportShare | null> {
+  const token = randomBytes(24).toString("base64url");
+  const tokenHash = astrologyReportShareTokenHash(token);
+  const now = new Date();
+
+  return database.transaction(async (tx) => {
+    const [result] = await tx
+      .select()
+      .from(astrologyReportResults)
+      .where(and(eq(astrologyReportResults.requestId, input.requestId), eq(astrologyReportResults.userId, input.userId)))
+      .limit(1);
+
+    if (!result || result.status !== "completed") return null;
+
+    await tx
+      .insert(astrologyReportShares)
+      .values({
+        requestId: input.requestId,
+        userId: input.userId,
+        tokenHash,
+        status: "active",
+        createdAt: now,
+        revokedAt: null
+      })
+      .onConflictDoUpdate({
+        target: astrologyReportShares.requestId,
+        set: {
+          tokenHash,
+          status: "active",
+          createdAt: now,
+          revokedAt: null
+        }
+      });
+
+    const title = astrologyReportResultFromRow(result).publicSignal?.headline ?? "Astrology report";
+    const shareUrl = `${input.baseUrl.replace(/\/$/g, "")}/reports/share/${token}`;
+    const email = astrologyReportShareEmail({ title, shareUrl });
+    return { shareUrl, ...email };
+  });
+}
+
+export async function revokeAstrologyReportShare(
+  database: AstraDb,
+  input: { requestId: string; userId: string }
+): Promise<boolean> {
+  const [share] = await database
+    .update(astrologyReportShares)
+    .set({
+      status: "revoked",
+      revokedAt: new Date()
+    })
+    .where(and(eq(astrologyReportShares.requestId, input.requestId), eq(astrologyReportShares.userId, input.userId), eq(astrologyReportShares.status, "active")))
+    .returning({ id: astrologyReportShares.id });
+
+  return Boolean(share);
+}
+
+export async function getSharedAstrologyReport(database: AstraDb, token: string): Promise<SharedAstrologyReport | null> {
+  const tokenHash = astrologyReportShareTokenHash(token);
+  const [share] = await database
+    .select()
+    .from(astrologyReportShares)
+    .where(and(eq(astrologyReportShares.tokenHash, tokenHash), eq(astrologyReportShares.status, "active")))
+    .limit(1);
+
+  if (!share) return null;
+
+  const [request, result] = await Promise.all([
+    getUserAstrologyReportRequest(database, {
+      requestId: share.requestId,
+      userId: share.userId
+    }),
+    getUserAstrologyReportResult(database, {
+      requestId: share.requestId,
+      userId: share.userId
+    })
+  ]);
+
+  if (!request || !result || result.status !== "completed") return null;
+  return { request, result };
 }
 
 export async function listUserArtifacts(database: AstraDb, userId: string): Promise<Artifact[]> {

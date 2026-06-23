@@ -1,6 +1,7 @@
 import {
   ASTRA_EPHEMERIS_ENGINE_ENV,
   ASTRA_REPORT_WRITER_ENV,
+  DEBUG_MODEL_REPORT_WRITER,
   LOCAL_CHART_ROUTINE_ENGINE,
   LOCAL_DETERMINISTIC_REPORT_WRITER,
   buildAstrologyReportResult
@@ -13,6 +14,7 @@ const appBaseUrl = clean(process.env.ASTRA_APP_SMOKE_BASE_URL) || "http://localh
 const authBaseUrl = `${appBaseUrl}/api/auth`;
 const mailpitUrl = clean(process.env.MAILPIT_API_URL) || "http://localhost:8025";
 const internalToken = clean(process.env.ASTRA_INTERNAL_API_TOKEN);
+const configuredWriter = clean(process.env[ASTRA_REPORT_WRITER_ENV]) || LOCAL_DETERMINISTIC_REPORT_WRITER;
 const email = clean(process.env.ASTRA_REPORT_SMOKE_EMAIL) || `report-smoke-${Date.now()}@example.com`;
 const name = clean(process.env.ASTRA_REPORT_SMOKE_NAME) || "Tony C";
 
@@ -222,11 +224,44 @@ if (!String(((generated.result as JsonObject).publicSignal as JsonObject).proven
   throw new Error("User report generation route did not preserve deterministic writer provenance.");
 }
 const generatedSections = Array.isArray((generated.result as JsonObject).sections) ? ((generated.result as JsonObject).sections as JsonObject[]) : [];
-if (!generatedSections.some((section) => String(section.body).includes("no LLM call, no paid provider, no credit spend"))) {
+if (configuredWriter === LOCAL_DETERMINISTIC_REPORT_WRITER && !generatedSections.some((section) => String(section.body).includes("no LLM call, no paid provider, no credit spend"))) {
   throw new Error("User report generation route did not prove the non-LLM, non-paid writer route.");
+}
+if (configuredWriter === DEBUG_MODEL_REPORT_WRITER && !String(((generated.result as JsonObject).publicSignal as JsonObject).provenanceSummary).includes(DEBUG_MODEL_REPORT_WRITER)) {
+  throw new Error("User report generation route did not preserve debug model writer provenance.");
 }
 if ((generated.request as JsonObject | undefined)?.status !== "completed") {
   throw new Error("User report generation route did not return the completed report request.");
+}
+
+await expectStatus(`${appBaseUrl}/api/reports/${requestId}/share`, 401, {
+  method: "POST"
+});
+const createdShare = await requestJson(`${appBaseUrl}/api/reports/${requestId}/share`, {
+  method: "POST"
+});
+const shareUrl = String(((createdShare.share as JsonObject | undefined)?.shareUrl ?? ""));
+if (!shareUrl.includes("/reports/share/")) {
+  throw new Error(`Report share route returned an invalid share URL: ${shareUrl || "missing"}`);
+}
+const sharedReportResponse = await fetch(shareUrl);
+if (!sharedReportResponse.ok) {
+  throw new Error(`Shared report page failed with ${sharedReportResponse.status}: ${await sharedReportResponse.text()}`);
+}
+const sharedReportHtml = await sharedReportResponse.text();
+if (!sharedReportHtml.includes("Shared Astra Report") || !sharedReportHtml.includes("Gemini Sun, Virgo Moon, Cancer rising")) {
+  throw new Error("Shared report page did not render the shared report shell.");
+}
+await requestJson(`${appBaseUrl}/api/reports/${requestId}/share`, {
+  method: "DELETE"
+});
+const revokedShareResponse = await fetch(shareUrl);
+if (!revokedShareResponse.ok) {
+  throw new Error(`Revoked shared report page should render unavailable state, got ${revokedShareResponse.status}.`);
+}
+const revokedShareHtml = await revokedShareResponse.text();
+if (!revokedShareHtml.includes("Shared report unavailable")) {
+  throw new Error("Revoked shared report page did not render the unavailable state.");
 }
 
 const publicGenerated = await requestJson(`${appBaseUrl}/api/reports/${publicRequestId}/generate`, {

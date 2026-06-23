@@ -797,6 +797,347 @@ a.card-link:focus-visible {
   margin: 0;
 }
 
+.library-report-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.library-report-card-meta span {
+  border: 1px solid color-mix(in srgb, var(--gold) 22%, var(--line));
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.library-report-subject {
+  color: var(--gold);
+  font-weight: 760;
+}
+
+.library-report-date {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 680;
+}
+
+.reportReaderShell {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  width: min(1120px, 100%);
+}
+
+.reportReaderHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 18px 0 2px;
+}
+
+.reportReaderHeader > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.reportReaderHeader h1 {
+  margin: 0;
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  line-height: 1.05;
+}
+
+.reportReaderHeader p {
+  max-width: 760px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.reportReaderDocument {
+  padding: clamp(11px, 1.5vw, 18px) clamp(24px, 4.6vw, 48px) clamp(26px, 4.6vw, 48px);
+  border: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--panel) 96%, var(--soft)), color-mix(in srgb, var(--panel) 92%, var(--paper))),
+    var(--panel);
+  box-shadow: 0 28px 84px rgba(64, 45, 25, 0.16);
+}
+
+html[data-astra-theme="dark"] .reportReaderDocument {
+  box-shadow: 0 28px 84px rgba(0, 0, 0, 0.3);
+}
+
+.reportActionsStack {
+  display: grid;
+  gap: 8px;
+}
+
+.reportActionsPanel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-block: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
+}
+
+.reportSavedPill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--line));
+  border-radius: 999px;
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.reportActionsToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.reportActionsToolbar .primaryButton,
+.reportActionsToolbar .secondaryButton,
+.reportActionsToolbar .dangerButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  gap: 7px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.reportShareBox {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--gold) 20%, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 94%, var(--soft));
+}
+
+.reportShareHeader {
+  display: grid;
+  gap: 3px;
+}
+
+.reportShareHeader span {
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 850;
+}
+
+.reportShareHeader small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.reportShareActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reportShareActions .secondaryButton,
+.reportShareActions .dangerButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  gap: 7px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 850;
+}
+
+.reportShareBox label {
+  display: grid;
+  gap: 5px;
+}
+
+.reportShareBox label span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.reportShareBox input {
+  min-width: 0;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 9px 10px;
+}
+
+.buttonIcon {
+  flex: 0 0 auto;
+}
+
+.reportActionStatus,
+.reportActionError {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 750;
+}
+
+.reportActionStatus {
+  color: var(--gold);
+}
+
+.reportActionError {
+  color: #b42318;
+}
+
+.reportDocumentPlate {
+  float: left;
+  display: grid;
+  gap: 9px;
+  width: 184px;
+  max-width: 184px;
+  margin: 3px 1.5em 10px 0;
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--gold) 30%, var(--line));
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 28% 10%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 34%),
+    linear-gradient(180deg, color-mix(in srgb, var(--panel) 94%, var(--soft)), color-mix(in srgb, var(--panel) 88%, var(--paper)));
+  box-shadow: 0 18px 46px rgba(64, 45, 25, 0.14);
+}
+
+.reportDocumentSeal {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--gold) 24%, var(--line));
+  border-radius: 6px;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--gold) 16%, transparent), transparent 58%),
+    var(--soft);
+  color: var(--gold);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 4rem;
+  font-weight: 700;
+}
+
+.reportDocumentPlateText {
+  display: grid;
+  gap: 3px;
+}
+
+.reportDocumentPlateKicker {
+  margin: 0 0 2px;
+  color: var(--gold);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.reportDocumentPlatePrimary,
+.reportDocumentPlateSecondary {
+  margin: 0;
+  line-height: 1.35;
+}
+
+.reportDocumentPlatePrimary {
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 850;
+  line-height: 1.22;
+  overflow-wrap: anywhere;
+}
+
+.reportDocumentPlateSecondary {
+  color: var(--muted);
+  font-size: 0.66rem;
+  line-height: 1.24;
+}
+
+.reportDocumentPlateFacts {
+  display: grid;
+  gap: 3px;
+  margin: 6px 0 0;
+  padding-top: 6px;
+  border-top: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
+}
+
+.reportDocumentPlateFacts div {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 10px;
+  align-items: baseline;
+}
+
+.reportDocumentPlateFacts dt,
+.reportDocumentPlateFacts dd {
+  margin: 0;
+  font-size: 0.62rem;
+  line-height: 1.18;
+}
+
+.reportDocumentPlateFacts dt {
+  color: var(--gold);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reportDocumentPlateFacts dd {
+  color: var(--ink);
+  text-transform: capitalize;
+}
+
+.reportMarkdown {
+  max-width: 860px;
+  margin: 0 auto;
+  color: var(--ink);
+}
+
+.reportMarkdown h2 {
+  margin: 30px 0 12px;
+  font-size: clamp(1.45rem, 3vw, 1.9rem);
+  line-height: 1.18;
+}
+
+.reportMarkdownPrimaryHeading,
+.reportMarkdown h2:first-child {
+  color: var(--gold);
+  margin-top: 0;
+}
+
+.reportMarkdown p,
+.reportMarkdown li {
+  font-size: clamp(1.0625rem, 1.6vw, 1.125rem);
+  line-height: 1.66;
+}
+
+.reportMarkdown p {
+  margin: 0 0 16px;
+}
+
 .auth-panel {
   display: grid;
   gap: 1rem;
@@ -1776,6 +2117,49 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
 }
 
 @media (max-width: 760px) {
+  .reportReaderHeader {
+    display: grid;
+  }
+
+  .reportReaderHeader h1 {
+    font-size: clamp(2rem, 12vw, 3.1rem);
+  }
+
+  .reportReaderDocument {
+    padding: 18px;
+  }
+
+  .reportActionsPanel {
+    display: grid;
+    align-items: stretch;
+  }
+
+  .reportActionsToolbar {
+    justify-content: stretch;
+  }
+
+  .reportActionsToolbar .primaryButton,
+  .reportActionsToolbar .secondaryButton,
+  .reportActionsToolbar .dangerButton {
+    flex: 1 1 calc(50% - 8px);
+  }
+
+  .reportShareActions .secondaryButton,
+  .reportShareActions .dangerButton {
+    flex: 1 1 calc(50% - 8px);
+  }
+
+  .reportDocumentPlate {
+    float: none;
+    width: 100%;
+    max-width: none;
+    margin: 0 0 18px;
+  }
+
+  .reportDocumentSeal {
+    display: none;
+  }
+
   .shell {
     grid-template-columns: 1fr;
   }

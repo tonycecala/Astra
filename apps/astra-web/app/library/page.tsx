@@ -1,8 +1,9 @@
 import Link from "next/link";
 
-import type { Artifact, AstrologyReportResult } from "@astra/contracts";
+import type { Artifact } from "@astra/contracts";
 import { PageHeader } from "../../components/PageHeader";
-import { db, getUserAstrologyReportResult, listUserArtifacts, listUserAstrologyReportResults } from "@astra/db";
+import { ReportReader, formatReportDate, reportSubjectContext, reportTypeLabel } from "../../components/ReportReader";
+import { db, getUserAstrologyReportResult, getUserAstrologyReportRequest, listUserArtifacts, listUserAstrologyReportRequests, listUserAstrologyReportResults } from "@astra/db";
 import { getFoundationViewModel } from "../../lib/foundation";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
@@ -11,6 +12,10 @@ export const dynamic = "force-dynamic";
 
 type LibraryArtifact = Artifact & {
   requestId?: string;
+  reportType?: string;
+  subjectName?: string;
+  subjectType?: "self" | "ally";
+  status?: string;
 };
 
 type LibraryPageParams = {
@@ -32,6 +37,13 @@ export default async function LibraryPage({ searchParams }: LibraryPageParams) {
           userId: profile.userId
         })
       : null;
+  const selectedRequest =
+    normalizedReportId && profile
+      ? await getUserAstrologyReportRequest(db, {
+          requestId: normalizedReportId,
+          userId: profile.userId
+        })
+      : null;
   const shouldShowList = !normalizedReportId;
 
   return (
@@ -46,7 +58,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageParams) {
           ))}
         </section>
       ) : null}
-      {selectedReport ? <SelectedReportCard report={selectedReport} onCloseHref="/library" /> : normalizedReportId ? <SelectedReportMissingCard reportId={normalizedReportId} /> : null}
+      {selectedReport ? <ReportReader report={selectedReport} request={selectedRequest} backHref="/library" actions /> : normalizedReportId ? <SelectedReportMissingCard /> : null}
     </>
   );
 }
@@ -59,9 +71,14 @@ function ArtifactCard({ artifact }: { artifact: LibraryArtifact }) {
         href={`/library?reportId=${encodeURIComponent(artifact.requestId)}`}
         aria-label={`${ui.library.openReportAction}: ${artifact.title}`}
       >
-        <div className="eyebrow">{artifact.kind}</div>
+        <div className="library-report-card-meta">
+          <span>{artifact.subjectType === "ally" ? ui.library.subjectAlly : ui.library.subjectSelf}</span>
+          <span>{reportTypeLabel(artifact.reportType)}</span>
+          <span>{artifact.status ?? ui.library.statusGenerated}</span>
+        </div>
         <h2>{artifact.title}</h2>
-        <p>{artifact.summary}</p>
+        {artifact.subjectName ? <p className="library-report-subject">{artifact.subjectName}</p> : null}
+        <p className="library-report-date">{ui.library.reportCardDateLabel} {formatReportDate(artifact.createdAt)}</p>
       </Link>
     );
   }
@@ -75,40 +92,7 @@ function ArtifactCard({ artifact }: { artifact: LibraryArtifact }) {
   );
 }
 
-function SelectedReportCard({
-  report,
-  onCloseHref
-}: {
-  report: AstrologyReportResult;
-  onCloseHref: string;
-}) {
-  return (
-    <section className="card" aria-label={ui.library.selectedReportLabel}>
-      <p>
-        <a href={onCloseHref}>{ui.library.selectedReportBack}</a>
-      </p>
-      {ui.library.selectedReportEyebrow ? <div className="eyebrow">{ui.library.selectedReportEyebrow}</div> : null}
-      <h2>{report.publicSignal?.headline ?? "Report details"}</h2>
-      {report.summary ? <p>{report.summary}</p> : <p>{ui.library.selectedReportNoSummary}</p>}
-
-      <div className="report-reader-content">
-        {report.sections.length ? (
-          report.sections.map((section) => (
-            <article className="card" key={section.id || section.title}>
-              <div className="eyebrow">{section.emphasis}</div>
-              <h3>{section.title}</h3>
-              <p>{section.body}</p>
-            </article>
-          ))
-        ) : (
-          <p>{ui.library.selectedReportNoSections}</p>
-        )}
-      </div>
-    </section>
-  );
-}
-
-function SelectedReportMissingCard({ reportId }: { reportId: string }) {
+function SelectedReportMissingCard() {
   return (
     <section className="card" aria-label={ui.library.selectedReportLabel}>
       <p>
@@ -116,7 +100,6 @@ function SelectedReportMissingCard({ reportId }: { reportId: string }) {
       </p>
       <p>{ui.library.selectedReportMissing}</p>
       <p>{ui.library.selectedReportMissingId}</p>
-      <pre>{reportId}</pre>
     </section>
   );
 }
@@ -135,22 +118,34 @@ function reportRequestIdFromArtifactId(id: string) {
 }
 
 async function getUserLibraryArtifacts(userId: string) {
-  const [artifacts, reportResults] = await Promise.all([listUserArtifacts(db, userId), listUserAstrologyReportResults(db, userId)]);
-  const artifactIds = new Set(artifacts.map((artifact) => artifact.id));
+  const [artifacts, reportRequests, reportResults] = await Promise.all([
+    listUserArtifacts(db, userId),
+    listUserAstrologyReportRequests(db, userId),
+    listUserAstrologyReportResults(db, userId)
+  ]);
+  const requestById = new Map(reportRequests.map((request) => [request.id, request]));
+  const nonReportArtifacts = artifacts.filter((artifact) => artifact.kind !== "report");
   const reportArtifacts = reportResults
     .filter((result) => result.status === "completed")
-    .map((result): LibraryArtifact => ({
-      id: `report:${result.requestId}`,
-      userId: result.userId,
-      title: result.publicSignal?.headline ?? "Astrology report",
-      kind: "report" as const,
-      summary: result.summary ?? "Completed astrology report.",
-      createdAt: result.createdAt,
-      requestId: result.requestId
-    }))
-    .filter((artifact) => !artifactIds.has(artifact.id));
+    .map((result): LibraryArtifact => {
+      const request = requestById.get(result.requestId);
+      const subject = reportSubjectContext(request);
+      return {
+        id: `report:${result.requestId}`,
+        userId: result.userId,
+        title: result.publicSignal?.headline ?? ui.library.selectedReportFallbackTitle,
+        kind: "report" as const,
+        summary: result.summary ?? ui.library.completedReportSummary,
+        createdAt: result.createdAt,
+        requestId: result.requestId,
+        reportType: request?.reportType,
+        subjectName: subject.name,
+        subjectType: subject.type,
+        status: result.status
+      };
+    });
 
-  return [...artifacts, ...reportArtifacts]
+  return [...nonReportArtifacts, ...reportArtifacts]
     .map((artifact) => ({
       ...artifact,
       requestId: (artifact as LibraryArtifact).requestId ?? reportRequestIdFromArtifactId(artifact.id)

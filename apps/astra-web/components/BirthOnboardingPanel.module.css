@@ -10,6 +10,11 @@
   margin-top: 16px;
 }
 
+.subjectFields {
+  display: grid;
+  gap: 12px;
+}
+
 .alphaGuide {
   display: grid;
   gap: 4px;
