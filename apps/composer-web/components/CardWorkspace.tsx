@@ -2,22 +2,27 @@
 
 import { PublishedCardBody } from "@astra/ui";
 import Link from "next/link";
-import { CheckCircle2, ChevronLeft, ChevronRight, CircleDot, ClipboardCheck, Eye, FileText, PauseCircle, Search, Send, Square, SquareCheck, X } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ChevronRight, CircleDot, ClipboardCheck, Eye, PauseCircle, Pencil, Save, Search, Send, Square, SquareCheck, X } from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import type { ComposerCardQueryResult, ComposerCardScope, ComposerStreamCard } from "../lib/cardLibrary";
 import { displayComposerValue, getComposerCardFeeds, getComposerCardImage } from "../lib/cardLibrary";
 
 type WorkspaceLabels = {
   approveSelected: string;
+  approveSelectedHelp: string;
   cardDetail: string;
+  cardDetailHelp: string;
   cardPreviewLabel: string;
   cards: string;
   clearSelection: string;
+  clearSelectionHelp: string;
   feed: string;
   holdSelected: string;
+  holdSelectedHelp: string;
   lane: string;
   loading: string;
   markReviewing: string;
+  markReviewingHelp: string;
   nextPage: string;
   noCards: string;
   noCardsDetail: string;
@@ -34,7 +39,9 @@ type WorkspaceLabels = {
   queueVisible: string;
   queueVisibleSelected: string;
   loadQueueDraft: string;
+  loadQueueDraftHelp: string;
   reviewCard: string;
+  reviewCardHelp: string;
   reviewDetailLabel: string;
   reviewNotes: string;
   reviewNotesPlaceholder: string;
@@ -42,22 +49,22 @@ type WorkspaceLabels = {
   publishFailed: string;
   publishFeedItem: string;
   publishBatchPrivateFeed: string;
+  publishBatchPrivateFeedHelp: string;
   publishBatchReady: string;
   publishPrivateFeed: string;
+  publishPrivateFeedHelp: string;
   publishReady: string;
   prepareBatch: string;
+  prepareBatchHelp: string;
   prepareLimit: string;
   preparePlan: string;
   preparePublishable: string;
   publishNeedsApproved: string;
-  publishNeedsTarget: string;
   publishNeedsReview: string;
   publishWrite: string;
   publishPlanIssues: string;
   publishPlanLoaded: string;
   publishPlanSaved: string;
-  targetUserId: string;
-  targetUserPlaceholder: string;
   queryBoundary: string;
   queryCache: string;
   queryWindow: string;
@@ -65,8 +72,11 @@ type WorkspaceLabels = {
   search: string;
   searchPlaceholder: string;
   selectCard: string;
+  selectCardHelp: string;
   selectVisible: string;
+  selectVisibleHelp: string;
   saveQueueDraft: string;
+  saveQueueDraftHelp: string;
   serverDraft: string;
   serverDraftEmpty: string;
   serverDraftLoaded: string;
@@ -90,7 +100,6 @@ type QueueDraftState = {
   decisionNotes: Record<string, string>;
   queueStates: Record<string, QueueState>;
   selectedCards: Record<string, QueueDraftCard>;
-  targetUserId: string;
   version: 1;
 };
 
@@ -100,12 +109,10 @@ type ServerQueueDraft = {
   lastPlanId?: string;
   lastPlanSummary: Record<string, unknown>;
   operatorKey: string;
-  queryCacheKeys: string[];
   queueStates: Record<string, unknown>;
   scope: ComposerCardScope;
   selectedCards: Record<string, unknown>;
   status: string;
-  targetUserId?: string;
 };
 
 type ServerQueueDraftResponse = {
@@ -117,7 +124,6 @@ type ServerQueueDraftResponse = {
 type ServerQueuePublishPlan = {
   id: string;
   status: string;
-  targetUserId: string;
   summary: QueueBatchPlan["summary"];
   issues: NonNullable<QueueBatchPlan["issues"]>;
 };
@@ -130,22 +136,18 @@ type ServerQueuePublishPlanResponse = {
 
 type QueuePublishResponse = {
   ok: boolean;
-  write?: {
+  collection?: {
     id?: string;
-    feedItem?: {
-      id?: string;
-      userId?: string;
-      title?: string;
-    };
+    totalCards?: number;
+    title?: string;
   };
-  astra?: unknown;
   error?: string;
   issues?: { field?: string; message?: string; type?: string }[];
 };
 
 type QueueBatchPublishResponse = {
   ok: boolean;
-  writes?: NonNullable<QueuePublishResponse["write"]>[];
+  collection?: QueuePublishResponse["collection"];
   error?: string;
   issues?: { field?: string; message?: string; type?: string; cardId?: string; index?: number }[];
   plan?: QueueBatchPlan;
@@ -158,11 +160,11 @@ type QueueBatchPlan = {
   planId: string;
   summary: {
     cappedAt: number;
+    collectionId: string;
     duplicateCount: number;
     needsReview: number;
     publishable: number;
     requested: number;
-    targetUserIdPresent: boolean;
   };
 };
 
@@ -276,7 +278,6 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
   const [selectedCardRegistry, setSelectedCardRegistry] = useState<Record<string, QueueDraftCard>>({});
   const [activeCardId, setActiveCardId] = useState(initialResult.cards[0]?.id ?? "");
   const [decisionNotes, setDecisionNotes] = useState<Record<string, string>>({});
-  const [targetUserId, setTargetUserId] = useState("");
   const [publishStatus, setPublishStatus] = useState("");
   const [publishResult, setPublishResult] = useState<QueuePublishResponse | null>(null);
   const [batchPublishResult, setBatchPublishResult] = useState<QueueBatchPublishResponse | null>(null);
@@ -344,7 +345,6 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
         setQueueStates(draft.queueStates);
         setSelectedCardRegistry(draft.selectedCards);
         setSelectedCardIds(new Set(Object.keys(draft.selectedCards)));
-        setTargetUserId(draft.targetUserId);
       }
       setIsDraftHydrated(true);
     });
@@ -357,10 +357,9 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
       decisionNotes,
       queueStates,
       selectedCards: selectedCardRegistry,
-      targetUserId,
       version: 1
     });
-  }, [decisionNotes, isDraftHydrated, queueStates, scope, selectedCardRegistry, targetUserId]);
+  }, [decisionNotes, isDraftHydrated, queueStates, scope, selectedCardRegistry]);
 
   function setReviewCard(cardId: string) {
     setActiveCardId(cardId);
@@ -466,24 +465,23 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
   function publishReadiness(card: ComposerStreamCard | undefined) {
     if (!card) return labels.publishNeedsApproved;
     if (queueStateFor(card) !== "approved") return labels.publishNeedsApproved;
-    if (!targetUserId.trim()) return labels.publishNeedsTarget;
     return labels.publishReady;
   }
 
   function canPublish(card: ComposerStreamCard | undefined) {
-    return Boolean(card && queueStateFor(card) === "approved" && targetUserId.trim() && !isPublishing);
+    return Boolean(card && queueStateFor(card) === "approved" && !isPublishing);
   }
 
   function canBatchPublish() {
-    return Boolean(approvedSelectedCardIds.length && targetUserId.trim() && !isPublishing);
+    return Boolean(approvedSelectedCardIds.length && !isPublishing);
   }
 
   function canPrepareBatch() {
-    return Boolean(approvedSelectedCardIds.length && targetUserId.trim() && !isPreparing);
+    return Boolean(approvedSelectedCardIds.length && !isPreparing);
   }
 
   function hasSuccessfulPublishResult() {
-    return Boolean(publishResult?.ok || (batchPublishResult?.writes?.length ?? 0) > 0);
+    return Boolean(publishResult?.ok || batchPublishResult?.collection);
   }
 
   function publishResultHeading() {
@@ -505,7 +503,7 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         cardId: activeCard.id,
-        targetUserId,
+        scope,
         queueState: queueStateFor(activeCard),
         decisionNotes: decisionNotes[activeCard.id] ?? ""
       })
@@ -514,7 +512,7 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
     setPublishResult(payload);
     setPublishStatus(
       payload.ok
-        ? `${labels.publishFeedItem} ${payload.write?.feedItem?.id ?? labels.publishWrite}`
+        ? `${labels.publishFeedItem} ${payload.collection?.id ?? labels.publishWrite}`
         : payload.issues?.map((issue) => issue.message ?? issue.type ?? issue.field).filter(Boolean).join("; ") || payload.error || labels.publishFailed
     );
     setIsPublishing(false);
@@ -533,9 +531,7 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        targetUserId,
         scope,
-        queryCacheKeys: [result.pageState.cacheKey],
         cards: approvedSelectedCardIds.map((cardId) => ({
           cardId,
           queueState: queueStateForCardId(cardId),
@@ -545,11 +541,11 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
     });
     const payload = (await response.json().catch(() => ({ ok: false, error: labels.publishFailed }))) as QueueBatchPublishResponse;
     setBatchPublishResult(payload);
-    const publishedCount = payload.writes?.length ?? 0;
+    const publishedCount = payload.collection?.totalCards ?? 0;
     const issueCount = payload.issues?.length ?? 0;
     setPublishStatus(
       publishedCount
-        ? `${publishedCount} ${labels.cards} · ${payload.writes?.[0]?.feedItem?.id ?? labels.publishWrite}${issueCount ? ` · ${issueCount} ${labels.publishNeedsReview}` : ""}`
+        ? `${publishedCount} ${labels.cards} · ${payload.collection?.id ?? labels.publishWrite}${issueCount ? ` · ${issueCount} ${labels.publishNeedsReview}` : ""}`
         : payload.issues?.map((issue) => issue.message ?? issue.type ?? issue.field).filter(Boolean).join("; ") || payload.error || labels.publishFailed
     );
     setIsPublishing(false);
@@ -565,7 +561,7 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        targetUserId,
+        scope,
         cards: approvedSelectedCardIds.map((cardId) => ({
           cardId,
           queueState: queueStateForCardId(cardId),
@@ -593,11 +589,9 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
         decisionNotes,
         lastPlanId: lastPlan?.planId,
         lastPlanSummary: lastPlan?.summary ?? {},
-        queryCacheKeys: [result.pageState.cacheKey],
         queueStates,
         scope,
-        selectedCards: selectedCardRegistry,
-        targetUserId
+        selectedCards: selectedCardRegistry
       })
     });
     const payload = (await response.json().catch(() => ({ ok: false, error: labels.publishFailed }))) as ServerQueueDraftResponse;
@@ -615,7 +609,6 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
       setQueueStates(queueStateRecord(payload.draft.queueStates));
       setSelectedCardRegistry(loadedSelectedCards);
       setSelectedCardIds(new Set(Object.keys(loadedSelectedCards)));
-      setTargetUserId(payload.draft.targetUserId ?? "");
       setServerDraftStatus(`${labels.serverDraftLoaded} · ${payload.draft.id}`);
       if (payload.draft.lastPlanId) {
         const planResponse = await fetch(`/api/cards/publish-plan?planId=${encodeURIComponent(payload.draft.lastPlanId)}`);
@@ -699,7 +692,7 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
             ) : null}
           </div>
           <div className="queue-actions">
-            <button className="secondary-button" type="button" onClick={toggleVisibleSelection} disabled={!result.cards.length}>
+            <button className="secondary-button" type="button" onClick={toggleVisibleSelection} disabled={!result.cards.length} title={labels.selectVisibleHelp}>
               {allVisibleSelected ? <SquareCheck aria-hidden="true" size={16} /> : <Square aria-hidden="true" size={16} />}
               {labels.selectVisible}
             </button>
@@ -711,6 +704,7 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
                 setSelectedCardRegistry({});
               }}
               disabled={!selectedCardIds.size}
+              title={labels.clearSelectionHelp}
             >
               <X aria-hidden="true" size={15} />
               {labels.clearSelection}
@@ -718,15 +712,15 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
           </div>
         </div>
         <div className="queue-actions queue-actions-compact" aria-label={labels.queueStateLabel}>
-          <button className="secondary-button" type="button" onClick={() => applyQueueState("reviewing")} disabled={!selectedCardIds.size}>
+          <button className="secondary-button" type="button" onClick={() => applyQueueState("reviewing")} disabled={!selectedCardIds.size} title={labels.markReviewingHelp}>
             <CircleDot aria-hidden="true" size={16} />
             {labels.markReviewing}
           </button>
-          <button className="secondary-button" type="button" onClick={() => applyQueueState("approved")} disabled={!selectedCardIds.size}>
+          <button className="secondary-button" type="button" onClick={() => applyQueueState("approved")} disabled={!selectedCardIds.size} title={labels.approveSelectedHelp}>
             <CheckCircle2 aria-hidden="true" size={16} />
             {labels.approveSelected}
           </button>
-          <button className="secondary-button" type="button" onClick={() => applyQueueState("held")} disabled={!selectedCardIds.size}>
+          <button className="secondary-button" type="button" onClick={() => applyQueueState("held")} disabled={!selectedCardIds.size} title={labels.holdSelectedHelp}>
             <PauseCircle aria-hidden="true" size={16} />
             {labels.holdSelected}
           </button>
@@ -794,30 +788,26 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
             </div>
             <div className="queue-detail-form">
               <label>
-                <span>{labels.targetUserId}</span>
-                <input value={targetUserId} onChange={(event) => setTargetUserId(event.target.value)} placeholder={labels.targetUserPlaceholder} />
-              </label>
-              <label>
                 <span>{labels.reviewNotes}</span>
                 <textarea value={decisionNotes[activeCard.id] ?? ""} onChange={(event) => setDecisionNotes((current) => ({ ...current, [activeCard.id]: event.target.value }))} placeholder={labels.reviewNotesPlaceholder} />
               </label>
-              <button className="primary-button" disabled={!canPublish(activeCard)} onClick={publishActiveCard} type="button">
+              <button className="primary-button" disabled={!canPublish(activeCard)} onClick={publishActiveCard} title={labels.publishPrivateFeedHelp} type="button">
                 <Send aria-hidden="true" size={16} />
                 {labels.publishPrivateFeed}
               </button>
-              <button className="secondary-button" disabled={!canPrepareBatch()} onClick={prepareSelectedCards} type="button">
+              <button className="secondary-button" disabled={!canPrepareBatch()} onClick={prepareSelectedCards} title={labels.prepareBatchHelp} type="button">
                 <ClipboardCheck aria-hidden="true" size={16} />
                 {isPreparing ? labels.loading : labels.prepareBatch}
               </button>
-              <button className="secondary-button" disabled={isSavingDraft || isLoadingDraft} onClick={saveServerDraft} type="button">
-                <ClipboardCheck aria-hidden="true" size={16} />
+              <button className="secondary-button" disabled={isSavingDraft || isLoadingDraft} onClick={saveServerDraft} title={labels.saveQueueDraftHelp} type="button">
+                <Save aria-hidden="true" size={16} />
                 {isSavingDraft ? labels.loading : labels.saveQueueDraft}
               </button>
-              <button className="secondary-button" disabled={isSavingDraft || isLoadingDraft} onClick={loadServerDraft} type="button">
+              <button className="secondary-button" disabled={isSavingDraft || isLoadingDraft} onClick={loadServerDraft} title={labels.loadQueueDraftHelp} type="button">
                 <ClipboardCheck aria-hidden="true" size={16} />
                 {isLoadingDraft ? labels.loading : labels.loadQueueDraft}
               </button>
-              <button className="secondary-button" disabled={!canBatchPublish()} onClick={publishSelectedCards} type="button">
+              <button className="secondary-button" disabled={!canBatchPublish()} onClick={publishSelectedCards} title={labels.publishBatchPrivateFeedHelp} type="button">
                 <Send aria-hidden="true" size={16} />
                 {labels.publishBatchPrivateFeed}
               </button>
@@ -848,18 +838,18 @@ export function CardWorkspace({ initialFeed = "", initialResult, labels, scope }
               >
                 <div className="composerQueueCardBar">
                   <label className="composerQueueSelect">
-                    <input checked={isSelected} onChange={() => toggleCardSelection(card)} type="checkbox" />
+                    <input checked={isSelected} onChange={() => toggleCardSelection(card)} title={`${labels.selectCardHelp} ${card.title}`} type="checkbox" />
                     <span>
                       {labels.selectCard}: {card.title}
                     </span>
                   </label>
                   <div className="composerQueueCardActions">
                     <span className={`composerQueuePill composerQueuePill-${queueState}`}>{queueStateLabel(queueState)}</span>
-                    <button className="composerReviewButton" type="button" onClick={() => setReviewCard(card.id)} aria-label={`${labels.reviewCard}: ${card.title}`}>
+                    <button className="composerReviewButton" type="button" onClick={() => setReviewCard(card.id)} aria-label={`${labels.reviewCard}: ${card.title}`} title={labels.reviewCardHelp}>
                       <Eye aria-hidden="true" size={15} />
                     </button>
-                    <Link className="composerReviewButton" href={`/cards/${encodeURIComponent(card.id)}`} aria-label={`${labels.cardDetail}: ${card.title}`}>
-                      <FileText aria-hidden="true" size={15} />
+                    <Link className="composerReviewButton" href={`/cards/${encodeURIComponent(card.id)}`} aria-label={`${labels.cardDetail}: ${card.title}`} title={labels.cardDetailHelp}>
+                      <Pencil aria-hidden="true" size={15} />
                     </Link>
                   </div>
                 </div>

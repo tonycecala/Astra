@@ -192,15 +192,14 @@ test.describe("clean-start routes", () => {
     await page.reload();
     await expect(page.getByRole("heading", { name })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
-    await expect(page.getByLabel("Alpha onboarding guidance")).toContainText("Subject and birth date are enough");
-    await expect(page.getByText("Step 1 of 4: Subject")).toBeVisible();
+    await expect(page.getByLabel("Alpha onboarding guidance")).toContainText("Your name and birth date are enough");
+    await expect(page.getByText("Step 1 of 3: Your name")).toBeVisible();
     await expect(page.getByLabel("Chart generation flow")).toContainText("Birth data");
     await expect(page.getByLabel("Chart generation flow")).toContainText("Saved in Library");
 
     const nextButton = page.getByRole("button", { exact: true, name: "Next" });
     await nextButton.click();
     await page.getByLabel("Birth date").fill("1961-05-23");
-    await nextButton.click();
     await expect(page.getByText("Date-only is valid")).toBeVisible();
     await page.getByLabel("Time and place").check();
     await page.getByLabel("Search birth place").fill("New");

@@ -22,7 +22,7 @@ published card -> everyone sees the same stream
 
 Signed-in `/journey` reads `UserFeedItem` projections from Astra-owned Postgres through authenticated server-side accessors. Signed-out `/journey` reads public fallback/source content from the foundation stream.
 
-Composer private feed writes travel through `ComposerPrivateFeedWrite` and the trusted `POST /api/composer/private-feed-items` edge. A report-derived card may be created from `AstrologyReportPublicSignal`, but the actual stream projection shown to a signed-in user is a user-owned `UserFeedItem` selected from public source material plus private user context. Raw private report sections, full provenance, birth data, engine payloads, navigation history, preferences, and progress must not be stored in public fallback rows.
+Composer's card queue publishes reviewed cards into shared availability pools. Astra then selects each user's subset from availability using user/path/preference context. Separate report-derived private feed writes may still travel through `ComposerPrivateFeedWrite` and the trusted `POST /api/composer/private-feed-items` edge, but queue publishing must not create one-user feed rows.
 
 ## Caching Rule
 
@@ -32,6 +32,15 @@ The first production read model must split cache domains:
 - private user feed projections must be user-scoped and auth-gated,
 - Composer decisions are private internal audit records,
 - private reports, chart requests, chart results, user-owned artifacts, navigation state, preferences, and progress remain auth-gated origin reads unless a deliberately private user-scoped cache is added.
+
+Composer card-library queries are public-safe operator working-set reads, not private feed projections. The query route may return a deterministic cache key for near-term edge caching, but it must not use Postgres as a page-window cache. Database durability is reserved for human review state, publish plans, and approved availability collections.
+
+Composer persistence is split by product necessity:
+
+- Necessary now: Composer availability collections, user-owned feed projections, and operator draft state that protects in-progress review work.
+- Useful now: publish-plan persistence when a batch needs review before commit.
+- Not necessary now: persisted query-window caches in Postgres.
+- Future boundary: edge caching for public-safe Composer card-library query results, keyed by query fingerprint and invalidated when source card content changes.
 
 Future cache tags should be scoped narrowly:
 

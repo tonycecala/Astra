@@ -20,9 +20,11 @@ npm run composer:logs
 
 `npm run composer:dev` remains available for short foreground iteration, but it is not the handoff path. Durable status must prove both a listener on `3012` and a healthy Composer route response.
 
-The first operator workflow lives in `src/operatorWorkflow.ts`:
+The primary operator workflow lives in the Cards/Course/Drafts queue:
 
-1. Validate a source-card draft and Composer voice card.
-2. Preview the card without writing a user feed item.
-3. Require an explicit target user.
-4. Emit `ComposerPrivateFeedWrite` for the trusted Astra API.
+1. Select cards from Composer inventory.
+2. Mark cards reviewing, approved, or held.
+3. Check the approved selection without writing to the pool.
+4. Publish approved cards into Composer availability for Astra per-user selection.
+
+Legacy private-feed contract helpers remain available for lower-level tests, but they are not the primary Composer UI path.

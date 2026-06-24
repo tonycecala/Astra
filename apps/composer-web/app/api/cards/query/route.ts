@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { db, upsertComposerCardQueryCache } from "@astra/db";
 import { type ComposerCardScope, queryComposerCards } from "../../../../lib/cardLibrary";
 
 const scopes = new Set<ComposerCardScope>(["all", "drafts", "course"]);
@@ -32,30 +31,11 @@ export async function GET(request: Request) {
     page: intValue(url.searchParams, "page"),
     pageSize: intValue(url.searchParams, "pageSize")
   });
-  let cachePersisted = false;
-
-  try {
-    await upsertComposerCardQueryCache(db, {
-      cacheKey: result.pageState.cacheKey,
-      scope,
-      fingerprint: result.pageState.fingerprint,
-      page: result.page,
-      pageSize: result.pageSize,
-      totalCards: result.totalCards,
-      windowStart: result.pageState.windowStart,
-      windowEnd: result.pageState.windowEnd,
-      cardIds: result.cards.map((card) => card.id),
-      facets: result.facets
-    });
-    cachePersisted = true;
-  } catch (error) {
-    console.error("Composer card query cache persist failed", error);
-  }
 
   return NextResponse.json({
     ok: true,
     cache: {
-      persisted: cachePersisted,
+      mode: "edge-ready",
       cacheKey: result.pageState.cacheKey
     },
     result

@@ -72,7 +72,7 @@ export default function DashboardPage() {
               <h2>{composerUi.dashboard.operatorQueue}</h2>
               <p>{composerUi.dashboard.operatorQueueDetail}</p>
             </div>
-            <Link className="icon-link" href="/review" aria-label={composerUi.dashboard.openReview}>
+            <Link className="icon-link" href="/cards" aria-label={composerUi.library.openCards}>
               <ArrowUpRight aria-hidden="true" size={18} />
             </Link>
           </div>

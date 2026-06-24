@@ -1,29 +1,19 @@
 import { eq } from "drizzle-orm";
 import {
   closeDatabaseConnection,
-  composerCardQueryCaches,
-  composerDecisions,
   composerQueueDrafts,
   composerQueuePublishPlans,
   db,
-  getComposerCardQueryCache,
-  getComposerQueuePublishPlan,
-  getUserFeedItemById,
-  listUserFeedItems,
-  sourceCards,
-  user,
-  userFeedItems
+  deleteComposerLibraryCollection,
+  getComposerLibraryCollection,
+  getComposerQueuePublishPlan
 } from "@astra/db";
 
 type JsonObject = Record<string, unknown>;
 
 const composerBaseUrl = clean(process.env.COMPOSER_APP_SMOKE_BASE_URL) || "http://localhost:3012";
-const runId = `composer_card_queue_${Date.now()}`;
-const userA = `${runId}_user_a`;
-const userB = `${runId}_user_b`;
-const cardIds: string[] = [];
 const publishPlanIds: string[] = [];
-let queryCacheKey = "";
+const collectionIds = ["operator_approved_pool"];
 
 function clean(value: string | undefined) {
   return value?.trim().replace(/^['"]|['"]$/g, "") || "";
@@ -36,17 +26,6 @@ async function requestJson(url: string, init?: RequestInit) {
   const text = await response.text();
   const payload = text ? (JSON.parse(text) as JsonObject) : {};
   return { ok: response.ok, status: response.status, payload };
-}
-
-async function insertUser(id: string, email: string) {
-  await db.insert(user).values({
-    id,
-    name: id,
-    email,
-    emailVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  });
 }
 
 async function publishQueueCard(body: JsonObject) {
@@ -97,59 +76,34 @@ async function deletePublishPlan(planId: string) {
   });
 }
 
-function feedItemId(cardId: string) {
-  return `composer_queue_feed:${cardId}:${userA}`;
-}
-
-function sourceCardId(cardId: string) {
-  return `source_card:${cardId}`;
-}
-
 try {
   const status = await requestJson(`${composerBaseUrl}/api/status`);
   if (!status.ok) {
     throw new Error(`Composer status route failed with ${status.status}: ${JSON.stringify(status.payload)}`);
   }
-  if ((status.payload as { hasInternalToken?: boolean }).hasInternalToken !== true) {
-    throw new Error("Composer card queue smoke requires Composer to run with ASTRA_INTERNAL_API_TOKEN.");
-  }
-
-  await insertUser(userA, `${userA}@example.com`);
-  await insertUser(userB, `${userB}@example.com`);
 
   const query = await requestJson(`${composerBaseUrl}/api/cards/query?pageSize=2`);
-  const cards = ((query.payload as { result?: { cards?: Array<{ id?: string }> } }).result?.cards ?? []).map((card) => card.id).filter((id): id is string => Boolean(id));
-  if (cards.length < 2) {
+  const cardIds = ((query.payload as { result?: { cards?: Array<{ id?: string }> } }).result?.cards ?? [])
+    .map((card) => card.id)
+    .filter((id): id is string => Boolean(id))
+    .slice(0, 2);
+  if (cardIds.length < 2) {
     throw new Error("Composer card queue smoke expected at least two queryable cards.");
   }
-  queryCacheKey = (query.payload as { result?: { pageState?: { cacheKey?: string } } }).result?.pageState?.cacheKey ?? "";
-  const cachedQuery = queryCacheKey ? await getComposerCardQueryCache(db, queryCacheKey) : null;
-  if (!cachedQuery || cachedQuery.cardIds.length < 2 || cachedQuery.pageSize !== 12) {
-    throw new Error(`Expected Composer query route to persist a query cache row, received ${JSON.stringify(cachedQuery)}`);
+  const cacheKey = (query.payload as { result?: { pageState?: { cacheKey?: string } } }).result?.pageState?.cacheKey ?? "";
+  const cacheMode = (query.payload as { cache?: { mode?: string } }).cache?.mode ?? "";
+  if (!cacheKey || cacheMode !== "edge-ready") {
+    throw new Error(`Expected Composer query route to return an edge-ready cache key, received ${JSON.stringify(query.payload)}`);
   }
-  cardIds.push(...cards.slice(0, 2));
 
   const [cardId, secondCardId] = cardIds;
 
-  const notApproved = await publishQueueCard({ cardId, queueState: "reviewing", targetUserId: userA });
-  if (notApproved.status !== 400 || notApproved.payload.error !== "CARD_NOT_APPROVED") {
-    throw new Error(`Expected CARD_NOT_APPROVED, received ${notApproved.status}: ${JSON.stringify(notApproved.payload)}`);
-  }
-
-  const missingTarget = await publishQueueCard({ cardId, queueState: "approved" });
-  if (missingTarget.status !== 400 || missingTarget.payload.error !== "TARGET_USER_REQUIRED") {
-    throw new Error(`Expected TARGET_USER_REQUIRED, received ${missingTarget.status}: ${JSON.stringify(missingTarget.payload)}`);
-  }
-
-  const missingPrepareTarget = await prepareQueueBatch({
-    cards: [{ cardId, queueState: "approved" }]
-  });
-  if (missingPrepareTarget.status !== 400 || missingPrepareTarget.payload.error !== "TARGET_USER_REQUIRED") {
-    throw new Error(`Expected prepare TARGET_USER_REQUIRED, received ${missingPrepareTarget.status}: ${JSON.stringify(missingPrepareTarget.payload)}`);
+  const notApproved = await publishQueueCard({ cardId, queueState: "reviewing" });
+  if (notApproved.status !== 400 || notApproved.payload.error !== "BATCH_PARTIAL_VALIDATION_FAILED") {
+    throw new Error(`Expected BATCH_PARTIAL_VALIDATION_FAILED for unapproved card, received ${notApproved.status}: ${JSON.stringify(notApproved.payload)}`);
   }
 
   const partialPrepare = await prepareQueueBatch({
-    targetUserId: userA,
     cards: [
       { cardId, queueState: "approved" },
       { cardId: secondCardId, queueState: "reviewing" }
@@ -163,19 +117,19 @@ try {
   }
 
   const readyPrepare = await prepareQueueBatch({
-    targetUserId: userA,
     cards: cardIds.map((id) => ({ cardId: id, queueState: "approved" }))
   });
   const readyPlan = readyPrepare.payload.plan as JsonObject | undefined;
   const readySummary = readyPlan?.summary as JsonObject | undefined;
-  if (!readyPrepare.ok || typeof readyPlan?.planId !== "string" || !String(readyPlan.planId).startsWith("composer_queue_plan:") || readySummary?.publishable !== cardIds.length) {
+  const collectionId = String(readySummary?.collectionId ?? "");
+  if (!readyPrepare.ok || typeof readyPlan?.planId !== "string" || collectionId !== "operator_approved_pool" || readySummary?.publishable !== cardIds.length) {
     throw new Error(`Expected ready prepare plan for both cards, received ${readyPrepare.status}: ${JSON.stringify(readyPrepare.payload)}`);
   }
   publishPlanIds.push(readyPlan.planId);
 
   const persistedReadyPlan = await getComposerQueuePublishPlan(db, readyPlan.planId);
-  if (!persistedReadyPlan || persistedReadyPlan.targetUserId !== userA || persistedReadyPlan.selectedCardIds.length !== cardIds.length || persistedReadyPlan.items.length !== cardIds.length) {
-    throw new Error(`Expected ready prepare plan to persist durable selected items, received ${JSON.stringify(persistedReadyPlan)}`);
+  if (!persistedReadyPlan || persistedReadyPlan.targetUserId !== collectionId || persistedReadyPlan.selectedCardIds.length !== cardIds.length || persistedReadyPlan.items.length !== cardIds.length) {
+    throw new Error(`Expected ready prepare plan to persist selected pool items, received ${JSON.stringify(persistedReadyPlan)}`);
   }
 
   const loadedReadyPlan = await loadPublishPlan(readyPlan.planId);
@@ -187,24 +141,22 @@ try {
 
   const draft = await saveQueueDraft({
     scope: "all",
-    targetUserId: userA,
     selectedCards: Object.fromEntries(cardIds.map((id) => [id, { id, status: "draft" }])),
     queueStates: Object.fromEntries(cardIds.map((id) => [id, "approved"])),
     decisionNotes: { [cardId]: "Saved by Composer queue API smoke." },
-    queryCacheKeys: [queryCacheKey],
     lastPlanId: readyPlan.planId,
     lastPlanSummary: readySummary
   });
   const savedDraft = draft.payload.draft as JsonObject | undefined;
   const savedSelectedCards = savedDraft?.selectedCards as JsonObject | undefined;
-  if (!draft.ok || savedDraft?.id !== "composer_queue_draft:local-operator:all" || Object.keys(savedSelectedCards ?? {}).length !== cardIds.length) {
-    throw new Error(`Expected Composer queue draft save to persist selected cards, received ${draft.status}: ${JSON.stringify(draft.payload)}`);
+  if (!draft.ok || savedDraft?.id !== "composer_queue_draft:local-operator:all" || Object.keys(savedSelectedCards ?? {}).length !== cardIds.length || savedDraft.targetUserId) {
+    throw new Error(`Expected Composer queue draft save to persist selected cards without a target user, received ${draft.status}: ${JSON.stringify(draft.payload)}`);
   }
 
   const loadedDraft = await loadQueueDraft();
   const loaded = loadedDraft.payload.draft as JsonObject | undefined;
-  if (!loadedDraft.ok || loaded?.lastPlanId !== readyPlan.planId || loaded?.targetUserId !== userA) {
-    throw new Error(`Expected Composer queue draft load to return saved draft, received ${loadedDraft.status}: ${JSON.stringify(loadedDraft.payload)}`);
+  if (!loadedDraft.ok || loaded?.lastPlanId !== readyPlan.planId || loaded?.targetUserId) {
+    throw new Error(`Expected Composer queue draft load to return saved pool draft, received ${loadedDraft.status}: ${JSON.stringify(loadedDraft.payload)}`);
   }
 
   const deletedDraft = await deleteQueueDraft();
@@ -223,86 +175,57 @@ try {
     throw new Error(`Expected Composer queue draft to be empty after delete, received ${emptyDraft.status}: ${JSON.stringify(emptyDraft.payload)}`);
   }
 
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    const published = await publishQueueCard({
-      cardId,
-      queueState: "approved",
-      targetUserId: userA,
-      decisionNotes: `Queue API smoke attempt ${attempt + 1}.`
-    });
-
-    if (!published.ok) {
-      throw new Error(`Queue publish failed with ${published.status}: ${JSON.stringify(published.payload)}`);
-    }
-
-    const write = published.payload.write as JsonObject | undefined;
-    const feedItem = write?.feedItem as JsonObject | undefined;
-    if (feedItem?.id !== feedItemId(cardId) || feedItem.userId !== userA) {
-      throw new Error("Queue publish did not return the expected deterministic user-owned feed item.");
-    }
+  const published = await publishQueueCard({
+    cardId,
+    queueState: "approved",
+    decisionNotes: "Queue API smoke single-card pool publish."
+  });
+  if (!published.ok) {
+    throw new Error(`Queue single-card pool publish failed with ${published.status}: ${JSON.stringify(published.payload)}`);
+  }
+  const singleCollection = published.payload.collection as JsonObject | undefined;
+  if (singleCollection?.id !== "operator_approved_pool" || singleCollection.totalCards !== 1) {
+    throw new Error(`Expected single-card publish to create operator_approved_pool, received ${JSON.stringify(published.payload)}`);
   }
 
   const invalidBatch = await publishQueueBatch({
-    targetUserId: userA,
     cards: [
       { cardId, queueState: "reviewing" },
       { cardId: secondCardId, queueState: "reviewing" }
     ]
   });
   if (invalidBatch.status !== 400 || invalidBatch.payload.error !== "BATCH_PARTIAL_VALIDATION_FAILED") {
-    throw new Error(`Expected BATCH_PARTIAL_VALIDATION_FAILED, received ${invalidBatch.status}: ${JSON.stringify(invalidBatch.payload)}`);
+    throw new Error(`Expected invalid pool batch to fail validation, received ${invalidBatch.status}: ${JSON.stringify(invalidBatch.payload)}`);
   }
 
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    const batch = await publishQueueBatch({
-      targetUserId: userA,
-      cards: cardIds.map((id, index) => ({
-        cardId: id,
-        queueState: "approved",
-        decisionNotes: `Queue batch smoke card ${index + 1}, attempt ${attempt + 1}.`
-      }))
-    });
-    if (!batch.ok) {
-      throw new Error(`Queue batch publish failed with ${batch.status}: ${JSON.stringify(batch.payload)}`);
-    }
-    const writes = (batch.payload.writes as JsonObject[] | undefined) ?? [];
-    if (writes.length !== cardIds.length) {
-      throw new Error(`Expected ${cardIds.length} batch writes, received ${writes.length}.`);
-    }
+  const batch = await publishQueueBatch({
+    cards: cardIds.map((id, index) => ({
+      cardId: id,
+      queueState: "approved",
+      decisionNotes: `Queue batch smoke card ${index + 1}.`
+    }))
+  });
+  if (!batch.ok) {
+    throw new Error(`Queue batch pool publish failed with ${batch.status}: ${JSON.stringify(batch.payload)}`);
+  }
+  const batchCollection = batch.payload.collection as JsonObject | undefined;
+  if (batchCollection?.id !== "operator_approved_pool" || batchCollection.totalCards !== cardIds.length) {
+    throw new Error(`Expected ${cardIds.length} pool cards, received ${JSON.stringify(batch.payload)}`);
   }
 
-  const feedA = await listUserFeedItems(db, { userId: userA, state: "available", limit: 20 });
-  for (const id of cardIds) {
-    if (!feedA.items.some((item) => item.id === feedItemId(id))) {
-      throw new Error(`User A private feed did not include queue-published item ${id}.`);
-    }
-  }
-
-  for (const id of cardIds) {
-    const forgedRead = await getUserFeedItemById(db, { userId: userB, feedItemId: feedItemId(id) });
-    if (forgedRead) {
-      throw new Error(`User B could read User A's queue-published feed item ${id}.`);
-    }
-  }
-
-  const feedB = await listUserFeedItems(db, { userId: userB, state: "available", limit: 20 });
-  if (feedB.items.some((item) => cardIds.some((id) => item.id === feedItemId(id)))) {
-    throw new Error("User B feed listed User A's queue-published item.");
+  const savedCollection = await getComposerLibraryCollection(db, "operator_approved_pool");
+  if (!savedCollection || savedCollection.cards.length !== cardIds.length || savedCollection.kind !== "pool") {
+    throw new Error(`Expected persisted operator_approved_pool with ${cardIds.length} cards, received ${JSON.stringify(savedCollection)}`);
   }
 } finally {
-  for (const id of cardIds) {
-    await db.delete(composerDecisions).where(eq(composerDecisions.userFeedItemId, feedItemId(id)));
-    await db.delete(userFeedItems).where(eq(userFeedItems.id, feedItemId(id)));
-    await db.delete(sourceCards).where(eq(sourceCards.id, sourceCardId(id)));
-  }
-  if (queryCacheKey) await db.delete(composerCardQueryCaches).where(eq(composerCardQueryCaches.cacheKey, queryCacheKey));
   await db.delete(composerQueueDrafts).where(eq(composerQueueDrafts.id, "composer_queue_draft:local-operator:all"));
   for (const planId of publishPlanIds) {
     await db.delete(composerQueuePublishPlans).where(eq(composerQueuePublishPlans.id, planId));
   }
-  await db.delete(user).where(eq(user.id, userA));
-  await db.delete(user).where(eq(user.id, userB));
+  for (const collectionId of collectionIds) {
+    await deleteComposerLibraryCollection(db, collectionId);
+  }
   await closeDatabaseConnection();
 }
 
-console.log(`Composer card queue API smoke passed: ${runId}.`);
+console.log("Composer card queue API smoke passed: pool availability publish.");
