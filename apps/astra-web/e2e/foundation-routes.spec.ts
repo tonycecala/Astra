@@ -341,6 +341,8 @@ test.describe("clean-start routes", () => {
     await page.goto("/admin");
     await expect(page.getByRole("heading", { name: "Admin Console" })).toBeVisible();
     await expect(page.getByText(`Signed in as ${email} · Admin`)).toBeVisible();
+    await expect(page.getByLabel("Selected User")).toContainText(email);
+    await expect(page.getByLabel("Selected User")).toContainText("50");
     await expect(page.getByRole("heading", { name: "Report bakeoff controls" })).toBeVisible();
     await expect(page.getByLabel("Report request id")).toBeVisible();
     await expect(page.getByLabel("Writer")).toBeVisible();

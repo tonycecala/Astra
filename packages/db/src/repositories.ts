@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { createHash, randomBytes } from "node:crypto";
 import {
   type Artifact,
@@ -1585,12 +1585,9 @@ export async function listCreditUsers(database: AstraDb, input: { limit?: number
   const search = input.search?.trim().toLowerCase();
   const rows = await database
     .select({
-      chartCount: sql<number>`(select count(*) from ${chartRequests} where ${chartRequests.userId} = ${appUserProfiles.userId})::integer`,
       createdAt: appUserProfiles.createdAt,
-      creditBalance: sql<number>`coalesce((select sum(${creditLedgerEntries.amount}) from ${creditLedgerEntries} where ${creditLedgerEntries.userId} = ${appUserProfiles.userId}), 0)::integer`,
       displayName: appUserProfiles.displayName,
       email: appUserProfiles.email,
-      reportCount: sql<number>`(select count(*) from ${astrologyReportRequests} where ${astrologyReportRequests.userId} = ${appUserProfiles.userId})::integer`,
       role: appUserProfiles.role,
       userId: appUserProfiles.userId
     })
@@ -1602,11 +1599,46 @@ export async function listCreditUsers(database: AstraDb, input: { limit?: number
     )
     .orderBy(desc(appUserProfiles.updatedAt))
     .limit(limit);
+
+  const userIds = rows.map((row) => row.userId);
+  if (!userIds.length) return [];
+
+  const [creditRows, chartRows, reportRows] = await Promise.all([
+    database
+      .select({
+        balance: sql<number>`coalesce(sum(${creditLedgerEntries.amount}), 0)::integer`,
+        userId: creditLedgerEntries.userId
+      })
+      .from(creditLedgerEntries)
+      .where(inArray(creditLedgerEntries.userId, userIds))
+      .groupBy(creditLedgerEntries.userId),
+    database
+      .select({
+        count: count(),
+        userId: chartRequests.userId
+      })
+      .from(chartRequests)
+      .where(inArray(chartRequests.userId, userIds))
+      .groupBy(chartRequests.userId),
+    database
+      .select({
+        count: count(),
+        userId: astrologyReportRequests.userId
+      })
+      .from(astrologyReportRequests)
+      .where(inArray(astrologyReportRequests.userId, userIds))
+      .groupBy(astrologyReportRequests.userId)
+  ]);
+
+  const creditsByUserId = new Map(creditRows.map((row) => [row.userId, Number(row.balance ?? 0)]));
+  const chartsByUserId = new Map(chartRows.map((row) => [row.userId, Number(row.count ?? 0)]));
+  const reportsByUserId = new Map(reportRows.map((row) => [row.userId, Number(row.count ?? 0)]));
+
   return rows.map((row) => ({
     ...row,
-    chartCount: Number(row.chartCount ?? 0),
-    creditBalance: Number(row.creditBalance ?? 0),
-    reportCount: Number(row.reportCount ?? 0)
+    chartCount: chartsByUserId.get(row.userId) ?? 0,
+    creditBalance: creditsByUserId.get(row.userId) ?? 0,
+    reportCount: reportsByUserId.get(row.userId) ?? 0
   }));
 }
 
