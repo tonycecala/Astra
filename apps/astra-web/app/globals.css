@@ -262,11 +262,11 @@ textarea {
 
 .self-profile-birth-data {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   color: var(--muted);
   max-width: 580px;
   font-size: clamp(0.95rem, 2vw, 1.08rem);
-  line-height: 1.45;
+  line-height: 1.2;
 }
 
 .self-profile-birth-data p {
@@ -3010,6 +3010,10 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
   color: color-mix(in srgb, #f7f0e6 82%, var(--gold));
 }
 
+.card.self-profile-card .self-profile-birth-data p {
+  margin: 0;
+}
+
 .card.self-chart-anchor .self-chart-anchor-title {
   margin: 0;
   font-size: clamp(1.85rem, 2.8vw, 2.2rem);
@@ -3996,7 +4000,7 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
     border-radius: 8px;
     padding: 7px 4px;
     color: var(--muted);
-    font-size: 11px;
+    font-size: 13px;
   }
 
   .bottom-nav a:hover,

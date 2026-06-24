@@ -6,6 +6,7 @@ import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
 import { PageHeader } from "../../components/PageHeader";
 import { SelfTabAvatar } from "../../components/SelfTabAvatar";
 import { getAstraAuthContext } from "../../lib/auth/profile";
+import { displayTimezone } from "../../lib/display";
 import { ui } from "../../lib/i18n";
 
 function normalizeRole(value: string | undefined) {
@@ -64,7 +65,7 @@ function formatBirthSummary(request?: ChartMakerRequest): BirthSummary | string 
 
   return {
     first,
-    second: `Birth time exact · ${formatTime(time)}${timezone ? ` · ${timezone}` : ""}`
+    second: [formatTime(time), displayTimezone(timezone)].filter(Boolean).join(" · ")
   };
 }
 

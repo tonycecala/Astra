@@ -144,7 +144,7 @@ export function SidebarAccountControls() {
   );
 }
 
-export function TopBar() {
+export function TopBar({ starBalance }: { starBalance: number }) {
   const pathname = usePathname();
 
   return (
@@ -153,7 +153,7 @@ export function TopBar() {
       <div className="topbar-actions">
         <Link className="topbar-icon-button topbar-stars-button" href="/stars" aria-label={ui.account.stars} title={ui.account.stars}>
           <Stars size={17} aria-hidden="true" />
-          <span className="topbar-stars-count">+</span>
+          <span className="topbar-stars-count">{starBalance}</span>
         </Link>
         <button className="topbar-icon-button topbar-icon-button-disabled" type="button" aria-label={ui.account.noNotifications} title={ui.account.noNotifications} disabled>
           <Bell size={17} aria-hidden="true" />

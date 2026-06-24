@@ -3,6 +3,7 @@
 import { type CSSProperties, FormEvent, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, Search, Send } from "lucide-react";
 import type { Ally, AstrologyReportRequest, AstrologyReportResult, BirthPlaceSearchResult, ChartBirthData, ChartMakerRequest } from "@astra/contracts";
+import { displayTimezone } from "../lib/display";
 import { ui } from "../lib/i18n";
 import styles from "./BirthOnboardingPanel.module.css";
 
@@ -252,7 +253,7 @@ export function BirthOnboardingPanel({
       [
         ui.self.onboardingReviewPrecision,
         optional(form.time) || optional(form.timezone) || optional(form.location)
-          ? `${form.time || ui.self.onboardingReviewMissing}, ${form.timezone || ui.self.onboardingReviewMissing}, ${form.location || ui.self.onboardingReviewMissing}`
+          ? `${form.time || ui.self.onboardingReviewMissing}, ${displayTimezone(form.timezone) || ui.self.onboardingReviewMissing}, ${form.location || ui.self.onboardingReviewMissing}`
           : ui.self.onboardingDateOnlyPrecision
       ]
     ],
@@ -831,7 +832,7 @@ export function BirthOnboardingPanel({
                     <li key={place.id}>
                       <button onClick={() => selectPlace(place)} type="button">
                         <strong>{place.label}</strong>
-                        <span>{place.timezone}</span>
+                        <span>{displayTimezone(place.timezone)}</span>
                       </button>
                     </li>
                   ))}
@@ -839,7 +840,7 @@ export function BirthOnboardingPanel({
               ) : null}
               {hasSelectedPlace && form.location && form.timezone ? (
                 <p className="form-status" aria-live="polite">
-                  {ui.self.placeSearchSelected(form.location)} ({form.timezone.replaceAll("_", " ")})
+                  {ui.self.placeSearchSelected(form.location)} ({displayTimezone(form.timezone)})
                 </p>
               ) : null}
               <label>

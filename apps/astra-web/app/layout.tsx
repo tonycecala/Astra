@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import { AppNavigation } from "../components/AppNavigation";
 import { SidebarAccountControls, TopBar } from "../components/TopBar";
+import { getAstraAuthContext } from "../lib/auth/profile";
 import { ui } from "../lib/i18n";
 import "./globals.css";
 
@@ -11,7 +12,9 @@ export const metadata: Metadata = {
   description: ui.metadata.description
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const { profile } = await getAstraAuthContext();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -45,7 +48,7 @@ try {
             <SidebarAccountControls />
           </aside>
           <main className="main">
-            <TopBar />
+            <TopBar starBalance={profile?.starBalance ?? 0} />
             {children}
           </main>
           <AppNavigation mobile />
