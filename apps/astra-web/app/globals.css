@@ -2309,6 +2309,32 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   color: var(--green);
 }
 
+.compact-list-report-row {
+  align-items: center;
+}
+
+.compact-list-report-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  text-align: right;
+}
+
+.compact-list-report-actions a {
+  color: var(--blue);
+  font-size: 0.9rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.compact-list-report-actions a:hover,
+.compact-list-report-actions a:focus-visible {
+  color: var(--gold);
+  text-decoration: underline;
+}
+
 .stream-card,
 .astraFeedCard {
   min-height: 340px;

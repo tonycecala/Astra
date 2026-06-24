@@ -83,6 +83,22 @@ function formatBirthAnchorSummary(request?: ChartMakerRequest) {
   return ui.self.chartAnchorBody(readableDate);
 }
 
+function reportStatusLabel(status: string) {
+  if (status === "queued" || status === "processing") {
+    return ui.self.reportStatusGenerating;
+  }
+  if (status === "completed") {
+    return ui.self.reportStatusReady;
+  }
+  if (status === "failed") {
+    return ui.self.reportStatusFailed;
+  }
+  if (status === "cancelled") {
+    return ui.self.reportStatusCancelled;
+  }
+  return status;
+}
+
 export default async function SelfPage() {
   const { profile } = await getAstraAuthContext();
 
@@ -115,6 +131,7 @@ export default async function SelfPage() {
   const latestRequest = chartRequests.at(0);
   const roleLine = normalizeRole(profile.role);
   const birthLine = formatBirthSummary(latestRequest);
+  const reportResultsByRequestId = new Map(reportResults.map((result) => [result.requestId, result]));
 
   return (
     <>
@@ -145,16 +162,16 @@ export default async function SelfPage() {
               <Sparkles aria-hidden="true" size={16} />
               {ui.self.createProfile}
             </Link>
+            <a className="button secondary" href="#self-birth-onboarding">
+              <Pencil aria-hidden="true" size={16} />
+              {ui.self.editBirthDetails}
+            </a>
             {profile.role === "admin" ? (
               <Link className="button secondary" href="/admin">
                 <ShieldCheck aria-hidden="true" size={16} />
                 {ui.account.admin}
               </Link>
             ) : null}
-            <a className="button secondary" href="#self-birth-onboarding">
-              <Pencil aria-hidden="true" size={16} />
-              {ui.self.editBirthDetails}
-            </a>
           </div>
         </article>
       </section>
@@ -220,12 +237,22 @@ export default async function SelfPage() {
           <h2>{ui.self.reportRequestsStatusTitle}</h2>
           {reportRequests.length ? (
             <ul className="compact-list">
-              {reportRequests.slice(0, 4).map((request) => (
-                <li key={request.id}>
-                  <span>{request.subjectName}</span>
-                  <strong>{request.status}</strong>
-                </li>
-              ))}
+              {reportRequests.slice(0, 4).map((request) => {
+                const result = reportResultsByRequestId.get(request.id);
+                return (
+                  <li className="compact-list-report-row" key={request.id}>
+                    <span>{request.subjectName}</span>
+                    <span className="compact-list-report-actions">
+                      <strong>{reportStatusLabel(request.status)}</strong>
+                      {result ? (
+                        <Link href={`/library?reportId=${request.id}`}>
+                          {ui.self.reportReadCta}
+                        </Link>
+                      ) : null}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <p>{ui.self.reportRequestsEmpty}</p>
