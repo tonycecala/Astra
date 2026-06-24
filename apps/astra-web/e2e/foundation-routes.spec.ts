@@ -10,7 +10,7 @@ type JsonObject = Record<string, unknown>;
 const routes = [
   { path: "/", heading: "A living stream", mobileHeading: "Journey" },
   { path: "/journey", heading: "A living stream", mobileHeading: "Journey" },
-  { path: "/allies", heading: "Companions with clear names", mobileHeading: "Allies" },
+  { path: "/allies", heading: "Sign in to create Ally reports", mobileHeading: "Allies" },
   { path: "/self", heading: "Sign in to see your Astra", mobileHeading: "Self" },
   { path: "/charts", heading: "Sign in to see your charts", mobileHeading: "Charts" },
   { path: "/library", heading: "Artifacts worth keeping", mobileHeading: "Library" },
@@ -249,7 +249,7 @@ test.describe("clean-start routes", () => {
   test("primary journey reaches adjacent clean-start areas", async ({ page }, testInfo) => {
     await page.goto("/journey");
     await page.locator('a[href="/allies"]:visible').click();
-    await expect(page.getByRole("heading", { name: testInfo.project.name === "mobile" ? "Allies" : "Companions with clear names" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: testInfo.project.name === "mobile" ? "Allies" : "Sign in to create Ally reports" })).toBeVisible();
     await page.locator('a[href="/self"]:visible').click();
     await expect(page.getByRole("heading", { name: testInfo.project.name === "mobile" ? "Self" : "Sign in to see your Astra" })).toBeVisible();
   });
