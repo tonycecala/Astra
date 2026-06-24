@@ -136,7 +136,7 @@ function ArtifactCard({ artifact }: { artifact: LibraryArtifact }) {
         <div className="library-report-card-meta">
           <span>{artifact.subjectType === "ally" ? ui.library.subjectAlly : ui.library.subjectSelf}</span>
           <span>{reportTypeLabel(artifact.reportType)}</span>
-          <span>{artifact.status ?? ui.library.statusGenerated}</span>
+          <span>{reportStatusLabel(artifact.status)}</span>
         </div>
         <h2>{artifact.title}</h2>
         {artifact.subjectName ? <p className="library-report-subject">{artifact.subjectName}</p> : null}
@@ -196,6 +196,14 @@ function canonicalReportType(reportType?: string) {
   if (reportType === "core_self") return "core";
   if (reportType === "identity" || reportType === "core" || reportType === "deep" || reportType === "progressed" || reportType === "synastry") return reportType;
   return "core";
+}
+
+function reportStatusLabel(status?: string) {
+  if (status === "completed") return ui.self.reportStatusReady;
+  if (status === "queued" || status === "processing") return ui.self.reportStatusGenerating;
+  if (status === "failed") return ui.self.reportStatusFailed;
+  if (status === "cancelled") return ui.self.reportStatusCancelled;
+  return status ?? ui.library.statusGenerated;
 }
 
 function artifactMatchesFilter(artifact: LibraryArtifact, filter: LibraryReportFilter) {
