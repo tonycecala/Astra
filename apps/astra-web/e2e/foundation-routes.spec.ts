@@ -1,5 +1,5 @@
 import { expect, type Page, test } from "@playwright/test";
-import { randomUUID } from "node:crypto";
+import { createHmac, randomUUID } from "node:crypto";
 import { ASTRA_REPORT_WRITER_ENV, LOCAL_DETERMINISTIC_REPORT_WRITER, buildAstrologyReportResultAsync } from "@astra/astrology";
 import { buildChartMakerRecordResult } from "@astra/chart-maker";
 import { appUserProfiles, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, creditLedgerEntries, db, mirrorCreditBalanceToProfile, recordAstrologyReportResult, recordChartMakerResult } from "@astra/db";
@@ -162,6 +162,47 @@ async function createCompletedReport(email: string, input: { chartRequestId?: st
     })
   );
   return { request, result };
+}
+
+function signedStripeHeader(rawBody: string) {
+  const secret = process.env.STRIPE_WEBHOOK_SECRET?.trim() || process.env.STRIPE_WEBHOOK_TEST_SECRET?.trim();
+  if (!secret) throw new Error("STRIPE_WEBHOOK_SECRET or STRIPE_WEBHOOK_TEST_SECRET is required for browser-visible Stripe QA.");
+  const timestamp = Math.floor(Date.now() / 1000);
+  const signature = createHmac("sha256", secret).update(`${timestamp}.${rawBody}`).digest("hex");
+  return `t=${timestamp},v1=${signature}`;
+}
+
+async function fulfillCheckoutThroughWebhook(page: Page, input: { checkoutSessionId: string; userId: string }) {
+  const event = {
+    id: `evt_playwright_${input.checkoutSessionId.replace(/[^a-zA-Z0-9]/g, "_")}`,
+    type: "checkout.session.completed",
+    data: {
+      object: {
+        amount_total: 999,
+        client_reference_id: input.userId,
+        currency: "usd",
+        customer: "cus_playwright_admin_parity",
+        id: input.checkoutSessionId,
+        metadata: {
+          astra_user_id: input.userId,
+          product_key: "core_pack",
+          product_type: "star_pack",
+          stars: "5"
+        },
+        payment_intent: "pi_playwright_admin_parity"
+      }
+    }
+  };
+  const rawBody = JSON.stringify(event);
+  const response = await page.request.post("/api/stripe/webhook", {
+    data: rawBody,
+    headers: {
+      "content-type": "application/json",
+      "stripe-signature": signedStripeHeader(rawBody)
+    }
+  });
+  expect(response.ok()).toBe(true);
+  return (await response.json()) as JsonObject;
 }
 
 test.describe("clean-start routes", () => {
@@ -338,11 +379,31 @@ test.describe("clean-start routes", () => {
     await page.keyboard.press("Escape");
     await expect(starsDialog).toHaveCount(0);
 
+    const [adminProfile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
+    if (!adminProfile) throw new Error(`Expected admin profile for ${email}.`);
+    const checkoutResponse = await page.request.post("/api/billing/create-checkout-session", {
+      data: {
+        cancelUrl: "http://localhost:3011/stars?checkout=cancelled",
+        productKey: "core_pack",
+        successUrl: "http://localhost:3011/stars?checkout=success"
+      }
+    });
+    expect(checkoutResponse.ok()).toBe(true);
+    const checkout = (await checkoutResponse.json()) as JsonObject;
+    const checkoutSessionId = String(checkout.checkoutSessionId ?? "");
+    expect(checkoutSessionId).toMatch(/^cs_/);
+    expect(String(checkout.url ?? "")).toContain("checkout.stripe.com");
+    const fulfilled = await fulfillCheckoutThroughWebhook(page, { checkoutSessionId, userId: adminProfile.userId });
+    expect(fulfilled.ok).toBe(true);
+    expect(fulfilled.balance).toBe(55);
+    await page.goto("/stars?checkout=success");
+    await expect(page.getByText("55 Stars")).toBeVisible();
+
     await page.goto("/admin");
     await expect(page.getByRole("heading", { name: "Admin Console" })).toBeVisible();
     await expect(page.getByText(`Signed in as ${email} · Admin`)).toBeVisible();
     await expect(page.getByLabel("Selected User")).toContainText(email);
-    await expect(page.getByLabel("Selected User")).toContainText("50");
+    await expect(page.getByLabel("Selected User")).toContainText("55");
     await expect(page.getByRole("heading", { name: "Report bakeoff controls" })).toBeVisible();
     await expect(page.getByLabel("Report request id")).toBeVisible();
     await expect(page.getByLabel("Writer")).toBeVisible();
@@ -350,6 +411,8 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("button", { name: "Run Replay" }).first()).toBeVisible();
     await expect(page.getByText("npm run report:bakeoff -- --profiles debug,production")).toBeVisible();
     await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText("Playwright admin parity grant");
+    await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText("stripe_checkout");
+    await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText(checkoutSessionId.slice(0, 14));
 
     await page.goto("/self#self-birth-onboarding");
     await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
