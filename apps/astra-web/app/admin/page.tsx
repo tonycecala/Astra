@@ -29,7 +29,7 @@ import {
   recordAstrologyReportResult,
   recordChartMakerResult
 } from "@astra/db";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
 
@@ -221,11 +221,54 @@ function textValue(value: unknown, fallback: string = ui.admin.notRecorded) {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;
 }
 
+function metadataText(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : "";
+}
+
+function metadataNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value !== "string" || !value.trim()) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function reportV1Metadata(request: { context: unknown } | null) {
+  return asRecord(asRecord(request?.context).v1);
+}
+
+function metadataCount(value: unknown) {
+  const number = metadataNumber(value);
+  if (number === null) return textValue(value);
+  return new Intl.NumberFormat("en-US").format(number);
+}
+
+function metadataSpend(value: unknown) {
+  const number = metadataNumber(value);
+  if (number === null) return textValue(value);
+  return `$${number.toFixed(4)}`;
+}
+
+function metadataLatency(value: unknown) {
+  const number = metadataNumber(value);
+  if (number === null) return textValue(value);
+  return `${new Intl.NumberFormat("en-US").format(number)}ms`;
+}
+
 function resultPublicHeadline(value: unknown) {
   return textValue(asRecord(value).headline);
 }
 
-function resultProviderModel(result: { provenance: unknown; error: string | null }) {
+function reportProviderModel(request: { context: unknown } | null, result: { provenance: unknown; error: string | null } | null) {
+  const v1 = reportV1Metadata(request);
+  const provider = metadataText(v1.provider);
+  const model = metadataText(v1.model);
+  if (provider || model) {
+    return {
+      provider: provider || ui.admin.notRecorded,
+      model: model || ui.admin.notRecorded
+    };
+  }
+  if (!result) return { provider: ui.admin.notRecorded, model: ui.admin.notRecorded };
   const haystack = [
     ...provenanceItems(result.provenance).map((item) => textValue(item.summary, "")),
     result.error ?? ""
@@ -237,7 +280,26 @@ function resultProviderModel(result: { provenance: unknown; error: string | null
   };
 }
 
-function resultUsageMetadata(result: { provenance: unknown; error: string | null }) {
+function reportUsageMetadata(request: { context: unknown } | null, result: { provenance: unknown; error: string | null } | null) {
+  const v1 = reportV1Metadata(request);
+  if (v1.inputTokens || v1.outputTokens || v1.totalTokens || v1.estimatedSpend || v1.latencyMs) {
+    return {
+      input: metadataCount(v1.inputTokens),
+      output: metadataCount(v1.outputTokens),
+      total: metadataCount(v1.totalTokens),
+      spend: metadataSpend(v1.estimatedSpend),
+      latency: metadataLatency(v1.latencyMs)
+    };
+  }
+  if (!result) {
+    return {
+      input: ui.admin.notRecorded,
+      output: ui.admin.notRecorded,
+      total: ui.admin.notRecorded,
+      spend: ui.admin.notRecorded,
+      latency: ui.admin.notRecorded
+    };
+  }
   const haystack = [
     ...provenanceItems(result.provenance).map((item) => textValue(item.summary, "")),
     result.error ?? ""
@@ -317,15 +379,25 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
       : [],
     listRecentBetaFeedback(db, { limit: 20 })
   ]);
+  const [requestedReplayRequest] =
+    replayRequest && selectedCreditUser && !selectedReportRequests.some((request) => request.id === replayRequest)
+      ? await db
+          .select()
+          .from(astrologyReportRequests)
+          .where(and(eq(astrologyReportRequests.userId, selectedCreditUser.userId), eq(astrologyReportRequests.id, replayRequest)))
+          .limit(1)
+      : [];
+  const adminReportRequests = requestedReplayRequest ? [requestedReplayRequest, ...selectedReportRequests] : selectedReportRequests;
   const reportResultByRequestId = new Map(selectedReportResults.map((result) => [result.requestId, result]));
-  const defaultReplayRequestId = replayRequest || selectedReportRequests[0]?.id || "";
+  const defaultReplayRequestId = replayRequest || adminReportRequests[0]?.id || "";
   const normalizedReplayProfile = reportModelProfileKeys.includes(replayProfile as ReportModelProfile)
     ? (replayProfile as ReportModelProfile)
     : "production";
-  const selectedReplayRequest = selectedReportRequests.find((request) => request.id === defaultReplayRequestId) ?? selectedReportRequests[0] ?? null;
+  const selectedReplayRequest = adminReportRequests.find((request) => request.id === defaultReplayRequestId) ?? adminReportRequests[0] ?? null;
   const selectedReplayResult = selectedReplayRequest ? reportResultByRequestId.get(selectedReplayRequest.id) ?? null : null;
-  const selectedReplayProviderModel = selectedReplayResult ? resultProviderModel(selectedReplayResult) : { provider: ui.admin.notRecorded, model: ui.admin.notRecorded };
-  const selectedReplayUsage = selectedReplayResult ? resultUsageMetadata(selectedReplayResult) : null;
+  const selectedReplayProviderModel = reportProviderModel(selectedReplayRequest, selectedReplayResult);
+  const selectedReplayUsage = reportUsageMetadata(selectedReplayRequest, selectedReplayResult);
+  const selectedReplayV1Metadata = reportV1Metadata(selectedReplayRequest);
   const selectedValidationErrors = validationErrors(selectedReplayResult?.error ?? null);
 
   return (
@@ -533,14 +605,14 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
             <label>
               <span>{ui.admin.requestSelector}</span>
               <select name="replayRequest" defaultValue={defaultReplayRequestId}>
-                {selectedReportRequests.map((request) => (
+                {adminReportRequests.map((request) => (
                   <option key={request.id} value={request.id}>
                     {request.subjectName} · {reportTypeLabel(request.reportType)} · {request.status} · {request.id.slice(0, 8)}
                   </option>
                 ))}
               </select>
             </label>
-            <button className="button secondary" type="submit" disabled={!selectedReportRequests.length}>{ui.admin.inspectRequest}</button>
+            <button className="button secondary" type="submit" disabled={!adminReportRequests.length}>{ui.admin.inspectRequest}</button>
           </form>
           <div className="adminRunInspector" aria-label={ui.admin.selectedRunInspector}>
             <div>
@@ -583,13 +655,33 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
                 <dt>{ui.admin.usage}</dt>
                 <dd>
                   {ui.admin.usageSummary(
-                    selectedReplayUsage?.input ?? ui.admin.notRecorded,
-                    selectedReplayUsage?.output ?? ui.admin.notRecorded,
-                    selectedReplayUsage?.total ?? ui.admin.notRecorded,
-                    selectedReplayUsage?.spend ?? ui.admin.notRecorded,
-                    selectedReplayUsage?.latency ?? ui.admin.notRecorded
+                    selectedReplayUsage.input,
+                    selectedReplayUsage.output,
+                    selectedReplayUsage.total,
+                    selectedReplayUsage.spend,
+                    selectedReplayUsage.latency
                   )}
                 </dd>
+              </div>
+              <div>
+                <dt>{ui.admin.modelProfile}</dt>
+                <dd>{textValue(selectedReplayV1Metadata.modelProfile)}</dd>
+              </div>
+              <div>
+                <dt>{ui.admin.promptVersion}</dt>
+                <dd>{textValue(selectedReplayV1Metadata.promptVersion)}</dd>
+              </div>
+              <div>
+                <dt>{ui.admin.voice}</dt>
+                <dd>{textValue(selectedReplayV1Metadata.voice)}</dd>
+              </div>
+              <div>
+                <dt>{ui.admin.format}</dt>
+                <dd>{textValue(selectedReplayV1Metadata.format)}</dd>
+              </div>
+              <div>
+                <dt>{ui.admin.v1Document}</dt>
+                <dd>{textValue(selectedReplayV1Metadata.reportDocumentId)}</dd>
               </div>
               <div>
                 <dt>{ui.admin.validationErrors}</dt>
@@ -627,7 +719,7 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
             <label>
               <span>{ui.admin.reportId}</span>
               <select name="requestId" defaultValue={defaultReplayRequestId} required>
-                {selectedReportRequests.map((request) => (
+                {adminReportRequests.map((request) => (
                   <option key={request.id} value={request.id}>
                     {request.subjectName} · {reportTypeLabel(request.reportType)} · {request.id.slice(0, 8)}
                   </option>
@@ -710,7 +802,7 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
               <time role="columnheader">{ui.admin.joined}</time>
               <div role="columnheader">{ui.admin.bakeoffReplay}</div>
             </div>
-            {selectedReportRequests.map((request) => {
+            {adminReportRequests.map((request) => {
               const result = reportResultByRequestId.get(request.id);
               return (
                 <div className="adminRow adminRowData" key={request.id} role="row">
@@ -747,7 +839,7 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
                 </div>
               );
             })}
-            {!selectedReportRequests.length ? <p>{ui.admin.noReports}</p> : null}
+            {!adminReportRequests.length ? <p>{ui.admin.noReports}</p> : null}
           </div>
         </div>
       </section>

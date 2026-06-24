@@ -156,13 +156,14 @@ function emailCandidates(email: string) {
 }
 
 async function gravatarUrlsForEmail(email: string, size: number) {
-  if (!globalThis.crypto?.subtle) return [];
   const urls: string[] = [];
   for (const candidate of emailCandidates(email)) {
-    const digest = await globalThis.crypto.subtle.digest("SHA-256", new TextEncoder().encode(candidate));
-    const sha256 = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
-    urls.push(`https://www.gravatar.com/avatar/${sha256}?s=${size}&d=404&r=g`);
     urls.push(`https://www.gravatar.com/avatar/${md5Hex(candidate)}?s=${size}&d=404&r=g`);
+    if (globalThis.crypto?.subtle) {
+      const digest = await globalThis.crypto.subtle.digest("SHA-256", new TextEncoder().encode(candidate));
+      const sha256 = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+      urls.push(`https://www.gravatar.com/avatar/${sha256}?s=${size}&d=404&r=g`);
+    }
   }
   return urls;
 }

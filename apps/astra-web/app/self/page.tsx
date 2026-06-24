@@ -83,7 +83,35 @@ function formatBirthAnchorSummary(request?: ChartMakerRequest) {
   return ui.self.chartAnchorBody(readableDate);
 }
 
-export default async function SelfPage() {
+function reportStatusLabel(status: string) {
+  if (status === "queued" || status === "processing") {
+    return ui.self.reportStatusGenerating;
+  }
+  if (status === "completed") {
+    return ui.self.reportStatusReady;
+  }
+  if (status === "failed") {
+    return ui.self.reportStatusFailed;
+  }
+  if (status === "cancelled") {
+    return ui.self.reportStatusCancelled;
+  }
+  return status;
+}
+
+type SelfPageParams = {
+  searchParams?: Promise<{
+    chart?: string;
+    start?: string;
+  }>;
+};
+
+function onboardingStepFromParam(value?: string) {
+  return value === "birth_details" || value === "report" || value === "review" ? value : undefined;
+}
+
+export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
+  const params = searchParams ? await searchParams : {};
   const { profile } = await getAstraAuthContext();
 
   if (!profile) {
@@ -112,9 +140,17 @@ export default async function SelfPage() {
     listUserAstrologyReportResults(db, profile.userId)
   ]);
   const fallbackInitial = profile.displayName.trim().slice(0, 1).toUpperCase() || "S";
-  const latestRequest = chartRequests.at(0);
+  const selfChartRequest =
+    chartRequests.find((request) => request.context?.subject?.subjectType === "self") ??
+    chartRequests.find((request) => request.source === "self") ??
+    chartRequests.at(0);
+  const selectedOnboardingChart = params.chart
+    ? chartRequests.find((request) => request.id === params.chart)
+    : undefined;
+  const onboardingChart = selectedOnboardingChart ?? selfChartRequest;
   const roleLine = normalizeRole(profile.role);
-  const birthLine = formatBirthSummary(latestRequest);
+  const birthLine = formatBirthSummary(selfChartRequest);
+  const reportResultsByRequestId = new Map(reportResults.map((result) => [result.requestId, result]));
 
   return (
     <>
@@ -145,16 +181,16 @@ export default async function SelfPage() {
               <Sparkles aria-hidden="true" size={16} />
               {ui.self.createProfile}
             </Link>
+            <a className="button secondary" href="#self-birth-onboarding">
+              <Pencil aria-hidden="true" size={16} />
+              {ui.self.editBirthDetails}
+            </a>
             {profile.role === "admin" ? (
               <Link className="button secondary" href="/admin">
                 <ShieldCheck aria-hidden="true" size={16} />
                 {ui.account.admin}
               </Link>
             ) : null}
-            <a className="button secondary" href="#self-birth-onboarding">
-              <Pencil aria-hidden="true" size={16} />
-              {ui.self.editBirthDetails}
-            </a>
           </div>
         </article>
       </section>
@@ -168,7 +204,7 @@ export default async function SelfPage() {
         </div>
       </section>
       <section className="grid" aria-label={ui.self.summaryLabel}>
-        {latestRequest ? (
+        {selfChartRequest ? (
           <Link className="card self-chart-anchor" href="/charts">
             <div className="self-chart-anchor-header">
               <ChartPie aria-hidden="true" className="self-chart-anchor-icon" size={16} />
@@ -178,7 +214,7 @@ export default async function SelfPage() {
               </div>
               <ChevronRight aria-hidden="true" className="self-chart-anchor-chevron" size={16} />
             </div>
-            <p>{formatBirthAnchorSummary(latestRequest)}</p>
+            <p>{formatBirthAnchorSummary(selfChartRequest)}</p>
           </Link>
         ) : (
           <article className="card self-chart-anchor">
@@ -220,12 +256,22 @@ export default async function SelfPage() {
           <h2>{ui.self.reportRequestsStatusTitle}</h2>
           {reportRequests.length ? (
             <ul className="compact-list">
-              {reportRequests.slice(0, 4).map((request) => (
-                <li key={request.id}>
-                  <span>{request.subjectName}</span>
-                  <strong>{request.status}</strong>
-                </li>
-              ))}
+              {reportRequests.slice(0, 4).map((request) => {
+                const result = reportResultsByRequestId.get(request.id);
+                return (
+                  <li className="compact-list-report-row" key={request.id}>
+                    <span>{request.subjectName}</span>
+                    <span className="compact-list-report-actions">
+                      <strong>{reportStatusLabel(request.status)}</strong>
+                      {result ? (
+                        <Link href={`/library?reportId=${request.id}`}>
+                          {ui.self.reportReadCta}
+                        </Link>
+                      ) : null}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <p>{ui.self.reportRequestsEmpty}</p>
@@ -240,12 +286,15 @@ export default async function SelfPage() {
       <section id="self-birth-onboarding">
         <BirthOnboardingPanel
           displayName={profile.displayName}
+          key={onboardingChart?.id ?? "self-chart"}
           role={profile.role}
           starBalance={profile.starBalance}
           initialRequests={chartRequests}
           initialReportRequests={reportRequests}
           initialReportResults={reportResults}
-          initialBirthData={latestRequest?.birthData}
+          initialBirthData={onboardingChart?.birthData}
+          initialChartRequestId={onboardingChart?.id}
+          initialStep={onboardingStepFromParam(params.start)}
         />
       </section>
     </>

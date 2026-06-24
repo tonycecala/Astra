@@ -1,33 +1,58 @@
+import Link from "next/link";
 import { PageHeader } from "../../components/PageHeader";
-import { getFoundationViewModel } from "../../lib/foundation";
+import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function GiftsPage() {
-  const view = await getFoundationViewModel();
+  const { profile } = await getAstraAuthContext();
+
+  if (!profile) {
+    return (
+      <>
+        <PageHeader eyebrow={ui.gifts.eyebrow} title={ui.gifts.signedOutTitle}>
+          {ui.gifts.signedOutIntro}
+        </PageHeader>
+        <section className="gift-list" aria-label={ui.gifts.listLabel}>
+          <article className="card gift-panel">
+            <div className="gift-panel-heading">
+              <span>{ui.login.codeFlowEyebrow}</span>
+              <h2>{ui.login.title}</h2>
+            </div>
+            <p>{ui.login.intro}</p>
+            <Link className="button" href="/login?next=/gifts">
+              {ui.self.signInCta}
+            </Link>
+          </article>
+        </section>
+      </>
+    );
+  }
 
   return (
     <>
       <PageHeader eyebrow={ui.gifts.eyebrow} title={ui.gifts.title}>
         {ui.gifts.intro}
       </PageHeader>
-      <section className="grid" aria-label={ui.gifts.listLabel}>
-        {view.gifts.map((gift) => (
-          <article className="card" key={gift.id}>
-            <div className="eyebrow">{gift.code}</div>
-            <h2>{gift.name}</h2>
-            <p>{gift.description}</p>
-            <p>{ui.gifts.starCost(gift.starCost)}</p>
-          </article>
-        ))}
-        {view.starTransactions.map((transaction) => (
-          <article className="card" key={transaction.id}>
-            <div className="eyebrow">{transaction.direction}</div>
-            <h2>{ui.gifts.starAmount(transaction.amount)}</h2>
-            <p>{transaction.reason}</p>
-          </article>
-        ))}
+      <section className="gift-list" aria-label={ui.gifts.listLabel}>
+        <article className="card gift-panel">
+          <div className="gift-panel-heading">
+            <span>{ui.gifts.comingSoonEyebrow}</span>
+            <h2>{ui.gifts.comingSoonTitle}</h2>
+          </div>
+          <p>{ui.gifts.comingSoonBody}</p>
+        </article>
+        <article className="card gift-panel">
+          <div className="gift-panel-heading">
+            <span>{ui.gifts.starsEyebrow}</span>
+            <h2>{ui.gifts.starsTitle}</h2>
+          </div>
+          <p>{ui.gifts.starsBody}</p>
+          <Link className="button secondary" href="/stars">
+            {ui.gifts.openStars}
+          </Link>
+        </article>
       </section>
     </>
   );

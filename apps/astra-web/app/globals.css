@@ -57,6 +57,8 @@ body {
   color: var(--ink);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   letter-spacing: 0;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 a {
@@ -732,7 +734,7 @@ textarea {
 
 .list {
   display: grid;
-  gap: 12px;
+  gap: 3px;
 }
 
 .card {
@@ -869,32 +871,50 @@ a.card-link:focus-visible {
   outline: none;
 }
 
-.library-report-card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-bottom: 10px;
+.library-report-card {
+  display: grid;
+  padding: 7px 12px;
 }
 
-.library-report-card-meta span {
-  border: 1px solid color-mix(in srgb, var(--gold) 22%, var(--line));
+.library-report-title-row {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 10px;
+}
+
+.card .library-report-title-row h2 {
+  overflow: hidden;
+  margin: 0;
+  min-width: 0;
+  color: var(--gold);
+  font-size: clamp(0.875rem, 3vw, 1rem);
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.library-report-type-pill {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  border: 1px solid color-mix(in srgb, var(--blue) 23%, transparent);
   border-radius: 999px;
-  padding: 4px 8px;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: capitalize;
+  padding: 1px 6px;
+  color: color-mix(in srgb, var(--blue) 60%, transparent);
+  font-size: 0.68rem;
+  font-weight: 750;
 }
 
 .library-report-subject {
-  color: var(--gold);
-  font-weight: 760;
-}
-
-.library-report-date {
+  overflow: hidden;
+  margin: 1px 0 0;
   color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 680;
+  font-size: 0.74rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .chartsLayout {
@@ -2309,6 +2329,296 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   color: var(--green);
 }
 
+.compact-list-report-row {
+  align-items: center;
+}
+
+.compact-list-report-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  text-align: right;
+}
+
+.compact-list-report-actions a {
+  color: var(--blue);
+  font-size: 0.9rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.compact-list-report-actions a:hover,
+.compact-list-report-actions a:focus-visible {
+  color: var(--gold);
+  text-decoration: underline;
+}
+
+.gift-list {
+  display: grid;
+  gap: 3px;
+}
+
+.gift-panel {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.gift-panel-heading {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.gift-panel-heading span {
+  color: color-mix(in srgb, var(--blue) 60%, transparent);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.gift-panel-heading h2 {
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(1rem, 3vw, 1.18rem);
+  line-height: 1.08;
+}
+
+.gift-panel p {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.gift-panel .button {
+  justify-self: start;
+  margin-top: 2px;
+  padding-inline: 16px;
+}
+
+.ally-card {
+  display: grid;
+  padding: 7px 12px;
+}
+
+.list-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(108px, auto) auto auto;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--gold) 16%, var(--line));
+  border-radius: 12px;
+  margin: 0 0 10px;
+  padding: 8px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+}
+
+.list-filter-control {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.list-filter-search,
+.list-filter-select {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--muted);
+}
+
+.list-filter-search {
+  gap: 7px;
+  padding: 0 10px;
+}
+
+.list-filter-search input,
+.list-filter-select select {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  outline: none;
+}
+
+.list-filter-select select {
+  min-height: 32px;
+  padding: 0 8px;
+}
+
+.list-filter-bar .button {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 0.8rem;
+}
+
+.ally-card-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.ally-card-identity {
+  min-width: 0;
+}
+
+.ally-card-title-row {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 10px;
+}
+
+.card .ally-card-header h2 {
+  overflow: hidden;
+  margin: 0;
+  min-width: 0;
+  color: var(--gold);
+  font-size: clamp(0.875rem, 3vw, 1rem);
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ally-card-birth {
+  display: block;
+  overflow: hidden;
+  margin-top: 1px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ally-card > p {
+  display: none;
+}
+
+.ally-card-controls {
+  display: flex;
+  align-items: center;
+  justify-items: end;
+}
+
+.ally-card-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  border: 1px solid color-mix(in srgb, var(--blue) 23%, transparent);
+  border-radius: 999px;
+  padding: 1px 6px;
+  color: color-mix(in srgb, var(--blue) 60%, transparent);
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+
+.ally-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.ally-card-actions {
+  justify-content: flex-end;
+}
+
+.ally-card-actions .button {
+  width: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+  justify-content: center;
+}
+
+.ally-remove-button {
+  border-color: color-mix(in srgb, var(--rose) 34%, var(--line));
+  color: color-mix(in srgb, var(--rose) 72%, var(--muted));
+}
+
+.ally-remove-layer {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.56);
+}
+
+.ally-remove-dialog {
+  width: min(360px, 100%);
+  border: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.ally-remove-dialog h3 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 1.05rem;
+}
+
+.ally-remove-dialog p {
+  margin: 10px 0 0;
+  color: var(--muted);
+}
+
+.ally-remove-error {
+  color: var(--rose) !important;
+  font-weight: 750;
+}
+
+.ally-remove-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(104px, auto));
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.ally-remove-actions .button {
+  min-width: 104px;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 360px) {
+  .ally-remove-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .list-filter-bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .list-filter-search-control {
+    grid-column: 1 / -1;
+  }
+}
+
 .stream-card,
 .astraFeedCard {
   min-height: 340px;
@@ -2661,6 +2971,12 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
   line-height: 1.12;
 }
 
+.card .library-report-title-row h2,
+.card .ally-card-header h2 {
+  font-size: clamp(0.875rem, 3vw, 1rem);
+  line-height: 1.05;
+}
+
 .card h3 {
   font-size: 1.2rem;
   line-height: 1.15;
@@ -2687,6 +3003,11 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
   font-weight: 820;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.card.self-profile-card .self-profile-birth-data,
+.card.self-profile-card .self-profile-birth-data p {
+  color: color-mix(in srgb, #f7f0e6 82%, var(--gold));
 }
 
 .card.self-chart-anchor .self-chart-anchor-title {
@@ -3459,14 +3780,14 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
   }
 
   .main {
-    padding: calc(env(safe-area-inset-top, 0px) + 88px) 16px 92px;
+    padding: calc(env(safe-area-inset-top, 0px) + 88px) 6px 92px;
   }
 
   .topbar {
     position: fixed;
     top: calc(env(safe-area-inset-top, 0px) + 8px);
-    right: 16px;
-    left: 16px;
+    right: 6px;
+    left: 6px;
     z-index: 90;
     display: flex;
     align-items: center;
@@ -3483,6 +3804,27 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
 
   .topbar-actions {
     gap: 6px;
+  }
+
+  .card {
+    border-radius: 10px;
+    padding-inline: 10px;
+  }
+
+  .ally-card,
+  .library-report-card {
+    padding-inline: 10px;
+  }
+
+  .list-filter-bar {
+    padding-inline: 6px;
+  }
+
+  .card .library-report-title-row h2,
+  .card .ally-card-header h2 {
+    font-size: 14px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   .topbar-route-title {
@@ -3681,5 +4023,9 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
     right: 14px;
     z-index: 20;
     display: block;
+  }
+
+  .main .list {
+    gap: 3px;
   }
 }

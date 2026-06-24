@@ -16,7 +16,12 @@ const forbidden = [
 ];
 const ignored = new Set([".git", "node_modules", ".next", "dist", "playwright-report", "test-results"]);
 const documentationPrefixes = ["akashic/", "docs/", "README.md", "AGENTS.md", "ASTRA_CLEAN_START_INAUGURAL_CHARTER.md"];
-const allowedFiles = new Set(["scripts/check-no-supabase.mts", "scripts/check-foundation.mts"]);
+const allowedFiles = new Set([
+  "scripts/check-no-supabase.mts",
+  "scripts/check-foundation.mts",
+  // One-off v1 quarry importer. This is not app runtime code and may name the legacy source envs it reads.
+  "scripts/import-v1-astramaster-data.mts"
+]);
 
 async function collectFiles(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true });

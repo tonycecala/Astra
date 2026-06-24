@@ -1,13 +1,109 @@
 import Link from "next/link";
+import { BookOpenText, ChartPie, Pencil, Search } from "lucide-react";
+import type { Ally, AstrologyReportRequest, AstrologyReportResult, ChartMakerRequest } from "@astra/contracts";
 import { PageHeader } from "../../components/PageHeader";
 import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
+import { AllyRemoveButton } from "../../components/AllyRemoveButton";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
 import { db, listUserAllies, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests } from "@astra/db";
 
 export const dynamic = "force-dynamic";
 
-export default async function AlliesPage() {
+function allyIdFromChartRequest(request: ChartMakerRequest) {
+  const subject = request.context?.subject;
+  if (!subject || typeof subject !== "object" || Array.isArray(subject)) return null;
+  const allyId = "allyId" in subject ? subject.allyId : "subjectId" in subject ? subject.subjectId : null;
+  return typeof allyId === "string" && allyId ? allyId : null;
+}
+
+function latestReportForChartRequest(
+  chartRequest: ChartMakerRequest | undefined,
+  requests: AstrologyReportRequest[],
+  results: AstrologyReportResult[]
+) {
+  if (!chartRequest) return null;
+  const reportRequestIds = new Set(requests.filter((request) => request.chartRequestId === chartRequest.id).map((request) => request.id));
+  return results.find((result) => reportRequestIds.has(result.requestId) && result.status === "completed") ?? null;
+}
+
+function compactBirthLine(chartRequest?: ChartMakerRequest) {
+  if (!chartRequest?.birthData.date) return ui.self.noBirthData;
+  return [chartRequest.birthData.date, chartRequest.birthData.time, chartRequest.birthData.location].filter(Boolean).join(" · ");
+}
+
+function AllyCard({
+  ally,
+  chartRequest,
+  report
+}: {
+  ally: Ally;
+  chartRequest?: ChartMakerRequest;
+  report: AstrologyReportResult | null;
+}) {
+  const createPortraitHref = chartRequest
+    ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=report#ally-birth-onboarding`
+    : "#ally-birth-onboarding";
+  const editDetailsHref = chartRequest
+    ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=birth_details#ally-birth-onboarding`
+    : "#ally-birth-onboarding";
+
+  return (
+    <article className="card ally-card" id={`ally-${ally.id}`}>
+      <div className="ally-card-header">
+        <div className="ally-card-identity">
+          <div className="ally-card-title-row">
+            <h2>{ally.name}</h2>
+            <span className="ally-card-badge">{ally.relationship}</span>
+          </div>
+          <span className="ally-card-birth">{compactBirthLine(chartRequest)}</span>
+        </div>
+        <div className="ally-card-controls">
+          <div className="ally-card-actions" role="group" aria-label={`${ui.allies.cardActionsLabel}: ${ally.name}`}>
+            {chartRequest ? (
+              <Link aria-label={ui.charts.viewChart} className="button secondary" href={`/charts?chart=${encodeURIComponent(chartRequest.id)}`} title={ui.charts.viewChart}>
+                <ChartPie aria-hidden="true" size={16} />
+              </Link>
+            ) : null}
+            {report ? (
+              <Link aria-label={ui.charts.viewPortrait} className="button secondary" href={`/library?reportId=${encodeURIComponent(report.requestId)}`} title={ui.charts.viewPortrait}>
+                <BookOpenText aria-hidden="true" size={16} />
+              </Link>
+            ) : (
+              <Link aria-label={ui.charts.createPortrait} className="button secondary" href={createPortraitHref} title={ui.charts.createPortrait}>
+                <BookOpenText aria-hidden="true" size={16} />
+              </Link>
+            )}
+            <Link aria-label={ui.charts.editDetails} className="button secondary" href={editDetailsHref} title={ui.charts.editDetails}>
+              <Pencil aria-hidden="true" size={16} />
+            </Link>
+            <AllyRemoveButton allyId={ally.id} allyName={ally.name} />
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+type AlliesPageParams = {
+  searchParams?: Promise<{
+    chart?: string;
+    q?: string;
+    relationship?: string;
+    start?: string;
+  }>;
+};
+
+function onboardingStepFromParam(value?: string) {
+  return value === "birth_details" || value === "report" || value === "review" ? value : undefined;
+}
+
+function cleanFilter(value?: string) {
+  return value?.trim().toLowerCase() ?? "";
+}
+
+export default async function AlliesPage({ searchParams }: AlliesPageParams = {}) {
+  const params = searchParams ? await searchParams : {};
   const { profile } = await getAstraAuthContext();
 
   if (!profile) {
@@ -36,40 +132,104 @@ export default async function AlliesPage() {
     listUserAstrologyReportRequests(db, profile.userId),
     listUserAstrologyReportResults(db, profile.userId)
   ]);
-  const allyChartRequests = chartRequests.filter((request) => request.source === "ally");
+  const allyChartRequests = chartRequests.filter((request) => request.source !== "self");
   const allyReportRequests = reportRequests.filter((request) => request.source === "ally");
   const allyReportRequestIds = new Set(allyReportRequests.map((request) => request.id));
   const allyReportResults = reportResults.filter((result) => allyReportRequestIds.has(result.requestId));
+  const latestChartRequestByAllyId = new Map<string, ChartMakerRequest>();
+  for (const request of allyChartRequests) {
+    const allyId = allyIdFromChartRequest(request);
+    if (allyId && !latestChartRequestByAllyId.has(allyId)) {
+      latestChartRequestByAllyId.set(allyId, request);
+    }
+    const importedAllyId = allyId ? `v1-ally:${allyId}` : null;
+    if (importedAllyId && !latestChartRequestByAllyId.has(importedAllyId)) {
+      latestChartRequestByAllyId.set(importedAllyId, request);
+    }
+  }
+  const selectedOnboardingChart = params.chart
+    ? allyChartRequests.find((request) => request.id === params.chart)
+    : undefined;
+  const clearFilterParams = new URLSearchParams();
+  if (params.chart) clearFilterParams.set("chart", params.chart);
+  if (params.start) clearFilterParams.set("start", params.start);
+  const clearFilterHref = `/allies${clearFilterParams.toString() ? `?${clearFilterParams.toString()}` : ""}`;
+  const filterQuery = params.q?.trim() ?? "";
+  const filterRelationship = params.relationship?.trim() ?? "";
+  const relationshipOptions = Array.from(new Set(allies.map((ally) => ally.relationship).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+  const filteredAllies = allies.filter((ally) => {
+    const chartRequest = latestChartRequestByAllyId.get(ally.id);
+    const haystack = [ally.name, ally.relationship, compactBirthLine(chartRequest)].join(" ").toLowerCase();
+    const matchesQuery = filterQuery ? haystack.includes(cleanFilter(filterQuery)) : true;
+    const matchesRelationship = filterRelationship ? ally.relationship === filterRelationship : true;
+    return matchesQuery && matchesRelationship;
+  });
 
   return (
     <>
       <PageHeader eyebrow={ui.allies.eyebrow} title={ui.allies.title}>
         {ui.allies.intro}
       </PageHeader>
-      <section className="list" aria-label={ui.allies.listLabel}>
-        {allies.length ? allies.map((ally) => (
-          <article className="card" key={ally.id}>
-            <div className="eyebrow">{ally.kind}</div>
-            <h2>{ally.name}</h2>
-            <p>{ally.relationship}</p>
-            {ally.note ? <p>{ally.note}</p> : null}
-          </article>
+      <form action="/allies" className="list-filter-bar allies-list-filter-bar">
+        {params.chart ? <input name="chart" type="hidden" value={params.chart} /> : null}
+        {params.start ? <input name="start" type="hidden" value={params.start} /> : null}
+        <div className="list-filter-control list-filter-search-control">
+          <span className="list-filter-search">
+            <Search aria-hidden="true" size={15} />
+            <input aria-label={ui.allies.filterSearchLabel} defaultValue={filterQuery} name="q" placeholder={ui.allies.filterSearchPlaceholder} type="search" />
+          </span>
+        </div>
+        <div className="list-filter-control">
+          <span className="list-filter-select">
+            <select aria-label={ui.allies.filterRelationshipLabel} defaultValue={filterRelationship} name="relationship">
+              <option value="">{ui.allies.filterAllRelationships}</option>
+              {relationshipOptions.map((relationship) => (
+                <option key={relationship} value={relationship}>
+                  {relationship}
+                </option>
+              ))}
+            </select>
+          </span>
+        </div>
+        <button className="button secondary" type="submit">
+          {ui.allies.filterApply}
+        </button>
+        {filterQuery || filterRelationship ? (
+          <Link className="button secondary" href={clearFilterHref}>
+            {ui.allies.filterClear}
+          </Link>
+        ) : null}
+      </form>
+      <section className="list allies-list" aria-label={ui.allies.listLabel}>
+        {filteredAllies.length ? filteredAllies.map((ally) => (
+          <AllyCard
+            ally={ally}
+            chartRequest={latestChartRequestByAllyId.get(ally.id)}
+            key={ally.id}
+            report={latestReportForChartRequest(latestChartRequestByAllyId.get(ally.id), allyReportRequests, allyReportResults)}
+          />
         )) : (
           <article className="card">
             <div className="eyebrow">{ui.allies.emptyTitle}</div>
-            <h2>{ui.allies.emptyTitle}</h2>
-            <p>{ui.allies.emptyBody}</p>
+            <h2>{allies.length ? ui.allies.filterEmptyTitle : ui.allies.emptyTitle}</h2>
+            <p>{allies.length ? ui.allies.filterEmptyBody : ui.allies.emptyBody}</p>
           </article>
         )}
       </section>
-      <BirthOnboardingPanel
-        displayName=""
-        initialAllies={allies}
-        initialRequests={allyChartRequests}
-        initialReportRequests={allyReportRequests}
-        initialReportResults={allyReportResults}
-        subjectType="ally"
-      />
+      <section id="ally-birth-onboarding">
+        <BirthOnboardingPanel
+          displayName=""
+          initialAllies={allies}
+          key={selectedOnboardingChart?.id ?? "new-ally-chart"}
+          initialRequests={allyChartRequests}
+          initialReportRequests={allyReportRequests}
+          initialReportResults={allyReportResults}
+          initialBirthData={selectedOnboardingChart?.birthData}
+          initialChartRequestId={selectedOnboardingChart?.id}
+          initialStep={onboardingStepFromParam(params.start)}
+          subjectType="ally"
+        />
+      </section>
     </>
   );
 }

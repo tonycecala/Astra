@@ -109,6 +109,7 @@ function ReportDebugDetails({ report, request }: { report: AstrologyReportResult
     [ui.library.debugEngineVersion, report.engineVersion],
     [ui.library.debugChartRequest, request?.chartRequestId ?? ui.library.reportUnknownChartValue],
     [ui.library.debugSource, request?.source ?? ui.library.reportUnknownChartValue],
+    ...reportModelDebugRows(report, request),
     ...(report.error ? ([[ui.library.debugError, report.error]] as const) : [])
   ];
 
@@ -134,6 +135,69 @@ function ReportDebugDetails({ report, request }: { report: AstrologyReportResult
       ) : null}
     </details>
   );
+}
+
+function reportModelDebugRows(report: AstrologyReportResult, request: AstrologyReportRequest | null) {
+  const context = recordFrom(request?.context);
+  const v1 = recordFrom(context.v1);
+  const provider = debugText(v1.provider);
+  const model = debugText(v1.model);
+  const writer = [provider, model].filter(Boolean).join(" · ") || [debugText(report.engine), debugText(report.engineVersion)].filter(Boolean).join(" · ");
+  const rows: Array<readonly [string, string]> = [];
+  pushDebugRow(rows, ui.library.debugWriter, writer);
+  pushDebugRow(rows, ui.library.debugProvider, provider);
+  pushDebugRow(rows, ui.library.debugModel, model);
+  pushDebugRow(rows, ui.library.debugModelProfile, v1.modelProfile);
+  pushDebugRow(rows, ui.library.debugPrompt, v1.promptVersion);
+  pushDebugRow(rows, ui.library.debugVoice, v1.voice);
+  pushDebugRow(rows, ui.library.debugFormat, v1.format);
+  pushDebugRow(rows, ui.library.debugInputTokens, formatCount(v1.inputTokens));
+  pushDebugRow(rows, ui.library.debugOutputTokens, formatCount(v1.outputTokens));
+  pushDebugRow(rows, ui.library.debugTotalTokens, formatCount(v1.totalTokens));
+  pushDebugRow(rows, ui.library.debugSpend, formatSpend(v1.estimatedSpend));
+  pushDebugRow(rows, ui.library.debugLatency, formatLatency(v1.latencyMs));
+  pushDebugRow(rows, ui.library.debugV1Document, v1.reportDocumentId);
+  return rows;
+}
+
+function recordFrom(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+}
+
+function debugText(value: unknown) {
+  if (typeof value === "string") return value.trim();
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  return "";
+}
+
+function pushDebugRow(rows: Array<readonly [string, string]>, label: string, value: unknown) {
+  const text = debugText(value);
+  if (text) rows.push([label, text]);
+}
+
+function formatCount(value: unknown) {
+  const number = numericValue(value);
+  if (number === null) return debugText(value);
+  return new Intl.NumberFormat("en-US").format(number);
+}
+
+function formatSpend(value: unknown) {
+  const number = numericValue(value);
+  if (number === null) return debugText(value);
+  return `$${number.toFixed(4)}`;
+}
+
+function formatLatency(value: unknown) {
+  const number = numericValue(value);
+  if (number === null) return debugText(value);
+  return `${new Intl.NumberFormat("en-US").format(number)}ms`;
+}
+
+function numericValue(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value !== "string" || !value.trim()) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 export function reportSubjectContext(request?: AstrologyReportRequest | null) {

@@ -1258,6 +1258,15 @@ export async function listUserAllies(database: AstraDb, userId: string): Promise
   return rows.map(allyFromRow);
 }
 
+export async function deleteUserAlly(database: AstraDb, input: { allyId: string; userId: string }) {
+  const deleted = await database
+    .delete(allies)
+    .where(and(eq(allies.id, input.allyId), eq(allies.userId, input.userId)))
+    .returning({ id: allies.id });
+
+  return deleted.length > 0;
+}
+
 export async function createChartMakerRequest(
   database: AstraDb,
   input: CreateChartMakerRequestInput

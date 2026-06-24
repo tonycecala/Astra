@@ -2,10 +2,11 @@
 
 import { Bell, CircleHelp, Settings, Sparkles as Stars, UserRound } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { authClient } from "../lib/auth/client";
 import { ui } from "../lib/i18n";
+import { SelfTabAvatar } from "./SelfTabAvatar";
 import { ThemeToggle } from "./ThemeToggle";
 
 const topbarRoutes = [
@@ -27,12 +28,20 @@ function accountInitial(name: string) {
 
 function useAccountState() {
   const { data: session } = authClient.useSession();
-  const accountName = session?.user?.name || session?.user?.email || ui.account.guestName;
-  const accountEmail = session?.user?.email ?? "";
-  const signedIn = Boolean(session?.user);
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => setMounted(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+  const hydratedSession = mounted ? session : null;
+  const accountName = hydratedSession?.user?.name || hydratedSession?.user?.email || ui.account.guestName;
+  const accountEmail = hydratedSession?.user?.email ?? "";
+  const signedIn = Boolean(hydratedSession?.user);
 
   async function signOut() {
     await authClient.signOut();
+    router.refresh();
   }
 
   return { accountEmail, accountName, signedIn, signOut };
@@ -67,15 +76,11 @@ function AccountMenu({ align = "right" }: { align?: "right" | "left" }) {
   return (
     <details className="account-menu" data-align={align} onToggle={(event) => setOpen(event.currentTarget.open)} open={open} ref={menuRef}>
       <summary className="account-profile-button" aria-label={ui.account.menuLabel} title={signedIn ? accountName : ui.account.signIn}>
-        <span className="account-avatar" aria-hidden="true">
-          {accountInitial(accountName)}
-        </span>
+        <SelfTabAvatar className="account-avatar" email={accountEmail || null} initial={accountInitial(accountName)} size={68} />
       </summary>
       <div className="account-panel" role="menu" aria-label={ui.account.menuLabel}>
         <div className="account-identity">
-          <span className="account-avatar account-avatar-large" aria-hidden="true">
-            {accountInitial(accountName)}
-          </span>
+          <SelfTabAvatar className="account-avatar account-avatar-large" email={accountEmail || null} initial={accountInitial(accountName)} size={84} />
           <span>
             <strong>{accountName}</strong>
             {accountEmail ? <small>{accountEmail}</small> : <small>{ui.account.signedOut}</small>}

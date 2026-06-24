@@ -67,6 +67,8 @@ No Supabase carryover is allowed: no packages, env vars, imports, RLS policies, 
 
 All app UI handles, navigation labels, route headings, aria labels, button text, tab names, and empty/error/loading labels must flow through the app i18n dictionary. Seed/content records may carry their own authored content, but interface chrome should not be hardcoded in route components.
 
+Astra UI headers use the Astra-gold treatment (`var(--gold)`). Do not add eyebrow labels above a panel header when the eyebrow only repeats the header meaning.
+
 ## QA
 
 For UI, route, auth, navigation, public/private data, reports, credits, or user-journey work, use `astra-browser-qa`.
