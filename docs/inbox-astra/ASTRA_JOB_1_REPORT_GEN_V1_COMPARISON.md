@@ -57,13 +57,17 @@ Directly quarried or adapted now:
 - Paid Identity minimum instead of invented deep total minimum.
 - Markdown-only model output.
 
-Still pending:
+Completed after this comparison pass:
 
-- Full v1 `ChartFacts`/allowed-claims/evidence-completeness validation.
-- Full mode section cards for relationship/synastry, progressed, and event reports.
-- Admin-visible query/debug/bakeoff controls in the app UI.
-- Full admin in-app query/debug/bakeoff forms beyond the current admin-visible replay endpoint and bakeoff command surface.
-- Library query/filter behavior parity beyond the current short-list loading behavior.
+- V1-style allowed-claims and deterministic evidence-completeness validation are now in the report engine.
+- Progressed and Synastry mode families are covered by the report-family smoke and Library rendering path.
+- Admin-visible query/debug/bakeoff controls now include report request selection, selected-run inspector, replay, model profile/provider/model controls, validation errors, provenance, and Library links.
+- Library query/filter behavior now keeps the list lightweight while report detail owns the heavy body.
+
+Watch-only:
+
+- Tighten report validation further only from v1 validation code when a real report QA case exposes a gap.
+- Add further admin controls only when they directly help alpha report QA.
 
 ## Rule Going Forward
 
