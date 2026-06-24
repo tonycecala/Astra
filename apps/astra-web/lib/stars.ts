@@ -33,6 +33,8 @@ export function stripePriceIdForStarPack(packKey: StarPackKey) {
     `STRIPE_PRICE_${normalized}_${preferredMode}`,
     `STRIPE_${preferredMode}_PRICE_${normalized}`,
     `STRIPE_PRICE_${normalized}`,
+    `STRIPE_PRICE_${normalized}_TEST`,
+    `STRIPE_PRICE_${normalized}_LIVE`,
     `STRIPE_TEST_PRICE_${normalized}`,
     `STRIPE_LIVE_PRICE_${normalized}`
   ];
