@@ -47,3 +47,27 @@
 - V2 inventory: admin access gate, credit user search, precise ledger table, manual grant/revoke, role management, feedback inbox, report inspector, replay controls, model profile/provider/model overrides, validation/debug details, and Library links already exist.
 - Patch: none.
 - Boundary: advanced report/model controls remain admin-only; customer report creation remains fenced to paid alpha-safe choices.
+
+## `/charts`
+
+- Status: previously restored and verified in final route sweep.
+- V1 quarry note: production charts provided the saved chart home, full wheel, legend, selectable bodies, highlighted aspects, chart settings, and report creation entry points.
+- V2 inventory: `/charts` exists outside the main tab, opens saved Self/Ally charts in place, renders the full chart wheel with selectable bodies/aspects, preserves Tropical/Sidereal and Whole Sign/Placidus settings, and links chart records back into report creation and Library flows.
+- Patch: none in this slice.
+- Boundary: charts stay under Self/Allies and `/charts`, not as a main tab.
+
+## `/stars`
+
+- Status: previously restored and verified in final route sweep.
+- V1 quarry note: Stars/credits used explicit ledger accounting and Stripe checkout in test/sandbox mode for alpha.
+- V2 inventory: `/stars` shows signed-in/signed-out balance state, Star packs, robust checkout panel, Stripe session creation, and webhook fulfillment plumbing; `/admin` owns ledger inspection and adjustments.
+- Patch: none in this slice.
+- Boundary: checkout remains in Stripe test mode and ledger accounting stays separate from Gifts.
+
+## `/login`, `/`, Disabled Help/Settings
+
+- Status: verified in final route sweep.
+- V1 quarry note: auth gated private routes and app shell utility controls should not produce broken navigation.
+- V2 inventory: `/login` code flow renders, `/` mirrors Journey, private routes redirect or gate correctly, and Help/Settings controls are visibly disabled rather than linked to missing routes.
+- Patch: none.
+- Boundary: no new settings/help surfaces added for alpha.
