@@ -4,6 +4,7 @@ import { buildAstrologyChartSnapshot, buildAstrologyReportSectionEvidence } from
 import type { AstrologyReportRequest, AstrologyReportResult } from "@astra/contracts";
 import { ui } from "../lib/i18n";
 import { ReportChartPlate } from "./ReportChartPlate";
+import { ReportFeedbackForm } from "./ReportFeedbackForm";
 import { ReportMarkdown } from "./ReportMarkdown";
 import { ReportReaderActions } from "./ReportReaderActions";
 
@@ -91,6 +92,7 @@ export function ReportReader({
         ) : (
           <div className="reportMarkdown"><p>{ui.library.selectedReportNoSections}</p></div>
         )}
+        {actions && !shared ? <ReportFeedbackForm labels={ui.library.feedback} reportId={report.requestId} /> : null}
       </article>
     </section>
   );
@@ -106,7 +108,8 @@ function ReportDebugDetails({ report, request }: { report: AstrologyReportResult
     [ui.library.debugEngine, report.engine],
     [ui.library.debugEngineVersion, report.engineVersion],
     [ui.library.debugChartRequest, request?.chartRequestId ?? ui.library.reportUnknownChartValue],
-    [ui.library.debugSource, request?.source ?? ui.library.reportUnknownChartValue]
+    [ui.library.debugSource, request?.source ?? ui.library.reportUnknownChartValue],
+    ...(report.error ? ([[ui.library.debugError, report.error]] as const) : [])
   ];
 
   return (

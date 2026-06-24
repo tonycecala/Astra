@@ -403,6 +403,7 @@ test.describe("clean-start routes", () => {
     await expect(page.getByText(`${name} — Core Report`)).toBeVisible();
     await page.getByRole("link", { name: new RegExp(`View report: ${name}`) }).first().click();
     await expect(page.getByRole("heading", { name: `${name} — Core Report` })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "How did this portrait land?" })).toBeVisible();
     const debugDetails = page.locator("details.reportDebugDetails");
     await expect(debugDetails).toContainText("Report debug details");
     await debugDetails.locator("summary").click();

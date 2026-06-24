@@ -533,6 +533,27 @@ export const astrologyReportShares = pgTable(
   })
 );
 
+export const betaFeedback = pgTable(
+  "beta_feedback",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    reportRequestId: text("report_request_id").references(() => astrologyReportRequests.id, { onDelete: "set null" }),
+    reportType: text("report_type").notNull(),
+    rating: integer("rating"),
+    category: text("category").notNull().default("report_quality"),
+    message: text("message").notNull(),
+    metadata: jsonb("metadata").notNull().default(sql`'{}'::jsonb`),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => ({
+    userIdx: index("beta_feedback_user_idx").on(table.userId, table.createdAt),
+    reportIdx: index("beta_feedback_report_idx").on(table.reportRequestId, table.createdAt)
+  })
+);
+
 export const composerQueueDrafts = pgTable(
   "composer_queue_drafts",
   {

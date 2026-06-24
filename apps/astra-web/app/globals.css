@@ -1405,6 +1405,86 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   padding-left: 18px;
 }
 
+.reportFeedbackForm {
+  display: grid;
+  gap: 14px;
+  margin-top: clamp(28px, 5vw, 54px);
+  padding: clamp(16px, 3vw, 24px);
+  border: 1px solid color-mix(in srgb, var(--gold) 20%, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--soft) 86%, transparent);
+}
+
+.reportFeedbackHeader h2 {
+  margin: 3px 0 0;
+  color: var(--gold);
+  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+  line-height: 1.15;
+}
+
+.reportFeedbackControls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.reportFeedbackControls label,
+.reportFeedbackMessage {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 780;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reportFeedbackControls select,
+.reportFeedbackMessage textarea {
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
+  border-radius: 8px;
+  padding: 10px 11px;
+  background: color-mix(in srgb, var(--panel) 90%, transparent);
+  color: var(--ink);
+  font: inherit;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.reportFeedbackMessage textarea {
+  min-height: 118px;
+  resize: vertical;
+}
+
+.reportFeedbackActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.reportFeedbackActions button {
+  min-height: 38px;
+  border: 1px solid color-mix(in srgb, var(--gold) 30%, var(--line));
+  border-radius: 8px;
+  padding: 0 14px;
+  background: color-mix(in srgb, var(--gold) 15%, transparent);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.reportFeedbackActions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.reportFeedbackActions span {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
 .reportActionsStack {
   display: grid;
   gap: 8px;
@@ -2934,6 +3014,19 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
   grid-template-columns: minmax(140px, 0.8fr) minmax(110px, 0.5fr) minmax(220px, 1.2fr) minmax(170px, 0.8fr) minmax(220px, 1.1fr) minmax(150px, 0.8fr);
 }
 
+.adminReportTable .adminRow {
+  grid-template-columns: minmax(150px, 0.9fr) minmax(150px, 0.8fr) minmax(90px, 0.45fr) minmax(170px, 0.9fr) minmax(130px, 0.65fr) minmax(130px, 0.65fr);
+}
+
+.adminCompactTable .adminRow {
+  grid-template-columns: minmax(260px, 1.4fr) minmax(170px, 0.7fr) minmax(120px, 0.45fr);
+}
+
+.adminFeedbackMessage {
+  max-width: 56ch;
+  white-space: normal;
+}
+
 .adminRow:last-child {
   border-bottom: 0;
 }
@@ -3373,6 +3466,10 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
 
   .adminPanelHeader {
     display: grid;
+  }
+
+  .reportFeedbackControls {
+    grid-template-columns: 1fr;
   }
 
   .adminTable {

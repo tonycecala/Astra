@@ -53,6 +53,7 @@ import {
   astrologyReportResults,
   astrologyReportShares,
   artifacts,
+  betaFeedback,
   cards,
   chartRequests,
   chartResults,
@@ -138,6 +139,31 @@ export type SharedAstrologyReport = {
   request: AstrologyReportRequest;
   result: AstrologyReportResult;
 };
+
+export type BetaFeedbackCategory = "report_quality" | "checkout" | "bug" | "other";
+
+export type CreateBetaFeedbackInput = {
+  category: BetaFeedbackCategory;
+  message: string;
+  metadata?: Record<string, unknown>;
+  rating?: number | null;
+  reportRequestId: string;
+  userId: string;
+};
+
+export type BetaFeedbackRecord = {
+  category: BetaFeedbackCategory;
+  createdAt: Date;
+  id: string;
+  message: string;
+  metadata: Record<string, unknown>;
+  rating: number | null;
+  reportRequestId: string | null;
+  reportType: string;
+  userDisplayName: string | null;
+  userEmail: string | null;
+  userId: string;
+};
 export type UpsertComposerStreamArtifactInput = ComposerStreamArtifact;
 export type CreateUserFeedItemInput = CreateUserFeedItem;
 export type CreateComposerDecisionInput = CreateComposerDecision;
@@ -221,6 +247,10 @@ function toDate(value: string) {
 
 function toIsoDate(value: Date | string) {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
+}
+
+function asJsonObject(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
 }
 
 function chartRequestFromRow(row: typeof chartRequests.$inferSelect): ChartMakerRequest {
@@ -1963,6 +1993,111 @@ export async function getSharedAstrologyReport(database: AstraDb, token: string)
 
   if (!request || !result || result.status !== "completed") return null;
   return { request, result };
+}
+
+function normalizeBetaFeedbackCategory(value: string): BetaFeedbackCategory {
+  if (value === "checkout" || value === "bug" || value === "other") return value;
+  return "report_quality";
+}
+
+function betaFeedbackRecordFromRow(row: {
+  category: string;
+  createdAt: Date;
+  id: string;
+  message: string;
+  metadata: unknown;
+  rating: number | null;
+  reportRequestId: string | null;
+  reportType: string;
+  userDisplayName: string | null;
+  userEmail: string | null;
+  userId: string;
+}): BetaFeedbackRecord {
+  return {
+    category: normalizeBetaFeedbackCategory(row.category),
+    createdAt: row.createdAt,
+    id: row.id,
+    message: row.message,
+    metadata: asJsonObject(row.metadata),
+    rating: row.rating,
+    reportRequestId: row.reportRequestId,
+    reportType: row.reportType,
+    userDisplayName: row.userDisplayName,
+    userEmail: row.userEmail,
+    userId: row.userId
+  };
+}
+
+export async function createBetaFeedback(database: AstraDb, input: CreateBetaFeedbackInput): Promise<BetaFeedbackRecord> {
+  const message = input.message.trim();
+  if (!message) throw new Error("invalid_feedback_message");
+  if (message.length > 2000) throw new Error("invalid_feedback_message");
+  if (input.rating !== null && input.rating !== undefined && (!Number.isInteger(input.rating) || input.rating < 1 || input.rating > 5)) {
+    throw new Error("invalid_feedback_rating");
+  }
+
+  return database.transaction(async (tx) => {
+    const [request] = await tx
+      .select({
+        id: astrologyReportRequests.id,
+        reportType: astrologyReportRequests.reportType
+      })
+      .from(astrologyReportRequests)
+      .where(and(eq(astrologyReportRequests.id, input.reportRequestId), eq(astrologyReportRequests.userId, input.userId)))
+      .limit(1);
+
+    if (!request) throw new Error("report_not_found");
+
+    const [row] = await tx
+      .insert(betaFeedback)
+      .values({
+        userId: input.userId,
+        reportRequestId: request.id,
+        reportType: request.reportType,
+        rating: input.rating ?? null,
+        category: normalizeBetaFeedbackCategory(input.category),
+        message,
+        metadata: input.metadata ?? {}
+      })
+      .returning();
+
+    return betaFeedbackRecordFromRow({
+      category: row.category,
+      createdAt: row.createdAt,
+      id: row.id,
+      message: row.message,
+      metadata: row.metadata,
+      rating: row.rating,
+      reportRequestId: row.reportRequestId,
+      reportType: row.reportType,
+      userDisplayName: null,
+      userEmail: null,
+      userId: row.userId
+    });
+  });
+}
+
+export async function listRecentBetaFeedback(database: AstraDb, input: { limit?: number } = {}): Promise<BetaFeedbackRecord[]> {
+  const rows = await database
+    .select({
+      category: betaFeedback.category,
+      createdAt: betaFeedback.createdAt,
+      id: betaFeedback.id,
+      message: betaFeedback.message,
+      metadata: betaFeedback.metadata,
+      rating: betaFeedback.rating,
+      reportRequestId: betaFeedback.reportRequestId,
+      reportType: betaFeedback.reportType,
+      userDisplayName: appUserProfiles.displayName,
+      userEmail: appUserProfiles.email,
+      userId: betaFeedback.userId
+    })
+    .from(betaFeedback)
+    .leftJoin(appUserProfiles, eq(appUserProfiles.userId, betaFeedback.userId))
+    .orderBy(desc(betaFeedback.createdAt))
+    .limit(input.limit ?? 20);
+
+  return rows.map(betaFeedbackRecordFromRow);
 }
 
 export async function listUserArtifacts(database: AstraDb, userId: string): Promise<Artifact[]> {

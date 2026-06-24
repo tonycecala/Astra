@@ -18,11 +18,13 @@ import {
   adminAdjustCredits,
   adminUpdateUserRole,
   astrologyReportRequests,
+  astrologyReportResults,
   db,
   getAstrologyReportRequest,
   getCreditLedgerSummary,
   getUserChartMakerRequest,
   listCreditUsers,
+  listRecentBetaFeedback,
   listRecentCreditLedger,
   recordAstrologyReportResult,
   recordChartMakerResult
@@ -188,6 +190,10 @@ function defaultModelFor(profile: ReportModelProfile) {
   return reportModelProfileModels[profile][0] ?? "";
 }
 
+function feedbackActor(feedback: { userDisplayName: string | null; userEmail: string | null }) {
+  return feedback.userDisplayName || feedback.userEmail || ui.admin.feedbackActorUnknown;
+}
+
 export default async function AdminPage({ searchParams }: { searchParams?: Promise<AdminSearchParams> }) {
   const { profile } = await getAstraAuthContext();
   if (!profile) redirect("/login?next=/admin");
@@ -211,8 +217,12 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
   const replayRequest = firstSearchParam(resolvedSearchParams.replayRequest).trim();
   const replayProfile = firstSearchParam(resolvedSearchParams.replayProfile).trim() || "production";
   const creditUsers = await listCreditUsers(db, { limit: 100, search: creditSearch });
-  const selectedCreditUser = creditUsers.find((user) => user.userId === requestedCreditUserId) ?? creditUsers[0] ?? null;
-  const [creditSummary, creditLedger, selectedReportRequests] = await Promise.all([
+  const selectedCreditUser =
+    creditUsers.find((user) => user.userId === requestedCreditUserId) ??
+    creditUsers.find((user) => user.userId === profile.userId) ??
+    creditUsers[0] ??
+    null;
+  const [creditSummary, creditLedger, selectedReportRequests, selectedReportResults, betaFeedback] = await Promise.all([
     getCreditLedgerSummary(db, selectedCreditUser?.userId ?? null),
     listRecentCreditLedger(db, { userId: selectedCreditUser?.userId ?? null, limit: 100 }),
     selectedCreditUser
@@ -222,8 +232,21 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
           .where(eq(astrologyReportRequests.userId, selectedCreditUser.userId))
           .orderBy(desc(astrologyReportRequests.createdAt))
           .limit(20)
-      : []
+      : [],
+    selectedCreditUser
+      ? db
+          .select({
+            requestId: astrologyReportResults.requestId,
+            status: astrologyReportResults.status,
+            engine: astrologyReportResults.engine,
+            error: astrologyReportResults.error
+          })
+          .from(astrologyReportResults)
+          .where(eq(astrologyReportResults.userId, selectedCreditUser.userId))
+      : [],
+    listRecentBetaFeedback(db, { limit: 20 })
   ]);
+  const reportResultByRequestId = new Map(selectedReportResults.map((result) => [result.requestId, result]));
   const defaultReplayRequestId = replayRequest || selectedReportRequests[0]?.id || "";
   const normalizedReplayProfile = reportModelProfileKeys.includes(replayProfile as ReportModelProfile)
     ? (replayProfile as ReportModelProfile)
@@ -382,6 +405,43 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
         </div>
       </section>
 
+      <section className="adminPanel" aria-labelledby="admin-feedback-heading">
+        <div className="adminPanelHeader">
+          <div>
+            <h2 id="admin-feedback-heading">{ui.admin.feedbackTitle}</h2>
+            <p>{ui.admin.feedbackLoaded(betaFeedback.length)}</p>
+          </div>
+        </div>
+        <div className="adminTableShell">
+          <div className="adminTable adminCompactTable" role="table" aria-label={ui.admin.feedbackTitle}>
+            <div className="adminRow adminRowHeader" role="row">
+              <div role="columnheader">{ui.admin.feedbackMessage}</div>
+              <div role="columnheader">{ui.admin.feedbackReport}</div>
+              <time role="columnheader">{ui.admin.joined}</time>
+            </div>
+            {betaFeedback.map((feedback) => (
+              <div className="adminRow adminRowData" key={feedback.id} role="row">
+                <div role="cell">
+                  <strong>{feedbackActor(feedback)}</strong>
+                  <p>{feedback.rating ? `${feedback.rating}/5 · ` : ""}{feedback.category.replace(/_/g, " ")}</p>
+                  <p className="adminFeedbackMessage">{feedback.message}</p>
+                </div>
+                <div role="cell">
+                  {feedback.reportRequestId ? (
+                    <Link href={`/library?reportId=${feedback.reportRequestId}`}>{feedback.reportRequestId.slice(0, 8)}</Link>
+                  ) : (
+                    <span>{ui.library.reportUnknownChartValue}</span>
+                  )}
+                  <p>{reportTypeLabel(feedback.reportType)}</p>
+                </div>
+                <time role="cell">{formatAdminDate(feedback.createdAt)}</time>
+              </div>
+            ))}
+            {!betaFeedback.length ? <p>{ui.admin.feedbackEmpty}</p> : null}
+          </div>
+        </div>
+      </section>
+
       <section className="adminOpsGrid" aria-label={ui.admin.bakeoffTitle}>
         <div className="adminPanel">
           <h2>{ui.admin.bakeoffTitle}</h2>
@@ -468,36 +528,45 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
               <div role="columnheader">{ui.admin.reportId}</div>
               <div role="columnheader">{ui.admin.event}</div>
               <div role="columnheader">{ui.admin.adjustmentAmount}</div>
+              <div role="columnheader">{ui.admin.reportResult}</div>
               <time role="columnheader">{ui.admin.joined}</time>
               <div role="columnheader">{ui.admin.bakeoffReplay}</div>
             </div>
-            {selectedReportRequests.map((request) => (
-              <div className="adminRow adminRowData" key={request.id} role="row">
-                <div role="cell">
-                  <strong>{request.id.slice(0, 8)}</strong>
-                  <p>{request.subjectName}</p>
+            {selectedReportRequests.map((request) => {
+              const result = reportResultByRequestId.get(request.id);
+              return (
+                <div className="adminRow adminRowData" key={request.id} role="row">
+                  <div role="cell">
+                    <strong>{request.id.slice(0, 8)}</strong>
+                    <p>{request.subjectName}</p>
+                    {result?.status === "completed" ? <Link href={`/library?reportId=${request.id}`}>{ui.admin.reportOpenLibrary}</Link> : null}
+                  </div>
+                  <div role="cell">
+                    <strong>{reportTypeLabel(request.reportType)}</strong>
+                    <p>{request.status}</p>
+                  </div>
+                  <div role="cell">
+                    <strong>{request.costCredits}</strong>
+                    <p>{request.source}</p>
+                  </div>
+                  <div role="cell">
+                    <strong>{result?.status ?? ui.library.reportUnknownChartValue}</strong>
+                    <p>{result?.error ?? result?.engine ?? ui.library.reportUnknownChartValue}</p>
+                  </div>
+                  <time role="cell">{formatAdminDate(request.createdAt)}</time>
+                  <div role="cell">
+                    <form action={replayReportAction}>
+                      <input name="requestId" type="hidden" value={request.id} />
+                      <input name="reportWriter" type="hidden" value={DEBUG_MODEL_REPORT_WRITER} />
+                      <input name="modelProfile" type="hidden" value="debug" />
+                      <input name="modelProvider" type="hidden" value="openrouter" />
+                      <input name="model" type="hidden" value={defaultModelFor("debug")} />
+                      <button className="button secondary" type="submit">{ui.admin.runReplay}</button>
+                    </form>
+                  </div>
                 </div>
-                <div role="cell">
-                  <strong>{reportTypeLabel(request.reportType)}</strong>
-                  <p>{request.status}</p>
-                </div>
-                <div role="cell">
-                  <strong>{request.costCredits}</strong>
-                  <p>{request.source}</p>
-                </div>
-                <time role="cell">{formatAdminDate(request.createdAt)}</time>
-                <div role="cell">
-                  <form action={replayReportAction}>
-                    <input name="requestId" type="hidden" value={request.id} />
-                    <input name="reportWriter" type="hidden" value={DEBUG_MODEL_REPORT_WRITER} />
-                    <input name="modelProfile" type="hidden" value="debug" />
-                    <input name="modelProvider" type="hidden" value="openrouter" />
-                    <input name="model" type="hidden" value={defaultModelFor("debug")} />
-                    <button className="button secondary" type="submit">{ui.admin.runReplay}</button>
-                  </form>
-                </div>
-              </div>
-            ))}
+              );
+            })}
             {!selectedReportRequests.length ? <p>{ui.admin.noReports}</p> : null}
           </div>
         </div>

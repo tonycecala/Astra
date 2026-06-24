@@ -7,7 +7,7 @@ import {
   buildAstrologyReportResult
 } from "@astra/astrology";
 import { astrologyReportRequestSchema } from "@astra/contracts";
-import { appUserProfiles, creditLedgerEntries, db, getCreditBalance, mirrorCreditBalanceToProfile } from "@astra/db";
+import { appUserProfiles, creditLedgerEntries, db, getCreditBalance, listRecentBetaFeedback, mirrorCreditBalanceToProfile } from "@astra/db";
 import { eq } from "drizzle-orm";
 
 type JsonObject = Record<string, unknown>;
@@ -311,6 +311,32 @@ if (configuredWriter === DEBUG_MODEL_REPORT_WRITER && !String(((generated.result
 }
 if ((generated.request as JsonObject | undefined)?.status !== "completed") {
   throw new Error("User report generation route did not return the completed report request.");
+}
+
+await expectStatus(`${appBaseUrl}/api/beta-feedback`, 401, {
+  method: "POST",
+  body: JSON.stringify({
+    category: "report_quality",
+    message: "Anonymous feedback should not be accepted.",
+    rating: 5,
+    reportId: requestId
+  })
+});
+const feedbackCreated = await requestJson(`${appBaseUrl}/api/beta-feedback`, {
+  method: "POST",
+  body: JSON.stringify({
+    category: "report_quality",
+    message: "Report API smoke feedback landed with this portrait.",
+    rating: 5,
+    reportId: requestId
+  })
+});
+if (!feedbackCreated.feedbackId) {
+  throw new Error(`Feedback API did not return a feedback id: ${JSON.stringify(feedbackCreated)}`);
+}
+const latestFeedback = await listRecentBetaFeedback(db, { limit: 5 });
+if (!latestFeedback.some((feedback) => feedback.id === feedbackCreated.feedbackId && feedback.reportRequestId === requestId)) {
+  throw new Error("Admin feedback list did not include the newly submitted report feedback.");
 }
 
 await expectStatus(`${appBaseUrl}/api/reports/${requestId}/share`, 401, {
