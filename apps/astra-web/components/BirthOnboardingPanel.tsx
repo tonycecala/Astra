@@ -15,7 +15,7 @@ function supportedTimeZones() {
 }
 
 const timeZones = supportedTimeZones();
-const steps = ["subject", "birth_date", "precision", "review"] as const;
+const steps = ["subject", "precision", "review"] as const;
 
 type Step = (typeof steps)[number];
 type PrecisionMode = "date_only" | "timed_location";
@@ -181,7 +181,7 @@ export function BirthOnboardingPanel({
 
   function stepError(step: Step) {
     if (step === "subject" && !optional(form.subjectName)) return ui.self.onboardingSubjectRequired;
-    if (step === "birth_date" && !/^\d{4}-\d{2}-\d{2}$/.test(form.date)) return ui.self.onboardingDateRequired;
+    if (step === "precision" && !/^\d{4}-\d{2}-\d{2}$/.test(form.date)) return ui.self.onboardingDateRequired;
     if (step === "precision" && form.precisionMode === "timed_location") {
       if (!optional(form.time) || !optional(form.timezone) || !optional(form.location)) {
         return ui.self.onboardingPrecisionRequired;
@@ -384,25 +384,22 @@ export function BirthOnboardingPanel({
             </label>
           ) : null}
 
-          {activeStep === "birth_date" ? (
-            <label>
-              <span>{ui.self.chartDateLabel}</span>
-              <input
-                value={form.date}
-                onChange={(event) => updateField("date", event.target.value)}
-                required
-                inputMode="numeric"
-                placeholder={ui.self.chartDatePlaceholder}
-              />
-            </label>
-          ) : null}
-
           {activeStep === "precision" ? (
             <>
               <div className={styles.alphaGuide}>
                 <strong>{ui.self.onboardingPrecisionGuideTitle}</strong>
                 <span>{ui.self.onboardingPrecisionGuideBody}</span>
               </div>
+              <label>
+                <span>{ui.self.chartDateLabel}</span>
+                <input
+                  value={form.date}
+                  onChange={(event) => updateField("date", event.target.value)}
+                  required
+                  inputMode="numeric"
+                  placeholder={ui.self.chartDatePlaceholder}
+                />
+              </label>
               <fieldset className={styles.optionGroup}>
                 <legend>{ui.self.onboardingPrecisionModeLabel}</legend>
                 <label className={styles.option}>

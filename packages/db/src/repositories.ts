@@ -116,24 +116,6 @@ export type UpsertComposerStreamArtifactInput = ComposerStreamArtifact;
 export type CreateUserFeedItemInput = CreateUserFeedItem;
 export type CreateComposerDecisionInput = CreateComposerDecision;
 
-export type ComposerCardQueryCacheInput = {
-  cacheKey: string;
-  scope: string;
-  fingerprint: string;
-  page: number;
-  pageSize: number;
-  totalCards: number;
-  windowStart: number;
-  windowEnd: number;
-  cardIds: string[];
-  facets: Record<string, unknown>;
-};
-
-export type ComposerCardQueryCacheRecord = ComposerCardQueryCacheInput & {
-  createdAt: string;
-  updatedAt: string;
-};
-
 export type ComposerQueueDraftInput = {
   id?: string;
   operatorKey: string;
@@ -143,16 +125,14 @@ export type ComposerQueueDraftInput = {
   selectedCards: Record<string, unknown>;
   queueStates: Record<string, unknown>;
   decisionNotes: Record<string, unknown>;
-  queryCacheKeys?: string[];
   lastPlanId?: string;
   lastPlanSummary?: Record<string, unknown>;
 };
 
-export type ComposerQueueDraftRecord = Required<Omit<ComposerQueueDraftInput, "id" | "status" | "targetUserId" | "queryCacheKeys" | "lastPlanId" | "lastPlanSummary">> & {
+export type ComposerQueueDraftRecord = Required<Omit<ComposerQueueDraftInput, "id" | "status" | "targetUserId" | "lastPlanId" | "lastPlanSummary">> & {
   id: string;
   status: string;
   targetUserId?: string;
-  queryCacheKeys: string[];
   lastPlanId?: string;
   lastPlanSummary: Record<string, unknown>;
   createdAt: string;
@@ -170,13 +150,11 @@ export type ComposerQueuePublishPlanInput = {
   issues: unknown[];
   items: unknown[];
   selectedCardIds: string[];
-  queryCacheKeys?: string[];
 };
 
-export type ComposerQueuePublishPlanRecord = Required<Omit<ComposerQueuePublishPlanInput, "draftId" | "status" | "queryCacheKeys">> & {
+export type ComposerQueuePublishPlanRecord = Required<Omit<ComposerQueuePublishPlanInput, "draftId" | "status">> & {
   draftId?: string;
   status: string;
-  queryCacheKeys: string[];
   createdAt: string;
   updatedAt: string;
 };
@@ -377,23 +355,6 @@ function composerDecisionFromRow(row: typeof composerDecisions.$inferSelect): Co
   });
 }
 
-function composerCardQueryCacheFromRow(row: typeof composerCardQueryCaches.$inferSelect): ComposerCardQueryCacheRecord {
-  return {
-    cacheKey: row.cacheKey,
-    scope: row.scope,
-    fingerprint: row.fingerprint,
-    page: row.page,
-    pageSize: row.pageSize,
-    totalCards: row.totalCards,
-    windowStart: row.windowStart,
-    windowEnd: row.windowEnd,
-    cardIds: Array.isArray(row.cardIds) ? row.cardIds.filter((id): id is string => typeof id === "string") : [],
-    facets: typeof row.facets === "object" && row.facets !== null && !Array.isArray(row.facets) ? (row.facets as Record<string, unknown>) : {},
-    createdAt: toIsoDate(row.createdAt),
-    updatedAt: toIsoDate(row.updatedAt)
-  };
-}
-
 function composerQueueDraftFromRow(row: typeof composerQueueDrafts.$inferSelect): ComposerQueueDraftRecord {
   return {
     id: row.id,
@@ -404,7 +365,6 @@ function composerQueueDraftFromRow(row: typeof composerQueueDrafts.$inferSelect)
     selectedCards: typeof row.selectedCards === "object" && row.selectedCards !== null && !Array.isArray(row.selectedCards) ? (row.selectedCards as Record<string, unknown>) : {},
     queueStates: typeof row.queueStates === "object" && row.queueStates !== null && !Array.isArray(row.queueStates) ? (row.queueStates as Record<string, unknown>) : {},
     decisionNotes: typeof row.decisionNotes === "object" && row.decisionNotes !== null && !Array.isArray(row.decisionNotes) ? (row.decisionNotes as Record<string, unknown>) : {},
-    queryCacheKeys: Array.isArray(row.queryCacheKeys) ? row.queryCacheKeys.filter((key): key is string => typeof key === "string") : [],
     lastPlanId: row.lastPlanId ?? undefined,
     lastPlanSummary: typeof row.lastPlanSummary === "object" && row.lastPlanSummary !== null && !Array.isArray(row.lastPlanSummary) ? (row.lastPlanSummary as Record<string, unknown>) : {},
     createdAt: toIsoDate(row.createdAt),
@@ -424,7 +384,6 @@ function composerQueuePublishPlanFromRow(row: typeof composerQueuePublishPlans.$
     issues: Array.isArray(row.issues) ? row.issues : [],
     items: Array.isArray(row.items) ? row.items : [],
     selectedCardIds: Array.isArray(row.selectedCardIds) ? row.selectedCardIds.filter((id): id is string => typeof id === "string") : [],
-    queryCacheKeys: Array.isArray(row.queryCacheKeys) ? row.queryCacheKeys.filter((key): key is string => typeof key === "string") : [],
     createdAt: toIsoDate(row.createdAt),
     updatedAt: toIsoDate(row.updatedAt)
   };
@@ -780,59 +739,6 @@ export async function resetFoundationData(database: AstraDb): Promise<Foundation
   return { cleared: true };
 }
 
-export async function upsertComposerCardQueryCache(
-  database: AstraDb,
-  input: ComposerCardQueryCacheInput
-): Promise<ComposerCardQueryCacheRecord> {
-  const now = new Date();
-  const [row] = await database
-    .insert(composerCardQueryCaches)
-    .values({
-      cacheKey: input.cacheKey,
-      scope: input.scope,
-      fingerprint: input.fingerprint,
-      page: input.page,
-      pageSize: input.pageSize,
-      totalCards: input.totalCards,
-      windowStart: input.windowStart,
-      windowEnd: input.windowEnd,
-      cardIds: input.cardIds,
-      facets: input.facets,
-      updatedAt: now
-    })
-    .onConflictDoUpdate({
-      target: composerCardQueryCaches.cacheKey,
-      set: {
-        scope: input.scope,
-        fingerprint: input.fingerprint,
-        page: input.page,
-        pageSize: input.pageSize,
-        totalCards: input.totalCards,
-        windowStart: input.windowStart,
-        windowEnd: input.windowEnd,
-        cardIds: input.cardIds,
-        facets: input.facets,
-        updatedAt: now
-      }
-    })
-    .returning();
-
-  return composerCardQueryCacheFromRow(row);
-}
-
-export async function getComposerCardQueryCache(
-  database: AstraDb,
-  cacheKey: string
-): Promise<ComposerCardQueryCacheRecord | null> {
-  const [row] = await database
-    .select()
-    .from(composerCardQueryCaches)
-    .where(eq(composerCardQueryCaches.cacheKey, cacheKey))
-    .limit(1);
-
-  return row ? composerCardQueryCacheFromRow(row) : null;
-}
-
 export async function upsertComposerQueueDraft(
   database: AstraDb,
   input: ComposerQueueDraftInput
@@ -850,7 +756,6 @@ export async function upsertComposerQueueDraft(
       selectedCards: input.selectedCards,
       queueStates: input.queueStates,
       decisionNotes: input.decisionNotes,
-      queryCacheKeys: input.queryCacheKeys ?? [],
       lastPlanId: input.lastPlanId ?? null,
       lastPlanSummary: input.lastPlanSummary ?? {},
       updatedAt: now
@@ -866,7 +771,6 @@ export async function upsertComposerQueueDraft(
         selectedCards: input.selectedCards,
         queueStates: input.queueStates,
         decisionNotes: input.decisionNotes,
-        queryCacheKeys: input.queryCacheKeys ?? [],
         lastPlanId: input.lastPlanId ?? null,
         lastPlanSummary: input.lastPlanSummary ?? {},
         updatedAt: now
@@ -915,7 +819,6 @@ export async function upsertComposerQueuePublishPlan(
       issues: input.issues,
       items: input.items,
       selectedCardIds: input.selectedCardIds,
-      queryCacheKeys: input.queryCacheKeys ?? [],
       updatedAt: now
     })
     .onConflictDoUpdate({
@@ -930,7 +833,6 @@ export async function upsertComposerQueuePublishPlan(
         issues: input.issues,
         items: input.items,
         selectedCardIds: input.selectedCardIds,
-        queryCacheKeys: input.queryCacheKeys ?? [],
         updatedAt: now
       }
     })

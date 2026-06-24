@@ -9,6 +9,8 @@ type QueueState = "reviewing" | "approved" | "held";
 
 type DetailControlLabels = {
   addToQueueDraft: string;
+  addToQueueDraftHelp: string;
+  approveSelectedHelp: string;
   cleanStartApi: string;
   collectionMembership: string;
   courseBuilder: string;
@@ -16,17 +18,20 @@ type DetailControlLabels = {
   editVersionApi: string;
   futureVersioning: string;
   held: string;
+  holdSelectedHelp: string;
   libraryInventory: string;
   loading: string;
   membershipDetail: string;
   noQueueDraft: string;
   open: string;
+  openHelp: string;
   queueApproved: string;
   queueDraftState: string;
   queueHeld: string;
   queueReviewing: string;
   queueSaved: string;
   refreshQueueDraft: string;
+  refreshQueueDraftHelp: string;
   serverDraft: string;
   versionApiPending: string;
 };
@@ -37,12 +42,10 @@ type ServerQueueDraft = {
   lastPlanId?: string;
   lastPlanSummary: Record<string, unknown>;
   operatorKey: string;
-  queryCacheKeys: string[];
   queueStates: Record<string, unknown>;
   scope: ComposerCardScope;
   selectedCards: Record<string, unknown>;
   status: string;
-  targetUserId?: string;
 };
 
 type QueueDraftResponse = {
@@ -76,7 +79,6 @@ function mergeSelectedCard(draft: ServerQueueDraft | null, cardId: string, cardS
     decisionNotes: draft?.decisionNotes ?? {},
     lastPlanId: draft?.lastPlanId,
     lastPlanSummary: draft?.lastPlanSummary ?? {},
-    queryCacheKeys: draft?.queryCacheKeys ?? [],
     queueStates: {
       ...(draft?.queueStates ?? {}),
       [cardId]: state
@@ -85,8 +87,7 @@ function mergeSelectedCard(draft: ServerQueueDraft | null, cardId: string, cardS
     selectedCards: {
       ...(draft?.selectedCards ?? {}),
       [cardId]: { id: cardId, status: cardStatus }
-    },
-    targetUserId: draft?.targetUserId
+    }
   };
 }
 
@@ -152,7 +153,7 @@ export function CardDetailWorkbenchControl({ cardId, cardStatus, labels, members
         </div>
         <div className="membership-list">
           {memberships.map((membership) => (
-            <Link className="membership-row" href={membership.href} key={`${membership.kind}:${membership.id}`}>
+            <Link className="membership-row" href={membership.href} key={`${membership.kind}:${membership.id}`} title={labels.openHelp}>
               <span>
                 <strong>{membership.title}</strong>
                 <small>
@@ -184,19 +185,19 @@ export function CardDetailWorkbenchControl({ cardId, cardStatus, labels, members
           </span>
         </div>
         <div className="queue-actions queue-actions-compact">
-          <button className="secondary-button" disabled={isLoading || isSaving} onClick={loadDraft} type="button">
+          <button className="secondary-button" disabled={isLoading || isSaving} onClick={loadDraft} title={labels.refreshQueueDraftHelp} type="button">
             <RefreshCw aria-hidden="true" size={16} />
             {isLoading ? labels.loading : labels.refreshQueueDraft}
           </button>
-          <button className="secondary-button" disabled={isSaving} onClick={() => saveState("reviewing")} type="button">
+          <button className="secondary-button" disabled={isSaving} onClick={() => saveState("reviewing")} title={labels.addToQueueDraftHelp} type="button">
             <CircleDot aria-hidden="true" size={16} />
             {labels.queueReviewing}
           </button>
-          <button className="secondary-button" disabled={isSaving} onClick={() => saveState("approved")} type="button">
+          <button className="secondary-button" disabled={isSaving} onClick={() => saveState("approved")} title={labels.approveSelectedHelp} type="button">
             <CheckCircle2 aria-hidden="true" size={16} />
             {labels.queueApproved}
           </button>
-          <button className="secondary-button" disabled={isSaving} onClick={() => saveState("held")} type="button">
+          <button className="secondary-button" disabled={isSaving} onClick={() => saveState("held")} title={labels.holdSelectedHelp} type="button">
             <PauseCircle aria-hidden="true" size={16} />
             {labels.held}
           </button>

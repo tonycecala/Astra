@@ -372,7 +372,17 @@ export const recordChartMakerResultSchema = z.object({
 });
 
 export const astrologyReportStatusSchema = z.enum(["queued", "processing", "completed", "failed", "cancelled"]);
-export const astrologyReportTypeSchema = z.enum(["core_self", "chart_interpretation", "daily_stream", "question_intention"]);
+export const astrologyReportTypeSchema = z.enum([
+  "identity",
+  "core",
+  "deep",
+  "progressed",
+  "synastry",
+  "core_self",
+  "chart_interpretation",
+  "daily_stream",
+  "question_intention"
+]);
 export const reportBoundarySchema = z.enum(["private", "public_signal"]);
 
 export const astrologyReportSectionSchema = z.object({
