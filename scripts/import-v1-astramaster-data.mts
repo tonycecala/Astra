@@ -236,6 +236,14 @@ async function main() {
     ...((family.subjects ?? []) as V1Subject[]).map((subject) => subject.id),
     ...((backup.tables.subjects ?? []) as V1Subject[]).map((subject) => subject.id)
   ]);
+  for (const report of (backup.tables.report_documents ?? []) as V1Report[]) {
+    if (report.status === "generated" && report.subject_id && report.subject_id !== SELF_SUBJECT_ID) {
+      allySubjectIds.add(report.subject_id);
+    }
+    if (report.status === "generated" && report.partner_subject_id && report.partner_subject_id !== SELF_SUBJECT_ID) {
+      allySubjectIds.add(report.partner_subject_id);
+    }
+  }
   allySubjectIds.delete(SELF_SUBJECT_ID);
 
   const summary = {
@@ -247,7 +255,17 @@ async function main() {
   };
 
   for (const subjectId of allySubjectIds) {
-    const subject = subjectsById.get(subjectId);
+    const reportForSubject = ((backup.tables.report_documents ?? []) as V1Report[]).find(
+      (report) => report.subject_id === subjectId || report.partner_subject_id === subjectId
+    );
+    const subject =
+      subjectsById.get(subjectId) ??
+      normalizedSubject({
+        id: subjectId,
+        kind: "person",
+        name: subjectNameFromTitle(reportForSubject?.title).replace(/\s+\+.*$/, ""),
+        relationship_tag: "report subject"
+      });
     if (!subject?.name) continue;
     const [existing] = await db
       .select({ id: allies.id })
