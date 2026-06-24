@@ -275,30 +275,46 @@ textarea {
 
 .self-stream-intro {
   display: grid;
-  gap: 6px;
+  gap: 12px;
 }
 
 .self-stream-intro-wrap {
   grid-column: 1 / -1;
-  margin: 18px 0 24px;
+  position: relative;
+  margin: 10px 0 8px;
+  padding: clamp(18px, 5vw, 34px) clamp(10px, 3vw, 22px);
+  border-bottom: 1px solid color-mix(in srgb, var(--gold) 20%, transparent);
+  background:
+    radial-gradient(circle at 86% 0%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 30%),
+    radial-gradient(circle at 10% 40%, color-mix(in srgb, var(--blue) 14%, transparent), transparent 38%),
+    linear-gradient(180deg, color-mix(in srgb, var(--purple) 12%, transparent), transparent);
+  overflow: hidden;
 }
 
 .self-stream-separator {
-  margin: 0 0 16px;
+  position: absolute;
+  inset: auto 10px 0;
+  margin: 0;
   border: 0;
-  border-top: 1px solid color-mix(in srgb, var(--line) 68%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--gold) 18%, transparent);
 }
 
 .self-stream-intro h2 {
-  margin: 2px 0 0;
-  font-size: clamp(1.45rem, 2.2vw, 1.75rem);
-  line-height: 1.12;
+  max-width: 12ch;
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(2rem, 8vw, 4rem);
+  line-height: 0.98;
+  letter-spacing: 0;
 }
 
 .self-stream-intro p {
   margin: 0;
-  max-width: 640px;
-  color: var(--muted);
+  max-width: 26ch;
+  color: color-mix(in srgb, var(--muted) 84%, var(--blue));
+  font-size: clamp(1rem, 3.8vw, 1.35rem);
+  font-weight: 720;
+  line-height: 1.35;
 }
 
 .self-chart-anchor {
@@ -361,6 +377,70 @@ textarea {
 .self-chart-anchor:hover .self-chart-anchor-chevron,
 .self-chart-anchor:focus-within .self-chart-anchor-chevron {
   transform: translateX(2px);
+}
+
+.self-insight-card {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--gold) 18%, transparent);
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--blue) 12%, transparent), transparent 34%),
+    radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--gold) 7%, transparent), transparent 32%),
+    linear-gradient(135deg, color-mix(in srgb, var(--panel) 52%, transparent), color-mix(in srgb, var(--purple) 10%, transparent));
+  box-shadow: none;
+}
+
+.self-insight-card::after {
+  position: absolute;
+  inset: auto -16% -42% 34%;
+  height: 90px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--blue) 8%, transparent);
+  content: "";
+  pointer-events: none;
+  filter: blur(18px);
+}
+
+.self-insight-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.self-insight-card h2,
+.self-insight-card .self-chart-anchor-title {
+  color: var(--gold);
+}
+
+.self-insight-card .eyebrow {
+  color: color-mix(in srgb, var(--blue) 62%, var(--gold));
+  font-size: 0.72rem;
+  font-weight: 880;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.self-insight-card h2 {
+  margin: 4px 0 0;
+  font-size: clamp(1rem, 2.7vw, 1.18rem);
+  line-height: 1.12;
+}
+
+.self-insight-card p {
+  max-width: 54ch;
+  color: color-mix(in srgb, var(--muted) 86%, var(--blue));
+  font-size: 0.9rem;
+  line-height: 1.42;
+}
+
+.self-metric-card {
+  align-content: start;
+}
+
+.self-metric-card .metric {
+  margin-top: 4px;
+  color: var(--gold);
+  font-size: clamp(2.2rem, 8vw, 3.1rem);
+  line-height: 0.95;
 }
 
 .self-profile-actions {
@@ -2401,9 +2481,192 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   padding-inline: 16px;
 }
 
+.allies-v1-intro {
+  display: grid;
+  gap: clamp(14px, 4vw, 26px);
+  margin: 0;
+  padding: clamp(16px, 4vw, 32px) clamp(8px, 2vw, 16px) clamp(12px, 3vw, 22px);
+  background:
+    radial-gradient(circle at 82% 10%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 28%),
+    radial-gradient(circle at 18% 34%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 36%),
+    linear-gradient(180deg, color-mix(in srgb, var(--purple) 14%, var(--paper)), color-mix(in srgb, var(--paper) 96%, #171024));
+}
+
+.allies-v1-intro p {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-weight: 760;
+  line-height: 1.15;
+}
+
+.allies-v1-intro h1 {
+  max-width: 11ch;
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(3rem, 13vw, 6.6rem);
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+.allies-v1-intro div {
+  max-width: 21ch;
+  color: color-mix(in srgb, var(--muted) 82%, var(--blue));
+  font-size: clamp(1.35rem, 5vw, 2.2rem);
+  font-weight: 760;
+  line-height: 1.4;
+}
+
+.allies-constellation {
+  position: relative;
+  display: grid;
+  min-height: 520px;
+  margin: 0 0 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--gold) 24%, transparent);
+  padding: clamp(14px, 3vw, 24px) clamp(8px, 2vw, 16px);
+  background:
+    radial-gradient(circle at 78% 10%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 26%),
+    radial-gradient(circle at 25% 40%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 36%),
+    linear-gradient(180deg, color-mix(in srgb, var(--paper) 96%, #171024), var(--paper));
+  overflow: hidden;
+}
+
+.allies-constellation-copy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 16px;
+  align-self: start;
+}
+
+.allies-constellation-copy p {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.35rem, 4vw, 1.8rem);
+  font-weight: 760;
+  line-height: 1.1;
+}
+
+.allies-constellation-copy h2 {
+  max-width: 13ch;
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(2.35rem, 9vw, 4.9rem);
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+.allies-orbit {
+  position: absolute;
+  inset: 130px 0 46px;
+  z-index: 1;
+}
+
+.allies-orbit::before {
+  position: absolute;
+  inset: 28% 20% 22% 24%;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--blue) 26%, transparent), transparent 72%);
+  content: "";
+  filter: blur(4px);
+}
+
+.allies-orbit-ring {
+  position: absolute;
+  border: 2px solid color-mix(in srgb, var(--gold) 14%, transparent);
+  border-radius: 50%;
+  transform: rotate(-7deg);
+}
+
+.allies-orbit-ring-one {
+  inset: 18% 16% 14% 3%;
+}
+
+.allies-orbit-ring-two {
+  inset: 8% 11% 2% -6%;
+}
+
+.allies-orbit-ring-three {
+  inset: -5% 5% -10% -14%;
+}
+
+.allies-orbit-self {
+  position: absolute;
+  top: 36%;
+  left: 50%;
+  display: grid;
+  justify-items: center;
+  width: min(280px, 62vw);
+  color: #f7f0e6;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.allies-orbit-avatar {
+  width: 112px;
+  height: 112px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--gold) 36%, transparent),
+    0 0 90px color-mix(in srgb, var(--gold) 30%, transparent),
+    0 0 140px color-mix(in srgb, var(--blue) 32%, transparent);
+}
+
+.allies-orbit-self strong {
+  margin-top: 12px;
+  color: #f7f0e6;
+  font-size: clamp(2rem, 8vw, 3.1rem);
+  line-height: 1;
+}
+
+.allies-orbit-node {
+  position: absolute;
+  display: grid;
+  width: clamp(48px, 12vw, 76px);
+  height: clamp(48px, 12vw, 76px);
+  place-items: center;
+  border: 2px solid color-mix(in srgb, var(--gold) 34%, transparent);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 28%, color-mix(in srgb, #fff 26%, transparent), transparent 28%),
+    color-mix(in srgb, var(--panel) 72%, transparent);
+  color: color-mix(in srgb, var(--gold) 84%, #f7f0e6);
+  font-size: clamp(0.85rem, 3.6vw, 1.25rem);
+  font-weight: 860;
+  box-shadow: 0 0 0 18px color-mix(in srgb, var(--blue) 12%, transparent);
+}
+
+.allies-orbit-node-1 { top: 10%; right: 20%; }
+.allies-orbit-node-2 { top: 19%; right: 9%; }
+.allies-orbit-node-3 { top: 33%; right: 3%; }
+.allies-orbit-node-4 { top: 48%; right: 1%; }
+.allies-orbit-node-5 { top: 63%; right: 8%; }
+.allies-orbit-node-6 { top: 72%; right: 22%; }
+.allies-orbit-node-7 { top: 61%; right: 34%; }
+.allies-orbit-node-8 { top: 39%; right: 27%; }
+
+.allies-constellation-count {
+  position: relative;
+  z-index: 2;
+  align-self: end;
+  justify-self: start;
+  border: 1px solid color-mix(in srgb, var(--gold) 38%, var(--line));
+  border-radius: 999px;
+  padding: 9px 18px;
+  color: var(--gold);
+  font-size: clamp(1rem, 3vw, 1.35rem);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
 .ally-card {
   display: grid;
-  padding: 7px 12px;
+  border-color: color-mix(in srgb, var(--gold) 18%, transparent);
+  background:
+    radial-gradient(circle at 96% 14%, color-mix(in srgb, var(--blue) 14%, transparent), transparent 30%),
+    linear-gradient(135deg, color-mix(in srgb, var(--panel) 54%, transparent), color-mix(in srgb, var(--purple) 12%, transparent));
+  padding: 6px 10px;
+  box-shadow: none;
 }
 
 .list-filter-bar {
@@ -2411,11 +2674,9 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   grid-template-columns: minmax(0, 1fr) minmax(108px, auto) auto auto;
   align-items: center;
   gap: 8px;
-  border: 1px solid color-mix(in srgb, var(--gold) 16%, var(--line));
-  border-radius: 12px;
-  margin: 0 0 10px;
-  padding: 8px;
-  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  margin: 6px 0;
+  padding: 0;
+  background: transparent;
 }
 
 .list-filter-control {
@@ -2434,9 +2695,9 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   align-items: center;
   min-width: 0;
   min-height: 34px;
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--gold) 16%, var(--line));
   border-radius: 8px;
-  background: var(--soft);
+  background: color-mix(in srgb, var(--paper) 34%, transparent);
   color: var(--muted);
 }
 
@@ -3016,7 +3277,7 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
 
 .card.self-chart-anchor .self-chart-anchor-title {
   margin: 0;
-  font-size: clamp(1.85rem, 2.8vw, 2.2rem);
+  font-size: clamp(1.15rem, 2.8vw, 1.35rem);
   line-height: 1.08;
   font-weight: 760;
 }
@@ -3982,6 +4243,7 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 10000;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 4px;

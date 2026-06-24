@@ -206,7 +206,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
       </section>
       <section className="grid" aria-label={ui.self.summaryLabel}>
         {selfChartRequest ? (
-          <Link className="card self-chart-anchor" href="/charts">
+          <Link className="card self-insight-card self-chart-anchor" href="/charts">
             <div className="self-chart-anchor-header">
               <ChartPie aria-hidden="true" className="self-chart-anchor-icon" size={16} />
               <div className="self-chart-anchor-text">
@@ -218,7 +218,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
             <p>{formatBirthAnchorSummary(selfChartRequest)}</p>
           </Link>
         ) : (
-          <article className="card self-chart-anchor">
+          <article className="card self-insight-card self-chart-anchor">
             <div className="self-chart-anchor-header">
               <ChartPie aria-hidden="true" className="self-chart-anchor-icon" size={16} />
               <div className="self-chart-anchor-text">
@@ -230,29 +230,29 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
             <p>{ui.self.chartAnchorBodyMissing}</p>
           </article>
         )}
-        <article className="card">
+        <article className="card self-insight-card self-metric-card">
           <div className="eyebrow">{ui.self.stars}</div>
           <div className="metric">{profile.starBalance}</div>
           <p>{ui.self.starsDescription}</p>
         </article>
-        <article className="card">
+        <article className="card self-insight-card">
           <div className="eyebrow">{ui.self.onboarding}</div>
           <h2>{profile.onboardingStatus}</h2>
           <p>{ui.self.onboardingDescription}</p>
         </article>
-        <article className="card">
+        <article className="card self-insight-card">
           <div className="eyebrow">{ui.self.achievement}</div>
           <h2>{ui.self.noAchievementTitle}</h2>
           <p>{ui.self.noAchievementDescription}</p>
         </article>
       </section>
       <section className="grid" aria-label={ui.self.reportRequestsLabel}>
-        <article className="card">
+        <article className="card self-insight-card">
           <div className="eyebrow">{ui.self.reportRequestsEyebrow}</div>
           <h2>{ui.self.reportRequestsTitle}</h2>
           <p>{ui.self.reportRequestsIntro}</p>
         </article>
-        <article className="card">
+        <article className="card self-insight-card">
           <div className="eyebrow">{ui.self.reportRequestsStatusEyebrow}</div>
           <h2>{ui.self.reportRequestsStatusTitle}</h2>
           {reportRequests.length ? (
