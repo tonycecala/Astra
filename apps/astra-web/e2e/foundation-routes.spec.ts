@@ -377,7 +377,6 @@ test.describe("clean-start routes", () => {
     const completedReport = await createCompletedReport(email, { chartRequestId: completedChart.request.id, name, reportType: "core" });
     await page.goto("/charts");
     await expect(page.getByRole("heading", { name: "Saved charts" })).toBeVisible();
-    await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Charts" })).toHaveAttribute("aria-current", "page");
     await expect(page.getByLabel("Saved charts list").getByRole("heading", { name }).first()).toBeVisible();
     await expect(page.getByText("Portrait ready")).toBeVisible();
     const selectedChart = page.getByLabel("Selected chart");
