@@ -160,6 +160,7 @@ export const ui = {
     viewChart: "View chart",
     createProfile: "Create Profile",
     editBirthDetails: "Edit Birth Details",
+    admin: "Admin",
     profileActionsLabel: "Profile actions",
     noBirthData: "Birth details not yet added.",
     signedOutTitle: "Sign in to see your Astra",

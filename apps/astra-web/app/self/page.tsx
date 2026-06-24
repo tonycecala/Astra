@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChartPie, ChevronRight, Pencil, Sparkles } from "lucide-react";
+import { ChartPie, ChevronRight, Pencil, Shield, Sparkles } from "lucide-react";
 import type { ChartMakerRequest } from "@astra/contracts";
 import { db, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests } from "@astra/db";
 import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
@@ -145,11 +145,17 @@ export default async function SelfPage() {
               <Sparkles aria-hidden="true" size={16} />
               {ui.self.createProfile}
             </Link>
+            <Link className="button secondary" href="#self-birth-onboarding">
+              <Pencil aria-hidden="true" size={16} />
+              {ui.self.editBirthDetails}
+            </Link>
+            {roleLine === "Admin" ? (
+              <Link className="button secondary" href="/admin">
+                <Shield aria-hidden="true" size={16} />
+                {ui.self.admin}
+              </Link>
+            ) : null}
           </div>
-          <a className="button self-profile-edit-button" href="#self-birth-onboarding">
-            <Pencil aria-hidden="true" size={16} />
-            {ui.self.editBirthDetails}
-          </a>
         </article>
       </section>
       <section className="grid" aria-label={ui.self.timelineLabel}>
