@@ -380,7 +380,9 @@ test.describe("clean-start routes", () => {
     await expect(page.getByLabel("Saved charts list").getByRole("heading", { name }).first()).toBeVisible();
     await expect(page.getByText("Portrait ready")).toBeVisible();
     const selectedChart = page.getByLabel("Selected chart");
-    await expect(selectedChart.getByLabel("Static natal chart wheel")).toBeVisible();
+    await expect(selectedChart.getByLabel("Full natal chart wheel")).toBeVisible();
+    await expect(selectedChart.getByLabel("Aspect legend")).toBeVisible();
+    await expect(selectedChart).toContainText("Selected Object");
     await expect(selectedChart).toContainText("Tropical");
     await expect(selectedChart).toContainText("Whole Sign");
     await page.getByRole("link", { name: "Portrait" }).first().click();

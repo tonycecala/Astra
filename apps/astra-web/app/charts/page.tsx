@@ -4,8 +4,8 @@ import { buildAstrologyChartSnapshot } from "@astra/astrology";
 import type { AstrologyReportRequest, ChartMakerRequest, ChartSettings } from "@astra/contracts";
 import { astrologyReportResults, chartResults, db, listUserAstrologyReportRequests, listUserChartMakerRequests } from "@astra/db";
 import { and, eq } from "drizzle-orm";
+import { FullChartWheel } from "../../components/FullChartWheel";
 import { PageHeader } from "../../components/PageHeader";
-import { ReportChartPlate } from "../../components/ReportChartPlate";
 import { reportTypeLabel } from "../../components/ReportReader";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
@@ -72,12 +72,12 @@ export default async function ChartsPage({ searchParams }: ChartsPageParams) {
       </PageHeader>
       {chartItems.length ? (
         <section className="chartsLayout" aria-label={ui.charts.pageLabel}>
+          {selected ? <SelectedChartPanel item={selected} /> : null}
           <section className="chartsList" aria-label={ui.charts.listLabel}>
             {chartItems.map((item) => (
               <ChartCard active={selected?.chart.id === item.chart.id} item={item} key={item.chart.id} />
             ))}
           </section>
-          {selected ? <SelectedChartPanel item={selected} /> : null}
         </section>
       ) : (
         <section className="grid" aria-label={ui.charts.listLabel}>
@@ -115,7 +115,7 @@ function ChartCard({ active, item }: { active: boolean; item: ChartListItem }) {
         </div>
       </div>
       <div className="chartHomeActions" aria-label={ui.charts.cardActionsLabel}>
-        <Link className="button secondary" href={`/charts?chart=${chart.id}`}>
+        <Link className="button secondary" href={`/charts?chart=${chart.id}#selected-chart`}>
           <ChartPie aria-hidden="true" size={16} />
           {ui.charts.viewChart}
         </Link>
@@ -146,7 +146,7 @@ function SelectedChartPanel({ item }: { item: ChartListItem }) {
   const subject = subjectContext(item.chart);
 
   return (
-    <section className="chartDetailPanel" aria-label={ui.charts.selectedLabel}>
+    <section className="chartDetailPanel" id="selected-chart" aria-label={ui.charts.selectedLabel}>
       <div className="chartDetailHeader">
         <div>
           <div className="eyebrow">{ui.charts.selectedEyebrow}</div>
@@ -158,7 +158,7 @@ function SelectedChartPanel({ item }: { item: ChartListItem }) {
           <ArrowRight aria-hidden="true" size={16} />
         </Link>
       </div>
-      <ReportChartPlate chart={chartSnapshot} request={reportRequest} />
+      <FullChartWheel chart={chartSnapshot} />
       <dl className="chartDetailFacts">
         <div>
           <dt>{ui.charts.subjectType}</dt>

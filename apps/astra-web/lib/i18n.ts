@@ -359,7 +359,22 @@ export const ui = {
     chartStatus: "Chart status",
     engine: "Engine",
     latestPortrait: "Latest portrait",
-    noPortraitYet: "No portrait yet"
+    noPortraitYet: "No portrait yet",
+    fullChartLabel: "Interactive chart wheel",
+    fullChartWheelLabel: "Full natal chart wheel",
+    aspectLegendLabel: "Aspect legend",
+    aspectSquare: "Square",
+    aspectOpposition: "Opposition",
+    aspectTrine: "Trine",
+    aspectSextile: "Sextile",
+    aspectConjunction: "Conjunction",
+    selectedAspect: "Selected Aspect",
+    selectedObject: "Selected Object",
+    selectBody: (body: string) => `Select ${body}`,
+    connectedAspects: "connected aspects",
+    bodyAspectsLabel: (body: string) => `${body} aspects`,
+    orbLabel: "orb",
+    selectAnotherObject: "Select another object or tap an aspect line in the wheel."
   },
   library: {
     eyebrow: "Library",

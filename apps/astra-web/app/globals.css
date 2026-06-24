@@ -915,6 +915,8 @@ a.card-link:focus-visible {
 
 .chartsList {
   display: grid;
+  grid-column: 1;
+  grid-row: 1;
   gap: 10px;
 }
 
@@ -994,6 +996,8 @@ a.card-link:focus-visible {
 
 .chartDetailPanel {
   display: grid;
+  grid-column: 2;
+  grid-row: 1;
   gap: 14px;
   border: 1px solid color-mix(in srgb, var(--gold) 20%, var(--line));
   border-radius: 8px;
@@ -1009,18 +1013,6 @@ a.card-link:focus-visible {
   justify-content: space-between;
   gap: 16px;
   align-items: flex-start;
-}
-
-.chartDetailPanel .reportDocumentPlate {
-  float: none;
-  width: min(420px, 100%);
-  max-width: none;
-  margin: 0 auto;
-  padding: 16px;
-}
-
-.chartDetailPanel .reportDocumentPlateFacts {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .chartDetailFacts {
@@ -1049,6 +1041,268 @@ a.card-link:focus-visible {
   margin: 4px 0 0;
   color: var(--ink);
   font-weight: 760;
+}
+
+.fullChart {
+  display: grid;
+  gap: 12px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
+  border-radius: 8px;
+  padding: 12px;
+  background:
+    radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--blue) 14%, transparent), transparent 44%),
+    linear-gradient(180deg, color-mix(in srgb, var(--panel) 96%, #050813), color-mix(in srgb, var(--paper) 82%, #070913));
+}
+
+.fullChartLegend {
+  justify-self: end;
+  border: 1px solid color-mix(in srgb, var(--gold) 16%, var(--line));
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: color-mix(in srgb, var(--soft) 82%, transparent);
+}
+
+.fullChartLegendGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, auto));
+  gap: 7px 12px;
+}
+
+.fullChartLegendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: color-mix(in srgb, var(--legend-color, var(--gold)) 82%, var(--ink));
+  font-size: 0.74rem;
+  font-weight: 820;
+}
+
+.fullChartLegendItem span {
+  width: 18px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--legend-color, var(--gold));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--legend-color, var(--gold)) 34%, white 8%);
+}
+
+.fullChartCanvas {
+  position: relative;
+  width: min(640px, 100%);
+  aspect-ratio: 1;
+  justify-self: center;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at center, color-mix(in srgb, var(--blue) 14%, transparent), transparent 36%),
+    radial-gradient(circle at center, color-mix(in srgb, var(--gold) 11%, transparent), transparent 58%);
+}
+
+.fullChartWheel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.fullChartOuter {
+  fill: color-mix(in srgb, var(--gold) 10%, transparent);
+  stroke: color-mix(in srgb, var(--gold) 62%, transparent);
+  stroke-width: 1.1;
+}
+
+.fullChartMiddle {
+  fill: color-mix(in srgb, var(--gold) 7%, transparent);
+  stroke: color-mix(in srgb, var(--muted) 30%, transparent);
+  stroke-width: 0.5;
+}
+
+.fullChartInner {
+  fill: color-mix(in srgb, var(--blue) 9%, transparent);
+  stroke: color-mix(in srgb, var(--muted) 44%, transparent);
+  stroke-width: 0.8;
+}
+
+.fullChartTick,
+.fullChartHouseLine {
+  stroke: color-mix(in srgb, var(--muted) 34%, transparent);
+  stroke-width: 0.16;
+}
+
+.fullChartTickMedium {
+  stroke-width: 0.24;
+}
+
+.fullChartTickMajor,
+.fullChartHouseLine {
+  stroke: color-mix(in srgb, var(--gold) 38%, transparent);
+  stroke-width: 0.34;
+}
+
+.fullChartSignLabel,
+.fullChartHouseLabel {
+  fill: var(--gold);
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 850;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.fullChartSignLabel {
+  font-size: 2.55px;
+  letter-spacing: 0;
+}
+
+.fullChartHouseLabel {
+  fill: color-mix(in srgb, var(--ink) 82%, var(--muted));
+  font-size: 2.35px;
+}
+
+.fullChartAspectLine {
+  stroke: var(--aspect-color, var(--blue));
+  stroke-width: 0.22;
+  opacity: 0.68;
+  transition: opacity 160ms ease, stroke-width 160ms ease, filter 160ms ease;
+}
+
+.fullChartAspectLineActive {
+  opacity: 1;
+  stroke-width: 0.28;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--aspect-color, var(--blue)) 60%, transparent));
+}
+
+.fullChartAspectLineSelected {
+  opacity: 1;
+  stroke-width: 0.34;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--aspect-color, var(--blue)) 70%, transparent));
+}
+
+.fullChartAspectLineDimmed {
+  opacity: 0.24;
+}
+
+.fullChartAspectHitArea {
+  stroke: transparent;
+  stroke-width: 4.6;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.fullChartGlyph {
+  position: absolute;
+  display: grid;
+  width: clamp(32px, 6.2vw, 48px);
+  height: clamp(32px, 6.2vw, 48px);
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--glyph-color, var(--gold)) 42%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel) 76%, var(--glyph-color, var(--gold)) 16%);
+  color: color-mix(in srgb, var(--glyph-color, var(--gold)) 86%, white 14%);
+  cursor: pointer;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 900;
+  transform: translate(-50%, -50%);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  z-index: 2;
+}
+
+.fullChartGlyph span {
+  font-size: clamp(1.1rem, 2.9vw, 1.7rem);
+  line-height: 1;
+}
+
+.fullChartGlyphAngle span {
+  font-family: var(--font-sans);
+  font-size: clamp(0.78rem, 1.8vw, 1rem);
+}
+
+.fullChartGlyph:hover,
+.fullChartGlyph:focus-visible,
+.fullChartGlyphHovered,
+.fullChartGlyphSelected {
+  border-color: color-mix(in srgb, var(--glyph-color, var(--gold)) 80%, white 16%);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--glyph-color, var(--gold)) 24%, transparent),
+    0 0 34px color-mix(in srgb, var(--glyph-color, var(--gold)) 32%, transparent);
+  outline: none;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.fullChartFocusTray {
+  display: grid;
+  grid-template-columns: minmax(0, 0.84fr) minmax(220px, 1.16fr);
+  gap: 12px;
+  align-items: start;
+  border: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
+  border-radius: 8px;
+  padding: 12px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--blue) 9%, transparent), color-mix(in srgb, var(--gold) 5%, transparent)),
+    color-mix(in srgb, var(--soft) 82%, transparent);
+}
+
+.fullChartTrayKicker {
+  margin: 0 0 6px;
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.fullChartFocusTray h3 {
+  margin: 0;
+  color: var(--ink);
+}
+
+.fullChartFocusTray p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.fullChartAspectList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-height: 158px;
+  overflow: auto;
+}
+
+.fullChartAspectList button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px 8px;
+  min-height: 42px;
+  border: 1px solid color-mix(in srgb, var(--aspect-color, var(--gold)) 34%, var(--line));
+  border-radius: 8px;
+  padding: 7px 9px;
+  background: color-mix(in srgb, var(--aspect-color, var(--gold)) 10%, transparent);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.fullChartAspectList button > span {
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--aspect-color, var(--gold));
+}
+
+.fullChartAspectList strong,
+.fullChartAspectList small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fullChartAspectList small {
+  color: var(--muted);
 }
 
 .reportReaderShell {
@@ -3165,6 +3419,19 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
     grid-template-columns: 1fr;
   }
 
+  .chartsList,
+  .chartDetailPanel {
+    grid-column: 1;
+  }
+
+  .chartDetailPanel {
+    grid-row: 1;
+  }
+
+  .chartsList {
+    grid-row: 2;
+  }
+
   .chartDetailHeader {
     display: grid;
   }
@@ -3180,6 +3447,22 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
   }
 
   .chartDetailFacts {
+    grid-template-columns: 1fr;
+  }
+
+  .fullChartLegend {
+    justify-self: stretch;
+  }
+
+  .fullChartLegendGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fullChartFocusTray {
+    grid-template-columns: 1fr;
+  }
+
+  .fullChartAspectList {
     grid-template-columns: 1fr;
   }
 
