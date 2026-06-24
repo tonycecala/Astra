@@ -2335,6 +2335,44 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   text-decoration: underline;
 }
 
+.ally-card {
+  display: grid;
+  gap: 12px;
+}
+
+.ally-card-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ally-card-badge,
+.ally-card-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  border: 1px solid color-mix(in srgb, var(--blue) 38%, transparent);
+  border-radius: 999px;
+  padding: 4px 10px;
+  color: var(--blue);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.ally-card-meta,
+.ally-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.ally-card-actions .button {
+  min-height: 36px;
+  padding: 8px 12px;
+}
+
 .stream-card,
 .astraFeedCard {
   min-height: 340px;

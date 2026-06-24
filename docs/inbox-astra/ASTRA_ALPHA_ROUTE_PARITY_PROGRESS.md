@@ -15,3 +15,11 @@
 - V2 inventory: list filters/search, lightweight report cards, selected report reader, share/copy/download/print/delete, feedback, chart plate, and admin debug details already exist.
 - Patch: kept the single v2 reader path, changed report-card status display from raw engine values to app labels such as `Written`, and added a v1-style `/library/:id` redirect into the existing reader.
 - Boundary: no duplicate report reader, no new persistence, no Supabase assumptions.
+
+## `/allies`
+
+- Status: patched and ready for QA.
+- V1 quarry note: production Allies is a relationship roster with clear records, chart readiness, portrait/report access, and actions to continue the relationship path.
+- V2 inventory: signed-out gating, Ally records, Ally birth/report onboarding, chart request creation, report generation, Synastry selection, and Library handoff already exist.
+- Patch: kept the current v2 onboarding module, upgraded saved Ally cards with chart/report status and direct actions to chart, portrait, or birth details.
+- Boundary: no invite system, no duplicate Ally detail route, no Supabase assumptions.

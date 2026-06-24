@@ -151,6 +151,11 @@ export const ui = {
     signedOutIntro: "Ally charts and reports are private user records.",
     emptyTitle: "No Allies yet",
     emptyBody: "Create an Ally report to add the first private companion record.",
+    cardActionsLabel: "Ally actions",
+    chartReady: "Chart ready",
+    chartMissing: "Needs chart",
+    reportWritten: "Portrait written",
+    reportMissing: "Ready for portrait",
     wizard: {
       chartRequestPanelLabel: "Ally birth data onboarding",
       chartRequestEyebrow: "Ally report",
