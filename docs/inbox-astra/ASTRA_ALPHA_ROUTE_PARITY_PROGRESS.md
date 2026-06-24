@@ -39,3 +39,11 @@
 - V2 inventory: `/stars` now owns alpha checkout/balance behavior; `/gifts` was still showing foundation/sample gift and transaction cards.
 - Patch: removed foundation sample transactions, gated Gifts behind sign-in, kept an honest gift placeholder, and linked current alpha purchases to `/stars`.
 - Boundary: no gift checkout or redemption tables added; no fake ledger surface remains on Gifts.
+
+## `/admin`
+
+- Status: inventoried and verified; no code patch needed.
+- V1 quarry note: production admin exposed credit/ledger operations, report query/debug/replay controls, bakeoff affordances, feedback visibility, and role/admin fencing.
+- V2 inventory: admin access gate, credit user search, precise ledger table, manual grant/revoke, role management, feedback inbox, report inspector, replay controls, model profile/provider/model overrides, validation/debug details, and Library links already exist.
+- Patch: none.
+- Boundary: advanced report/model controls remain admin-only; customer report creation remains fenced to paid alpha-safe choices.
