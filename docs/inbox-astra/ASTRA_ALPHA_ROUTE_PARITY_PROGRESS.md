@@ -31,3 +31,11 @@
 - V2 inventory: Journey renders a public preview for signed-out readers, private user-owned cards for signed-in users, Composer-selected cards when explicitly requested, lane filters, card detail, save/reflect UI, and clear public/private state copy.
 - Patch: none. The v2 public preview is an intentional alpha boundary, not a missing v1 feature.
 - Boundary: private feed data remains user-owned and gated; public fallback cards are not copied into private Journey.
+
+## `/gifts`
+
+- Status: patched and ready for QA.
+- V1 quarry note: production Gifts was signed-in, intentionally coming soon, and avoided presenting gift checkout as ready before the product lane was complete.
+- V2 inventory: `/stars` now owns alpha checkout/balance behavior; `/gifts` was still showing foundation/sample gift and transaction cards.
+- Patch: removed foundation sample transactions, gated Gifts behind sign-in, kept an honest gift placeholder, and linked current alpha purchases to `/stars`.
+- Boundary: no gift checkout or redemption tables added; no fake ledger surface remains on Gifts.
