@@ -99,6 +99,14 @@ function ChartCard({ active, item }: { active: boolean; item: ChartListItem }) {
   const { chart, report, reportResult } = item;
   const subject = subjectContext(chart);
   const status = reportResult?.status === "completed" ? ui.charts.portraitReady : ui.charts.readyForPortrait;
+  const createHref =
+    subject.source === "ally"
+      ? `/allies?chart=${encodeURIComponent(chart.id)}&start=report#ally-birth-onboarding`
+      : `/self?chart=${encodeURIComponent(chart.id)}&start=report#self-birth-onboarding`;
+  const editHref =
+    subject.source === "ally"
+      ? `/allies?chart=${encodeURIComponent(chart.id)}&start=birth_details#ally-birth-onboarding`
+      : `/self?chart=${encodeURIComponent(chart.id)}&start=birth_details#self-birth-onboarding`;
 
   return (
     <article className={active ? "chartHomeCard chartHomeCardActive" : "chartHomeCard"}>
@@ -125,12 +133,12 @@ function ChartCard({ active, item }: { active: boolean; item: ChartListItem }) {
             {ui.charts.viewPortrait}
           </Link>
         ) : (
-          <Link className="button secondary" href={subject.source === "ally" ? "/allies" : "/self#self-birth-onboarding"}>
+          <Link className="button secondary" href={createHref}>
             <BookOpenText aria-hidden="true" size={16} />
             {ui.charts.createPortrait}
           </Link>
         )}
-        <Link className="button secondary" href={subject.source === "ally" ? "/allies" : "/self#self-birth-onboarding"}>
+        <Link className="button secondary" href={editHref}>
           <Pencil aria-hidden="true" size={16} />
           {ui.charts.editDetails}
         </Link>
@@ -245,7 +253,7 @@ function chartSettings(chart: ChartMakerRequest): ChartSettings {
 
 function subjectContext(chart: ChartMakerRequest) {
   const subject = chart.context?.subject;
-  const source = chart.source === "ally" ? "ally" : "self";
+  const source = chart.source === "self" ? "self" : "ally";
   const relationship = subject?.relationship ? String(subject.relationship) : "";
   return {
     source,

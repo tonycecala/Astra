@@ -29,9 +29,15 @@ function accountInitial(name: string) {
 function useAccountState() {
   const { data: session } = authClient.useSession();
   const router = useRouter();
-  const accountName = session?.user?.name || session?.user?.email || ui.account.guestName;
-  const accountEmail = session?.user?.email ?? "";
-  const signedIn = Boolean(session?.user);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => setMounted(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+  const hydratedSession = mounted ? session : null;
+  const accountName = hydratedSession?.user?.name || hydratedSession?.user?.email || ui.account.guestName;
+  const accountEmail = hydratedSession?.user?.email ?? "";
+  const signedIn = Boolean(hydratedSession?.user);
 
   async function signOut() {
     await authClient.signOut();

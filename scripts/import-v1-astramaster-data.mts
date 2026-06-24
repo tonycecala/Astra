@@ -5,431 +5,588 @@ import {
   appUserProfiles,
   astrologyReportRequests,
   astrologyReportResults,
+  artifacts,
   chartRequests,
   closeDatabaseConnection,
-  createAlly,
   db,
   recordChartMakerResult
 } from "@astra/db";
-import type { AstrologyReportType, ChartBirthData, ChartMakerRequest } from "@astra/contracts";
-import { and, eq } from "drizzle-orm";
+import type { AstrologyReportSection, AstrologyReportType, ChartBirthData, ChartMakerRequest } from "@astra/contracts";
+import { and, eq, like } from "drizzle-orm";
 
-const V1_BACKUP =
-  "/Users/tony/Documents/Projects/Astria/.astraea/manual-backups/2026-05-24T23-14-44-049Z-migrate-legacy-astramaster-account.json";
-const V1_FAMILY_BACKUP =
-  "/Users/tony/Documents/Projects/Astria/.astraea/protected-backups/2026-04-21T18-23-02-829Z-family-charts/records.json";
-const V1_RECORD_BACKUP =
-  "/Users/tony/Documents/Projects/Astria/.astraea/record-backups/2026-04-21T19-04-53-013Z-save_chart_snapshot.json";
+const V1_ENV_PATH = "/Users/tony/Documents/Projects/Astria/.env";
 const TARGET_EMAIL = "astramaster@tony.io";
 const SELF_SUBJECT_ID = "6e73828d-db99-49a3-b801-9b4a18039a72";
 
+type V1Profile = {
+  id: string;
+  auth_user_id?: string | null;
+  email?: string | null;
+  display_name?: string | null;
+};
+
 type V1Subject = {
   id: string;
-  kind?: string | null;
-  name: string;
-  description?: string | null;
-  birth?: {
-    date?: string;
-    time?: string | null;
-    place?: string | null;
-    timezone?: string | null;
-    latitude?: number | null;
-    longitude?: number | null;
-    timeKnown?: boolean | null;
-    accuracy?: string | null;
-  };
+  access_scope?: string | null;
+  archived_at?: string | null;
+  birth_accuracy?: string | null;
   birth_date?: string | null;
-  birth_time?: string | null;
-  birth_place?: string | null;
-  birth_timezone?: string | null;
   birth_latitude?: number | null;
   birth_longitude?: number | null;
+  birth_place?: string | null;
+  birth_time?: string | null;
+  birth_time_known?: boolean | null;
+  birth_timezone?: string | null;
+  description?: string | null;
+  kind?: string | null;
+  name: string;
+  owner_user_id?: string | null;
   relationship_tag?: string | null;
-  relationshipTag?: string | null;
+  source_label?: string | null;
+  source_notes?: string | null;
+  source_rodden_rating?: string | null;
+  source_url?: string | null;
+  updated_at?: string | null;
+  user_id?: string | null;
 };
 
-type V1Report = {
+type V1ReportDocument = {
   id: string;
-  subject_id?: string | null;
-  partner_subject_id?: string | null;
-  report_mode?: string | null;
-  report_tier?: string | null;
-  title?: string | null;
-  status?: string | null;
-  markdown_content?: string | null;
   chart_snapshot?: Record<string, unknown> | null;
-  prompt_version?: string | null;
-  provider?: string | null;
-  model?: string | null;
-  model_profile?: string | null;
-  voice?: string | null;
+  created_at?: string | null;
+  estimated_spend?: number | string | null;
   format?: string | null;
   input_tokens?: number | null;
-  output_tokens?: number | null;
-  total_tokens?: number | null;
-  estimated_spend?: number | null;
   latency_ms?: number | null;
-  created_at?: string | null;
+  markdown_content: string;
+  model?: string | null;
+  model_profile?: string | null;
+  output_tokens?: number | null;
+  partner_subject_id?: string | null;
+  prompt_version?: string | null;
+  provider?: string | null;
+  report_mode: string;
+  report_tier: string;
+  section_keys?: string[] | null;
+  status: string;
+  subject_id?: string | null;
+  title: string;
+  total_tokens?: number | null;
   updated_at?: string | null;
+  voice?: string | null;
 };
 
-function readJson(path: string) {
-  return JSON.parse(readFileSync(path, "utf8")) as Record<string, unknown>;
-}
-
-function normalizedSubject(input: V1Subject): V1Subject {
-  return {
-    ...input,
-    birth: input.birth ?? {
-      date: input.birth_date ?? undefined,
-      time: input.birth_time ?? undefined,
-      place: input.birth_place ?? undefined,
-      timezone: input.birth_timezone ?? undefined,
-      latitude: input.birth_latitude ?? undefined,
-      longitude: input.birth_longitude ?? undefined,
-      timeKnown: Boolean(input.birth_time),
-      accuracy: undefined
-    }
-  };
-}
-
-function birthDataFor(subject: V1Subject): ChartBirthData | null {
-  const birth = subject.birth;
-  if (!birth?.date) return null;
-  const hasTimedLocation = Boolean(birth.time && birth.timezone && birth.place);
-
-  return {
-    date: birth.date,
-    time: hasTimedLocation ? birth.time || undefined : undefined,
-    timezone: hasTimedLocation ? birth.timezone || undefined : undefined,
-    location: hasTimedLocation ? birth.place || undefined : undefined,
-    latitude: hasTimedLocation && typeof birth.latitude === "number" ? birth.latitude : undefined,
-    longitude: hasTimedLocation && typeof birth.longitude === "number" ? birth.longitude : undefined
-  };
-}
-
-function reportTypeFor(report: V1Report): AstrologyReportType {
-  if (report.report_mode === "relationship") return "synastry";
-  if (report.report_mode === "progressed") return "progressed";
-  if (report.report_tier === "deep") return "deep";
-  if (report.report_tier === "core") return "core";
-  return "identity";
-}
-
-function subjectNameFromTitle(title: string | null | undefined) {
-  if (!title) return "Imported v1 subject";
-  return title
-    .replace(/^Astra Reading\s*-\s*/i, "")
-    .replace(/\s+—\s+(Free Preview|Identity Reading|Core Report|Deep Report|Event Core Report).*$/i, "")
-    .trim() || "Imported v1 subject";
-}
-
-function sectionsFromMarkdown(reportId: string, markdown: string, fallbackTitle: string) {
-  const matches = [...markdown.matchAll(/^##\s+(.+)$/gm)];
-  if (matches.length === 0) {
-    return [
-      {
-        id: `v1-section:${reportId}:body`,
-        title: fallbackTitle,
-        body: markdown.trim(),
-        emphasis: "primary" as const
-      }
-    ];
+function readV1Env() {
+  const text = readFileSync(V1_ENV_PATH, "utf8");
+  const values = new Map<string, string>();
+  for (const line of text.split(/\r?\n/)) {
+    const match = /^([A-Z0-9_]+)=(.*)$/.exec(line.trim());
+    if (!match) continue;
+    values.set(match[1], match[2].trim().replace(/^['"]|['"]$/g, ""));
   }
-
-  return matches.map((match, index) => {
-    const next = matches[index + 1];
-    const start = (match.index ?? 0) + match[0].length;
-    const end = next?.index ?? markdown.length;
-    return {
-      id: `v1-section:${reportId}:${index + 1}`,
-      title: match[1].trim(),
-      body: markdown.slice(start, end).replace(/^---\s*/gm, "").trim(),
-      emphasis: index === 0 ? ("primary" as const) : ("supporting" as const)
-    };
-  }).filter((section) => section.body.length > 0);
+  const url = values.get("SUPABASE_URL");
+  const serviceRoleKey = values.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !serviceRoleKey) {
+    throw new Error("Missing v1 SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in Astria .env.");
+  }
+  return { url, serviceRoleKey };
 }
 
-async function existingChartRequestId(userId: string, subjectId: string) {
-  const [row] = await db
-    .select({ id: chartRequests.id })
-    .from(chartRequests)
-    .where(and(eq(chartRequests.userId, userId), eq(chartRequests.id, `v1-chart:${subjectId}`)))
-    .limit(1);
-  return row?.id ?? null;
+async function fetchV1<T>(path: string): Promise<T> {
+  const { url, serviceRoleKey } = readV1Env();
+  const response = await fetch(`${url}/rest/v1/${path}`, {
+    headers: {
+      apikey: serviceRoleKey,
+      authorization: `Bearer ${serviceRoleKey}`
+    }
+  });
+  const text = await response.text();
+  if (!response.ok) {
+    throw new Error(`V1 Supabase request failed ${response.status}: ${text.slice(0, 500)}`);
+  }
+  return JSON.parse(text) as T;
 }
 
-async function ensureChartRequest(userId: string, subject: V1Subject, source: "self" | "ally" | "import") {
-  const birthData = birthDataFor(subject);
+function compactMetadata(subject: V1Subject) {
+  return {
+    v1SubjectId: subject.id,
+    accessScope: subject.access_scope ?? null,
+    birthAccuracy: subject.birth_accuracy ?? null,
+    birthTimeKnown: subject.birth_time_known ?? null,
+    sourceLabel: subject.source_label ?? null,
+    sourceRoddenRating: subject.source_rodden_rating ?? null,
+    sourceUrl: subject.source_url ?? null
+  };
+}
+
+function v1SubjectBirthData(subject: V1Subject): ChartBirthData | null {
+  if (!subject.birth_date) return null;
+  const hasTimedLocation = Boolean(subject.birth_time && subject.birth_timezone && subject.birth_place);
+
+  return {
+    date: subject.birth_date,
+    time: hasTimedLocation ? subject.birth_time ?? undefined : undefined,
+    timezone: hasTimedLocation ? subject.birth_timezone ?? undefined : undefined,
+    location: hasTimedLocation ? subject.birth_place ?? undefined : undefined,
+    latitude: hasTimedLocation && typeof subject.birth_latitude === "number" ? subject.birth_latitude : undefined,
+    longitude: hasTimedLocation && typeof subject.birth_longitude === "number" ? subject.birth_longitude : undefined
+  };
+}
+
+function allyNote(subject: V1Subject) {
+  const parts = [
+    "Imported from Astra v1 private records.",
+    subject.birth_accuracy ? `Birth data quality: ${subject.birth_accuracy}.` : null,
+    subject.source_rodden_rating ? `Rodden/source rating: ${subject.source_rodden_rating}.` : null,
+    subject.source_label ? `Source: ${subject.source_label}.` : null,
+    subject.description
+  ];
+  return parts.filter(Boolean).join(" ");
+}
+
+async function loadV1PrivateSubjects() {
+  const profiles = await fetchV1<V1Profile[]>(
+    `profiles?select=id,email,display_name&email=eq.${encodeURIComponent(TARGET_EMAIL)}&limit=1`
+  );
+  const appProfiles = await fetchV1<V1Profile[]>(
+    `app_user_profiles?select=id,auth_user_id,email,display_name&email=eq.${encodeURIComponent(TARGET_EMAIL)}&limit=10`
+  );
+  const ownerIds = new Set<string>();
+  for (const profile of profiles) ownerIds.add(profile.id);
+  for (const profile of appProfiles) {
+    ownerIds.add(profile.id);
+    if (profile.auth_user_id) ownerIds.add(profile.auth_user_id);
+  }
+  if (!ownerIds.size) throw new Error(`No v1 profile ids found for ${TARGET_EMAIL}.`);
+
+  const orParts = [
+    ...[...ownerIds].map((id) => `user_id.eq.${id}`),
+    ...[...ownerIds].map((id) => `owner_user_id.eq.${id}`)
+  ];
+  const subjects = await fetchV1<V1Subject[]>(
+    `subjects?select=*&or=(${orParts.join(",")})&access_scope=eq.private&archived_at=is.null&order=updated_at.desc&limit=500`
+  );
+
+  const deduped = new Map<string, V1Subject>();
+  for (const subject of subjects) {
+    if (subject.kind !== "person") continue;
+    deduped.set(subject.id, subject);
+  }
+  return [...deduped.values()];
+}
+
+async function loadV1PrivateReportDocuments(subjects: V1Subject[]) {
+  const profiles = await fetchV1<V1Profile[]>(
+    `profiles?select=id,email,display_name&email=eq.${encodeURIComponent(TARGET_EMAIL)}&limit=1`
+  );
+  const appProfiles = await fetchV1<V1Profile[]>(
+    `app_user_profiles?select=id,auth_user_id,email,display_name&email=eq.${encodeURIComponent(TARGET_EMAIL)}&limit=10`
+  );
+  const ownerIds = new Set<string>();
+  for (const profile of profiles) ownerIds.add(profile.id);
+  for (const profile of appProfiles) {
+    ownerIds.add(profile.id);
+    if (profile.auth_user_id) ownerIds.add(profile.auth_user_id);
+  }
+  if (!ownerIds.size) return [];
+
+  const ownedReportFilters = [...ownerIds].flatMap((id) => [`owner_user_id.eq.${id}`, `user_id.eq.${id}`]);
+  const subjectIds = new Set(subjects.map((subject) => subject.id));
+  const reports = await fetchV1<V1ReportDocument[]>(
+    `report_documents?select=id,subject_id,partner_subject_id,report_mode,report_tier,title,status,markdown_content,chart_snapshot,section_keys,prompt_version,provider,model,model_profile,voice,format,input_tokens,output_tokens,total_tokens,estimated_spend,latency_ms,created_at,updated_at&or=(${ownedReportFilters.join(",")})&status=neq.archived&is_sample=eq.false&order=created_at.desc&limit=200`
+  );
+
+  return reports.filter((report) => {
+    if (!report.markdown_content?.trim()) return false;
+    if (report.report_mode === "relationship") {
+      return Boolean(report.subject_id && subjectIds.has(report.subject_id) && report.partner_subject_id && subjectIds.has(report.partner_subject_id));
+    }
+    return Boolean(report.subject_id && subjectIds.has(report.subject_id));
+  });
+}
+
+async function clearPreviousV1Import(userId: string) {
+  await db
+    .delete(artifacts)
+    .where(and(eq(artifacts.userId, userId), like(artifacts.id, "report:v1-report:%")));
+  await db
+    .delete(astrologyReportRequests)
+    .where(and(eq(astrologyReportRequests.userId, userId), like(astrologyReportRequests.id, "v1-report:%")));
+  await db
+    .delete(chartRequests)
+    .where(and(eq(chartRequests.userId, userId), like(chartRequests.id, "v1-chart:%")));
+  await db
+    .delete(allies)
+    .where(and(eq(allies.userId, userId), like(allies.id, "v1-ally:%")));
+}
+
+async function upsertAlly(userId: string, subject: V1Subject) {
+  const values = {
+    id: `v1-ally:${subject.id}`,
+    userId,
+    name: subject.name,
+    kind: subject.kind ?? "person",
+    relationship: subject.relationship_tag ?? "ally",
+    note: allyNote(subject),
+    createdAt: subject.updated_at ? new Date(subject.updated_at) : new Date()
+  };
+
+  await db
+    .insert(allies)
+    .values(values)
+    .onConflictDoUpdate({
+      target: allies.id,
+      set: {
+        name: values.name,
+        kind: values.kind,
+        relationship: values.relationship,
+        note: values.note
+      }
+    });
+}
+
+async function upsertChartRequest(userId: string, subject: V1Subject, source: "self" | "ally") {
+  const birthData = v1SubjectBirthData(subject);
   if (!birthData) return null;
 
-  const requestId = `v1-chart:${subject.id}`;
-  const existing = await existingChartRequestId(userId, subject.id);
   const context = {
     chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
     subject: {
-      subjectType: source === "self" ? "self" : "ally",
+      subjectType: source,
       subjectId: subject.id,
+      allyId: source === "ally" ? `v1-ally:${subject.id}` : undefined,
       displayName: subject.name,
-      relationship: subject.relationship_tag ?? subject.relationshipTag ?? (source === "self" ? "self" : "ally"),
-      note: "Imported from Astra v1 local data."
+      relationship: subject.relationship_tag ?? source,
+      note: "Imported from Astra v1 private records."
     },
-    v1: { subjectId: subject.id }
+    v1: compactMetadata(subject)
   } as const;
-
-  const requestValues = {
+  const now = new Date();
+  const requestId = `v1-chart:${subject.id}`;
+  const values = {
+    id: requestId,
     userId,
     subjectName: subject.name,
     birthData,
     question: null,
-    intent: "Imported from Astra v1.",
+    intent: "Imported from Astra v1 private records.",
     context,
     source,
     status: "queued",
-    updatedAt: new Date()
+    createdAt: subject.updated_at ? new Date(subject.updated_at) : now,
+    updatedAt: now
   };
 
-  if (!existing) {
-    await db.insert(chartRequests).values({
-      id: requestId,
-      ...requestValues,
-      createdAt: new Date(),
+  await db
+    .insert(chartRequests)
+    .values(values)
+    .onConflictDoUpdate({
+      target: chartRequests.id,
+      set: {
+        subjectName: values.subjectName,
+        birthData: values.birthData,
+        intent: values.intent,
+        context: values.context,
+        source: values.source,
+        status: values.status,
+        updatedAt: values.updatedAt
+      }
     });
-  } else {
-    await db.update(chartRequests).set(requestValues).where(eq(chartRequests.id, requestId));
-  }
 
   const request: ChartMakerRequest = {
     id: requestId,
     userId,
     subjectName: subject.name,
     birthData,
-    intent: "Imported from Astra v1.",
+    intent: values.intent,
     context,
     source,
     status: "queued",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: values.createdAt.toISOString(),
+    updatedAt: now.toISOString()
   };
   await recordChartMakerResult(db, buildChartMakerRecordResult(request));
   return requestId;
 }
 
-async function main() {
-  const backup = readJson(V1_BACKUP) as { tables: Record<string, unknown[]> };
-  const family = readJson(V1_FAMILY_BACKUP) as { subjects?: V1Subject[] };
-  const recordBackup = readJson(V1_RECORD_BACKUP) as { subjects?: V1Subject[] };
+function reportTypeFromV1(report: V1ReportDocument): AstrologyReportType {
+  if (report.report_mode === "relationship") return "synastry";
+  if (report.report_mode === "progressed") return "progressed";
+  if (report.report_tier === "free") return "identity";
+  if (report.report_tier === "deep") return "deep";
+  return "core";
+}
 
-  const [profile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, TARGET_EMAIL)).limit(1);
-  if (!profile) throw new Error(`No v2 profile found for ${TARGET_EMAIL}. Sign in once before importing.`);
-
-  const subjectsById = new Map<string, V1Subject>();
-  for (const subject of [
-    ...((recordBackup.subjects ?? []) as V1Subject[]),
-    ...((family.subjects ?? []) as V1Subject[]),
-    ...((backup.tables.subjects ?? []) as V1Subject[])
-  ]) {
-    subjectsById.set(subject.id, normalizedSubject(subject));
+function reportTitleFromV1(report: V1ReportDocument) {
+  if (report.report_mode === "relationship") {
+    return report.title.replace(/\s+[—-]\s+Deep Report$/i, " — Synastry Report");
   }
+  return report.title;
+}
 
-  const allySubjectIds = new Set([
-    ...((family.subjects ?? []) as V1Subject[]).map((subject) => subject.id),
-    ...((backup.tables.subjects ?? []) as V1Subject[]).map((subject) => subject.id)
-  ]);
-  for (const report of (backup.tables.report_documents ?? []) as V1Report[]) {
-    if (report.status === "generated" && report.subject_id && report.subject_id !== SELF_SUBJECT_ID) {
-      allySubjectIds.add(report.subject_id);
-    }
-    if (report.status === "generated" && report.partner_subject_id && report.partner_subject_id !== SELF_SUBJECT_ID) {
-      allySubjectIds.add(report.partner_subject_id);
-    }
-  }
-  allySubjectIds.delete(SELF_SUBJECT_ID);
+function markdownSummary(markdown: string) {
+  const cleaned = markdown
+    .replace(/^#{1,6}\s+.+$/gm, "")
+    .replace(/^---+$/gm, "")
+    .replace(/\*\*Chart Evidence\*\*[\s\S]*$/i, "")
+    .replace(/[*_`>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return cleaned.slice(0, 260).replace(/\s+\S*$/, "").trim() || "Imported Astra v1 report.";
+}
 
-  const summary = {
-    alliesCreated: 0,
-    alliesSkipped: 0,
-    chartsCreatedOrUpdated: 0,
-    reportsCreated: 0,
-    reportsSkipped: 0
-  };
-
-  for (const subjectId of allySubjectIds) {
-    const reportForSubject = ((backup.tables.report_documents ?? []) as V1Report[]).find(
-      (report) => report.subject_id === subjectId || report.partner_subject_id === subjectId
-    );
-    const subject =
-      subjectsById.get(subjectId) ??
-      normalizedSubject({
-        id: subjectId,
-        kind: "person",
-        name: subjectNameFromTitle(reportForSubject?.title).replace(/\s+\+.*$/, ""),
-        relationship_tag: "report subject"
-      });
-    if (!subject?.name) continue;
-    const [existing] = await db
-      .select({ id: allies.id })
-      .from(allies)
-      .where(and(eq(allies.userId, profile.userId), eq(allies.id, `v1-ally:${subject.id}`)))
-      .limit(1);
-    if (existing) {
-      summary.alliesSkipped += 1;
-    } else {
-      await createAlly(db, {
-        id: `v1-ally:${subject.id}`,
-        userId: profile.userId,
-        name: subject.name,
-        kind: "person",
-        relationship: subject.relationship_tag ?? subject.relationshipTag ?? "ally",
-        note: subject.description ?? "Imported from Astra v1."
-      });
-      summary.alliesCreated += 1;
-    }
-    if (await ensureChartRequest(profile.userId, subject, "ally")) summary.chartsCreatedOrUpdated += 1;
-  }
-
-  const selfSubject = subjectsById.get(SELF_SUBJECT_ID);
-  if (selfSubject && (await ensureChartRequest(profile.userId, selfSubject, "self"))) {
-    summary.chartsCreatedOrUpdated += 1;
-  }
-
-  const chartRequestBySubjectId = new Map<string, string>();
-  for (const [subjectId, subject] of subjectsById.entries()) {
-    const source = subjectId === SELF_SUBJECT_ID ? "self" : allySubjectIds.has(subjectId) ? "ally" : "import";
-    const requestId = await ensureChartRequest(profile.userId, subject, source);
-    if (requestId) chartRequestBySubjectId.set(subjectId, requestId);
-  }
-
-  const reports = ((backup.tables.report_documents ?? []) as V1Report[])
-    .filter((report) => report.status === "generated" && report.markdown_content?.trim())
-    .sort((a, b) => Date.parse(a.created_at ?? "") - Date.parse(b.created_at ?? ""));
-
-  for (const report of reports) {
-    const requestId = `v1-report:${report.id}`;
-    const primarySubject = report.subject_id ? subjectsById.get(report.subject_id) : undefined;
-    const partnerSubject = report.partner_subject_id ? subjectsById.get(report.partner_subject_id) : undefined;
-    const subjectName = primarySubject?.name ?? subjectNameFromTitle(report.title);
-    const birthData = birthDataFor(primarySubject ?? selfSubject ?? { id: "import", name: subjectName }) ?? { date: "1961-05-23" };
-    const reportType = reportTypeFor(report);
-    const title = report.title ?? `${subjectName} — Imported v1 Report`;
-    const createdAt = report.created_at ? new Date(report.created_at) : new Date();
-    const sections = sectionsFromMarkdown(report.id, report.markdown_content ?? "", title);
-    const summaryText = sections[0]?.body.slice(0, 420).replace(/\s+/g, " ").trim() || "Imported Astra v1 report.";
-    const reportContext = {
-      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
-      subject: {
-        subjectType: report.subject_id === SELF_SUBJECT_ID ? "self" : "ally",
-        subjectId: report.subject_id ?? undefined,
-        displayName: subjectName,
-        relationship: primarySubject?.relationship_tag ?? primarySubject?.relationshipTag ?? undefined
-      },
-      synastryPartner:
-        partnerSubject && report.partner_subject_id
-          ? {
-              chartRequestId: chartRequestBySubjectId.get(report.partner_subject_id) ?? `v1-chart:${report.partner_subject_id}`,
-              subjectName: partnerSubject.name,
-              birthData: birthDataFor(partnerSubject) ?? undefined
-            }
-          : undefined,
-      v1: {
-        reportDocumentId: report.id,
-        reportMode: report.report_mode,
-        reportTier: report.report_tier,
-        provider: report.provider,
-        model: report.model,
-        modelProfile: report.model_profile,
-        voice: report.voice,
-        format: report.format,
-        promptVersion: report.prompt_version,
-        inputTokens: report.input_tokens,
-        outputTokens: report.output_tokens,
-        totalTokens: report.total_tokens,
-        estimatedSpend: report.estimated_spend,
-        latencyMs: report.latency_ms,
-        chartSnapshot: report.chart_snapshot ?? null
+function sectionsFromMarkdown(report: V1ReportDocument): AstrologyReportSection[] {
+  const markdown = report.markdown_content.replace(/^# .+?\n+---+\n+/s, "").trim();
+  const matches = [...markdown.matchAll(/^##\s+(.+)$/gm)];
+  if (!matches.length) {
+    return [
+      {
+        id: `v1-section:${report.id}:imported`,
+        title: "Imported v1 Report",
+        body: markdown,
+        emphasis: "primary"
       }
-    } as const;
-    const [existing] = await db
-      .select({ id: astrologyReportResults.id })
-      .from(astrologyReportResults)
-      .where(and(eq(astrologyReportResults.userId, profile.userId), eq(astrologyReportResults.requestId, requestId)))
-      .limit(1);
-    if (existing) {
-      await db
-        .update(astrologyReportRequests)
-        .set({
-          chartRequestId: report.subject_id ? chartRequestBySubjectId.get(report.subject_id) ?? null : null,
-          reportType,
-          subjectName,
-          birthData,
-          context: reportContext,
-          source: "import",
-          boundary: "private",
-          status: "completed",
-          engine: "astra-v1-import",
-          engineVersion: report.prompt_version ?? "v1",
-          costCredits: 0,
-          updatedAt: new Date()
-        })
-        .where(and(eq(astrologyReportRequests.id, requestId), eq(astrologyReportRequests.userId, profile.userId)));
-      summary.reportsSkipped += 1;
-      continue;
-    }
+    ];
+  }
 
-    await db.insert(astrologyReportRequests).values({
+  return matches
+    .map((match, index) => {
+      const title = match[1].trim();
+      const start = (match.index ?? 0) + match[0].length;
+      const end = index + 1 < matches.length ? matches[index + 1].index ?? markdown.length : markdown.length;
+      const body = markdown.slice(start, end).trim();
+      return {
+        id: `v1-section:${report.id}:${index + 1}`,
+        title,
+        body,
+        emphasis: index === 0 ? "primary" : "supporting"
+      } satisfies AstrologyReportSection;
+    })
+    .filter((section) => section.body);
+}
+
+async function upsertImportedReport(userId: string, report: V1ReportDocument, subjectsById: Map<string, V1Subject>) {
+  const subject = report.subject_id ? subjectsById.get(report.subject_id) : undefined;
+  const partner = report.partner_subject_id ? subjectsById.get(report.partner_subject_id) : undefined;
+  const birthData = subject ? v1SubjectBirthData(subject) : null;
+  if (!subject || !birthData) return false;
+
+  const reportType = reportTypeFromV1(report);
+  const requestId = `v1-report:${report.id}`;
+  const source = subject.id === SELF_SUBJECT_ID || subject.relationship_tag === "self" ? "self" : "ally";
+  const chartRequestId = `v1-chart:${subject.id}`;
+  const createdAt = report.created_at ? new Date(report.created_at) : new Date();
+  const updatedAt = report.updated_at ? new Date(report.updated_at) : createdAt;
+  const title = reportTitleFromV1(report);
+  const summary = markdownSummary(report.markdown_content);
+  const subjectName = report.report_mode === "relationship" && partner ? `${subject.name} + ${partner.name}` : subject.name;
+  const context = {
+    chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+    subject: {
+      subjectType: source,
+      subjectId: subject.id,
+      allyId: source === "ally" ? `v1-ally:${subject.id}` : undefined,
+      displayName: subject.name,
+      relationship: subject.relationship_tag ?? source,
+      partnerSubjectId: partner?.id,
+      partnerDisplayName: partner?.name,
+      partnerAllyId: partner ? `v1-ally:${partner.id}` : undefined
+    },
+    v1: {
+      reportDocumentId: report.id,
+      reportMode: report.report_mode,
+      reportTier: report.report_tier,
+      promptVersion: report.prompt_version ?? null,
+      provider: report.provider ?? null,
+      model: report.model ?? null,
+      modelProfile: report.model_profile ?? null,
+      voice: report.voice ?? null,
+      format: report.format ?? null,
+      inputTokens: report.input_tokens ?? null,
+      outputTokens: report.output_tokens ?? null,
+      totalTokens: report.total_tokens ?? null,
+      estimatedSpend: report.estimated_spend === null || report.estimated_spend === undefined ? null : Number(report.estimated_spend),
+      latencyMs: report.latency_ms ?? null,
+      sectionKeys: report.section_keys ?? [],
+      chartSnapshot: report.chart_snapshot ?? null
+    }
+  } as const;
+
+  await db
+    .insert(astrologyReportRequests)
+    .values({
       id: requestId,
-      userId: profile.userId,
-      chartRequestId: report.subject_id ? chartRequestBySubjectId.get(report.subject_id) ?? null : null,
+      userId,
+      chartRequestId,
       reportType,
       subjectName,
       birthData,
       question: null,
-      intent: "Imported historical Astra v1 report.",
-      context: reportContext,
-      source: "import",
+      intent: "Imported from Astra v1 private report library.",
+      context,
+      source: report.report_mode === "relationship" ? "ally" : source,
       boundary: "private",
       status: "completed",
-      engine: "astra-v1-import",
-      engineVersion: report.prompt_version ?? "v1",
+      engine: report.provider ?? "astra-v1",
+      engineVersion: report.model ?? report.prompt_version ?? "report-document",
       costCredits: 0,
       createdAt,
-      updatedAt: report.updated_at ? new Date(report.updated_at) : createdAt
+      updatedAt
+    })
+    .onConflictDoUpdate({
+      target: astrologyReportRequests.id,
+      set: {
+        chartRequestId,
+        reportType,
+        subjectName,
+        birthData,
+        intent: "Imported from Astra v1 private report library.",
+        context,
+        source: report.report_mode === "relationship" ? "ally" : source,
+        status: "completed",
+        engine: report.provider ?? "astra-v1",
+        engineVersion: report.model ?? report.prompt_version ?? "report-document",
+        updatedAt
+      }
     });
 
-    await db.insert(astrologyReportResults).values({
+  const sections = sectionsFromMarkdown(report);
+  const publicSignal = {
+    reportId: requestId,
+    requestId,
+    reportType,
+    headline: title,
+    summary,
+    tone: "grounded" as const,
+    boundary: "public_signal" as const,
+    provenanceSummary: "Imported from Astra v1 private report library."
+  };
+
+  await db
+    .insert(astrologyReportResults)
+    .values({
       requestId,
-      userId: profile.userId,
-      engine: "astra-v1-import",
-      engineVersion: report.prompt_version ?? "v1",
+      userId,
+      engine: report.provider ?? "astra-v1",
+      engineVersion: report.model ?? report.prompt_version ?? "report-document",
       status: "completed",
-      summary: summaryText,
+      summary,
       sections,
       provenance: [
         {
           id: `v1-provenance:${report.id}`,
           kind: "manual",
-          label: "Astra v1 import",
-          summary: `Imported from v1 report document ${report.id}.`,
-          boundary: "private"
+          label: "Astra v1 report document",
+          summary: `Imported ${report.report_tier} ${report.report_mode} report from Astra v1.`,
+          boundary: "private",
+          sourceId: requestId
         }
       ],
-      publicSignal: {
-        reportId: `v1-result:${report.id}`,
-        requestId,
-        reportType,
-        headline: title,
-        summary: summaryText,
-        tone: "grounded",
-        boundary: "public_signal",
-        provenanceSummary: "Imported historical v1 report."
-      },
+      publicSignal,
       error: null,
       createdAt
+    })
+    .onConflictDoUpdate({
+      target: astrologyReportResults.requestId,
+      set: {
+        engine: report.provider ?? "astra-v1",
+        engineVersion: report.model ?? report.prompt_version ?? "report-document",
+        status: "completed",
+        summary,
+        sections,
+        provenance: [
+          {
+            id: `v1-provenance:${report.id}`,
+            kind: "manual",
+            label: "Astra v1 report document",
+            summary: `Imported ${report.report_tier} ${report.report_mode} report from Astra v1.`,
+            boundary: "private",
+            sourceId: requestId
+          }
+        ],
+        publicSignal,
+        error: null,
+        createdAt
+      }
     });
-    summary.reportsCreated += 1;
+
+  await db
+    .insert(artifacts)
+    .values({
+      id: `report:${requestId}`,
+      userId,
+      title,
+      kind: "report",
+      summary,
+      payload: {
+        requestId,
+        v1ReportDocumentId: report.id,
+        publicSignal,
+        importedFrom: "astra-v1"
+      },
+      createdAt
+    })
+    .onConflictDoUpdate({
+      target: artifacts.id,
+      set: {
+        title,
+        summary,
+        payload: {
+          requestId,
+          v1ReportDocumentId: report.id,
+          publicSignal,
+          importedFrom: "astra-v1"
+        }
+      }
+    });
+
+  return true;
+}
+
+async function main() {
+  const [profile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, TARGET_EMAIL)).limit(1);
+  if (!profile) throw new Error(`No v2 profile found for ${TARGET_EMAIL}. Sign in once before importing.`);
+
+  const subjects = await loadV1PrivateSubjects();
+  const reports = await loadV1PrivateReportDocuments(subjects);
+  await clearPreviousV1Import(profile.userId);
+  const subjectsById = new Map(subjects.map((subject) => [subject.id, subject]));
+
+  const summary = {
+    email: TARGET_EMAIL,
+    userId: profile.userId,
+    privateSubjectsFound: subjects.length,
+    alliesImported: 0,
+    selfChartsImported: 0,
+    allyChartsImported: 0,
+    privateReportsFound: reports.length,
+    privateReportsImported: 0,
+    skippedWithoutBirthData: [] as string[]
+  };
+
+  for (const subject of subjects) {
+    const source = subject.id === SELF_SUBJECT_ID || subject.relationship_tag === "self" ? "self" : "ally";
+    const birthData = v1SubjectBirthData(subject);
+    if (!birthData) {
+      summary.skippedWithoutBirthData.push(`${subject.id} ${subject.name}`);
+      continue;
+    }
+    if (source === "ally") {
+      await upsertAlly(profile.userId, subject);
+      summary.alliesImported += 1;
+    }
+    const chartId = await upsertChartRequest(profile.userId, subject, source);
+    if (chartId && source === "self") summary.selfChartsImported += 1;
+    if (chartId && source === "ally") summary.allyChartsImported += 1;
   }
 
-  console.log(JSON.stringify({ userId: profile.userId, email: TARGET_EMAIL, ...summary }, null, 2));
+  for (const report of reports) {
+    if (await upsertImportedReport(profile.userId, report, subjectsById)) {
+      summary.privateReportsImported += 1;
+    }
+  }
+
+  console.log(JSON.stringify(summary, null, 2));
 }
 
 try {

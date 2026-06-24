@@ -64,6 +64,7 @@ export function AuthPanel() {
     }
 
     setMessage(ui.login.signedIn);
+    router.refresh();
   }
 
   async function signOut() {

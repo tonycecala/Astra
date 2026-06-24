@@ -1,7 +1,7 @@
 "use client";
 
 import { type CSSProperties, FormEvent, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Search, Send } from "lucide-react";
 import type { Ally, AstrologyReportRequest, AstrologyReportResult, BirthPlaceSearchResult, ChartBirthData, ChartMakerRequest } from "@astra/contracts";
 import { ui } from "../lib/i18n";
 import styles from "./BirthOnboardingPanel.module.css";
@@ -77,6 +77,8 @@ type BirthOnboardingPanelProps = {
   subjectType?: "self" | "ally";
   initialAllies?: Ally[];
   initialBirthData?: ChartBirthData;
+  initialChartRequestId?: string;
+  initialStep?: Step;
 };
 
 type FormState = {
@@ -95,20 +97,20 @@ type FormState = {
   longitude?: number;
 };
 
-const defaultForm = (displayName: string, birthData?: ChartBirthData): FormState => ({
-  subjectName: displayName,
+const defaultForm = (displayName: string, birthData?: ChartBirthData, chartRequest?: ChartMakerRequest): FormState => ({
+  subjectName: chartRequest?.subjectName ?? displayName,
   relationship: "",
   note: "",
   reportType: "core",
-  zodiacMode: "tropical",
-  houseSystem: "whole-sign",
+  zodiacMode: chartRequest?.context?.chartSettings?.zodiacMode ?? "tropical",
+  houseSystem: chartRequest?.context?.chartSettings?.houseSystem ?? "whole-sign",
   synastryPartnerChartRequestId: "",
-  date: birthData?.date ?? "",
-  time: birthData?.time ?? "",
-  timezone: birthData?.timezone ?? "",
-  location: birthData?.location ?? "",
-  latitude: birthData?.latitude,
-  longitude: birthData?.longitude
+  date: chartRequest?.birthData.date ?? birthData?.date ?? "",
+  time: chartRequest?.birthData.time ?? birthData?.time ?? "",
+  timezone: chartRequest?.birthData.timezone ?? birthData?.timezone ?? "",
+  location: chartRequest?.birthData.location ?? birthData?.location ?? "",
+  latitude: chartRequest?.birthData.latitude ?? birthData?.latitude,
+  longitude: chartRequest?.birthData.longitude ?? birthData?.longitude
 });
 
 function optional(value: string) {
@@ -175,6 +177,16 @@ function reportTypeCost(reportType: ReportType) {
   return 0;
 }
 
+function compactBirthLine(birthData?: ChartBirthData) {
+  if (!birthData?.date) return ui.self.noBirthData;
+  return [birthData.date, birthData.time, birthData.location].filter(Boolean).join(" · ");
+}
+
+function chartSubjectId(request: ChartMakerRequest) {
+  const subject = request.context?.subject as { allyId?: string; subjectId?: string } | undefined;
+  return subject?.allyId ?? subject?.subjectId;
+}
+
 export function BirthOnboardingPanel({
   displayName,
   role = "customer",
@@ -184,11 +196,17 @@ export function BirthOnboardingPanel({
   initialReportResults = [],
   subjectType = "self",
   initialAllies = [],
-  initialBirthData
+  initialBirthData,
+  initialChartRequestId,
+  initialStep
 }: BirthOnboardingPanelProps) {
-  const [form, setForm] = useState<FormState>(() => defaultForm(displayName, initialBirthData));
+  const initialChartRequest = initialChartRequestId
+    ? initialRequests.find((request) => request.id === initialChartRequestId)
+    : undefined;
+  const [form, setForm] = useState<FormState>(() => defaultForm(displayName, initialBirthData, initialChartRequest));
   const [allies, setAllies] = useState(initialAllies);
-  const [activeStep, setActiveStep] = useState<Step>("subject");
+  const [activeStep, setActiveStep] = useState<Step>(() => initialStep ?? "subject");
+  const [selectedExistingChartRequestId, setSelectedExistingChartRequestId] = useState(initialChartRequest?.id ?? "");
   const [requests, setRequests] = useState(initialRequests);
   const [reportRequests, setReportRequests] = useState(initialReportRequests);
   const [reportResults, setReportResults] = useState(initialReportResults);
@@ -213,6 +231,10 @@ export function BirthOnboardingPanel({
   const selectedReportCost = reportTypeCost(form.reportType);
   const balanceAfterReport = starBalance - selectedReportCost;
   const canAffordSelectedReport = isAdmin || balanceAfterReport >= 0;
+  const existingChartRequest = selectedExistingChartRequestId
+    ? requests.find((request) => request.id === selectedExistingChartRequestId)
+    : undefined;
+  const isUsingExistingChart = Boolean(existingChartRequest);
   const synastryPartner = useMemo(
     () => synastryChartOptions.find((request) => request.id === form.synastryPartnerChartRequestId),
     [form.synastryPartnerChartRequestId, synastryChartOptions]
@@ -240,6 +262,16 @@ export function BirthOnboardingPanel({
     () => new Map(reportResults.map((result) => [result.requestId, result])),
     [reportResults]
   );
+  const chartRequestsBySubjectId = useMemo(() => {
+    const indexed = new Map<string, ChartMakerRequest>();
+    for (const request of requests) {
+      const subjectId = chartSubjectId(request);
+      if (subjectId && !indexed.has(subjectId)) {
+        indexed.set(subjectId, request);
+      }
+    }
+    return indexed;
+  }, [requests]);
 
   function updateField(field: keyof FormState, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -421,14 +453,15 @@ export function BirthOnboardingPanel({
     setMessage(ui.self.chartRequestWorking);
 
     try {
-      const ally = isAlly ? await createAllyRecord() : undefined;
+      const ally = !existingChartRequest && isAlly ? await createAllyRecord() : undefined;
       const subjectContext = {
+        ...(existingChartRequest?.context?.subject ?? {}),
         subjectType,
-        subjectId: ally?.id,
-        allyId: ally?.id,
+        subjectId: ally?.id ?? existingChartRequest?.context?.subject?.subjectId,
+        allyId: ally?.id ?? existingChartRequest?.context?.subject?.allyId,
         displayName: form.subjectName.trim(),
-        relationship: ally?.relationship,
-        note: ally?.note
+        relationship: ally?.relationship ?? existingChartRequest?.context?.subject?.relationship,
+        note: ally?.note ?? existingChartRequest?.context?.subject?.note
       };
       const chartSettings = {
         zodiacMode: form.zodiacMode,
@@ -444,7 +477,7 @@ export function BirthOnboardingPanel({
           : undefined;
       const body = {
         subjectName: form.subjectName.trim(),
-        birthData: birthDataFor(form),
+        birthData: existingChartRequest?.birthData ?? birthDataFor(form),
         source: subjectType,
         context: {
           subject: subjectContext,
@@ -452,20 +485,22 @@ export function BirthOnboardingPanel({
           ...(synastryPartnerContext ? { synastryPartner: synastryPartnerContext } : {})
         }
       };
-      const chartPayload = await requestJson<{ request: ChartMakerRequest }>("/api/chart-requests", {
+      const chartRequest = existingChartRequest ?? (await requestJson<{ request: ChartMakerRequest }>("/api/chart-requests", {
         method: "POST",
         body: JSON.stringify(body)
-      });
+      })).request;
       const reportPayload = await requestJson<{ request: AstrologyReportRequest }>("/api/reports", {
         method: "POST",
         body: JSON.stringify({
           ...body,
-          chartRequestId: chartPayload.request.id,
+          chartRequestId: chartRequest.id,
           reportType: form.reportType
         })
       });
 
-      setRequests((current) => [chartPayload.request, ...current]);
+      if (!existingChartRequest) {
+        setRequests((current) => [chartRequest, ...current]);
+      }
       setReportRequests((current) => [reportPayload.request, ...current]);
       setActiveStep("review");
       setIsSubmissionComplete(true);
@@ -487,6 +522,7 @@ export function BirthOnboardingPanel({
     setPlaceQuery("");
     setHasSelectedPlace(false);
     setIsConfirmingReport(false);
+    setSelectedExistingChartRequestId("");
     setForm(defaultForm(displayName, initialBirthData));
   }
 
@@ -580,17 +616,35 @@ export function BirthOnboardingPanel({
             <div className={styles.subjectFields}>
               <label>
                 <span>{panelCopy.chartSubjectLabel}</span>
-                <input value={form.subjectName} onChange={(event) => updateField("subjectName", event.target.value)} required />
+                <input
+                  disabled={isUsingExistingChart}
+                  readOnly={isUsingExistingChart}
+                  value={form.subjectName}
+                  onChange={(event) => updateField("subjectName", event.target.value)}
+                  required
+                />
               </label>
               {isAlly ? (
                 <>
                   <label>
                     <span>{ui.allies.wizardRelationshipLabel}</span>
-                    <input value={form.relationship} onChange={(event) => updateField("relationship", event.target.value)} required />
+                    <input
+                      disabled={isUsingExistingChart}
+                      readOnly={isUsingExistingChart}
+                      value={form.relationship}
+                      onChange={(event) => updateField("relationship", event.target.value)}
+                      required={!isUsingExistingChart}
+                    />
                   </label>
                   <label>
                     <span>{ui.allies.wizardNoteLabel}</span>
-                    <textarea value={form.note} onChange={(event) => updateField("note", event.target.value)} rows={3} />
+                    <textarea
+                      disabled={isUsingExistingChart}
+                      readOnly={isUsingExistingChart}
+                      value={form.note}
+                      onChange={(event) => updateField("note", event.target.value)}
+                      rows={3}
+                    />
                   </label>
                 </>
               ) : null}
@@ -599,6 +653,26 @@ export function BirthOnboardingPanel({
 
           {activeStep === "report" ? (
             <div className={styles.subjectFields}>
+              {isUsingExistingChart ? (
+                <dl className={styles.review}>
+                  <div>
+                    <dt>{ui.self.onboardingReviewSubject}</dt>
+                    <dd>{form.subjectName}</dd>
+                  </div>
+                  <div>
+                    <dt>{ui.self.onboardingReviewBirthDate}</dt>
+                    <dd>{form.date}</dd>
+                  </div>
+                  <div>
+                    <dt>{ui.self.onboardingReviewBirthTime}</dt>
+                    <dd>{form.time || ui.self.onboardingReviewMissing}</dd>
+                  </div>
+                  <div>
+                    <dt>{ui.self.onboardingReviewBirthPlace}</dt>
+                    <dd>{form.location || ui.self.onboardingReviewMissing}</dd>
+                  </div>
+                </dl>
+              ) : null}
               <fieldset className={styles.optionGroup}>
                 <legend>{ui.self.onboardingReportTypeLabel}</legend>
                 <p className={styles.optionHint}>
@@ -693,6 +767,8 @@ export function BirthOnboardingPanel({
                 <input
                   value={form.date}
                   onChange={(event) => updateField("date", event.target.value)}
+                  disabled={isUsingExistingChart}
+                  readOnly={isUsingExistingChart}
                   required
                   inputMode="numeric"
                   placeholder={ui.self.chartDatePlaceholder}
@@ -706,6 +782,8 @@ export function BirthOnboardingPanel({
                   <input
                     value={form.time}
                     onChange={(event) => updateField("time", event.target.value)}
+                    disabled={isUsingExistingChart}
+                    readOnly={isUsingExistingChart}
                     inputMode="numeric"
                     placeholder={ui.self.chartTimePlaceholder}
                   />
@@ -713,7 +791,11 @@ export function BirthOnboardingPanel({
                 </label>
                 <label>
                   <span>{ui.self.chartTimezoneLabel}</span>
-                  <select value={form.timezone} onChange={(event) => updateField("timezone", event.target.value)}>
+                  <select
+                    value={form.timezone}
+                    onChange={(event) => updateField("timezone", event.target.value)}
+                    disabled={isUsingExistingChart}
+                  >
                     <option value="">{ui.self.chartTimezonePlaceholder}</option>
                     {timeZones.map((timeZone) => (
                       <option key={timeZone} value={timeZone}>
@@ -732,10 +814,12 @@ export function BirthOnboardingPanel({
                       setHasSelectedPlace(false);
                       setPlaceQuery(event.target.value);
                     }}
+                    disabled={isUsingExistingChart}
+                    readOnly={isUsingExistingChart}
                     placeholder={ui.self.placeSearchPlaceholder}
                   />
                 </label>
-                <button className="button secondary" disabled={isSearchingPlaces} onClick={searchPlaces} type="button">
+                <button className="button secondary" disabled={isSearchingPlaces || isUsingExistingChart} onClick={searchPlaces} type="button">
                   <Search aria-hidden="true" size={18} />
                   {isSearchingPlaces ? ui.self.placeSearchWorking : ui.self.placeSearchSubmit}
                 </button>
@@ -766,6 +850,8 @@ export function BirthOnboardingPanel({
                     setHasSelectedPlace(false);
                     updateField("location", event.target.value);
                   }}
+                  disabled={isUsingExistingChart}
+                  readOnly={isUsingExistingChart}
                 />
               </label>
               <p className="form-status">{ui.self.birthDetailsOptionalHint}</p>
@@ -866,32 +952,39 @@ export function BirthOnboardingPanel({
 
       <aside className={styles.summaryRail}>
         {isAlly ? (
-          <article className="card">
-            <div className="eyebrow">{ui.allies.wizardAlliesEyebrow}</div>
-            <h2>{ui.allies.wizardAlliesTitle}</h2>
+          <article className={`card ${styles.railCard}`}>
+            <h2 className={styles.railTitle}>{ui.allies.wizardAlliesTitle}</h2>
             {allies.length ? (
-              <ul className={styles.requestList}>
-                {allies.slice(0, 5).map((ally) => (
-                  <li key={ally.id}>
-                    <span>{ally.name}</span>
-                    <strong>{ally.relationship}</strong>
-                  </li>
-                ))}
+              <ul className={styles.compactRecordList}>
+                {allies.slice(0, 6).map((ally) => {
+                  const chartRequest = chartRequestsBySubjectId.get(ally.id);
+                  return (
+                    <li key={ally.id}>
+                      <div>
+                        <strong>{ally.name}</strong>
+                        <span>{compactBirthLine(chartRequest?.birthData)}</span>
+                      </div>
+                      <em>{ally.relationship}</em>
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               <p>{ui.allies.wizardAlliesEmpty}</p>
             )}
           </article>
         ) : null}
-        <article className="card">
-          <div className="eyebrow">{ui.self.chartRequestsEyebrow}</div>
-          <h2>{ui.self.chartRequestsTitle}</h2>
+        <article className={`card ${styles.railCard}`}>
+          <h2 className={styles.railTitle}>{ui.self.chartRequestsTitle}</h2>
           {requests.length ? (
-            <ul className={styles.requestList}>
+            <ul className={styles.compactRecordList}>
               {requests.slice(0, 5).map((request) => (
                 <li key={request.id}>
-                  <span>{request.subjectName}</span>
-                  <strong>{reportStatusLabel(request.status)}</strong>
+                  <div>
+                    <strong>{request.subjectName}</strong>
+                    <span>{compactBirthLine(request.birthData)}</span>
+                  </div>
+                  <em>{reportStatusLabel(request.status)}</em>
                 </li>
               ))}
             </ul>
@@ -899,28 +992,19 @@ export function BirthOnboardingPanel({
             <p>{ui.self.chartRequestsEmpty}</p>
           )}
         </article>
-        <article className="card">
-          <div className="eyebrow">{ui.self.reportRequestsStatusEyebrow}</div>
-          <h2>{ui.self.reportRequestsStatusTitle}</h2>
+        <article className={`card ${styles.railCard}`}>
+          <h2 className={styles.railTitle}>{ui.self.reportRequestsStatusTitle}</h2>
           {reportRequests.length ? (
-            <ul className={styles.requestList}>
+            <ul className={styles.compactRecordList}>
               {reportRequests.slice(0, 5).map((request) => {
                 const result = reportResultsByRequestId.get(request.id);
                 return (
                   <li key={request.id}>
                     <div>
-                      <span>{request.subjectName}</span>
-                      {result?.publicSignal ? <small>{result.publicSignal.headline}</small> : null}
+                      <strong>{request.subjectName}</strong>
+                      <span>{result?.publicSignal?.headline ?? reportTypeLabel(request.reportType)}</span>
                     </div>
-                    <div className={styles.statusActions}>
-                      <strong>{reportStatusLabel(request.status)}</strong>
-                      {result ? (
-                        <button className="button secondary" onClick={() => openReportArtifact(request.id)} type="button">
-                          <BookOpenText aria-hidden="true" size={16} />
-                          {ui.self.reportReadCta}
-                        </button>
-                      ) : null}
-                    </div>
+                    <em>{reportTypeLabel(request.reportType)}</em>
                   </li>
                 );
               })}

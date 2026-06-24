@@ -14,10 +14,12 @@ export default async function GiftsPage() {
         <PageHeader eyebrow={ui.gifts.eyebrow} title={ui.gifts.signedOutTitle}>
           {ui.gifts.signedOutIntro}
         </PageHeader>
-        <section className="grid" aria-label={ui.gifts.listLabel}>
-          <article className="card">
-            <div className="eyebrow">{ui.login.codeFlowEyebrow}</div>
-            <h2>{ui.login.title}</h2>
+        <section className="gift-list" aria-label={ui.gifts.listLabel}>
+          <article className="card gift-panel">
+            <div className="gift-panel-heading">
+              <span>{ui.login.codeFlowEyebrow}</span>
+              <h2>{ui.login.title}</h2>
+            </div>
             <p>{ui.login.intro}</p>
             <Link className="button" href="/login?next=/gifts">
               {ui.self.signInCta}
@@ -33,15 +35,19 @@ export default async function GiftsPage() {
       <PageHeader eyebrow={ui.gifts.eyebrow} title={ui.gifts.title}>
         {ui.gifts.intro}
       </PageHeader>
-      <section className="grid" aria-label={ui.gifts.listLabel}>
-        <article className="card">
-          <div className="eyebrow">{ui.gifts.comingSoonEyebrow}</div>
-          <h2>{ui.gifts.comingSoonTitle}</h2>
+      <section className="gift-list" aria-label={ui.gifts.listLabel}>
+        <article className="card gift-panel">
+          <div className="gift-panel-heading">
+            <span>{ui.gifts.comingSoonEyebrow}</span>
+            <h2>{ui.gifts.comingSoonTitle}</h2>
+          </div>
           <p>{ui.gifts.comingSoonBody}</p>
         </article>
-        <article className="card">
-          <div className="eyebrow">{ui.gifts.starsEyebrow}</div>
-          <h2>{ui.gifts.starsTitle}</h2>
+        <article className="card gift-panel">
+          <div className="gift-panel-heading">
+            <span>{ui.gifts.starsEyebrow}</span>
+            <h2>{ui.gifts.starsTitle}</h2>
+          </div>
           <p>{ui.gifts.starsBody}</p>
           <Link className="button secondary" href="/stars">
             {ui.gifts.openStars}

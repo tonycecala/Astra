@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Search } from "lucide-react";
 
 import type { Artifact } from "@astra/contracts";
 import { PageHeader } from "../../components/PageHeader";
@@ -12,6 +13,7 @@ import { and, eq } from "drizzle-orm";
 export const dynamic = "force-dynamic";
 
 type LibraryArtifact = Artifact & {
+  birthLine?: string;
   requestId?: string;
   reportType?: string;
   subjectName?: string;
@@ -98,29 +100,34 @@ function LibraryControls({
   filterCounts: Record<LibraryReportFilter, number>;
   query: string;
 }) {
+  const clearHref = "/library";
   return (
-    <section className="libraryControls" aria-label={ui.library.filtersLabel}>
-      <form className="librarySearchForm" action="/library">
-        <input name="filter" type="hidden" value={activeFilter} />
-        <label>
-          <span>{ui.library.searchLabel}</span>
-          <input name="q" type="search" defaultValue={query} placeholder={ui.library.searchPlaceholder} />
-        </label>
+    <section aria-label={ui.library.filtersLabel}>
+      <form className="list-filter-bar library-list-filter-bar" action="/library">
+        <div className="list-filter-control list-filter-search-control">
+          <span className="list-filter-search">
+            <Search aria-hidden="true" size={15} />
+            <input aria-label={ui.library.searchLabel} name="q" type="search" defaultValue={query} placeholder={ui.library.searchPlaceholder} />
+          </span>
+        </div>
+        <div className="list-filter-control">
+          <span className="list-filter-select">
+            <select aria-label={ui.library.filtersLabel} defaultValue={activeFilter} name="filter">
+              {reportFilters.map((filter) => (
+                <option key={filter.value} value={filter.value}>
+                  {filter.label} ({filterCounts[filter.value]})
+                </option>
+              ))}
+            </select>
+          </span>
+        </div>
         <button className="button secondary" type="submit">{ui.library.searchSubmit}</button>
-      </form>
-      <nav className="libraryFilterNav" aria-label={ui.library.filtersLabel}>
-        {reportFilters.map((filter) => (
-          <Link
-            aria-current={activeFilter === filter.value ? "page" : undefined}
-            className={activeFilter === filter.value ? "libraryFilterChip libraryFilterChipActive" : "libraryFilterChip"}
-            href={libraryHref(filter.value, query)}
-            key={filter.value}
-          >
-            <span>{filter.label}</span>
-            <strong>{filterCounts[filter.value]}</strong>
+        {query || activeFilter !== "all" ? (
+          <Link className="button secondary" href={clearHref}>
+            {ui.allies.filterClear}
           </Link>
-        ))}
-      </nav>
+        ) : null}
+      </form>
     </section>
   );
 }
@@ -129,18 +136,15 @@ function ArtifactCard({ artifact }: { artifact: LibraryArtifact }) {
   if (artifact.kind === "report" && artifact.requestId) {
     return (
       <Link
-        className="card card-link"
+        className="card card-link library-report-card"
         href={`/library?reportId=${encodeURIComponent(artifact.requestId)}`}
         aria-label={`${ui.library.openReportAction}: ${artifact.title}`}
       >
-        <div className="library-report-card-meta">
-          <span>{artifact.subjectType === "ally" ? ui.library.subjectAlly : ui.library.subjectSelf}</span>
-          <span>{reportTypeLabel(artifact.reportType)}</span>
-          <span>{reportStatusLabel(artifact.status)}</span>
+        <div className="library-report-title-row">
+          <h2>{reportCardName(artifact)}</h2>
+          <span className="library-report-type-pill">{reportCardType(artifact)}</span>
         </div>
-        <h2>{artifact.title}</h2>
-        {artifact.subjectName ? <p className="library-report-subject">{artifact.subjectName}</p> : null}
-        <p className="library-report-date">{ui.library.reportCardDateLabel} {formatReportDate(artifact.createdAt)}</p>
+        <p className="library-report-subject">{artifact.birthLine ?? `${ui.library.reportCardDateLabel} ${formatReportDate(artifact.createdAt)}`}</p>
       </Link>
     );
   }
@@ -198,12 +202,20 @@ function canonicalReportType(reportType?: string) {
   return "core";
 }
 
-function reportStatusLabel(status?: string) {
-  if (status === "completed") return ui.self.reportStatusReady;
-  if (status === "queued" || status === "processing") return ui.self.reportStatusGenerating;
-  if (status === "failed") return ui.self.reportStatusFailed;
-  if (status === "cancelled") return ui.self.reportStatusCancelled;
-  return status ?? ui.library.statusGenerated;
+function reportCardName(artifact: LibraryArtifact) {
+  return artifact.title.split(/\s+[—-]\s+/)[0]?.trim() || artifact.subjectName || artifact.title;
+}
+
+function reportCardType(artifact: LibraryArtifact) {
+  if (artifact.reportType === "synastry") return reportTypeLabel(artifact.reportType);
+  const suffix = artifact.title.split(/\s+[—-]\s+/).slice(1).join(" — ").trim();
+  return suffix || reportTypeLabel(artifact.reportType);
+}
+
+function reportBirthLine(request?: { birthData?: { date?: string; time?: string; location?: string } }) {
+  const birthData = request?.birthData;
+  if (!birthData?.date) return undefined;
+  return [birthData.date, birthData.time, birthData.location].filter(Boolean).join(" · ");
 }
 
 function artifactMatchesFilter(artifact: LibraryArtifact, filter: LibraryReportFilter) {
@@ -271,6 +283,7 @@ async function getUserLibraryArtifacts(userId: string) {
         kind: "report" as const,
         summary: result.summary ?? ui.library.completedReportSummary,
         createdAt: result.createdAt,
+        birthLine: reportBirthLine(request),
         requestId: result.requestId,
         reportType: request?.reportType,
         subjectName: subject.name,
