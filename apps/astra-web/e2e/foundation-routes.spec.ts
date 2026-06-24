@@ -1,7 +1,8 @@
 import { expect, type Page, test } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { ASTRA_REPORT_WRITER_ENV, LOCAL_DETERMINISTIC_REPORT_WRITER, buildAstrologyReportResultAsync } from "@astra/astrology";
-import { appUserProfiles, createAstrologyReportRequest, createAstrologyReportShare, creditLedgerEntries, db, mirrorCreditBalanceToProfile, recordAstrologyReportResult } from "@astra/db";
+import { buildChartMakerRecordResult } from "@astra/chart-maker";
+import { appUserProfiles, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, creditLedgerEntries, db, mirrorCreditBalanceToProfile, recordAstrologyReportResult, recordChartMakerResult } from "@astra/db";
 import { eq } from "drizzle-orm";
 
 type JsonObject = Record<string, unknown>;
@@ -11,6 +12,7 @@ const routes = [
   { path: "/journey", heading: "A living stream", mobileHeading: "Journey" },
   { path: "/allies", heading: "Companions with clear names", mobileHeading: "Allies" },
   { path: "/self", heading: "Sign in to see your Astra", mobileHeading: "Self" },
+  { path: "/charts", heading: "Sign in to see your charts", mobileHeading: "Charts" },
   { path: "/library", heading: "Artifacts worth keeping", mobileHeading: "Library" },
   { path: "/gifts", heading: "Stars stay accountable", mobileHeading: "Gifts" },
   { path: "/login", heading: "Welcome back to Astra" }
@@ -101,12 +103,38 @@ async function makeProfileAdmin(email: string) {
   await mirrorCreditBalanceToProfile(db, profile.userId);
 }
 
-async function createCompletedReport(email: string, input: { name: string; reportType?: "core" | "deep" | "identity" }) {
+async function createCompletedChart(email: string, input: { name: string }) {
+  const [profile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
+  if (!profile) throw new Error(`Expected profile for ${email}.`);
+  const request = await createChartMakerRequest(db, {
+    userId: profile.userId,
+    subjectName: input.name,
+    birthData: {
+      date: "1961-05-23",
+      time: "09:30",
+      timezone: "America/New_York",
+      location: "New York, NY, USA",
+      latitude: 40.7128,
+      longitude: -74.006
+    },
+    intent: "playwright-chart-home-qa",
+    context: {
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+      subject: { subjectType: "self", displayName: input.name }
+    },
+    source: "self"
+  });
+  const result = await recordChartMakerResult(db, buildChartMakerRecordResult(request));
+  return { request, result };
+}
+
+async function createCompletedReport(email: string, input: { chartRequestId?: string; name: string; reportType?: "core" | "deep" | "identity" }) {
   const [profile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
   if (!profile) throw new Error(`Expected profile for ${email}.`);
   const request = await createAstrologyReportRequest(db, {
     id: randomUUID(),
     userId: profile.userId,
+    chartRequestId: input.chartRequestId,
     reportType: input.reportType ?? "core",
     subjectName: input.name,
     birthData: {
@@ -321,29 +349,6 @@ test.describe("clean-start routes", () => {
     await expect(page.getByText("npm run report:bakeoff -- --profiles debug,production")).toBeVisible();
     await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText("Playwright admin parity grant");
 
-    const completedReport = await createCompletedReport(email, { name, reportType: "core" });
-    await page.goto("/library");
-    const reportFilters = page.getByRole("navigation", { name: "Report filters" });
-    await expect(reportFilters).toBeVisible();
-    await expect(reportFilters.getByRole("link", { name: /Core/ })).toBeVisible();
-    await reportFilters.getByRole("link", { name: /Core/ }).click();
-    await expect(page).toHaveURL(/filter=core/);
-    await expect(page.getByText(`${name} — Core Report`)).toBeVisible();
-    await page.getByLabel("Search Library").fill(name);
-    await page.getByRole("button", { name: "Search" }).click();
-    await expect(page).toHaveURL(/q=Astra/);
-    await createAstrologyReportShare(db, { requestId: completedReport.request.id, userId: completedReport.request.userId, baseUrl: "http://localhost:3011" });
-    await page.goto("/library?filter=shared");
-    await expect(page.getByText(`${name} — Core Report`)).toBeVisible();
-    await page.getByRole("link", { name: new RegExp(`View report: ${name}`) }).first().click();
-    await expect(page.getByRole("heading", { name: `${name} — Core Report` })).toBeVisible();
-    const debugDetails = page.locator("details.reportDebugDetails");
-    await expect(debugDetails).toContainText("Report debug details");
-    await debugDetails.locator("summary").click();
-    await expect(debugDetails).toContainText(completedReport.request.id);
-    await expect(debugDetails).toContainText("local-chart-routine");
-    await expect(debugDetails).toContainText("local-deterministic-writer");
-
     await page.goto("/self#self-birth-onboarding");
     await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
     const nextButton = page.getByRole("button", { exact: true, name: "Next" });
@@ -367,5 +372,41 @@ test.describe("clean-start routes", () => {
     await page.getByLabel("Synastry Report").check();
     await expect(page.getByLabel("Comparison chart")).toBeVisible();
     await expect(page.getByLabel("Comparison chart")).toContainText(name);
+
+    const completedChart = await createCompletedChart(email, { name });
+    const completedReport = await createCompletedReport(email, { chartRequestId: completedChart.request.id, name, reportType: "core" });
+    await page.goto("/charts");
+    await expect(page.getByRole("heading", { name: "Saved charts" })).toBeVisible();
+    await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Charts" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByLabel("Saved charts list").getByRole("heading", { name }).first()).toBeVisible();
+    await expect(page.getByText("Portrait ready")).toBeVisible();
+    const selectedChart = page.getByLabel("Selected chart");
+    await expect(selectedChart.getByLabel("Static natal chart wheel")).toBeVisible();
+    await expect(selectedChart).toContainText("Tropical");
+    await expect(selectedChart).toContainText("Whole Sign");
+    await page.getByRole("link", { name: "Portrait" }).first().click();
+    await expect(page).toHaveURL(new RegExp(`/library\\?reportId=${completedReport.request.id}`));
+
+    await page.goto("/library");
+    const reportFilters = page.getByRole("navigation", { name: "Report filters" });
+    await expect(reportFilters).toBeVisible();
+    await expect(reportFilters.getByRole("link", { name: /Core/ })).toBeVisible();
+    await reportFilters.getByRole("link", { name: /Core/ }).click();
+    await expect(page).toHaveURL(/filter=core/);
+    await expect(page.getByText(`${name} — Core Report`)).toBeVisible();
+    await page.getByLabel("Search Library").fill(name);
+    await page.getByRole("button", { name: "Search" }).click();
+    await expect(page).toHaveURL(/q=Astra/);
+    await createAstrologyReportShare(db, { requestId: completedReport.request.id, userId: completedReport.request.userId, baseUrl: "http://localhost:3011" });
+    await page.goto("/library?filter=shared");
+    await expect(page.getByText(`${name} — Core Report`)).toBeVisible();
+    await page.getByRole("link", { name: new RegExp(`View report: ${name}`) }).first().click();
+    await expect(page.getByRole("heading", { name: `${name} — Core Report` })).toBeVisible();
+    const debugDetails = page.locator("details.reportDebugDetails");
+    await expect(debugDetails).toContainText("Report debug details");
+    await debugDetails.locator("summary").click();
+    await expect(debugDetails).toContainText(completedReport.request.id);
+    await expect(debugDetails).toContainText("local-chart-routine");
+    await expect(debugDetails).toContainText("local-deterministic-writer");
   });
 });

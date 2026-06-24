@@ -905,6 +905,152 @@ a.card-link:focus-visible {
   font-weight: 680;
 }
 
+.chartsLayout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.82fr) minmax(360px, 1.18fr);
+  gap: 16px;
+  width: min(1120px, 100%);
+  align-items: start;
+}
+
+.chartsList {
+  display: grid;
+  gap: 10px;
+}
+
+.chartHomeCard {
+  display: grid;
+  gap: 14px;
+  border: 1px solid color-mix(in srgb, var(--gold) 15%, var(--line));
+  border-radius: 8px;
+  padding: 14px;
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--blue) 8%, transparent), transparent 34%),
+    color-mix(in srgb, var(--panel) 94%, transparent);
+}
+
+.chartHomeCardActive {
+  border-color: color-mix(in srgb, var(--gold) 40%, var(--line));
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--gold) 13%, transparent), transparent 36%),
+    color-mix(in srgb, var(--panel) 98%, transparent);
+}
+
+.chartHomeCardMain {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.chartHomeInitial {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--gold) 32%, var(--line));
+  border-radius: 999px;
+  color: var(--gold);
+  font-weight: 850;
+}
+
+.chartHomeCard h2,
+.chartDetailHeader h2 {
+  margin: 0;
+}
+
+.chartHomeCard p,
+.chartDetailHeader p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-weight: 680;
+}
+
+.chartStatusPill {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 10px;
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--line));
+  border-radius: 999px;
+  padding: 4px 9px;
+  color: var(--gold);
+  font-size: 0.74rem;
+  font-weight: 850;
+}
+
+.chartHomeActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.chartHomeActions .button,
+.chartDetailHeader .button {
+  min-height: 34px;
+  padding: 0 11px;
+  font-size: 0.82rem;
+}
+
+.chartDetailPanel {
+  display: grid;
+  gap: 14px;
+  border: 1px solid color-mix(in srgb, var(--gold) 20%, var(--line));
+  border-radius: 8px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 34%),
+    radial-gradient(circle at 100% 8%, color-mix(in srgb, var(--blue) 12%, transparent), transparent 32%),
+    color-mix(in srgb, var(--panel) 94%, transparent);
+}
+
+.chartDetailHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.chartDetailPanel .reportDocumentPlate {
+  float: none;
+  width: min(420px, 100%);
+  max-width: none;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.chartDetailPanel .reportDocumentPlateFacts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.chartDetailFacts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.chartDetailFacts div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: color-mix(in srgb, var(--soft) 70%, transparent);
+}
+
+.chartDetailFacts dt {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 820;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.chartDetailFacts dd {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-weight: 760;
+}
+
 .reportReaderShell {
   display: grid;
   grid-template-columns: 1fr;
@@ -3015,6 +3161,28 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
     min-height: 0;
   }
 
+  .chartsLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .chartDetailHeader {
+    display: grid;
+  }
+
+  .chartHomeActions {
+    justify-content: stretch;
+  }
+
+  .chartHomeActions .button,
+  .chartDetailHeader .button {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .chartDetailFacts {
+    grid-template-columns: 1fr;
+  }
+
   .detail-meta {
     grid-template-columns: 1fr;
   }
@@ -3025,7 +3193,7 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
     right: 0;
     bottom: 0;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 4px;
     border-top: 1px solid var(--line);
     background: color-mix(in srgb, var(--paper) 96%, transparent);

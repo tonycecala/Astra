@@ -14,6 +14,7 @@
     "@astra/contracts": "file:../../packages/contracts",
     "@astra/db": "file:../../packages/db",
     "@astra/astrology": "file:../../packages/astrology",
+    "@astra/chart-maker": "file:../../packages/chart-maker",
     "@astra/testkit": "file:../../packages/testkit",
     "@astra/ui": "file:../../packages/ui",
     "@better-auth/drizzle-adapter": "^1.6.11",

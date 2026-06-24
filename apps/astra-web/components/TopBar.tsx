@@ -12,6 +12,7 @@ const topbarRoutes = [
   { href: "/journey", label: ui.nav.journey },
   { href: "/allies", label: ui.nav.allies },
   { href: "/self", label: ui.nav.self },
+  { href: "/charts", label: ui.nav.charts },
   { href: "/library", label: ui.nav.library },
   { href: "/gifts", label: ui.nav.gifts }
 ];

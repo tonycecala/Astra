@@ -137,7 +137,7 @@ export default async function SelfPage() {
             )}
           </div>
           <div className="self-profile-actions" role="group" aria-label={ui.self.profileActionsLabel}>
-            <Link className="button secondary" href="/journey">
+            <Link className="button secondary" href="/charts">
               <ChartPie aria-hidden="true" size={16} />
               {ui.self.viewChart}
             </Link>
@@ -169,7 +169,7 @@ export default async function SelfPage() {
       </section>
       <section className="grid" aria-label={ui.self.summaryLabel}>
         {latestRequest ? (
-          <Link className="card self-chart-anchor" href="/journey">
+          <Link className="card self-chart-anchor" href="/charts">
             <div className="self-chart-anchor-header">
               <ChartPie aria-hidden="true" className="self-chart-anchor-icon" size={16} />
               <div className="self-chart-anchor-text">

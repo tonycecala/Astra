@@ -1,6 +1,6 @@
 "use client";
 
-import { BookMarked, Compass, Sparkles as Stars, UserRound, UsersRound } from "lucide-react";
+import { BookMarked, ChartPie, Compass, Sparkles as Stars, UserRound, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ui } from "../lib/i18n";
@@ -9,6 +9,7 @@ const navItems = [
   { href: "/journey", label: ui.nav.journey, icon: Compass },
   { href: "/allies", label: ui.nav.allies, icon: UsersRound },
   { href: "/self", label: ui.nav.self, icon: UserRound },
+  { href: "/charts", label: ui.nav.charts, icon: ChartPie },
   { href: "/library", label: ui.nav.library, icon: BookMarked },
   { href: "/gifts", label: ui.nav.gifts, icon: Stars }
 ];
