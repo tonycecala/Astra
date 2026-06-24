@@ -1,3 +1,4 @@
+import { AuthPanel } from "../../components/AuthPanel";
 import { PageHeader } from "../../components/PageHeader";
 import { StreamReader } from "../../components/StreamReader";
 import { getAstraAuthContext } from "../../lib/auth/profile";
@@ -57,6 +58,16 @@ export default async function JourneyPage({ searchParams }: JourneyPageProps) {
       <PageHeader eyebrow={ui.journey.eyebrow} title={ui.journey.title}>
         {ui.journey.intro}
       </PageHeader>
+      {!profile ? (
+        <section className="grid" aria-label={ui.login.pageKicker}>
+          <article className="card">
+            <div className="eyebrow">{ui.login.pageKicker}</div>
+            <h2>{ui.login.pageTitle}</h2>
+            <p>{ui.login.pageIntro}</p>
+            <AuthPanel />
+          </article>
+        </section>
+      ) : null}
       <section className="journey-state-card" aria-label={ui.journey.stateLabel}>
         <div>
           <p className="eyebrow">{ui.journey.states[view.feedState].eyebrow}</p>

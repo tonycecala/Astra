@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState, useSyncExternalStore } from "react";
 import { authClient } from "../lib/auth/client";
 import { ui } from "../lib/i18n";
@@ -21,6 +22,7 @@ function serverNotReady() {
 
 export function AuthPanel() {
   const { data: session, isPending } = authClient.useSession();
+  const router = useRouter();
   const mounted = useSyncExternalStore(subscribeToClientReady, clientReady, serverNotReady);
   const [step, setStep] = useState<AuthStep>("email");
   const [name, setName] = useState("");
@@ -67,6 +69,7 @@ export function AuthPanel() {
   async function signOut() {
     await authClient.signOut();
     setMessage(ui.login.signedOut);
+    router.refresh();
   }
 
   if (!mounted || isPending) {

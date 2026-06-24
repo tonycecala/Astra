@@ -2,7 +2,7 @@
 
 import { Bell, CircleHelp, Settings, Sparkles as Stars, UserRound } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { authClient } from "../lib/auth/client";
 import { ui } from "../lib/i18n";
@@ -27,12 +27,14 @@ function accountInitial(name: string) {
 
 function useAccountState() {
   const { data: session } = authClient.useSession();
+  const router = useRouter();
   const accountName = session?.user?.name || session?.user?.email || ui.account.guestName;
   const accountEmail = session?.user?.email ?? "";
   const signedIn = Boolean(session?.user);
 
   async function signOut() {
     await authClient.signOut();
+    router.refresh();
   }
 
   return { accountEmail, accountName, signedIn, signOut };
