@@ -108,8 +108,8 @@ if (!completed.provenance.some((entry) => entry.kind === "engine")) {
 if (!completed.provenance.some((entry) => entry.summary.includes(LOCAL_DETERMINISTIC_REPORT_WRITER))) {
   throw new Error("Configured astrology report should include deterministic writer provenance.");
 }
-if (completed.publicSignal?.headline !== "Gemini Sun, Virgo Moon, Cancer rising") {
-  throw new Error(`Configured astrology report should expose Tony's GEM/VIR/CAN signature, got: ${completed.publicSignal?.headline ?? "missing"}`);
+if (completed.publicSignal?.headline !== "Tony C — Core Report") {
+  throw new Error(`Configured astrology report should expose Tony's report headline, got: ${completed.publicSignal?.headline ?? "missing"}`);
 }
 if (
   !completed.publicSignal.provenanceSummary.includes(ASTRA_DEFAULT_ZODIAC_MODE) ||
@@ -122,9 +122,9 @@ if (!completed.publicSignal.provenanceSummary.includes(LOCAL_DETERMINISTIC_REPOR
 }
 
 const publicCompleted = buildAstrologyReportResult(einsteinPublicRequest);
-if (publicCompleted.publicSignal?.headline !== "Pisces Sun, Sagittarius Moon, Cancer rising") {
+if (publicCompleted.publicSignal?.headline !== "Albert Einstein — Core Report") {
   throw new Error(
-    `Configured astrology report should preserve Einstein's public AA chart signature, got: ${publicCompleted.publicSignal?.headline ?? "missing"}`
+    `Configured astrology report should preserve Einstein's public AA report headline, got: ${publicCompleted.publicSignal?.headline ?? "missing"}`
   );
 }
 
@@ -173,38 +173,37 @@ const successfulModelFetch: typeof fetch = async (url, init) => {
   }
 
   const body = JSON.parse(String(init?.body ?? "{}")) as Record<string, unknown>;
-  if (body.model !== "gpt-5.2" || typeof body.input !== "string" || !body.input.includes("Preserve the chart signature exactly.")) {
+  if (body.model !== "gpt-5.2" || typeof body.input !== "string" || !body.input.includes("Section signal cards:")) {
     throw new Error("Debug model writer did not send the expected Responses API payload.");
   }
 
   return new Response(
     JSON.stringify({
-      output_text: JSON.stringify({
-        summary: "Model draft kept the Gemini/Virgo/Cancer signature for private review.",
-        sections: [
-          {
-            id: "debug-model-core",
-            title: "Model core",
-            body: "The model draft names Gemini Sun, Virgo Moon, and Cancer rising without changing the computed signature.",
-            emphasis: "primary"
-          },
-          {
-            id: "debug-model-evidence",
-            title: "Model evidence",
-            body: "The model draft stays inside the chart evidence supplied by the deterministic baseline.",
-            emphasis: "supporting"
-          },
-          {
-            id: "debug-model-practice",
-            title: "Model practice",
-            body: "The model draft adds a private reflection prompt while public signal publishing stays deterministic.",
-            emphasis: "practice"
-          }
-        ],
-        publicSignal: {
-          summary: "The model tried to change public copy, but Astra must ignore it."
-        }
-      })
+      output_text: [
+        "# Astra Report - Tony C",
+        "",
+        "## Identity",
+        "",
+        [
+          "Model draft kept the Gemini/Virgo/Cancer signature for private review. Your Gemini Sun stays tied to the private thinking pattern in the supplied chart notes, while the Virgo Moon and Cancer rising keep the emotional and visible tone grounded in the computed signature. The point is not that you are merely quick or verbal; it is that your mind keeps moving behind the curtain before you decide what is safe enough to say aloud.",
+          "That private motion matters because the Virgo Moon gives the report a second organizing intelligence. It turns feeling into observation, conversation, and careful sorting, which can make your emotional life look more contained than it actually is. Cancer rising then changes how the pattern arrives in the room: people may meet sensitivity, caution, and protectiveness first, while the more restless Gemini layer is still deciding how much of itself to reveal.",
+          "The tension is useful when it becomes conscious. You can read a situation quickly, name the practical detail that others missed, and still hold enough emotional context to know why that detail matters. The cost is that you may edit yourself until the cleanest sentence replaces the truer one, especially when the chart notes point toward privacy as both a refuge and a habit.",
+          "This is where the report has to stay personal rather than generic. The Gemini part needs movement, exchange, and room to test language; the Virgo Moon needs accuracy, order, and evidence that the feeling has been handled responsibly; Cancer rising needs enough safety to let the inner life cross the threshold. When those needs cooperate, the chart reads as someone who can make a precise emotional truth usable without draining it of warmth. That is the tested private-report depth this smoke path is meant to protect.",
+          "A useful practice is to notice the moment when a real thought becomes a polished version of itself. That small pause tells you whether discretion is protecting something sacred or simply keeping you from being available. The work is not to become louder; it is to let the right thought arrive with enough warmth and clarity that other people can actually meet you there."
+        ].join("\n\n"),
+        "",
+        "## Relationships",
+        "",
+        "The model draft names relationship material only from the selected chart signals. It keeps the private section grounded in Venus, Mars, and the report notes instead of trying to rewrite the deterministic public signal.",
+        "",
+        "## Work",
+        "",
+        "The model draft stays inside the chart evidence supplied by the section cards. It treats work as an expression of the same Gemini/Virgo/Cancer pattern and does not invent a new public headline.",
+        "",
+        "## Right Now",
+        "",
+        "Right now, the model draft adds a private reflection prompt while public signal publishing stays deterministic. It gives the reader one practical sentence without changing the stored public signal summary."
+      ].join("\n")
     }),
     { status: 200, headers: { "content-type": "application/json" } }
   );
@@ -215,15 +214,15 @@ const debugModelCompleted = await buildAstrologyReportResultAsync(reportRequest,
   fetchImpl: successfulModelFetch
 });
 if (debugModelCompleted.status !== "completed") {
-  throw new Error(`Debug model writer should complete with a mocked OpenAI response, got ${debugModelCompleted.status}.`);
+  throw new Error(`Debug model writer should complete with a mocked OpenAI response, got ${debugModelCompleted.status}: ${debugModelCompleted.error ?? "no error"}.`);
 }
 if (!debugModelCompleted.summary?.includes("Model draft kept")) {
   throw new Error("Debug model writer did not preserve the mocked private summary.");
 }
-if (debugModelCompleted.sections.length !== 3 || !debugModelCompleted.sections.some((section) => section.id === "debug-model-practice")) {
+if (debugModelCompleted.sections.length !== 4 || !debugModelCompleted.sections.some((section) => section.title === "Right Now")) {
   throw new Error("Debug model writer did not preserve the mocked private sections.");
 }
-if (debugModelCompleted.publicSignal?.headline !== "Gemini Sun, Virgo Moon, Cancer rising") {
+if (debugModelCompleted.publicSignal?.headline !== "Tony C — Core Report") {
   throw new Error("Debug model writer must preserve the deterministic public signal headline.");
 }
 if (debugModelCompleted.publicSignal.summary !== completed.publicSignal.summary) {
@@ -247,6 +246,46 @@ const malformedDebugModel = await buildAstrologyReportResultAsync(reportRequest,
 });
 if (malformedDebugModel.status !== "failed" || malformedDebugModel.publicSignal) {
   throw new Error("Debug model writer must fail privately when model output does not validate.");
+}
+
+const unsupportedClaimFetch: typeof fetch = async () => {
+  const longUnsupportedIdentity = Array.from({ length: 60 }, () =>
+    "This section deliberately repeats a grounded private-reading sentence so the validation exercise reaches the chart-claim guardrail instead of the length guardrail."
+  ).join(" ");
+  return new Response(
+    JSON.stringify({
+      output_text: [
+        "# Astra Report - Tony C",
+        "",
+        "## Identity",
+        "",
+        `The Sun in Pisces claim is intentionally unsupported for this Gemini chart. ${longUnsupportedIdentity}`,
+        "",
+        "## Relationships",
+        "",
+        "The model draft keeps relationship material short for this validation path.",
+        "",
+        "## Work",
+        "",
+        "The model draft keeps work material short for this validation path.",
+        "",
+        "## Right Now",
+        "",
+        "The model draft keeps current-season material short for this validation path."
+      ].join("\n")
+    }),
+    { status: 200, headers: { "content-type": "application/json" } }
+  );
+};
+const unsupportedClaimDebugModel = await buildAstrologyReportResultAsync(reportRequest, {
+  env: debugModelEnv,
+  fetchImpl: unsupportedClaimFetch
+});
+if (unsupportedClaimDebugModel.status !== "failed" || !unsupportedClaimDebugModel.error?.includes("Sun in Pisces")) {
+  throw new Error("Debug model writer must reject unsupported astrology claims before saving a report.");
+}
+if (unsupportedClaimDebugModel.publicSignal) {
+  throw new Error("Unsupported model claims must not expose a public signal.");
 }
 
 if (previousEngine === undefined) {

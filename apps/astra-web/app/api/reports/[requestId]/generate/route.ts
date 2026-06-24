@@ -1,5 +1,6 @@
 import { buildAstrologyReportResultAsync } from "@astra/astrology";
-import { db, getUserAstrologyReportRequest, recordAstrologyReportResult } from "@astra/db";
+import { buildChartMakerRecordResult } from "@astra/chart-maker";
+import { db, getUserAstrologyReportRequest, getUserChartMakerRequest, recordAstrologyReportResult, recordChartMakerResult } from "@astra/db";
 import { NextResponse } from "next/server";
 import { getAstraAuthContext } from "../../../../../lib/auth/profile";
 
@@ -25,6 +26,16 @@ export async function POST(_request: Request, context: RouteContext) {
 
   if (!reportRequest) {
     return NextResponse.json({ error: "ASTROLOGY_REPORT_REQUEST_NOT_FOUND" }, { status: 404 });
+  }
+
+  if (reportRequest.chartRequestId) {
+    const chartRequest = await getUserChartMakerRequest(db, {
+      requestId: reportRequest.chartRequestId,
+      userId: profile.userId
+    });
+    if (chartRequest) {
+      await recordChartMakerResult(db, buildChartMakerRecordResult(chartRequest));
+    }
   }
 
   const resultPayload = await buildAstrologyReportResultAsync(reportRequest);

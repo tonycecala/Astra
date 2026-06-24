@@ -1,12 +1,18 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
+import { createHmac, randomUUID } from "node:crypto";
+import { ASTRA_REPORT_WRITER_ENV, LOCAL_DETERMINISTIC_REPORT_WRITER, buildAstrologyReportResultAsync } from "@astra/astrology";
+import { buildChartMakerRecordResult } from "@astra/chart-maker";
+import { appUserProfiles, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, creditLedgerEntries, db, mirrorCreditBalanceToProfile, recordAstrologyReportResult, recordChartMakerResult } from "@astra/db";
+import { eq } from "drizzle-orm";
 
 type JsonObject = Record<string, unknown>;
 
 const routes = [
   { path: "/", heading: "A living stream", mobileHeading: "Journey" },
   { path: "/journey", heading: "A living stream", mobileHeading: "Journey" },
-  { path: "/allies", heading: "Companions with clear names", mobileHeading: "Allies" },
+  { path: "/allies", heading: "Sign in to create Ally reports", mobileHeading: "Allies" },
   { path: "/self", heading: "Sign in to see your Astra", mobileHeading: "Self" },
+  { path: "/charts", heading: "Sign in to see your charts", mobileHeading: "Charts" },
   { path: "/library", heading: "Artifacts worth keeping", mobileHeading: "Library" },
   { path: "/gifts", heading: "Stars stay accountable", mobileHeading: "Gifts" },
   { path: "/login", heading: "Welcome back to Astra" }
@@ -67,6 +73,138 @@ async function readOtpFromMailpit(email: string) {
   throw new Error(`No OTP found in Mailpit for ${email}.`);
 }
 
+async function signInWithOtp(page: Page, input: { email: string; name: string }) {
+  await page.goto("/login");
+  await page.getByLabel("Name").fill(input.name);
+  await page.getByLabel("Email").fill(input.email);
+  await page.getByRole("button", { name: "Send code" }).click();
+  await expect(page.getByText("Check email for the sign-in code")).toBeVisible();
+
+  await page.getByLabel("Code").fill(await readOtpFromMailpit(input.email));
+  await page.getByRole("button", { name: "Verify code" }).click();
+  await expect(page.getByRole("heading", { name: input.name })).toBeVisible();
+}
+
+async function makeProfileAdmin(email: string) {
+  const [profile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
+  if (!profile) throw new Error(`Expected profile for ${email}.`);
+  await db.update(appUserProfiles).set({ role: "admin", updatedAt: new Date() }).where(eq(appUserProfiles.userId, profile.userId));
+  await db
+    .insert(creditLedgerEntries)
+    .values({
+      amount: 20,
+      description: "Playwright admin parity grant",
+      eventType: "admin_adjustment",
+      idempotencyKey: `playwright_admin_grant:${profile.userId}:${Date.now()}`,
+      metadata: { actor: "playwright", reason: "Admin parity browser QA" },
+      source: "playwright_e2e",
+      userId: profile.userId
+    });
+  await mirrorCreditBalanceToProfile(db, profile.userId);
+}
+
+async function createCompletedChart(email: string, input: { name: string }) {
+  const [profile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
+  if (!profile) throw new Error(`Expected profile for ${email}.`);
+  const request = await createChartMakerRequest(db, {
+    userId: profile.userId,
+    subjectName: input.name,
+    birthData: {
+      date: "1961-05-23",
+      time: "09:30",
+      timezone: "America/New_York",
+      location: "New York, NY, USA",
+      latitude: 40.7128,
+      longitude: -74.006
+    },
+    intent: "playwright-chart-home-qa",
+    context: {
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+      subject: { subjectType: "self", displayName: input.name }
+    },
+    source: "self"
+  });
+  const result = await recordChartMakerResult(db, buildChartMakerRecordResult(request));
+  return { request, result };
+}
+
+async function createCompletedReport(email: string, input: { chartRequestId?: string; name: string; reportType?: "core" | "deep" | "identity" }) {
+  const [profile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
+  if (!profile) throw new Error(`Expected profile for ${email}.`);
+  const request = await createAstrologyReportRequest(db, {
+    id: randomUUID(),
+    userId: profile.userId,
+    chartRequestId: input.chartRequestId,
+    reportType: input.reportType ?? "core",
+    subjectName: input.name,
+    birthData: {
+      date: "1961-05-23",
+      time: "09:30",
+      timezone: "America/New_York",
+      location: "New York, NY, USA",
+      latitude: 40.7128,
+      longitude: -74.006
+    },
+    intent: "playwright-library-filter-qa",
+    context: {
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+      subject: { subjectType: "self", displayName: input.name }
+    },
+    source: "self"
+  });
+  const result = await recordAstrologyReportResult(
+    db,
+    await buildAstrologyReportResultAsync(request, {
+      env: {
+        ...process.env,
+        [ASTRA_REPORT_WRITER_ENV]: LOCAL_DETERMINISTIC_REPORT_WRITER
+      }
+    })
+  );
+  return { request, result };
+}
+
+function signedStripeHeader(rawBody: string) {
+  const secret = process.env.STRIPE_WEBHOOK_SECRET?.trim() || process.env.STRIPE_WEBHOOK_TEST_SECRET?.trim();
+  if (!secret) throw new Error("STRIPE_WEBHOOK_SECRET or STRIPE_WEBHOOK_TEST_SECRET is required for browser-visible Stripe QA.");
+  const timestamp = Math.floor(Date.now() / 1000);
+  const signature = createHmac("sha256", secret).update(`${timestamp}.${rawBody}`).digest("hex");
+  return `t=${timestamp},v1=${signature}`;
+}
+
+async function fulfillCheckoutThroughWebhook(page: Page, input: { checkoutSessionId: string; userId: string }) {
+  const event = {
+    id: `evt_playwright_${input.checkoutSessionId.replace(/[^a-zA-Z0-9]/g, "_")}`,
+    type: "checkout.session.completed",
+    data: {
+      object: {
+        amount_total: 999,
+        client_reference_id: input.userId,
+        currency: "usd",
+        customer: "cus_playwright_admin_parity",
+        id: input.checkoutSessionId,
+        metadata: {
+          astra_user_id: input.userId,
+          product_key: "core_pack",
+          product_type: "star_pack",
+          stars: "5"
+        },
+        payment_intent: "pi_playwright_admin_parity"
+      }
+    }
+  };
+  const rawBody = JSON.stringify(event);
+  const response = await page.request.post("/api/stripe/webhook", {
+    data: rawBody,
+    headers: {
+      "content-type": "application/json",
+      "stripe-signature": signedStripeHeader(rawBody)
+    }
+  });
+  expect(response.ok()).toBe(true);
+  return (await response.json()) as JsonObject;
+}
+
 test.describe("clean-start routes", () => {
   for (const route of routes) {
     test(`${route.path} renders without console errors`, async ({ page }, testInfo) => {
@@ -111,7 +249,7 @@ test.describe("clean-start routes", () => {
   test("primary journey reaches adjacent clean-start areas", async ({ page }, testInfo) => {
     await page.goto("/journey");
     await page.locator('a[href="/allies"]:visible').click();
-    await expect(page.getByRole("heading", { name: testInfo.project.name === "mobile" ? "Allies" : "Companions with clear names" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: testInfo.project.name === "mobile" ? "Allies" : "Sign in to create Ally reports" })).toBeVisible();
     await page.locator('a[href="/self"]:visible').click();
     await expect(page.getByRole("heading", { name: testInfo.project.name === "mobile" ? "Self" : "Sign in to see your Astra" })).toBeVisible();
   });
@@ -165,80 +303,184 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("button", { name: "Send code" })).toBeVisible();
   });
 
-  test("signed-in self onboarding queues chart and report requests", async ({ page }, testInfo) => {
+  test("signed-in self onboarding requires report cost confirmation", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "desktop", "The auth-backed onboarding journey is covered on desktop in this regression test.");
 
     const email = `self-onboarding-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
     const name = "Astra Onboarding Smoke";
 
-    await page.goto("/login");
-    await page.getByLabel("Name").fill(name);
-    await page.getByLabel("Email").fill(email);
-    await page.getByRole("button", { name: "Send code" }).click();
-    await expect(page.getByText("Check email for the sign-in code")).toBeVisible();
+    await signInWithOtp(page, { email, name });
+    await page.getByRole("link", { name: "Continue to Self" }).click();
 
-    await page.getByLabel("Code").fill(await readOtpFromMailpit(email));
-    await page.getByRole("button", { name: "Verify code" }).click();
-
-    await page.goto("/journey");
-    const journeyState = page.getByLabel("Journey state");
-    const journeyStateText = (await journeyState.textContent()) ?? "";
-    const isSignedOut = journeyStateText.includes("A public sample, not your private Journey");
-    test.skip(isSignedOut, "Journey is in signed-out preview mode; onboarding test requires private auth state.");
-    await expect(journeyState).toContainText("First private runComposer will generate your onboarding cards");
-    await expect(page.getByRole("heading", { name: "No cards in this lane" })).toBeVisible();
-
-    await page.goto("/self");
-    await page.reload();
     await expect(page.getByRole("heading", { name })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
-    await expect(page.getByLabel("Alpha onboarding guidance")).toContainText("Your name and birth date are enough");
-    await expect(page.getByText("Step 1 of 3: Your name")).toBeVisible();
-    await expect(page.getByLabel("Chart generation flow")).toContainText("Birth data");
-    await expect(page.getByLabel("Chart generation flow")).toContainText("Saved in Library");
+    await expect(page.getByLabel("Alpha onboarding guidance")).toHaveCount(0);
+    await expect(page.getByLabel("Chart generation flow")).toHaveCount(0);
+    await expect(page.getByText("Step 1 of 4: Your name")).toBeVisible();
+    await expect(page.getByLabel("Your name")).toHaveValue(name);
 
     const nextButton = page.getByRole("button", { exact: true, name: "Next" });
     await nextButton.click();
+    await expect(page.getByText("Step 2 of 4: Birth details")).toBeVisible();
     await page.getByLabel("Birth date").fill("1961-05-23");
-    await expect(page.getByText("Date-only is valid")).toBeVisible();
-    await page.getByLabel("Time and place").check();
-    await page.getByLabel("Search birth place").fill("New");
-    await page.getByRole("button", { exact: true, name: "Search" }).click();
-    await page.getByRole("button", { name: /New York, NY, USA/ }).click();
-    await page.getByLabel("Birth time (optional)").fill("09:30");
+    await nextButton.click();
+    await expect(page.getByText("Step 3 of 4: Report")).toBeVisible();
+    await expect(page.getByText("Core Report")).toBeVisible();
+    await expect(page.getByText("Chart settings")).toBeVisible();
     await nextButton.click();
 
     await expect(page.getByLabel("Review birth data")).toContainText("1961-05-23");
-    await expect(page.getByLabel("Review birth data")).toContainText("New York, NY, USA");
+    await expect(page.getByLabel("Review birth data")).toContainText("Core Report");
     const queueButton = page.getByRole("button", { name: "Queue chart and report", exact: true });
-    if (await queueButton.isVisible()) {
-      await queueButton.click();
-    }
+    await queueButton.focus();
+    await page.keyboard.press("Enter");
+    const confirmDialog = page.getByRole("dialog", { name: "Confirm report" });
+    await expect(confirmDialog).toBeVisible();
+    await expect(confirmDialog).toContainText("Report selected");
+    await expect(confirmDialog).toContainText("Core Report");
+    await expect(confirmDialog).toContainText("Cost");
+    await expect(confirmDialog).toContainText("5 Stars");
+    await expect(confirmDialog).toContainText("Current balance");
+    await expect(confirmDialog.getByRole("button", { name: "OK" })).toBeVisible();
+    await confirmDialog.getByRole("button", { name: "Cancel" }).click();
+    await expect(confirmDialog).toHaveCount(0);
     const onboarding = page.locator('section[aria-label="Birth data onboarding"]');
     await expect(onboarding.getByRole("heading", { name: "Recent chart requests" })).toBeVisible();
     await expect(onboarding.getByRole("heading", { name: "Report status" })).toBeVisible();
-    await expect(onboarding).toContainText(name);
-    await expect(onboarding).toContainText("Generating");
-    await expect(onboarding).toContainText("Report generated");
-    await expect(onboarding).toContainText("Gemini Sun, Virgo Moon");
-    await expect(onboarding.getByLabel("Chart generation flow")).toContainText("Saved in Library");
-    await page.getByRole("button", { name: "Read report" }).click();
-    await expect(page).toHaveURL(/\/library\?reportId=/);
-    await expect(page.getByRole("link", { name: "Click/Tap to Close Report" })).toBeVisible();
 
     await page.goto("/library");
     await expect(page.getByRole("heading", { name: "Artifacts worth keeping" })).toBeVisible();
-    const libraryReportCards = page.getByRole("link", { name: /View report:/ });
-    await expect(libraryReportCards.first()).toBeVisible();
-    await expect(libraryReportCards.first()).toContainText("report");
-    await libraryReportCards.first().click();
-    await expect(page).toHaveURL(/\/library\?reportId=/);
-    await expect(page.getByRole("link", { name: "Click/Tap to Close Report" })).toBeVisible();
-    await page.getByRole("link", { name: "Click/Tap to Close Report" }).click();
-    await expect(page).toHaveURL(/\/library$/);
 
     await page.goto("/journey");
-    await expect(page.locator(".status-strip").getByText("Private journey")).toBeVisible();
-    await expect(page.getByLabel("Journey state")).toContainText("First private runComposer will generate your onboarding cards");
+    await expect(page.getByRole("heading", { name: "A living stream" })).toBeVisible();
+  });
+
+  test("admin Stars ledger and Synastry controls stay browser-visible", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "The auth-backed admin and Synastry parity journey is covered on desktop.");
+
+    const email = `alpha-parity-admin-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
+    const name = "Astra Alpha Admin";
+
+    await signInWithOtp(page, { email, name });
+    await page.goto("/self");
+    await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
+    await makeProfileAdmin(email);
+
+    await page.goto("/stars");
+    await expect(page.getByRole("heading", { name: "Stars" })).toBeVisible();
+    await expect(page.getByText("Current balance")).toBeVisible();
+    await expect(page.getByText("50 Stars")).toBeVisible();
+    await page.getByRole("button", { name: "Add Stars" }).click();
+    const starsDialog = page.getByRole("dialog", { name: "Choose a Star pack" });
+    await expect(starsDialog).toBeVisible();
+    await expect(starsDialog).toContainText("5 Stars");
+    await expect(starsDialog).toContainText("$9.99");
+    await expect(starsDialog).toContainText("30 Stars");
+    await page.keyboard.press("Escape");
+    await expect(starsDialog).toHaveCount(0);
+
+    const [adminProfile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
+    if (!adminProfile) throw new Error(`Expected admin profile for ${email}.`);
+    const checkoutResponse = await page.request.post("/api/billing/create-checkout-session", {
+      data: {
+        cancelUrl: "http://localhost:3011/stars?checkout=cancelled",
+        productKey: "core_pack",
+        successUrl: "http://localhost:3011/stars?checkout=success"
+      }
+    });
+    expect(checkoutResponse.ok()).toBe(true);
+    const checkout = (await checkoutResponse.json()) as JsonObject;
+    const checkoutSessionId = String(checkout.checkoutSessionId ?? "");
+    expect(checkoutSessionId).toMatch(/^cs_/);
+    expect(String(checkout.url ?? "")).toContain("checkout.stripe.com");
+    const fulfilled = await fulfillCheckoutThroughWebhook(page, { checkoutSessionId, userId: adminProfile.userId });
+    expect(fulfilled.ok).toBe(true);
+    expect(fulfilled.balance).toBe(55);
+    await page.goto("/stars?checkout=success");
+    await expect(page.getByText("55 Stars")).toBeVisible();
+
+    await page.goto("/admin");
+    await expect(page.getByRole("heading", { name: "Admin Console" })).toBeVisible();
+    await expect(page.getByText(`Signed in as ${email} · Admin`)).toBeVisible();
+    await expect(page.getByLabel("Selected User")).toContainText(email);
+    await expect(page.getByLabel("Selected User")).toContainText("55");
+    await expect(page.getByRole("heading", { name: "Report bakeoff controls" })).toBeVisible();
+    await expect(page.getByLabel("Report request id")).toBeVisible();
+    await expect(page.getByLabel("Writer")).toBeVisible();
+    await expect(page.getByLabel("Profile")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Run Replay" }).first()).toBeVisible();
+    await expect(page.getByText("npm run report:bakeoff -- --profiles debug,production")).toBeVisible();
+    await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText("Playwright admin parity grant");
+    await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText("stripe_checkout");
+    await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText(checkoutSessionId.slice(0, 14));
+
+    await page.goto("/self#self-birth-onboarding");
+    await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
+    const nextButton = page.getByRole("button", { exact: true, name: "Next" });
+    await nextButton.click();
+    await page.getByLabel("Birth date").fill("1961-05-23");
+    await nextButton.click();
+    await expect(page.getByText("Deep Report")).toBeVisible();
+    await expect(page.getByText("Progressed Report")).toBeVisible();
+    await expect(page.getByText("Synastry Report")).toHaveCount(0);
+    await nextButton.click();
+    await page.getByRole("button", { name: "Queue chart and report", exact: true }).focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("dialog", { name: "Confirm report" })).toContainText("Admin mode records the report cost but does not debit Stars.");
+    await page.getByRole("button", { name: "OK" }).click();
+    await expect(page.getByText("Report is generating")).toBeVisible();
+
+    await page.getByRole("button", { name: "Start another report request" }).click();
+    await nextButton.click();
+    await page.getByLabel("Birth date").fill("1961-05-23");
+    await nextButton.click();
+    await page.getByLabel("Synastry Report").check();
+    await expect(page.getByLabel("Comparison chart")).toBeVisible();
+    await expect(page.getByLabel("Comparison chart")).toContainText(name);
+
+    const completedChart = await createCompletedChart(email, { name });
+    const completedReport = await createCompletedReport(email, { chartRequestId: completedChart.request.id, name, reportType: "core" });
+    await page.goto(`/admin?replayRequest=${completedReport.request.id}`);
+    await expect(page.getByLabel("Selected report run inspector")).toContainText(completedReport.request.id.slice(0, 8));
+    await expect(page.getByLabel("Selected report run inspector")).toContainText("completed");
+    await expect(page.locator("details.adminDebugDetails")).toContainText("Report debug details");
+    await expect(page.locator("details.adminDebugDetails")).toContainText("Usage");
+    await expect(page.locator("details.adminDebugDetails").getByRole("link", { name: "Open Library" })).toBeVisible();
+
+    await page.goto("/charts");
+    await expect(page.getByRole("heading", { name: "Saved charts" })).toBeVisible();
+    await expect(page.getByLabel("Saved charts list").getByRole("heading", { name }).first()).toBeVisible();
+    await expect(page.getByText("Portrait ready")).toBeVisible();
+    const selectedChart = page.getByLabel("Selected chart");
+    await expect(selectedChart.getByLabel("Full natal chart wheel")).toBeVisible();
+    await expect(selectedChart.getByLabel("Aspect legend")).toBeVisible();
+    await expect(selectedChart).toContainText("Selected Object");
+    await expect(selectedChart).toContainText("Tropical");
+    await expect(selectedChart).toContainText("Whole Sign");
+    await page.getByRole("link", { name: "Portrait" }).first().click();
+    await expect(page).toHaveURL(new RegExp(`/library\\?reportId=${completedReport.request.id}`));
+
+    await page.goto("/library");
+    const reportFilters = page.getByRole("navigation", { name: "Report filters" });
+    await expect(reportFilters).toBeVisible();
+    await expect(reportFilters.getByRole("link", { name: /Core/ })).toBeVisible();
+    await reportFilters.getByRole("link", { name: /Core/ }).click();
+    await expect(page).toHaveURL(/filter=core/);
+    await expect(page.getByText(`${name} — Core Report`)).toBeVisible();
+    await page.getByLabel("Search Library").fill(name);
+    await page.getByRole("button", { name: "Search" }).click();
+    await expect(page).toHaveURL(/q=Astra/);
+    await createAstrologyReportShare(db, { requestId: completedReport.request.id, userId: completedReport.request.userId, baseUrl: "http://localhost:3011" });
+    await page.goto("/library?filter=shared");
+    await expect(page.getByText(`${name} — Core Report`)).toBeVisible();
+    await page.getByRole("link", { name: new RegExp(`View report: ${name}`) }).first().click();
+    await expect(page.getByRole("heading", { name: `${name} — Core Report` })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "How did this portrait land?" })).toBeVisible();
+    const debugDetails = page.locator("details.reportDebugDetails");
+    await expect(debugDetails).toContainText("Report debug details");
+    await debugDetails.locator("summary").click();
+    await expect(debugDetails).toContainText(completedReport.request.id);
+    await expect(debugDetails).toContainText("local-chart-routine");
+    await expect(debugDetails).toContainText("local-deterministic-writer");
   });
 });

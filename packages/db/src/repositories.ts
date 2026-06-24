@@ -1,11 +1,14 @@
-import { and, asc, desc, eq } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
+import { createHash, randomBytes } from "node:crypto";
 import {
   type Artifact,
   type AstrologyReportRequest,
   type AstrologyReportResult,
+  type Ally,
   type ComposerDecision,
   type ComposerAvailabilityCollection,
   type ComposerAvailabilityResponse,
+  type CreateAlly,
   type CreateComposerDecision,
   type CreateUserFeedItem,
   type ComposerStreamArtifact,
@@ -19,6 +22,7 @@ import {
   type RecordAstrologyReportResult,
   type SourceCard,
   type UserFeedItem,
+  allySchema,
   artifactSchema,
   astrologyReportRequestSchema,
   astrologyReportResultSchema,
@@ -27,6 +31,7 @@ import {
   chartMakerResultSchema,
   composerDecisionSchema,
   createComposerDecisionSchema,
+  createAllySchema,
   createAstrologyReportRequestSchema,
   createUserFeedItemSchema,
   composerStreamArtifactSchema,
@@ -46,7 +51,9 @@ import {
   appUserProfiles,
   astrologyReportRequests,
   astrologyReportResults,
+  astrologyReportShares,
   artifacts,
+  betaFeedback,
   cards,
   chartRequests,
   chartResults,
@@ -56,10 +63,14 @@ import {
   composerLibraryCollections,
   composerQueueDrafts,
   composerQueuePublishPlans,
+  creditLedgerEntries,
   gifts,
+  products,
+  purchases,
   publicStreamItems,
   sourceCards,
   starTransactions,
+  stripeEvents,
   streamItems,
   user,
   userFeedItems
@@ -88,6 +99,11 @@ export type AuthUserProfileInput = {
   displayName: string;
 };
 
+export type CreateAllyInput = CreateAlly & {
+  userId: string;
+  id?: string;
+};
+
 export type CreateChartMakerRequestInput = {
   userId: string;
   subjectName: string;
@@ -99,6 +115,7 @@ export type CreateChartMakerRequestInput = {
 };
 
 export type CreateAstrologyReportRequestInput = {
+  id?: string;
   userId: string;
   chartRequestId?: string;
   reportType?: AstrologyReportRequest["reportType"];
@@ -108,10 +125,45 @@ export type CreateAstrologyReportRequestInput = {
   intent?: string;
   context?: Record<string, unknown>;
   source?: AstrologyReportRequest["source"];
+  costCredits?: number;
 };
 
 export type RecordChartMakerResultInput = RecordChartMakerResult;
 export type RecordAstrologyReportResultInput = RecordAstrologyReportResult;
+export type AstrologyReportShare = {
+  shareUrl: string;
+  subject: string;
+  body: string;
+};
+export type SharedAstrologyReport = {
+  request: AstrologyReportRequest;
+  result: AstrologyReportResult;
+};
+
+export type BetaFeedbackCategory = "report_quality" | "checkout" | "bug" | "other";
+
+export type CreateBetaFeedbackInput = {
+  category: BetaFeedbackCategory;
+  message: string;
+  metadata?: Record<string, unknown>;
+  rating?: number | null;
+  reportRequestId: string;
+  userId: string;
+};
+
+export type BetaFeedbackRecord = {
+  category: BetaFeedbackCategory;
+  createdAt: Date;
+  id: string;
+  message: string;
+  metadata: Record<string, unknown>;
+  rating: number | null;
+  reportRequestId: string | null;
+  reportType: string;
+  userDisplayName: string | null;
+  userEmail: string | null;
+  userId: string;
+};
 export type UpsertComposerStreamArtifactInput = ComposerStreamArtifact;
 export type CreateUserFeedItemInput = CreateUserFeedItem;
 export type CreateComposerDecisionInput = CreateComposerDecision;
@@ -173,6 +225,10 @@ function toDate(value: string) {
 
 function toIsoDate(value: Date | string) {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
+}
+
+function asJsonObject(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
 }
 
 function chartRequestFromRow(row: typeof chartRequests.$inferSelect): ChartMakerRequest {
@@ -251,6 +307,18 @@ function artifactFromRow(row: typeof artifacts.$inferSelect): Artifact {
     title: row.title,
     kind: row.kind,
     summary: row.summary,
+    createdAt: toIsoDate(row.createdAt)
+  });
+}
+
+function allyFromRow(row: typeof allies.$inferSelect): Ally {
+  return allySchema.parse({
+    id: row.id,
+    userId: row.userId,
+    name: row.name,
+    kind: row.kind,
+    relationship: row.relationship,
+    note: row.note ?? undefined,
     createdAt: toIsoDate(row.createdAt)
   });
 }
@@ -1160,6 +1228,36 @@ export async function upsertAuthUserProfile(database: AstraDb, input: AuthUserPr
   return profile;
 }
 
+export async function createAlly(database: AstraDb, input: CreateAllyInput): Promise<Ally> {
+  const parsed = createAllySchema.parse(input);
+  const now = new Date();
+
+  const [row] = await database
+    .insert(allies)
+    .values({
+      id: input.id ?? `ally:${input.userId}:${crypto.randomUUID()}`,
+      userId: input.userId,
+      name: parsed.name,
+      kind: parsed.kind,
+      relationship: parsed.relationship,
+      note: parsed.note ?? null,
+      createdAt: now
+    })
+    .returning();
+
+  return allyFromRow(row);
+}
+
+export async function listUserAllies(database: AstraDb, userId: string): Promise<Ally[]> {
+  const rows = await database
+    .select()
+    .from(allies)
+    .where(eq(allies.userId, userId))
+    .orderBy(desc(allies.createdAt));
+
+  return rows.map(allyFromRow);
+}
+
 export async function createChartMakerRequest(
   database: AstraDb,
   input: CreateChartMakerRequestInput
@@ -1194,6 +1292,22 @@ export async function listUserChartMakerRequests(database: AstraDb, userId: stri
     .orderBy(desc(chartRequests.createdAt));
 
   return rows.map(chartRequestFromRow);
+}
+
+export async function getUserChartMakerRequest(
+  database: AstraDb,
+  input: {
+    requestId: string;
+    userId: string;
+  }
+): Promise<ChartMakerRequest | null> {
+  const [row] = await database
+    .select()
+    .from(chartRequests)
+    .where(and(eq(chartRequests.id, input.requestId), eq(chartRequests.userId, input.userId)))
+    .limit(1);
+
+  return row ? chartRequestFromRow(row) : null;
 }
 
 export async function recordChartMakerResult(
@@ -1266,6 +1380,7 @@ export async function createAstrologyReportRequest(
   const [request] = await database
     .insert(astrologyReportRequests)
     .values({
+      id: input.id,
       userId: input.userId,
       chartRequestId: parsed.chartRequestId ?? null,
       reportType: parsed.reportType,
@@ -1277,13 +1392,363 @@ export async function createAstrologyReportRequest(
       source: parsed.source,
       boundary: "private",
       status: "queued",
-      costCredits: 0,
+      costCredits: input.costCredits ?? 0,
       createdAt: now,
       updatedAt: now
     })
     .returning();
 
   return astrologyReportRequestFromRow(request);
+}
+
+export async function getCreditBalance(database: AstraDb, userId?: string | null) {
+  if (!userId) return 0;
+  const [row] = await database
+    .select({ balance: sql<number>`coalesce(sum(${creditLedgerEntries.amount}), 0)::integer` })
+    .from(creditLedgerEntries)
+    .where(eq(creditLedgerEntries.userId, userId));
+  return Number(row?.balance ?? 0);
+}
+
+export async function mirrorCreditBalanceToProfile(database: AstraDb, userId: string) {
+  const balance = await getCreditBalance(database, userId);
+  await database.update(appUserProfiles).set({ starBalance: balance, updatedAt: new Date() }).where(eq(appUserProfiles.userId, userId));
+  return balance;
+}
+
+export async function ensureBetaSignupCredits(database: AstraDb, userId: string) {
+  const amount = Number.parseInt(process.env.ASTRA_BETA_SIGNUP_CREDITS ?? "30", 10);
+  if (!Number.isInteger(amount) || amount <= 0) return null;
+  const [entry] = await database
+    .insert(creditLedgerEntries)
+    .values({
+      userId,
+      amount,
+      eventType: "beta_grant",
+      source: "founding_beta_explorer_pack",
+      description: `Founding Beta Explorer Pack - ${amount} Explorer Stars`,
+      idempotencyKey: `beta_grant:${userId}:explorer_pack_v1`,
+      metadata: { grantName: "Founding Beta Explorer Pack", label: "Explorer Stars - 30 gift Stars", actor: "system" }
+    })
+    .onConflictDoNothing()
+    .returning();
+  await mirrorCreditBalanceToProfile(database, userId);
+  return entry ?? null;
+}
+
+export async function adminAdjustCredits(
+  database: AstraDb,
+  input: { actorEmail?: string | null; amount: number; direction: "grant" | "revoke"; notes?: string | null; reason: string; targetEmail: string }
+) {
+  const targetEmail = input.targetEmail.trim().toLowerCase();
+  const amount = Math.abs(input.amount);
+  if (!targetEmail || !Number.isInteger(amount) || amount <= 0) throw new Error("invalid_credit_adjustment");
+
+  const [profile] = await database.select().from(appUserProfiles).where(eq(appUserProfiles.email, targetEmail)).limit(1);
+  if (!profile) throw new Error("credit_user_not_found");
+
+  const signedAmount = input.direction === "revoke" ? -amount : amount;
+  const [entry] = await database
+    .insert(creditLedgerEntries)
+    .values({
+      userId: profile.userId,
+      amount: signedAmount,
+      eventType: "admin_adjustment",
+      source: "admin_console",
+      description: input.reason,
+      idempotencyKey: `admin_adjustment:${profile.userId}:${Date.now()}:${randomBytes(4).toString("hex")}`,
+      metadata: {
+        actor: input.actorEmail ?? "admin",
+        adminEmail: input.actorEmail ?? "admin",
+        direction: input.direction,
+        notes: input.notes ?? "",
+        reason: input.reason
+      }
+    })
+    .returning();
+  const balance = await mirrorCreditBalanceToProfile(database, profile.userId);
+  return { balance, entry };
+}
+
+export async function adminUpdateUserRole(database: AstraDb, input: { role: string; targetEmail: string }) {
+  const targetEmail = input.targetEmail.trim().toLowerCase();
+  const role = input.role === "admin" ? "admin" : "customer";
+  const [profile] = await database
+    .update(appUserProfiles)
+    .set({ role, updatedAt: new Date() })
+    .where(eq(appUserProfiles.email, targetEmail))
+    .returning();
+  if (!profile) throw new Error("credit_user_not_found");
+  return profile;
+}
+
+export async function listCreditUsers(database: AstraDb, input: { limit?: number; search?: string | null } = {}) {
+  const limit = input.limit ?? 100;
+  const search = input.search?.trim().toLowerCase();
+  const rows = await database
+    .select({
+      createdAt: appUserProfiles.createdAt,
+      displayName: appUserProfiles.displayName,
+      email: appUserProfiles.email,
+      role: appUserProfiles.role,
+      userId: appUserProfiles.userId
+    })
+    .from(appUserProfiles)
+    .where(
+      search
+        ? sql`lower(${appUserProfiles.email}) like ${`%${search}%`} or lower(${appUserProfiles.displayName}) like ${`%${search}%`} or lower(${appUserProfiles.userId}) like ${`%${search}%`}`
+        : undefined
+    )
+    .orderBy(desc(appUserProfiles.updatedAt))
+    .limit(limit);
+
+  const userIds = rows.map((row) => row.userId);
+  if (!userIds.length) return [];
+
+  const [creditRows, chartRows, reportRows] = await Promise.all([
+    database
+      .select({
+        balance: sql<number>`coalesce(sum(${creditLedgerEntries.amount}), 0)::integer`,
+        userId: creditLedgerEntries.userId
+      })
+      .from(creditLedgerEntries)
+      .where(inArray(creditLedgerEntries.userId, userIds))
+      .groupBy(creditLedgerEntries.userId),
+    database
+      .select({
+        count: count(),
+        userId: chartRequests.userId
+      })
+      .from(chartRequests)
+      .where(inArray(chartRequests.userId, userIds))
+      .groupBy(chartRequests.userId),
+    database
+      .select({
+        count: count(),
+        userId: astrologyReportRequests.userId
+      })
+      .from(astrologyReportRequests)
+      .where(inArray(astrologyReportRequests.userId, userIds))
+      .groupBy(astrologyReportRequests.userId)
+  ]);
+
+  const creditsByUserId = new Map(creditRows.map((row) => [row.userId, Number(row.balance ?? 0)]));
+  const chartsByUserId = new Map(chartRows.map((row) => [row.userId, Number(row.count ?? 0)]));
+  const reportsByUserId = new Map(reportRows.map((row) => [row.userId, Number(row.count ?? 0)]));
+
+  return rows.map((row) => ({
+    ...row,
+    chartCount: chartsByUserId.get(row.userId) ?? 0,
+    creditBalance: creditsByUserId.get(row.userId) ?? 0,
+    reportCount: reportsByUserId.get(row.userId) ?? 0
+  }));
+}
+
+export async function getCreditLedgerSummary(database: AstraDb, userId?: string | null) {
+  const base = {
+    currentBalance: 0,
+    lastCreditEventAt: null as Date | null,
+    lifetimeCreditsGranted: 0,
+    lifetimeCreditsPurchased: 0,
+    lifetimeCreditsRefunded: 0,
+    lifetimeCreditsSpent: 0
+  };
+  if (!userId) return base;
+
+  const [row] = await database
+    .select({
+      currentBalance: sql<number>`coalesce(sum(${creditLedgerEntries.amount}), 0)::integer`,
+      lastCreditEventAt: sql<Date | null>`max(${creditLedgerEntries.createdAt})`,
+      lifetimeCreditsGranted: sql<number>`coalesce(sum(case when ${creditLedgerEntries.eventType} in ('beta_grant', 'admin_adjustment') and ${creditLedgerEntries.amount} > 0 then ${creditLedgerEntries.amount} else 0 end), 0)::integer`,
+      lifetimeCreditsPurchased: sql<number>`coalesce(sum(case when ${creditLedgerEntries.eventType} = 'purchase' then ${creditLedgerEntries.amount} else 0 end), 0)::integer`,
+      lifetimeCreditsRefunded: sql<number>`coalesce(sum(case when ${creditLedgerEntries.eventType} = 'refund' then ${creditLedgerEntries.amount} else 0 end), 0)::integer`,
+      lifetimeCreditsSpent: sql<number>`coalesce(sum(case when ${creditLedgerEntries.amount} < 0 then abs(${creditLedgerEntries.amount}) else 0 end), 0)::integer`
+    })
+    .from(creditLedgerEntries)
+    .where(eq(creditLedgerEntries.userId, userId));
+
+  return {
+    currentBalance: Number(row?.currentBalance ?? 0),
+    lastCreditEventAt: row?.lastCreditEventAt ?? null,
+    lifetimeCreditsGranted: Number(row?.lifetimeCreditsGranted ?? 0),
+    lifetimeCreditsPurchased: Number(row?.lifetimeCreditsPurchased ?? 0),
+    lifetimeCreditsRefunded: Number(row?.lifetimeCreditsRefunded ?? 0),
+    lifetimeCreditsSpent: Number(row?.lifetimeCreditsSpent ?? 0)
+  };
+}
+
+export async function listRecentCreditLedger(database: AstraDb, input: { limit?: number; userId?: string | null } = {}) {
+  const rows = await database
+    .select({
+      amount: creditLedgerEntries.amount,
+      createdAt: creditLedgerEntries.createdAt,
+      description: creditLedgerEntries.description,
+      eventType: creditLedgerEntries.eventType,
+      id: creditLedgerEntries.id,
+      idempotencyKey: creditLedgerEntries.idempotencyKey,
+      metadata: creditLedgerEntries.metadata,
+      relatedReportDocumentId: creditLedgerEntries.relatedReportDocumentId,
+      relatedReportRequestId: creditLedgerEntries.relatedReportRequestId,
+      source: creditLedgerEntries.source,
+      stripeCheckoutSessionId: creditLedgerEntries.stripeCheckoutSessionId,
+      stripeEventId: creditLedgerEntries.stripeEventId,
+      userDisplayName: appUserProfiles.displayName,
+      userEmail: appUserProfiles.email,
+      userId: creditLedgerEntries.userId
+    })
+    .from(creditLedgerEntries)
+    .leftJoin(appUserProfiles, eq(appUserProfiles.userId, creditLedgerEntries.userId))
+    .where(input.userId ? eq(creditLedgerEntries.userId, input.userId) : undefined)
+    .orderBy(desc(creditLedgerEntries.createdAt))
+    .limit(input.limit ?? 100);
+
+  return rows.map((row) => ({
+    ...row,
+    metadata: row.metadata && typeof row.metadata === "object" && !Array.isArray(row.metadata) ? (row.metadata as Record<string, unknown>) : {}
+  }));
+}
+
+export async function spendCreditsForReport(
+  database: AstraDb,
+  input: { amount: number; description: string; reportType: string; requestId: string; userId: string }
+) {
+  if (!Number.isInteger(input.amount) || input.amount <= 0) return null;
+  const existing = await database.select().from(creditLedgerEntries).where(eq(creditLedgerEntries.idempotencyKey, `report_spend:${input.userId}:${input.requestId}`)).limit(1);
+  if (existing[0]) return existing[0];
+
+  const balance = await getCreditBalance(database, input.userId);
+  if (balance < input.amount) throw new Error("insufficient_credits");
+
+  const [entry] = await database
+    .insert(creditLedgerEntries)
+    .values({
+      userId: input.userId,
+      amount: -Math.abs(input.amount),
+      eventType: "report_spend",
+      source: "report_generation",
+      description: input.description,
+      relatedReportRequestId: input.requestId,
+      idempotencyKey: `report_spend:${input.userId}:${input.requestId}`,
+      metadata: { reportType: input.reportType }
+    })
+    .returning();
+  await mirrorCreditBalanceToProfile(database, input.userId);
+  return entry;
+}
+
+export async function recordPendingStripeCheckout(
+  database: AstraDb,
+  input: { amountMinor?: number | null; checkoutSessionId: string; currency?: string | null; productKey: string; userId: string }
+) {
+  const [product] = await database.select().from(products).where(eq(products.key, input.productKey)).limit(1);
+  const [purchase] = await database
+    .insert(purchases)
+    .values({
+      userId: input.userId,
+      productId: product?.id ?? null,
+      provider: "stripe",
+      stripeCheckoutSessionId: input.checkoutSessionId,
+      amountMinor: input.amountMinor ?? null,
+      currency: input.currency ?? null,
+      status: "pending",
+      rawEvent: { productKey: input.productKey }
+    })
+    .onConflictDoUpdate({
+      target: purchases.stripeCheckoutSessionId,
+      set: {
+        amountMinor: input.amountMinor ?? null,
+        currency: input.currency ?? null,
+        rawEvent: { productKey: input.productKey },
+        updatedAt: new Date()
+      }
+    })
+    .returning();
+  return purchase;
+}
+
+export async function recordStripeEvent(
+  database: AstraDb,
+  input: { eventId: string; eventType: string; objectId?: string | null; rawEvent: Record<string, unknown> }
+) {
+  const [event] = await database
+    .insert(stripeEvents)
+    .values({
+      id: input.eventId,
+      eventType: input.eventType,
+      objectId: input.objectId ?? null,
+      rawEvent: input.rawEvent
+    })
+    .onConflictDoNothing()
+    .returning();
+  return { inserted: Boolean(event), event: event ?? null };
+}
+
+export async function completeStripeCheckoutPurchase(
+  database: AstraDb,
+  input: {
+    amount: number;
+    amountMinor?: number | null;
+    checkoutSessionId: string;
+    currency?: string | null;
+    customerId?: string | null;
+    eventId: string;
+    paymentIntentId?: string | null;
+    productKey: string;
+    rawEvent: Record<string, unknown>;
+    userId: string;
+  }
+) {
+  const [product] = await database.select().from(products).where(eq(products.key, input.productKey)).limit(1);
+  const [purchase] = await database
+    .insert(purchases)
+    .values({
+      userId: input.userId,
+      productId: product?.id ?? null,
+      provider: "stripe",
+      stripeCustomerId: input.customerId ?? null,
+      stripeCheckoutSessionId: input.checkoutSessionId,
+      stripePaymentIntentId: input.paymentIntentId ?? null,
+      stripeEventId: input.eventId,
+      amountMinor: input.amountMinor ?? null,
+      currency: input.currency ?? null,
+      status: "paid",
+      purchasedAt: new Date(),
+      rawEvent: input.rawEvent
+    })
+    .onConflictDoUpdate({
+      target: purchases.stripeCheckoutSessionId,
+      set: {
+        stripeCustomerId: input.customerId ?? null,
+        stripePaymentIntentId: input.paymentIntentId ?? null,
+        stripeEventId: input.eventId,
+        amountMinor: input.amountMinor ?? null,
+        currency: input.currency ?? null,
+        status: "paid",
+        purchasedAt: new Date(),
+        rawEvent: input.rawEvent,
+        updatedAt: new Date()
+      }
+    })
+    .returning();
+
+  const [entry] = await database
+    .insert(creditLedgerEntries)
+    .values({
+      userId: input.userId,
+      amount: input.amount,
+      eventType: "purchase",
+      source: "stripe_checkout",
+      description: `${input.productKey} purchase`,
+      stripeCustomerId: input.customerId ?? null,
+      stripeCheckoutSessionId: input.checkoutSessionId,
+      stripeEventId: input.eventId,
+      idempotencyKey: `stripe_credit_pack:${input.checkoutSessionId}:${input.productKey}`,
+      metadata: { productKey: input.productKey, purchaseId: purchase.id }
+    })
+    .onConflictDoNothing()
+    .returning();
+  const balance = await mirrorCreditBalanceToProfile(database, input.userId);
+  return { purchase, ledgerEntry: entry ?? null, balance };
 }
 
 export async function listUserAstrologyReportRequests(
@@ -1307,6 +1772,16 @@ export async function getUserAstrologyReportRequest(
     .select()
     .from(astrologyReportRequests)
     .where(and(eq(astrologyReportRequests.id, input.requestId), eq(astrologyReportRequests.userId, input.userId)))
+    .limit(1);
+
+  return row ? astrologyReportRequestFromRow(row) : null;
+}
+
+export async function getAstrologyReportRequest(database: AstraDb, requestId: string): Promise<AstrologyReportRequest | null> {
+  const [row] = await database
+    .select()
+    .from(astrologyReportRequests)
+    .where(eq(astrologyReportRequests.id, requestId))
     .limit(1);
 
   return row ? astrologyReportRequestFromRow(row) : null;
@@ -1336,6 +1811,227 @@ export async function getUserAstrologyReportResult(
     .limit(1);
 
   return row ? astrologyReportResultFromRow(row) : null;
+}
+
+export async function deleteUserAstrologyReport(
+  database: AstraDb,
+  input: { requestId: string; userId: string }
+): Promise<boolean> {
+  return database.transaction(async (tx) => {
+    const [request] = await tx
+      .select({ id: astrologyReportRequests.id })
+      .from(astrologyReportRequests)
+      .where(and(eq(astrologyReportRequests.id, input.requestId), eq(astrologyReportRequests.userId, input.userId)))
+      .limit(1);
+
+    if (!request) return false;
+
+    await tx.delete(artifacts).where(and(eq(artifacts.id, `report:${input.requestId}`), eq(artifacts.userId, input.userId)));
+    await tx.delete(astrologyReportRequests).where(and(eq(astrologyReportRequests.id, input.requestId), eq(astrologyReportRequests.userId, input.userId)));
+
+    return true;
+  });
+}
+
+function astrologyReportShareTokenHash(token: string) {
+  return createHash("sha256").update(token).digest("hex");
+}
+
+function astrologyReportShareEmail(input: { title: string; shareUrl: string }) {
+  return {
+    subject: "Astra report shared with you",
+    body: ["Hi,", "", "I shared an Astra report with you:", "", input.title, input.shareUrl, "", "You can open the link to read the report online."].join("\n")
+  };
+}
+
+export async function createAstrologyReportShare(
+  database: AstraDb,
+  input: { requestId: string; userId: string; baseUrl: string }
+): Promise<AstrologyReportShare | null> {
+  const token = randomBytes(24).toString("base64url");
+  const tokenHash = astrologyReportShareTokenHash(token);
+  const now = new Date();
+
+  return database.transaction(async (tx) => {
+    const [result] = await tx
+      .select()
+      .from(astrologyReportResults)
+      .where(and(eq(astrologyReportResults.requestId, input.requestId), eq(astrologyReportResults.userId, input.userId)))
+      .limit(1);
+
+    if (!result || result.status !== "completed") return null;
+
+    await tx
+      .insert(astrologyReportShares)
+      .values({
+        requestId: input.requestId,
+        userId: input.userId,
+        tokenHash,
+        status: "active",
+        createdAt: now,
+        revokedAt: null
+      })
+      .onConflictDoUpdate({
+        target: astrologyReportShares.requestId,
+        set: {
+          tokenHash,
+          status: "active",
+          createdAt: now,
+          revokedAt: null
+        }
+      });
+
+    const title = astrologyReportResultFromRow(result).publicSignal?.headline ?? "Astrology report";
+    const shareUrl = `${input.baseUrl.replace(/\/$/g, "")}/reports/share/${token}`;
+    const email = astrologyReportShareEmail({ title, shareUrl });
+    return { shareUrl, ...email };
+  });
+}
+
+export async function revokeAstrologyReportShare(
+  database: AstraDb,
+  input: { requestId: string; userId: string }
+): Promise<boolean> {
+  const [share] = await database
+    .update(astrologyReportShares)
+    .set({
+      status: "revoked",
+      revokedAt: new Date()
+    })
+    .where(and(eq(astrologyReportShares.requestId, input.requestId), eq(astrologyReportShares.userId, input.userId), eq(astrologyReportShares.status, "active")))
+    .returning({ id: astrologyReportShares.id });
+
+  return Boolean(share);
+}
+
+export async function getSharedAstrologyReport(database: AstraDb, token: string): Promise<SharedAstrologyReport | null> {
+  const tokenHash = astrologyReportShareTokenHash(token);
+  const [share] = await database
+    .select()
+    .from(astrologyReportShares)
+    .where(and(eq(astrologyReportShares.tokenHash, tokenHash), eq(astrologyReportShares.status, "active")))
+    .limit(1);
+
+  if (!share) return null;
+
+  const [request, result] = await Promise.all([
+    getUserAstrologyReportRequest(database, {
+      requestId: share.requestId,
+      userId: share.userId
+    }),
+    getUserAstrologyReportResult(database, {
+      requestId: share.requestId,
+      userId: share.userId
+    })
+  ]);
+
+  if (!request || !result || result.status !== "completed") return null;
+  return { request, result };
+}
+
+function normalizeBetaFeedbackCategory(value: string): BetaFeedbackCategory {
+  if (value === "checkout" || value === "bug" || value === "other") return value;
+  return "report_quality";
+}
+
+function betaFeedbackRecordFromRow(row: {
+  category: string;
+  createdAt: Date;
+  id: string;
+  message: string;
+  metadata: unknown;
+  rating: number | null;
+  reportRequestId: string | null;
+  reportType: string;
+  userDisplayName: string | null;
+  userEmail: string | null;
+  userId: string;
+}): BetaFeedbackRecord {
+  return {
+    category: normalizeBetaFeedbackCategory(row.category),
+    createdAt: row.createdAt,
+    id: row.id,
+    message: row.message,
+    metadata: asJsonObject(row.metadata),
+    rating: row.rating,
+    reportRequestId: row.reportRequestId,
+    reportType: row.reportType,
+    userDisplayName: row.userDisplayName,
+    userEmail: row.userEmail,
+    userId: row.userId
+  };
+}
+
+export async function createBetaFeedback(database: AstraDb, input: CreateBetaFeedbackInput): Promise<BetaFeedbackRecord> {
+  const message = input.message.trim();
+  if (!message) throw new Error("invalid_feedback_message");
+  if (message.length > 2000) throw new Error("invalid_feedback_message");
+  if (input.rating !== null && input.rating !== undefined && (!Number.isInteger(input.rating) || input.rating < 1 || input.rating > 5)) {
+    throw new Error("invalid_feedback_rating");
+  }
+
+  return database.transaction(async (tx) => {
+    const [request] = await tx
+      .select({
+        id: astrologyReportRequests.id,
+        reportType: astrologyReportRequests.reportType
+      })
+      .from(astrologyReportRequests)
+      .where(and(eq(astrologyReportRequests.id, input.reportRequestId), eq(astrologyReportRequests.userId, input.userId)))
+      .limit(1);
+
+    if (!request) throw new Error("report_not_found");
+
+    const [row] = await tx
+      .insert(betaFeedback)
+      .values({
+        userId: input.userId,
+        reportRequestId: request.id,
+        reportType: request.reportType,
+        rating: input.rating ?? null,
+        category: normalizeBetaFeedbackCategory(input.category),
+        message,
+        metadata: input.metadata ?? {}
+      })
+      .returning();
+
+    return betaFeedbackRecordFromRow({
+      category: row.category,
+      createdAt: row.createdAt,
+      id: row.id,
+      message: row.message,
+      metadata: row.metadata,
+      rating: row.rating,
+      reportRequestId: row.reportRequestId,
+      reportType: row.reportType,
+      userDisplayName: null,
+      userEmail: null,
+      userId: row.userId
+    });
+  });
+}
+
+export async function listRecentBetaFeedback(database: AstraDb, input: { limit?: number } = {}): Promise<BetaFeedbackRecord[]> {
+  const rows = await database
+    .select({
+      category: betaFeedback.category,
+      createdAt: betaFeedback.createdAt,
+      id: betaFeedback.id,
+      message: betaFeedback.message,
+      metadata: betaFeedback.metadata,
+      rating: betaFeedback.rating,
+      reportRequestId: betaFeedback.reportRequestId,
+      reportType: betaFeedback.reportType,
+      userDisplayName: appUserProfiles.displayName,
+      userEmail: appUserProfiles.email,
+      userId: betaFeedback.userId
+    })
+    .from(betaFeedback)
+    .leftJoin(appUserProfiles, eq(appUserProfiles.userId, betaFeedback.userId))
+    .orderBy(desc(betaFeedback.createdAt))
+    .limit(input.limit ?? 20);
+
+  return rows.map(betaFeedbackRecordFromRow);
 }
 
 export async function listUserArtifacts(database: AstraDb, userId: string): Promise<Artifact[]> {

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChartPie, ChevronRight, Pencil, Shield, Sparkles } from "lucide-react";
+import { ChartPie, ChevronRight, Pencil, ShieldCheck, Sparkles } from "lucide-react";
 import type { ChartMakerRequest } from "@astra/contracts";
 import { db, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests } from "@astra/db";
 import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
@@ -137,7 +137,7 @@ export default async function SelfPage() {
             )}
           </div>
           <div className="self-profile-actions" role="group" aria-label={ui.self.profileActionsLabel}>
-            <Link className="button secondary" href="/journey">
+            <Link className="button secondary" href="/charts">
               <ChartPie aria-hidden="true" size={16} />
               {ui.self.viewChart}
             </Link>
@@ -145,16 +145,16 @@ export default async function SelfPage() {
               <Sparkles aria-hidden="true" size={16} />
               {ui.self.createProfile}
             </Link>
-            <Link className="button secondary" href="#self-birth-onboarding">
-              <Pencil aria-hidden="true" size={16} />
-              {ui.self.editBirthDetails}
-            </Link>
-            {roleLine === "Admin" ? (
+            {profile.role === "admin" ? (
               <Link className="button secondary" href="/admin">
-                <Shield aria-hidden="true" size={16} />
-                {ui.self.admin}
+                <ShieldCheck aria-hidden="true" size={16} />
+                {ui.account.admin}
               </Link>
             ) : null}
+            <a className="button secondary" href="#self-birth-onboarding">
+              <Pencil aria-hidden="true" size={16} />
+              {ui.self.editBirthDetails}
+            </a>
           </div>
         </article>
       </section>
@@ -169,7 +169,7 @@ export default async function SelfPage() {
       </section>
       <section className="grid" aria-label={ui.self.summaryLabel}>
         {latestRequest ? (
-          <Link className="card self-chart-anchor" href="/journey">
+          <Link className="card self-chart-anchor" href="/charts">
             <div className="self-chart-anchor-header">
               <ChartPie aria-hidden="true" className="self-chart-anchor-icon" size={16} />
               <div className="self-chart-anchor-text">
@@ -240,9 +240,12 @@ export default async function SelfPage() {
       <section id="self-birth-onboarding">
         <BirthOnboardingPanel
           displayName={profile.displayName}
+          role={profile.role}
+          starBalance={profile.starBalance}
           initialRequests={chartRequests}
           initialReportRequests={reportRequests}
           initialReportResults={reportResults}
+          initialBirthData={latestRequest?.birthData}
         />
       </section>
     </>

@@ -1,8 +1,8 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { type CSSProperties, FormEvent, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send } from "lucide-react";
-import type { AstrologyReportRequest, AstrologyReportResult, BirthPlaceSearchResult, ChartMakerRequest } from "@astra/contracts";
+import type { Ally, AstrologyReportRequest, AstrologyReportResult, BirthPlaceSearchResult, ChartBirthData, ChartMakerRequest } from "@astra/contracts";
 import { ui } from "../lib/i18n";
 import styles from "./BirthOnboardingPanel.module.css";
 
@@ -15,34 +15,100 @@ function supportedTimeZones() {
 }
 
 const timeZones = supportedTimeZones();
-const steps = ["subject", "precision", "review"] as const;
+const steps = ["subject", "birth_details", "report", "review"] as const;
+
+const confirmLayerStyle: CSSProperties = {
+  position: "fixed",
+  inset: 0,
+  zIndex: 90,
+  display: "grid",
+  placeItems: "center",
+  padding: 20,
+  background: "color-mix(in srgb, #02030a 62%, transparent)",
+  backdropFilter: "blur(12px)"
+};
+
+const confirmDialogStyle: CSSProperties = {
+  width: "min(430px, 100%)",
+  border: "1px solid color-mix(in srgb, var(--gold) 32%, var(--line))",
+  borderRadius: 8,
+  padding: 20,
+  background:
+    "radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 38%), var(--panel)",
+  boxShadow: "0 24px 80px color-mix(in srgb, #000 52%, transparent)"
+};
+
+const confirmRowsStyle: CSSProperties = {
+  display: "grid",
+  gap: 8,
+  margin: "16px 0 0"
+};
+
+const confirmRowStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr) auto",
+  gap: 12,
+  alignItems: "center",
+  border: "1px solid var(--line)",
+  borderRadius: 8,
+  padding: "10px 12px",
+  background: "var(--soft)"
+};
+
+const confirmActionsStyle: CSSProperties = {
+  display: "flex",
+  justifyContent: "flex-end",
+  gap: 10,
+  marginTop: 18
+};
 
 type Step = (typeof steps)[number];
-type PrecisionMode = "date_only" | "timed_location";
+type ReportType = AstrologyReportRequest["reportType"];
+type ZodiacMode = "tropical" | "sidereal";
+type HouseSystemMode = "whole-sign" | "placidus";
 
 type BirthOnboardingPanelProps = {
   displayName: string;
+  role?: string;
+  starBalance?: number;
   initialRequests: ChartMakerRequest[];
   initialReportRequests: AstrologyReportRequest[];
   initialReportResults: AstrologyReportResult[];
+  subjectType?: "self" | "ally";
+  initialAllies?: Ally[];
+  initialBirthData?: ChartBirthData;
 };
 
 type FormState = {
   subjectName: string;
+  relationship: string;
+  note: string;
+  reportType: ReportType;
+  zodiacMode: ZodiacMode;
+  houseSystem: HouseSystemMode;
+  synastryPartnerChartRequestId: string;
   date: string;
-  precisionMode: PrecisionMode;
   time: string;
   timezone: string;
   location: string;
+  latitude?: number;
+  longitude?: number;
 };
 
-const defaultForm = (displayName: string): FormState => ({
+const defaultForm = (displayName: string, birthData?: ChartBirthData): FormState => ({
   subjectName: displayName,
-  date: "",
-  precisionMode: "date_only",
-  time: "",
-  timezone: "",
-  location: ""
+  relationship: "",
+  note: "",
+  reportType: "core",
+  zodiacMode: "tropical",
+  houseSystem: "whole-sign",
+  synastryPartnerChartRequestId: "",
+  date: birthData?.date ?? "",
+  time: birthData?.time ?? "",
+  timezone: birthData?.timezone ?? "",
+  location: birthData?.location ?? "",
+  latitude: birthData?.latitude,
+  longitude: birthData?.longitude
 });
 
 function optional(value: string) {
@@ -51,11 +117,14 @@ function optional(value: string) {
 }
 
 function birthDataFor(form: FormState) {
+  const hasTimedDetails = Boolean(optional(form.time) || optional(form.timezone) || optional(form.location));
   const birthData = {
     date: form.date,
-    time: form.precisionMode === "timed_location" ? optional(form.time) : undefined,
-    timezone: form.precisionMode === "timed_location" ? optional(form.timezone) : undefined,
-    location: form.precisionMode === "timed_location" ? optional(form.location) : undefined
+    time: hasTimedDetails ? optional(form.time) : undefined,
+    timezone: hasTimedDetails ? optional(form.timezone) : undefined,
+    location: hasTimedDetails ? optional(form.location) : undefined,
+    latitude: hasTimedDetails ? form.latitude : undefined,
+    longitude: hasTimedDetails ? form.longitude : undefined
   };
   return Object.fromEntries(Object.entries(birthData).filter(([, value]) => value !== undefined));
 }
@@ -84,13 +153,41 @@ function reportStatusLabel(status: string) {
   return status;
 }
 
+function reportTypeLabel(reportType: ReportType) {
+  if (reportType === "identity") return ui.library.reportTypeIdentity;
+  if (reportType === "deep") return ui.library.reportTypeDeep;
+  if (reportType === "progressed") return ui.library.reportTypeProgressed;
+  if (reportType === "synastry") return ui.library.reportTypeSynastry;
+  return ui.library.reportTypeCore;
+}
+
+function reportTypeOptions(isAlly: boolean, isAdmin: boolean, canCompareCharts: boolean): ReportType[] {
+  if (!isAdmin) return ["identity", "core"];
+  return isAlly || canCompareCharts
+    ? ["identity", "core", "deep", "progressed", "synastry"]
+    : ["identity", "core", "deep", "progressed"];
+}
+
+function reportTypeCost(reportType: ReportType) {
+  if (reportType === "identity") return 1;
+  if (reportType === "core" || reportType === "core_self" || reportType === "progressed") return 5;
+  if (reportType === "deep" || reportType === "synastry") return 10;
+  return 0;
+}
+
 export function BirthOnboardingPanel({
   displayName,
+  role = "customer",
+  starBalance = 0,
   initialRequests,
   initialReportRequests,
-  initialReportResults = []
+  initialReportResults = [],
+  subjectType = "self",
+  initialAllies = [],
+  initialBirthData
 }: BirthOnboardingPanelProps) {
-  const [form, setForm] = useState<FormState>(() => defaultForm(displayName));
+  const [form, setForm] = useState<FormState>(() => defaultForm(displayName, initialBirthData));
+  const [allies, setAllies] = useState(initialAllies);
   const [activeStep, setActiveStep] = useState<Step>("subject");
   const [requests, setRequests] = useState(initialRequests);
   const [reportRequests, setReportRequests] = useState(initialReportRequests);
@@ -103,38 +200,60 @@ export function BirthOnboardingPanel({
   const [hasSelectedPlace, setHasSelectedPlace] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmissionComplete, setIsSubmissionComplete] = useState(false);
+  const [isConfirmingReport, setIsConfirmingReport] = useState(false);
 
   const activeStepIndex = stepIndex(activeStep);
+  const isAlly = subjectType === "ally";
+  const isAdmin = role === "admin";
+  const synastryChartOptions = useMemo(() => requests.filter((request) => request.birthData.date), [requests]);
+  const availableReportTypes = reportTypeOptions(isAlly, isAdmin, synastryChartOptions.length > 0);
+  const panelCopy = isAlly ? ui.allies.wizard : ui.self;
   const isWizardComplete = isSubmissionComplete;
   const canSubmit = activeStep === "review" && !isWizardComplete;
-  const progressPercent = isWizardComplete ? 100 : Math.round(((activeStepIndex + 1) / steps.length) * 100);
+  const selectedReportCost = reportTypeCost(form.reportType);
+  const balanceAfterReport = starBalance - selectedReportCost;
+  const canAffordSelectedReport = isAdmin || balanceAfterReport >= 0;
+  const synastryPartner = useMemo(
+    () => synastryChartOptions.find((request) => request.id === form.synastryPartnerChartRequestId),
+    [form.synastryPartnerChartRequestId, synastryChartOptions]
+  );
   const reviewRows = useMemo(
     () => [
       [ui.self.onboardingReviewSubject, form.subjectName || ui.self.onboardingReviewMissing],
+      ...(isAlly ? ([[ui.self.onboardingReviewRelationship, form.relationship || ui.self.onboardingReviewMissing]] as const) : []),
+      [ui.self.onboardingReviewReportType, reportTypeLabel(form.reportType)],
+      [ui.self.onboardingReviewChartSettings, `${ui.self.zodiacModes[form.zodiacMode]} · ${ui.self.houseSystems[form.houseSystem]}`],
+      ...(form.reportType === "synastry"
+        ? ([[ui.self.onboardingReviewSynastryPartner, synastryPartner?.subjectName ?? ui.self.onboardingReviewMissing]] as const)
+        : []),
       [ui.self.onboardingReviewBirthDate, form.date || ui.self.onboardingReviewMissing],
       [
         ui.self.onboardingReviewPrecision,
-        form.precisionMode === "timed_location"
+        optional(form.time) || optional(form.timezone) || optional(form.location)
           ? `${form.time || ui.self.onboardingReviewMissing}, ${form.timezone || ui.self.onboardingReviewMissing}, ${form.location || ui.self.onboardingReviewMissing}`
           : ui.self.onboardingDateOnlyPrecision
       ]
     ],
-    [form]
+    [form, isAlly, synastryPartner]
   );
   const reportResultsByRequestId = useMemo(
     () => new Map(reportResults.map((result) => [result.requestId, result])),
     [reportResults]
   );
-  const hasCompletedReport = reportResults.some((result) => result.status === "completed");
-  const flowStages = [
-    { label: ui.self.chartFlowBirthData, isDone: requests.length > 0 },
-    { label: ui.self.chartFlowChart, isDone: requests.length > 0 },
-    { label: ui.self.chartFlowReport, isDone: hasCompletedReport },
-    { label: ui.self.chartFlowLibrary, isDone: hasCompletedReport }
-  ];
 
   function updateField(field: keyof FormState, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
+    setIsConfirmingReport(false);
+    setMessage("");
+  }
+
+  function selectReportType(reportType: ReportType) {
+    setForm((current) => ({
+      ...current,
+      reportType,
+      synastryPartnerChartRequestId: reportType === "synastry" ? current.synastryPartnerChartRequestId : ""
+    }));
+    setIsConfirmingReport(false);
     setMessage("");
   }
 
@@ -142,7 +261,9 @@ export function BirthOnboardingPanel({
     setForm((current) => ({
       ...current,
       location: place.label,
-      timezone: place.timezone
+      timezone: place.timezone,
+      latitude: place.latitude,
+      longitude: place.longitude
     }));
     setHasSelectedPlace(true);
     setPlaceResults([]);
@@ -181,12 +302,17 @@ export function BirthOnboardingPanel({
 
   function stepError(step: Step) {
     if (step === "subject" && !optional(form.subjectName)) return ui.self.onboardingSubjectRequired;
-    if (step === "precision" && !/^\d{4}-\d{2}-\d{2}$/.test(form.date)) return ui.self.onboardingDateRequired;
-    if (step === "precision" && form.precisionMode === "timed_location") {
-      if (!optional(form.time) || !optional(form.timezone) || !optional(form.location)) {
-        return ui.self.onboardingPrecisionRequired;
+    if (step === "subject" && isAlly && !optional(form.relationship)) return ui.allies.wizardRelationshipRequired;
+    if (step === "report" && form.reportType === "synastry" && !optional(form.synastryPartnerChartRequestId)) {
+      return ui.self.onboardingSynastryPartnerRequired;
+    }
+    if (step === "birth_details" && !/^\d{4}-\d{2}-\d{2}$/.test(form.date)) return ui.self.onboardingDateRequired;
+    if (step === "birth_details") {
+      const hasTimedDetails = Boolean(optional(form.time) || optional(form.timezone) || optional(form.location));
+      if (hasTimedDetails && (!optional(form.time) || !optional(form.timezone) || !optional(form.location))) {
+        return ui.self.onboardingTimedDetailsRequired;
       }
-      if (!/^\d{2}:\d{2}$/.test(form.time)) return ui.self.onboardingTimeRequired;
+      if (optional(form.time) && !/^\d{2}:\d{2}$/.test(form.time)) return ui.self.onboardingTimeRequired;
     }
     return "";
   }
@@ -199,6 +325,7 @@ export function BirthOnboardingPanel({
       return;
     }
     setActiveStep(nextStep);
+    setIsConfirmingReport(false);
     setMessage("");
   }
 
@@ -213,6 +340,7 @@ export function BirthOnboardingPanel({
     const next = steps[activeStepIndex + 1];
     if (next) {
       setActiveStep(next);
+      setIsConfirmingReport(false);
       setMessage("");
     }
   }
@@ -222,6 +350,7 @@ export function BirthOnboardingPanel({
     const previous = steps[activeStepIndex - 1];
     if (previous) {
       setActiveStep(previous);
+      setIsConfirmingReport(false);
       setMessage("");
     }
   }
@@ -247,6 +376,20 @@ export function BirthOnboardingPanel({
     return payload;
   }
 
+  async function createAllyRecord() {
+    const payload = await requestJson<{ ally: Ally }>("/api/allies", {
+      method: "POST",
+      body: JSON.stringify({
+        name: form.subjectName.trim(),
+        kind: "person",
+        relationship: form.relationship.trim(),
+        note: optional(form.note)
+      })
+    });
+    setAllies((current) => [payload.ally, ...current]);
+    return payload.ally;
+  }
+
   async function submitChartRequest(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isWizardComplete) return;
@@ -260,15 +403,54 @@ export function BirthOnboardingPanel({
       return;
     }
 
+    setIsConfirmingReport(true);
+  }
+
+  async function submitConfirmedReport() {
+    if (isWizardComplete || isSubmitting) return;
+    const currentError = stepError(activeStep);
+    if (currentError) {
+      setIsConfirmingReport(false);
+      setMessage(currentError);
+      return;
+    }
+
+    setIsConfirmingReport(false);
     setIsSubmitting(true);
     setIsSubmissionComplete(false);
     setMessage(ui.self.chartRequestWorking);
 
     try {
+      const ally = isAlly ? await createAllyRecord() : undefined;
+      const subjectContext = {
+        subjectType,
+        subjectId: ally?.id,
+        allyId: ally?.id,
+        displayName: form.subjectName.trim(),
+        relationship: ally?.relationship,
+        note: ally?.note
+      };
+      const chartSettings = {
+        zodiacMode: form.zodiacMode,
+        houseSystem: form.houseSystem
+      };
+      const synastryPartnerContext =
+        form.reportType === "synastry" && synastryPartner
+          ? {
+              chartRequestId: synastryPartner.id,
+              subjectName: synastryPartner.subjectName,
+              birthData: synastryPartner.birthData
+            }
+          : undefined;
       const body = {
         subjectName: form.subjectName.trim(),
         birthData: birthDataFor(form),
-        source: "self"
+        source: subjectType,
+        context: {
+          subject: subjectContext,
+          chartSettings,
+          ...(synastryPartnerContext ? { synastryPartner: synastryPartnerContext } : {})
+        }
       };
       const chartPayload = await requestJson<{ request: ChartMakerRequest }>("/api/chart-requests", {
         method: "POST",
@@ -279,7 +461,7 @@ export function BirthOnboardingPanel({
         body: JSON.stringify({
           ...body,
           chartRequestId: chartPayload.request.id,
-          reportType: "core_self"
+          reportType: form.reportType
         })
       });
 
@@ -304,7 +486,8 @@ export function BirthOnboardingPanel({
     setPlaceMessage("");
     setPlaceQuery("");
     setHasSelectedPlace(false);
-    setForm(defaultForm(displayName));
+    setIsConfirmingReport(false);
+    setForm(defaultForm(displayName, initialBirthData));
   }
 
   function openReportArtifact(requestId: string) {
@@ -327,24 +510,26 @@ export function BirthOnboardingPanel({
       }
       setReportResults((current) => [payload.result, ...current.filter((result) => result.requestId !== payload.result.requestId)]);
       setMessage(payload.result.status === "completed" ? ui.self.reportGenerateCompleted : ui.self.reportGenerateFailed);
+      if (payload.result.status === "completed") {
+        openReportArtifact(payload.result.requestId);
+      }
     } catch (error) {
       setMessage(error instanceof Error ? error.message : ui.self.reportGenerateError);
-    } finally {
     }
   }
 
   return (
-    <section className={styles.panel} aria-label={ui.self.chartRequestPanelLabel}>
+    <section className={styles.panel} aria-label={panelCopy.chartRequestPanelLabel}>
       <article className="card">
-        <div className="eyebrow">{ui.self.chartRequestEyebrow}</div>
-        <h2>{ui.self.chartRequestTitle}</h2>
-        <p>{ui.self.chartRequestIntro}</p>
-        <div className={styles.alphaGuide} aria-label={ui.self.onboardingGuideLabel}>
-          <strong>{ui.self.onboardingGuideTitle}</strong>
-          <span>{ui.self.onboardingGuideBody}</span>
-        </div>
+        <div className="eyebrow">{panelCopy.chartRequestEyebrow}</div>
+        <h2>{panelCopy.chartRequestTitle}</h2>
+        <p>{panelCopy.chartRequestIntro}</p>
 
-        <div className={styles.stepper} aria-label={ui.self.onboardingStepsLabel}>
+        <div
+          className={styles.stepper}
+          aria-label={ui.self.onboardingStepsLabel}
+          style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(4, minmax(0, 1fr))", marginTop: 18 }}
+        >
           {steps.map((step, index) => (
             <button
               aria-current={activeStep === step ? "step" : undefined}
@@ -352,45 +537,158 @@ export function BirthOnboardingPanel({
               key={step}
               disabled={isWizardComplete}
               onClick={() => goToStep(step)}
+              style={{
+                background: "transparent",
+                border: 0,
+                borderRadius: 0,
+                color: activeStep === step ? "var(--gold)" : "var(--muted)",
+                display: "grid",
+                fontSize: "0.8rem",
+                fontWeight: 760,
+                gap: 7,
+                justifyItems: "center",
+                minHeight: 36,
+                padding: 0
+              }}
               type="button"
             >
-              <span>{index + 1}</span>
+              <span
+                style={{
+                  background: activeStep === step ? "var(--gold)" : "color-mix(in srgb, var(--muted) 24%, transparent)",
+                  borderRadius: 999,
+                  color: "transparent",
+                  display: "block",
+                  fontSize: 0,
+                  height: 5,
+                  width: "100%"
+                }}
+              >
+                {index + 1}
+              </span>
               {ui.self.onboardingSteps[step]}
             </button>
           ))}
-        </div>
-        <div className={styles.progressTrack} role="progressbar" aria-valuemax={100} aria-valuemin={0} aria-valuenow={progressPercent} aria-label={ui.self.onboardingStepsLabel}>
-          <span className={styles.progressFill} style={{ width: `${progressPercent}%` }} />
         </div>
         <p className={styles.progressText} aria-live="polite">
           {isWizardComplete
             ? ui.self.onboardingProgressQueued
             : ui.self.onboardingProgress(activeStepIndex + 1, steps.length, ui.self.onboardingSteps[activeStep])}
         </p>
-        <ol className={styles.flowMap} aria-label={ui.self.chartFlowLabel}>
-          {flowStages.map((stage, index) => (
-            <li className={stage.isDone ? styles.flowDone : undefined} key={stage.label}>
-              <span>{stage.isDone ? <Check aria-hidden="true" size={14} /> : index + 1}</span>
-              {stage.label}
-            </li>
-          ))}
-        </ol>
 
         <form className={`auth-form ${styles.form}`} onSubmit={submitChartRequest}>
           {activeStep === "subject" ? (
-            <label>
-              <span>{ui.self.chartSubjectLabel}</span>
-              <input value={form.subjectName} onChange={(event) => updateField("subjectName", event.target.value)} required />
-            </label>
+            <div className={styles.subjectFields}>
+              <label>
+                <span>{panelCopy.chartSubjectLabel}</span>
+                <input value={form.subjectName} onChange={(event) => updateField("subjectName", event.target.value)} required />
+              </label>
+              {isAlly ? (
+                <>
+                  <label>
+                    <span>{ui.allies.wizardRelationshipLabel}</span>
+                    <input value={form.relationship} onChange={(event) => updateField("relationship", event.target.value)} required />
+                  </label>
+                  <label>
+                    <span>{ui.allies.wizardNoteLabel}</span>
+                    <textarea value={form.note} onChange={(event) => updateField("note", event.target.value)} rows={3} />
+                  </label>
+                </>
+              ) : null}
+            </div>
           ) : null}
 
-          {activeStep === "precision" ? (
+          {activeStep === "report" ? (
+            <div className={styles.subjectFields}>
+              <fieldset className={styles.optionGroup}>
+                <legend>{ui.self.onboardingReportTypeLabel}</legend>
+                <p className={styles.optionHint}>
+                  {isAdmin ? ui.self.onboardingAdminReportFence : ui.self.onboardingCustomerReportFence(starBalance)}
+                </p>
+                {availableReportTypes.map((reportType) => (
+                  <label className={styles.option} key={reportType}>
+                    <input
+                      checked={form.reportType === reportType}
+                      name="reportType"
+                      onChange={() => selectReportType(reportType)}
+                      type="radio"
+                    />
+                    <span>
+                      <strong className={styles.optionTitle}>
+                        {reportTypeLabel(reportType)}
+                        {" "}
+                        <em>{isAdmin ? ui.self.onboardingAdminBadge : ui.stars.reportCost(reportTypeCost(reportType))}</em>
+                      </strong>
+                      {ui.self.onboardingReportTypeDescriptions[reportType]}
+                    </span>
+                  </label>
+                ))}
+              </fieldset>
+              {form.reportType === "synastry" ? (
+                <label>
+                  <span>{ui.self.synastryPartnerLabel}</span>
+                  <select
+                    value={form.synastryPartnerChartRequestId}
+                    onChange={(event) => updateField("synastryPartnerChartRequestId", event.target.value)}
+                  >
+                    <option value="">{ui.self.synastryPartnerPlaceholder}</option>
+                    {synastryChartOptions.map((request) => (
+                      <option key={request.id} value={request.id}>
+                        {request.subjectName} · {request.birthData.date}
+                      </option>
+                    ))}
+                  </select>
+                  {!synastryChartOptions.length ? <small className={styles.fieldHint}>{ui.self.synastryPartnerEmpty}</small> : null}
+                </label>
+              ) : null}
+              <fieldset className={styles.optionGroup}>
+                <legend>{ui.self.chartSettingsLabel}</legend>
+                <div className={styles.settingsGrid}>
+                  <div>
+                    <span className={styles.controlLabel}>{ui.self.zodiacModeLabel}</span>
+                    <div className={styles.segmentRow} role="group" aria-label={ui.self.zodiacModeLabel}>
+                      {(["tropical", "sidereal"] as const).map((zodiacMode) => (
+                        <button
+                          aria-pressed={form.zodiacMode === zodiacMode}
+                          className={styles.segmentButton}
+                          key={zodiacMode}
+                          onClick={() => updateField("zodiacMode", zodiacMode)}
+                          type="button"
+                        >
+                          {ui.self.zodiacModes[zodiacMode]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <span className={styles.controlLabel}>{ui.self.houseSystemLabel}</span>
+                    <div className={styles.segmentRow} role="group" aria-label={ui.self.houseSystemLabel}>
+                      {(["whole-sign", "placidus"] as const).map((houseSystem) => (
+                        <button
+                          aria-pressed={form.houseSystem === houseSystem}
+                          className={styles.segmentButton}
+                          key={houseSystem}
+                          onClick={() => updateField("houseSystem", houseSystem)}
+                          type="button"
+                        >
+                          {ui.self.houseSystems[houseSystem]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          ) : null}
+
+          {activeStep === "birth_details" ? (
             <>
-              <div className={styles.alphaGuide}>
-                <strong>{ui.self.onboardingPrecisionGuideTitle}</strong>
-                <span>{ui.self.onboardingPrecisionGuideBody}</span>
+              <div className={styles.birthDetailsHeader}>
+                <div>
+                  <strong>{ui.self.birthDetailsTitle}</strong>
+                  <span>{ui.self.birthDetailsBody}</span>
+                </div>
               </div>
-              <label>
+              <label className={styles.fieldWithHint}>
                 <span>{ui.self.chartDateLabel}</span>
                 <input
                   value={form.date}
@@ -398,113 +696,79 @@ export function BirthOnboardingPanel({
                   required
                   inputMode="numeric"
                   placeholder={ui.self.chartDatePlaceholder}
+                  autoComplete="bday"
+                />
+                <small>{ui.self.chartDateFormatHint}</small>
+              </label>
+              <div className={styles.formGrid}>
+                <label className={styles.fieldWithHint}>
+                  <span>{ui.self.chartTimeLabel}</span>
+                  <input
+                    value={form.time}
+                    onChange={(event) => updateField("time", event.target.value)}
+                    inputMode="numeric"
+                    placeholder={ui.self.chartTimePlaceholder}
+                  />
+                  <small>{ui.self.chartTimeFormatHint}</small>
+                </label>
+                <label>
+                  <span>{ui.self.chartTimezoneLabel}</span>
+                  <select value={form.timezone} onChange={(event) => updateField("timezone", event.target.value)}>
+                    <option value="">{ui.self.chartTimezonePlaceholder}</option>
+                    {timeZones.map((timeZone) => (
+                      <option key={timeZone} value={timeZone}>
+                        {timeZone.replaceAll("_", " ")}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <div className={styles.placeSearch}>
+                <label>
+                  <span>{ui.self.placeSearchLabel}</span>
+                  <input
+                    value={placeQuery}
+                    onChange={(event) => {
+                      setHasSelectedPlace(false);
+                      setPlaceQuery(event.target.value);
+                    }}
+                    placeholder={ui.self.placeSearchPlaceholder}
+                  />
+                </label>
+                <button className="button secondary" disabled={isSearchingPlaces} onClick={searchPlaces} type="button">
+                  <Search aria-hidden="true" size={18} />
+                  {isSearchingPlaces ? ui.self.placeSearchWorking : ui.self.placeSearchSubmit}
+                </button>
+              </div>
+              {placeMessage ? <p className="form-status" aria-live="polite">{placeMessage}</p> : null}
+              {placeResults.length > 0 && !hasSelectedPlace ? (
+                <ul className={styles.placeResults} aria-label={ui.self.placeSearchResultsLabel}>
+                  {placeResults.map((place) => (
+                    <li key={place.id}>
+                      <button onClick={() => selectPlace(place)} type="button">
+                        <strong>{place.label}</strong>
+                        <span>{place.timezone}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              {hasSelectedPlace && form.location && form.timezone ? (
+                <p className="form-status" aria-live="polite">
+                  {ui.self.placeSearchSelected(form.location)} ({form.timezone.replaceAll("_", " ")})
+                </p>
+              ) : null}
+              <label>
+                <span>{ui.self.chartLocationLabel}</span>
+                <input
+                  value={form.location}
+                  onChange={(event) => {
+                    setHasSelectedPlace(false);
+                    updateField("location", event.target.value);
+                  }}
                 />
               </label>
-              <fieldset className={styles.optionGroup}>
-                <legend>{ui.self.onboardingPrecisionModeLabel}</legend>
-                <label className={styles.option}>
-                  <input
-                    checked={form.precisionMode === "date_only"}
-                    name="precisionMode"
-                    onChange={() => {
-                      setHasSelectedPlace(false);
-                      updateField("precisionMode", "date_only");
-                    }}
-                    type="radio"
-                  />
-                  <span>
-                    <strong>{ui.self.onboardingDateOnlyPrecision}</strong>
-                    {ui.self.onboardingDateOnlyPrecisionBody}
-                  </span>
-                </label>
-                <label className={styles.option}>
-                  <input
-                    checked={form.precisionMode === "timed_location"}
-                    name="precisionMode"
-                    onChange={() => {
-                      setHasSelectedPlace(false);
-                      updateField("precisionMode", "timed_location");
-                    }}
-                    type="radio"
-                  />
-                  <span>
-                    <strong>{ui.self.onboardingTimedPrecision}</strong>
-                    {ui.self.onboardingTimedPrecisionBody}
-                  </span>
-                </label>
-              </fieldset>
-              {form.precisionMode === "timed_location" ? (
-                <>
-                  <div className={styles.placeSearch}>
-                    <label>
-                      <span>{ui.self.placeSearchLabel}</span>
-                      <input
-                        value={placeQuery}
-                        onChange={(event) => {
-                          setHasSelectedPlace(false);
-                          setPlaceQuery(event.target.value);
-                        }}
-                        placeholder={ui.self.placeSearchPlaceholder}
-                      />
-                    </label>
-                    <button className="button secondary" disabled={isSearchingPlaces} onClick={searchPlaces} type="button">
-                      <Search aria-hidden="true" size={18} />
-                      {isSearchingPlaces ? ui.self.placeSearchWorking : ui.self.placeSearchSubmit}
-                    </button>
-                  </div>
-                  {placeMessage ? <p className="form-status" aria-live="polite">{placeMessage}</p> : null}
-                  {placeResults.length > 0 && !hasSelectedPlace ? (
-                    <ul className={styles.placeResults} aria-label={ui.self.placeSearchResultsLabel}>
-                      {placeResults.map((place) => (
-                        <li key={place.id}>
-                          <button onClick={() => selectPlace(place)} type="button">
-                            <strong>{place.label}</strong>
-                            <span>{place.timezone}</span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-                  {hasSelectedPlace && form.location && form.timezone ? (
-                    <p className="form-status" aria-live="polite">
-                      {ui.self.placeSearchSelected(form.location)} ({form.timezone.replaceAll("_", " ")})
-                    </p>
-                  ) : null}
-                  <div className={styles.formGrid}>
-                    <label>
-                      <span>{ui.self.chartTimeLabel}</span>
-                      <input
-                        value={form.time}
-                        onChange={(event) => updateField("time", event.target.value)}
-                        inputMode="numeric"
-                        placeholder={ui.self.chartTimePlaceholder}
-                      />
-                    </label>
-                    <label>
-                      <span>{ui.self.chartTimezoneLabel}</span>
-                      <select value={form.timezone} onChange={(event) => updateField("timezone", event.target.value)}>
-                        <option value="">{ui.self.chartTimezonePlaceholder}</option>
-                        {timeZones.map((timeZone) => (
-                          <option key={timeZone} value={timeZone}>
-                            {timeZone.replaceAll("_", " ")}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                  <label>
-                    <span>{ui.self.chartLocationLabel}</span>
-                    <input
-                      value={form.location}
-                      onChange={(event) => {
-                        setHasSelectedPlace(false);
-                        updateField("location", event.target.value);
-                      }}
-                    />
-                  </label>
-                </>
-              ) : null}
-              <p className="form-status">{ui.self.chartPrecisionHint}</p>
+              <p className="form-status">{ui.self.birthDetailsOptionalHint}</p>
             </>
           ) : null}
 
@@ -553,9 +817,72 @@ export function BirthOnboardingPanel({
           </div>
           {message ? <p className="form-status" aria-live="polite">{message}</p> : null}
         </form>
+        {isConfirmingReport ? (
+          <div className={styles.confirmLayer} data-report-confirm-layer role="presentation" style={confirmLayerStyle}>
+            <section
+              aria-labelledby="report-confirm-title"
+              aria-modal="true"
+              className={styles.confirmDialog}
+              data-report-confirm-dialog
+              role="dialog"
+              style={confirmDialogStyle}
+            >
+              <div className="eyebrow">{ui.self.onboardingReportTypeLabel}</div>
+              <h3 id="report-confirm-title">{ui.self.reportConfirmTitle}</h3>
+              <p>{ui.self.reportConfirmIntro}</p>
+              <dl className={styles.confirmRows} data-report-confirm-rows style={confirmRowsStyle}>
+                <div style={confirmRowStyle}>
+                  <dt>{ui.self.reportConfirmSelected}</dt>
+                  <dd>{reportTypeLabel(form.reportType)}</dd>
+                </div>
+                <div style={confirmRowStyle}>
+                  <dt>{ui.self.reportConfirmCost}</dt>
+                  <dd>{ui.stars.reportCost(selectedReportCost)}</dd>
+                </div>
+                <div style={confirmRowStyle}>
+                  <dt>{ui.self.reportConfirmBalance}</dt>
+                  <dd>{ui.stars.balance(starBalance)}</dd>
+                </div>
+              </dl>
+              <p className={styles.confirmNote} data-report-confirm-note>
+                {isAdmin
+                  ? ui.self.reportConfirmAdminNote
+                  : canAffordSelectedReport
+                    ? ui.self.reportConfirmExplorerNote(balanceAfterReport)
+                    : ui.self.reportConfirmInsufficient}
+              </p>
+              <div className={styles.confirmActions} data-report-confirm-actions style={confirmActionsStyle}>
+                <button className="button secondary" type="button" onClick={() => setIsConfirmingReport(false)}>
+                  {ui.self.reportConfirmCancel}
+                </button>
+                <button className="button" type="button" onClick={submitConfirmedReport} disabled={isSubmitting || !canAffordSelectedReport}>
+                  {ui.self.reportConfirmOk}
+                </button>
+              </div>
+            </section>
+          </div>
+        ) : null}
       </article>
 
       <aside className={styles.summaryRail}>
+        {isAlly ? (
+          <article className="card">
+            <div className="eyebrow">{ui.allies.wizardAlliesEyebrow}</div>
+            <h2>{ui.allies.wizardAlliesTitle}</h2>
+            {allies.length ? (
+              <ul className={styles.requestList}>
+                {allies.slice(0, 5).map((ally) => (
+                  <li key={ally.id}>
+                    <span>{ally.name}</span>
+                    <strong>{ally.relationship}</strong>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>{ui.allies.wizardAlliesEmpty}</p>
+            )}
+          </article>
+        ) : null}
         <article className="card">
           <div className="eyebrow">{ui.self.chartRequestsEyebrow}</div>
           <h2>{ui.self.chartRequestsTitle}</h2>
