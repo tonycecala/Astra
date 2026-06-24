@@ -190,6 +190,7 @@ export function SelfTabAvatar({ className = "", email, initial, size = 20 }: Sel
   return (
     <span className={`nav-avatar ${className}`.trim()} aria-hidden="true">
       {gravatarUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element -- Gravatar URLs are dynamic external fallbacks; next/image would require broad remote config for tiny nav avatars.
         <img
           alt=""
           height={size}

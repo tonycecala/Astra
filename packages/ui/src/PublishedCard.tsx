@@ -55,7 +55,12 @@ function PublishedCardInner({
         {meta ? <span className="astraPublishedCardMeta">{meta}</span> : null}
       </span>
       <span className={["astraPublishedCardMedia", mediaClassName].filter(Boolean).join(" ")} aria-hidden={imageAlt ? undefined : "true"}>
-        {imageUrl ? <img alt={imageAlt} className="astraPublishedCardImage" src={imageUrl} /> : <span className="astraPublishedCardImageFallback">{imageFallback}</span>}
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- Shared UI package accepts arbitrary published media URLs and should not depend on Next image configuration.
+          <img alt={imageAlt} className="astraPublishedCardImage" src={imageUrl} />
+        ) : (
+          <span className="astraPublishedCardImageFallback">{imageFallback}</span>
+        )}
       </span>
     </>
   );

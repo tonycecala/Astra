@@ -115,7 +115,7 @@ function ChartCard({ active, item }: { active: boolean; item: ChartListItem }) {
         </div>
       </div>
       <div className="chartHomeActions" aria-label={ui.charts.cardActionsLabel}>
-        <Link className="button secondary" href={`/charts?chart=${chart.id}#selected-chart`}>
+        <Link className="button secondary" href={`/charts?chart=${chart.id}`} scroll={false}>
           <ChartPie aria-hidden="true" size={16} />
           {ui.charts.viewChart}
         </Link>
