@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 type GravatarState = {
@@ -190,11 +191,12 @@ export function SelfTabAvatar({ className = "", email, initial, size = 20 }: Sel
   return (
     <span className={`nav-avatar ${className}`.trim()} aria-hidden="true">
       {gravatarUrl ? (
-        <img
+        <Image
           alt=""
           height={size}
           onError={() => setState((current) => (current.index + 1 < current.urls.length ? { ...current, index: current.index + 1 } : { ...current, urls: [] }))}
           src={gravatarUrl}
+          unoptimized
           width={size}
         />
       ) : (
