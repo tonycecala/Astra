@@ -377,6 +377,13 @@ test.describe("clean-start routes", () => {
 
     const completedChart = await createCompletedChart(email, { name });
     const completedReport = await createCompletedReport(email, { chartRequestId: completedChart.request.id, name, reportType: "core" });
+    await page.goto(`/admin?replayRequest=${completedReport.request.id}`);
+    await expect(page.getByLabel("Selected report run inspector")).toContainText(completedReport.request.id.slice(0, 8));
+    await expect(page.getByLabel("Selected report run inspector")).toContainText("completed");
+    await expect(page.locator("details.adminDebugDetails")).toContainText("Report debug details");
+    await expect(page.locator("details.adminDebugDetails")).toContainText("Usage");
+    await expect(page.locator("details.adminDebugDetails").getByRole("link", { name: "Open Library" })).toBeVisible();
+
     await page.goto("/charts");
     await expect(page.getByRole("heading", { name: "Saved charts" })).toBeVisible();
     await expect(page.getByLabel("Saved charts list").getByRole("heading", { name }).first()).toBeVisible();

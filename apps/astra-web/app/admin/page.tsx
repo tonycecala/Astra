@@ -55,6 +55,17 @@ function optionalFormString(value: FormDataEntryValue | null) {
   return clean || undefined;
 }
 
+function replayRedirectPath(input: { status: string; requestId?: string; profile: string; creditUser?: string; creditSearch?: string }) {
+  const params = new URLSearchParams({
+    replayStatus: input.status,
+    replayProfile: input.profile
+  });
+  if (input.requestId) params.set("replayRequest", input.requestId);
+  if (input.creditUser) params.set("creditUser", input.creditUser);
+  if (input.creditSearch) params.set("creditSearch", input.creditSearch);
+  return `/admin?${params.toString()}`;
+}
+
 async function adjustCreditsAction(formData: FormData) {
   "use server";
   const { profile } = await getAstraAuthContext();
@@ -83,14 +94,16 @@ async function replayReportAction(formData: FormData) {
   const reportWriter = optionalFormString(formData.get("reportWriter")) ?? DEBUG_MODEL_REPORT_WRITER;
   const modelProvider = optionalFormString(formData.get("modelProvider"));
   const model = optionalFormString(formData.get("model"));
+  const creditUser = optionalFormString(formData.get("creditUser"));
+  const creditSearch = optionalFormString(formData.get("creditSearch"));
 
   if (!requestId) {
-    redirect("/admin?replayStatus=missing-request");
+    redirect(replayRedirectPath({ status: "missing-request", profile: modelProfile, creditUser, creditSearch }));
   }
 
   const reportRequest = await getAstrologyReportRequest(db, requestId);
   if (!reportRequest) {
-    redirect(`/admin?replayStatus=not-found&replayRequest=${encodeURIComponent(requestId)}&replayProfile=${modelProfile}`);
+    redirect(replayRedirectPath({ status: "not-found", requestId, profile: modelProfile, creditUser, creditSearch }));
   }
 
   if (reportRequest.chartRequestId) {
@@ -113,7 +126,7 @@ async function replayReportAction(formData: FormData) {
   const resultPayload = await buildAstrologyReportResultAsync(reportRequest, { env });
   const result = await recordAstrologyReportResult(db, resultPayload);
   revalidatePath("/admin");
-  redirect(`/admin?replayStatus=${encodeURIComponent(result.status)}&replayRequest=${encodeURIComponent(requestId)}&replayProfile=${modelProfile}`);
+  redirect(replayRedirectPath({ status: result.status, requestId, profile: modelProfile, creditUser, creditSearch }));
 }
 
 async function updateUserRoleAction(formData: FormData) {
@@ -180,6 +193,8 @@ function ledgerRelatedObject(entry: { idempotencyKey: string; relatedReportDocum
 
 function reportTypeLabel(reportType: string) {
   if (reportType === "identity") return ui.library.reportTypeIdentity;
+  if (reportType === "core_self") return ui.library.reportTypeCoreSelf;
+  if (reportType === "chart_interpretation") return ui.library.reportTypeChartInterpretation;
   if (reportType === "deep") return ui.library.reportTypeDeep;
   if (reportType === "progressed") return ui.library.reportTypeProgressed;
   if (reportType === "synastry") return ui.library.reportTypeSynastry;
@@ -192,6 +207,57 @@ function defaultModelFor(profile: ReportModelProfile) {
 
 function feedbackActor(feedback: { userDisplayName: string | null; userEmail: string | null }) {
   return feedback.userDisplayName || feedback.userEmail || ui.admin.feedbackActorUnknown;
+}
+
+function asRecord(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+}
+
+function provenanceItems(value: unknown) {
+  return Array.isArray(value) ? value.map(asRecord) : [];
+}
+
+function textValue(value: unknown, fallback: string = ui.admin.notRecorded) {
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+function resultPublicHeadline(value: unknown) {
+  return textValue(asRecord(value).headline);
+}
+
+function resultProviderModel(result: { provenance: unknown; error: string | null }) {
+  const haystack = [
+    ...provenanceItems(result.provenance).map((item) => textValue(item.summary, "")),
+    result.error ?? ""
+  ].join("\n");
+  const match = haystack.match(/\b(openrouter|openai)\/([^;\n]+)/i);
+  return {
+    provider: match?.[1] ?? ui.admin.notRecorded,
+    model: match?.[2]?.trim() ?? ui.admin.notRecorded
+  };
+}
+
+function resultUsageMetadata(result: { provenance: unknown; error: string | null }) {
+  const haystack = [
+    ...provenanceItems(result.provenance).map((item) => textValue(item.summary, "")),
+    result.error ?? ""
+  ].join("\n");
+  const find = (label: string) => haystack.match(new RegExp(`${label}[:\\s]+([$\\d.,]+(?:ms)?)`, "i"))?.[1] ?? ui.admin.notRecorded;
+  return {
+    input: find("Input"),
+    output: find("Output"),
+    total: find("Total"),
+    spend: find("Spend"),
+    latency: find("Latency")
+  };
+}
+
+function validationErrors(error: string | null) {
+  if (!error) return [];
+  return error
+    .split(";")
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 export default async function AdminPage({ searchParams }: { searchParams?: Promise<AdminSearchParams> }) {
@@ -239,7 +305,12 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
             requestId: astrologyReportResults.requestId,
             status: astrologyReportResults.status,
             engine: astrologyReportResults.engine,
-            error: astrologyReportResults.error
+            engineVersion: astrologyReportResults.engineVersion,
+            summary: astrologyReportResults.summary,
+            provenance: astrologyReportResults.provenance,
+            publicSignal: astrologyReportResults.publicSignal,
+            error: astrologyReportResults.error,
+            createdAt: astrologyReportResults.createdAt
           })
           .from(astrologyReportResults)
           .where(eq(astrologyReportResults.userId, selectedCreditUser.userId))
@@ -251,6 +322,11 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
   const normalizedReplayProfile = reportModelProfileKeys.includes(replayProfile as ReportModelProfile)
     ? (replayProfile as ReportModelProfile)
     : "production";
+  const selectedReplayRequest = selectedReportRequests.find((request) => request.id === defaultReplayRequestId) ?? selectedReportRequests[0] ?? null;
+  const selectedReplayResult = selectedReplayRequest ? reportResultByRequestId.get(selectedReplayRequest.id) ?? null : null;
+  const selectedReplayProviderModel = selectedReplayResult ? resultProviderModel(selectedReplayResult) : { provider: ui.admin.notRecorded, model: ui.admin.notRecorded };
+  const selectedReplayUsage = selectedReplayResult ? resultUsageMetadata(selectedReplayResult) : null;
+  const selectedValidationErrors = validationErrors(selectedReplayResult?.error ?? null);
 
   return (
     <section className="adminPage" aria-labelledby="admin-title">
@@ -451,10 +527,112 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
               {ui.admin.replayResult(replayStatus, replayRequest || "unknown request", replayProfile || "default profile")}
             </p>
           ) : null}
+          <form className="adminSearchForm" action="/admin">
+            <input name="creditUser" type="hidden" value={selectedCreditUser?.userId ?? ""} />
+            <input name="creditSearch" type="hidden" value={creditSearch} />
+            <label>
+              <span>{ui.admin.requestSelector}</span>
+              <select name="replayRequest" defaultValue={defaultReplayRequestId}>
+                {selectedReportRequests.map((request) => (
+                  <option key={request.id} value={request.id}>
+                    {request.subjectName} · {reportTypeLabel(request.reportType)} · {request.status} · {request.id.slice(0, 8)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button className="button secondary" type="submit" disabled={!selectedReportRequests.length}>{ui.admin.inspectRequest}</button>
+          </form>
+          <div className="adminRunInspector" aria-label={ui.admin.selectedRunInspector}>
+            <div>
+              <span>{ui.admin.selectedRun}</span>
+              <strong>{selectedReplayRequest ? selectedReplayRequest.id.slice(0, 8) : ui.admin.notRecorded}</strong>
+              <p>{selectedReplayRequest ? `${selectedReplayRequest.subjectName} · ${reportTypeLabel(selectedReplayRequest.reportType)}` : ui.admin.noReports}</p>
+            </div>
+            <div>
+              <span>{ui.admin.reportResult}</span>
+              <strong>{selectedReplayResult?.status ?? ui.admin.notRecorded}</strong>
+              <p>{selectedReplayResult ? formatAdminDate(selectedReplayResult.createdAt) : ui.admin.notRecorded}</p>
+            </div>
+            <div>
+              <span>{ui.admin.modelProvider}</span>
+              <strong>{selectedReplayProviderModel.provider}</strong>
+              <p>{selectedReplayProviderModel.model}</p>
+            </div>
+            <div>
+              <span>{ui.admin.reportCost}</span>
+              <strong>{selectedReplayRequest?.costCredits ?? 0}</strong>
+              <p>{selectedReplayRequest?.source ?? ui.admin.notRecorded}</p>
+            </div>
+          </div>
+          <details className="adminDebugDetails" open>
+            <summary>{ui.admin.debugDetails}</summary>
+            <dl>
+              <div>
+                <dt>{ui.admin.publicHeadline}</dt>
+                <dd>{selectedReplayResult ? resultPublicHeadline(selectedReplayResult.publicSignal) : ui.admin.notRecorded}</dd>
+              </div>
+              <div>
+                <dt>{ui.admin.engine}</dt>
+                <dd>{selectedReplayResult?.engine ?? ui.admin.notRecorded}</dd>
+              </div>
+              <div>
+                <dt>{ui.admin.engineVersion}</dt>
+                <dd>{selectedReplayResult?.engineVersion ?? ui.admin.notRecorded}</dd>
+              </div>
+              <div>
+                <dt>{ui.admin.usage}</dt>
+                <dd>
+                  {ui.admin.usageSummary(
+                    selectedReplayUsage?.input ?? ui.admin.notRecorded,
+                    selectedReplayUsage?.output ?? ui.admin.notRecorded,
+                    selectedReplayUsage?.total ?? ui.admin.notRecorded,
+                    selectedReplayUsage?.spend ?? ui.admin.notRecorded,
+                    selectedReplayUsage?.latency ?? ui.admin.notRecorded
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt>{ui.admin.validationErrors}</dt>
+                <dd>
+                  {selectedValidationErrors.length ? (
+                    <ul>
+                      {selectedValidationErrors.map((error) => (
+                        <li key={error}>{error}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    ui.admin.noValidationErrors
+                  )}
+                </dd>
+              </div>
+            </dl>
+            {selectedReplayResult && provenanceItems(selectedReplayResult.provenance).length ? (
+              <ul className="adminProvenanceList">
+                {provenanceItems(selectedReplayResult.provenance).map((item, index) => (
+                  <li key={`${index}-${textValue(item.id, "provenance")}`}>
+                    <strong>{textValue(item.label)}</strong>: {textValue(item.summary)}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {selectedReplayResult?.status === "completed" && selectedReplayRequest ? (
+              <Link className="button secondary" href={`/library?reportId=${selectedReplayRequest.id}`}>
+                {ui.admin.reportOpenLibrary}
+              </Link>
+            ) : null}
+          </details>
           <form className="adminCreditForm adminReplayForm" action={replayReportAction}>
+            <input name="creditUser" type="hidden" value={selectedCreditUser?.userId ?? ""} />
+            <input name="creditSearch" type="hidden" value={creditSearch} />
             <label>
               <span>{ui.admin.reportId}</span>
-              <input name="requestId" defaultValue={defaultReplayRequestId} required />
+              <select name="requestId" defaultValue={defaultReplayRequestId} required>
+                {selectedReportRequests.map((request) => (
+                  <option key={request.id} value={request.id}>
+                    {request.subjectName} · {reportTypeLabel(request.reportType)} · {request.id.slice(0, 8)}
+                  </option>
+                ))}
+              </select>
             </label>
             <label>
               <span>{ui.admin.reportWriter}</span>
@@ -556,6 +734,8 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
                   <time role="cell">{formatAdminDate(request.createdAt)}</time>
                   <div role="cell">
                     <form action={replayReportAction}>
+                      <input name="creditUser" type="hidden" value={selectedCreditUser?.userId ?? ""} />
+                      <input name="creditSearch" type="hidden" value={creditSearch} />
                       <input name="requestId" type="hidden" value={request.id} />
                       <input name="reportWriter" type="hidden" value={DEBUG_MODEL_REPORT_WRITER} />
                       <input name="modelProfile" type="hidden" value="debug" />

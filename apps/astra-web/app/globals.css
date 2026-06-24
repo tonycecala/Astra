@@ -2975,7 +2975,8 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
 
 .adminCreditForm input,
 .adminCreditForm select,
-.adminSearchForm input {
+.adminSearchForm input,
+.adminSearchForm select {
   min-height: 42px;
   width: 100%;
   border: 1px solid var(--line);
@@ -3061,6 +3062,72 @@ html[data-astra-theme="day"] .stream-card:focus-visible {
 
 .adminSubheading {
   margin: 10px 0 0;
+}
+
+.adminRunInspector {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.adminRunInspector > div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 12px;
+}
+
+.adminRunInspector span,
+.adminDebugDetails dt {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 820;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.adminRunInspector strong {
+  display: block;
+  margin-top: 4px;
+}
+
+.adminDebugDetails {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  padding: 10px 12px;
+}
+
+.adminDebugDetails summary {
+  cursor: pointer;
+  color: var(--gold);
+  font-weight: 820;
+}
+
+.adminDebugDetails dl {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.adminDebugDetails dl > div {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.4fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.adminDebugDetails dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.adminDebugDetails ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.adminProvenanceList {
+  color: var(--muted);
 }
 
 .adminOpsGrid {
@@ -3458,9 +3525,14 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
   .starsValueGrid,
   .adminMetricGrid,
   .adminOpsGrid,
+  .adminRunInspector,
   .adminSearchForm,
   .adminCreditForm,
   .adminRoleForm {
+    grid-template-columns: 1fr;
+  }
+
+  .adminDebugDetails dl > div {
     grid-template-columns: 1fr;
   }
 

@@ -23,7 +23,7 @@ V1 remains the source of truth for alpha-critical chart, report, Library, Stars,
 | Report actions | `app/reports/[id]/ReportActions`, `app/reports/ReportMarkdown.tsx` | Share, revoke, copy link, download markdown, copy markdown, print, delete are present. | Keep actions private/report-owned and browser-visible. |
 | Report feedback | `app/reports/ReportFeedbackForm.tsx`, `app/api/beta-feedback/route.ts`, `lib/server/beta-feedback-store.ts` | Ported to Drizzle feedback table/API/form/admin inbox. | Store only alpha QA feedback; no broad activity system until needed. |
 | Stars/ledger | `app/credits/*`, `lib/server/credit-store.ts`, `lib/credit-config.ts` | V2 has Star packs, Stripe checkout, webhook fulfillment, ledger, admin adjustments, spend records. | Ledger is source of truth; profile balance mirrors ledger. |
-| Admin report QA | `app/admin/page.tsx`, `app/api/admin/replay-report/route.ts`, `scripts/run-report-v2-*-bakeoff.mts` | V2 has user search, ledger, role, replay, model profile/provider/model controls, recent reports. | Add only v1 query/debug controls that directly help alpha report QA. |
+| Admin report QA | `app/admin/page.tsx`, `app/api/admin/replay-report/route.ts`, `scripts/run-report-v2-*-bakeoff.mts` | V2 has user search, ledger, role, report request selector, selected-run inspector, replay, model profile/provider/model controls, recent reports, Library links, validation errors, provenance, and usage placeholders. | Add only further v1 query/debug controls when they directly help alpha report QA. |
 
 ## Post-Alpha V1 Surfaces
 
