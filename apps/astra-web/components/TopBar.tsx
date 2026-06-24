@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { authClient } from "../lib/auth/client";
 import { ui } from "../lib/i18n";
+import { SelfTabAvatar } from "./SelfTabAvatar";
 import { ThemeToggle } from "./ThemeToggle";
 
 const topbarRoutes = [
@@ -69,15 +70,11 @@ function AccountMenu({ align = "right" }: { align?: "right" | "left" }) {
   return (
     <details className="account-menu" data-align={align} onToggle={(event) => setOpen(event.currentTarget.open)} open={open} ref={menuRef}>
       <summary className="account-profile-button" aria-label={ui.account.menuLabel} title={signedIn ? accountName : ui.account.signIn}>
-        <span className="account-avatar" aria-hidden="true">
-          {accountInitial(accountName)}
-        </span>
+        <SelfTabAvatar className="account-avatar" email={accountEmail || null} initial={accountInitial(accountName)} size={68} />
       </summary>
       <div className="account-panel" role="menu" aria-label={ui.account.menuLabel}>
         <div className="account-identity">
-          <span className="account-avatar account-avatar-large" aria-hidden="true">
-            {accountInitial(accountName)}
-          </span>
+          <SelfTabAvatar className="account-avatar account-avatar-large" email={accountEmail || null} initial={accountInitial(accountName)} size={84} />
           <span>
             <strong>{accountName}</strong>
             {accountEmail ? <small>{accountEmail}</small> : <small>{ui.account.signedOut}</small>}
