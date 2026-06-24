@@ -108,8 +108,8 @@ if (!completed.provenance.some((entry) => entry.kind === "engine")) {
 if (!completed.provenance.some((entry) => entry.summary.includes(LOCAL_DETERMINISTIC_REPORT_WRITER))) {
   throw new Error("Configured astrology report should include deterministic writer provenance.");
 }
-if (completed.publicSignal?.headline !== "Gemini Sun, Virgo Moon, Cancer rising") {
-  throw new Error(`Configured astrology report should expose Tony's GEM/VIR/CAN signature, got: ${completed.publicSignal?.headline ?? "missing"}`);
+if (completed.publicSignal?.headline !== "Tony C — Core Report") {
+  throw new Error(`Configured astrology report should expose Tony's report headline, got: ${completed.publicSignal?.headline ?? "missing"}`);
 }
 if (
   !completed.publicSignal.provenanceSummary.includes(ASTRA_DEFAULT_ZODIAC_MODE) ||
@@ -122,9 +122,9 @@ if (!completed.publicSignal.provenanceSummary.includes(LOCAL_DETERMINISTIC_REPOR
 }
 
 const publicCompleted = buildAstrologyReportResult(einsteinPublicRequest);
-if (publicCompleted.publicSignal?.headline !== "Pisces Sun, Sagittarius Moon, Cancer rising") {
+if (publicCompleted.publicSignal?.headline !== "Albert Einstein — Core Report") {
   throw new Error(
-    `Configured astrology report should preserve Einstein's public AA chart signature, got: ${publicCompleted.publicSignal?.headline ?? "missing"}`
+    `Configured astrology report should preserve Einstein's public AA report headline, got: ${publicCompleted.publicSignal?.headline ?? "missing"}`
   );
 }
 
@@ -222,7 +222,7 @@ if (!debugModelCompleted.summary?.includes("Model draft kept")) {
 if (debugModelCompleted.sections.length !== 4 || !debugModelCompleted.sections.some((section) => section.title === "Right Now")) {
   throw new Error("Debug model writer did not preserve the mocked private sections.");
 }
-if (debugModelCompleted.publicSignal?.headline !== "Gemini Sun, Virgo Moon, Cancer rising") {
+if (debugModelCompleted.publicSignal?.headline !== "Tony C — Core Report") {
   throw new Error("Debug model writer must preserve the deterministic public signal headline.");
 }
 if (debugModelCompleted.publicSignal.summary !== completed.publicSignal.summary) {
@@ -246,6 +246,46 @@ const malformedDebugModel = await buildAstrologyReportResultAsync(reportRequest,
 });
 if (malformedDebugModel.status !== "failed" || malformedDebugModel.publicSignal) {
   throw new Error("Debug model writer must fail privately when model output does not validate.");
+}
+
+const unsupportedClaimFetch: typeof fetch = async () => {
+  const longUnsupportedIdentity = Array.from({ length: 60 }, () =>
+    "This section deliberately repeats a grounded private-reading sentence so the validation exercise reaches the chart-claim guardrail instead of the length guardrail."
+  ).join(" ");
+  return new Response(
+    JSON.stringify({
+      output_text: [
+        "# Astra Report - Tony C",
+        "",
+        "## Identity",
+        "",
+        `The Sun in Pisces claim is intentionally unsupported for this Gemini chart. ${longUnsupportedIdentity}`,
+        "",
+        "## Relationships",
+        "",
+        "The model draft keeps relationship material short for this validation path.",
+        "",
+        "## Work",
+        "",
+        "The model draft keeps work material short for this validation path.",
+        "",
+        "## Right Now",
+        "",
+        "The model draft keeps current-season material short for this validation path."
+      ].join("\n")
+    }),
+    { status: 200, headers: { "content-type": "application/json" } }
+  );
+};
+const unsupportedClaimDebugModel = await buildAstrologyReportResultAsync(reportRequest, {
+  env: debugModelEnv,
+  fetchImpl: unsupportedClaimFetch
+});
+if (unsupportedClaimDebugModel.status !== "failed" || !unsupportedClaimDebugModel.error?.includes("Sun in Pisces")) {
+  throw new Error("Debug model writer must reject unsupported astrology claims before saving a report.");
+}
+if (unsupportedClaimDebugModel.publicSignal) {
+  throw new Error("Unsupported model claims must not expose a public signal.");
 }
 
 if (previousEngine === undefined) {

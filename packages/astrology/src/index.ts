@@ -1065,7 +1065,7 @@ function buildReportSectionSignalCards(chartSignature: ChartSignature, headings:
       risks: meaning.risks,
       tensions: meaning.tensions,
       developmentalTasks: meaning.developmentalTasks,
-      evidenceBullets: chartSignals.slice(0, 3).map((signal) => ({
+      evidenceBullets: chartSignals.map((signal) => ({
         label: signal.label,
         meaning: signal.facts.join("; ")
       }))
@@ -1441,42 +1441,177 @@ function validateRawModelText(text: string) {
 }
 
 const zodiacSignNames = zodiacSigns.map((sign) => sign.name);
-const aspectClaimNames = ["conjunction", "sextile", "square", "trine", "opposition", "quincunx"];
+const reportClaimBodyNames = [
+  "Sun",
+  "Moon",
+  "Mercury",
+  "Venus",
+  "Mars",
+  "Jupiter",
+  "Saturn",
+  "Uranus",
+  "Neptune",
+  "Pluto",
+  "Chiron",
+  "Ascendant",
+  "Midheaven"
+] as const;
+const aspectAliases: Record<string, string> = {
+  conjunct: "conjunction",
+  conjuncts: "conjunction",
+  conjunction: "conjunction",
+  opposite: "opposition",
+  opposes: "opposition",
+  opposition: "opposition",
+  square: "square",
+  squares: "square",
+  trine: "trine",
+  trines: "trine",
+  sextile: "sextile",
+  sextiles: "sextile",
+  quincunx: "quincunx",
+  quincunxes: "quincunx"
+};
+const aspectClaimNames = Object.keys(aspectAliases);
 
-function mentionedTerms(text: string, terms: readonly string[]) {
-  return terms.filter((term) => new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(text));
+function normalizeClaim(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/\bthe\s+/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-function allowedEvidenceText(card: ReportSectionSignalCard | undefined) {
-  if (!card) return "";
-  return [
-    card.title,
-    ...card.chartSignals.flatMap((signal) => [signal.label, ...signal.facts]),
-    ...card.evidenceBullets.flatMap((item) => [item.label, item.meaning])
-  ].join("\n");
+function normalizeAspectClaim(value: string) {
+  return aspectAliases[value.toLowerCase()] ?? value.toLowerCase();
+}
+
+function titleCaseClaim(value: string) {
+  return value[0]?.toUpperCase() ? `${value[0].toUpperCase()}${value.slice(1).toLowerCase()}` : value;
+}
+
+function compactHouseLabel(value: number | string) {
+  const house = Number(value);
+  return houseLabel(Number.isFinite(house) ? house : undefined);
+}
+
+function aspectClaimKey(left: string, aspect: string, right: string) {
+  const endpoints = [left.toLowerCase(), right.toLowerCase()].sort();
+  return normalizeClaim(`${endpoints[0]} ${normalizeAspectClaim(aspect)} ${endpoints[1]}`);
+}
+
+function signalClaimText(signal: ReportSectionSignalCard["chartSignals"][number]) {
+  return [signal.label, ...signal.facts].join(" ");
+}
+
+function allowedClaimSet(cards: ReportSectionSignalCard[], chartSignature: ChartSignature) {
+  const claims = new Set<string>();
+  const add = (claim: string) => {
+    const normalized = normalizeClaim(claim);
+    if (normalized) claims.add(normalized);
+  };
+  const addAspect = (left: string, aspect: string, right: string) => {
+    claims.add(aspectClaimKey(left, aspect, right));
+  };
+
+  for (const point of [...chartSignature.points, ...(chartSignature.ascendant ? [chartSignature.ascendant] : [])]) {
+    add(`${point.body} in ${point.sign}`);
+    if (point.house) add(`${point.body} in ${compactHouseLabel(point.house)}`);
+  }
+
+  for (const card of cards) {
+    for (const signal of card.chartSignals) {
+      const text = signalClaimText(signal);
+      add(signal.label);
+      for (const match of text.matchAll(new RegExp(`\\b(${reportClaimBodyNames.join("|")})\\s+in\\s+(${zodiacSignNames.join("|")})\\b`, "gi"))) {
+        add(`${match[1]} in ${titleCaseClaim(match[2])}`);
+      }
+      for (const match of text.matchAll(new RegExp(`\\b(${reportClaimBodyNames.join("|")})\\s+in\\s+(?:${zodiacSignNames.join("|")})\\s+in\\s+(?:the\\s+)?(\\d+)(?:st|nd|rd|th)?\\s+house\\b`, "gi"))) {
+        add(`${match[1]} in ${compactHouseLabel(match[2])}`);
+      }
+      for (const match of text.matchAll(new RegExp(`\\b(${reportClaimBodyNames.join("|")})\\s+in\\s+(?:the\\s+)?(\\d+)(?:st|nd|rd|th)?\\s+house\\b`, "gi"))) {
+        add(`${match[1]} in ${compactHouseLabel(match[2])}`);
+      }
+      for (const match of text.matchAll(new RegExp(`\\b(${reportClaimBodyNames.join("|")})\\s+(${aspectClaimNames.join("|")})\\s+(${reportClaimBodyNames.join("|")})\\b`, "gi"))) {
+        addAspect(match[1], match[2], match[3]);
+      }
+      for (const match of text.matchAll(new RegExp(`\\b(${zodiacSignNames.join("|")})\\s+emphasis\\b`, "gi"))) {
+        add(`${titleCaseClaim(match[1])} emphasis`);
+      }
+      for (const match of text.matchAll(/\b(\d+)(?:st|nd|rd|th)?\s+house emphasis\b/gi)) {
+        add(`${compactHouseLabel(match[1])} emphasis`);
+      }
+    }
+  }
+
+  return claims;
+}
+
+function mentionedClaimLabels(text: string) {
+  const claims: Array<{ label: string; key: string }> = [];
+  const bodyPattern = reportClaimBodyNames.join("|");
+  const signPattern = zodiacSignNames.join("|");
+  const aspectPattern = aspectClaimNames.join("|");
+  const pushClaim = (label: string, key = normalizeClaim(label)) => {
+    if (!claims.some((claim) => claim.key === key)) claims.push({ label, key });
+  };
+
+  for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})\\s+in\\s+(${signPattern})\\b`, "gi"))) {
+    pushClaim(`${match[1]} in ${titleCaseClaim(match[2])}`);
+  }
+  for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})\\s+in\\s+(?:${signPattern})\\s+in\\s+(?:the\\s+)?(\\d+)(?:st|nd|rd|th)?\\s+house\\b`, "gi"))) {
+    pushClaim(`${match[1]} in ${compactHouseLabel(match[2])}`);
+  }
+  for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})\\s+in\\s+(?:the\\s+)?(\\d+)(?:st|nd|rd|th)?\\s+house\\b`, "gi"))) {
+    pushClaim(`${match[1]} in ${compactHouseLabel(match[2])}`);
+  }
+  for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})\\s+(${aspectPattern})\\s+(${bodyPattern})\\b`, "gi"))) {
+    pushClaim(`${match[1]} ${normalizeAspectClaim(match[2])} ${match[3]}`, aspectClaimKey(match[1], match[2], match[3]));
+  }
+  for (const match of text.matchAll(new RegExp(`\\b(${signPattern})\\s+emphasis\\b`, "gi"))) {
+    pushClaim(`${titleCaseClaim(match[1])} emphasis`);
+  }
+  for (const match of text.matchAll(/\b(\d+)(?:st|nd|rd|th)?[-\s]+house emphasis\b/gi)) {
+    pushClaim(`${compactHouseLabel(match[1])} emphasis`);
+  }
+
+  return claims;
+}
+
+function sectionCardForTitle(cards: ReportSectionSignalCard[], title: string) {
+  const normalizedTitle = normalizeClaim(title);
+  return cards.find((card) => normalizeClaim(card.title) === normalizedTitle);
+}
+
+function validateEvidenceCompleteness(draft: ReportDraft, cards: ReportSectionSignalCard[]) {
+  const errors: string[] = [];
+  for (const section of draft.sections ?? []) {
+    const card = sectionCardForTitle(cards, section.title);
+    if (!card?.evidenceBullets.length) continue;
+    const visibleLabels = card.evidenceBullets.map((item) => normalizeClaim(item.label));
+    for (const signal of card.chartSignals) {
+      const signalClaims = mentionedClaimLabels(signalClaimText(signal));
+      if (!signalClaims.some((claim) => section.body.toLowerCase().includes(claim.label.toLowerCase()))) continue;
+      const normalizedSignal = normalizeClaim(signal.label);
+      if (!visibleLabels.some((label) => label.includes(normalizedSignal) || normalizedSignal.includes(label))) {
+        errors.push(`Missing visible chart evidence in ${section.title}: ${signal.label}.`);
+      }
+    }
+  }
+  return errors;
 }
 
 function validateUnsupportedSectionClaims(draft: ReportDraft, cards: ReportSectionSignalCard[], chartSignature: ChartSignature) {
   const errors: string[] = [];
-  const allowedText = [
-    ...cards.map(allowedEvidenceText),
-    chartSignature.sun.sign,
-    chartSignature.moon.sign,
-    chartSignature.ascendant?.sign ?? "",
-    ...chartSignature.points.flatMap((point) => [point.body, point.sign, houseLabel(point.house)])
-  ].join("\n");
+  const allowedClaims = allowedClaimSet(cards, chartSignature);
   for (const section of draft.sections ?? []) {
-    for (const sign of mentionedTerms(section.body, zodiacSignNames)) {
-      if (!new RegExp(`\\b${sign}\\b`, "i").test(allowedText)) {
-        errors.push(`Unsupported astrology claim in ${section.title}: ${sign} is not in the selected report evidence.`);
-      }
-    }
-    for (const aspect of mentionedTerms(section.body, aspectClaimNames)) {
-      if (!new RegExp(`\\b${aspect}\\b`, "i").test(allowedText)) {
-        errors.push(`Unsupported astrology claim in ${section.title}: ${aspect} is not in the selected report evidence.`);
+    for (const claim of mentionedClaimLabels(section.body)) {
+      if (!allowedClaims.has(claim.key)) {
+        errors.push(`Unsupported astrology claim in ${section.title}: ${claim.label} is not in the selected report evidence.`);
       }
     }
   }
+  errors.push(...validateEvidenceCompleteness(draft, cards));
   return errors;
 }
 
