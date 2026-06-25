@@ -121,8 +121,8 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
         <PageHeader eyebrow={ui.self.eyebrow} title={ui.self.signedOutTitle}>
           {ui.self.signedOutIntro}
         </PageHeader>
-        <section className="grid" aria-label={ui.self.summaryLabel}>
-          <article className="card">
+        <section className="auth-gate-grid" aria-label={ui.self.summaryLabel}>
+          <article className="card auth-gate-card">
             <div className="eyebrow">{ui.login.codeFlowEyebrow}</div>
             <h2>{ui.login.title}</h2>
             <p>{ui.login.intro}</p>

@@ -154,8 +154,8 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
         <PageHeader eyebrow={ui.allies.eyebrow} title={ui.allies.signedOutTitle}>
           {ui.allies.signedOutIntro}
         </PageHeader>
-        <section className="grid" aria-label={ui.allies.listLabel}>
-          <article className="card">
+        <section className="auth-gate-grid" aria-label={ui.allies.listLabel}>
+          <article className="card auth-gate-card">
             <div className="eyebrow">{ui.login.codeFlowEyebrow}</div>
             <h2>{ui.login.title}</h2>
             <p>{ui.login.intro}</p>

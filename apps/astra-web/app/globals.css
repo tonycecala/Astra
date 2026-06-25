@@ -8,6 +8,7 @@
   --line: #ded8ce;
   --gold: #a66f2d;
   --blue: #315b7d;
+  --purple: #6d579f;
   --green: #476b55;
   --rose: #8b4b55;
   --panel: #ffffff;
@@ -30,6 +31,7 @@ html[data-astra-theme="dark"] {
   --line: #393936;
   --gold: #d9b66f;
   --blue: #8fb9d8;
+  --purple: #8067b8;
   --green: #83c7a2;
   --rose: #e0a0aa;
   --panel: #1b1e1c;
@@ -751,6 +753,61 @@ textarea {
   gap: 14px;
 }
 
+.auth-gate-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, min(100%, 760px));
+  gap: 14px;
+}
+
+.auth-gate-card {
+  display: grid;
+  gap: 14px;
+  border-color: color-mix(in srgb, var(--gold) 18%, transparent);
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--blue) 12%, transparent), transparent 34%),
+    radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 34%),
+    linear-gradient(135deg, color-mix(in srgb, var(--panel) 62%, transparent), color-mix(in srgb, var(--purple) 9%, transparent));
+  box-shadow: none;
+}
+
+.auth-gate-heading {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.auth-gate-card .eyebrow,
+.auth-gate-heading span {
+  color: color-mix(in srgb, var(--blue) 62%, var(--gold));
+  font-size: 0.72rem;
+  font-weight: 880;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.auth-gate-card h2,
+.auth-gate-heading h2 {
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  line-height: 1.12;
+}
+
+.auth-gate-card p {
+  max-width: 68ch;
+  margin: 0;
+  color: color-mix(in srgb, var(--muted) 88%, var(--blue));
+  font-size: 0.96rem;
+  line-height: 1.45;
+}
+
+.auth-gate-card .button {
+  justify-self: start;
+  margin-top: 2px;
+  padding-inline: 16px;
+}
+
 .reader-shell {
   display: grid;
   gap: 18px;
@@ -828,6 +885,15 @@ textarea {
   padding: 16px;
   min-width: 0;
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
+}
+
+.card.auth-gate-card {
+  border-color: color-mix(in srgb, var(--gold) 18%, transparent);
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--blue) 12%, transparent), transparent 34%),
+    radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 34%),
+    linear-gradient(135deg, color-mix(in srgb, var(--panel) 62%, transparent), color-mix(in srgb, var(--purple) 9%, transparent));
+  box-shadow: none;
 }
 
 .card.self-profile-card {

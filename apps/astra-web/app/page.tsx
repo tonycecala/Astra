@@ -38,8 +38,8 @@ export default async function HomePage() {
         {ui.journey.intro}
       </PageHeader>
 
-      <section className="grid" aria-label={ui.login.pageKicker}>
-        <article className="card">
+      <section className="auth-gate-grid" aria-label={ui.login.pageKicker}>
+        <article className="card auth-gate-card">
           <div className="eyebrow">{ui.login.pageKicker}</div>
           <h2>{ui.login.pageTitle}</h2>
           <p>{ui.login.pageIntro}</p>

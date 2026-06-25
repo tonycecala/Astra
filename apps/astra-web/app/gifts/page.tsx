@@ -14,9 +14,9 @@ export default async function GiftsPage() {
         <PageHeader eyebrow={ui.gifts.eyebrow} title={ui.gifts.signedOutTitle}>
           {ui.gifts.signedOutIntro}
         </PageHeader>
-        <section className="gift-list" aria-label={ui.gifts.listLabel}>
-          <article className="card gift-panel">
-            <div className="gift-panel-heading">
+        <section className="auth-gate-grid" aria-label={ui.gifts.listLabel}>
+          <article className="card auth-gate-card">
+            <div className="auth-gate-heading">
               <span>{ui.login.codeFlowEyebrow}</span>
               <h2>{ui.login.title}</h2>
             </div>
