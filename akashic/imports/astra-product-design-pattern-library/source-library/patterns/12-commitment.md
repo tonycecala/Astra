@@ -1,0 +1,60 @@
+---
+title: "Commitment"
+slug: "12-commitment"
+priority: "high"
+astra_area: "onboarding, habit"
+source: "The Product Design Playbook, flattened text upload"
+status: "codex-ready"
+---
+
+# Astra Pattern Skill: Commitment
+
+## Core Principle
+Let users declare intent, then organize the product around it.
+
+## Astra Translation
+This pattern should be interpreted through Astra’s product frame:
+
+- **Home / Stream**: daily relevance and discovery.
+- **Allies**: supportive relationships, mentors, archetypes, guides.
+- **Self**: chart, preferences, reflections, identity signals.
+- **Library**: durable artifacts and personal archive.
+- **Gifts**: earned milestones, stars, constellations, certificates.
+
+## Use In Astra
+- Choose current life focus
+- Set learning pace
+- Pick preferred daily ritual
+- Name a constellation goal
+
+## Avoid
+- Forced goals
+- Guilt streaks
+- Irreversible pledges
+
+## Product Questions
+- Where does this pattern reduce friction without reducing meaning?
+- Does it increase clarity, trust, momentum, or personal relevance?
+- Does it respect the user’s autonomy?
+- Could a new user understand the value without a tutorial?
+- Would this still feel good after 30 days of use?
+
+## Metrics To Instrument
+- `commitment_creation_rate`
+- `commitment_followthrough_rate`
+- `commitment_edit_rate`
+
+## Codex Implementation Direction
+Use commitments as gentle structure, not coercion. Make them editable and forgiving.
+
+## Acceptance Criteria
+- The UX state has a clear before / during / after.
+- Empty, loading, success, error, and logged-out states are accounted for.
+- Mobile layout works first.
+- Copy is user-outcome focused, not system-focused.
+- Analytics events are named and documented.
+- No dark-pattern implementation.
+- Edge cases are tested.
+
+## Notes For Astra
+Astra should adapt this play through a mythic, humane, and non-extractive lens. The goal is not maximum compulsion. The goal is durable usefulness, calm return, meaningful progress, and a sense that the product remembers the user’s becoming.
