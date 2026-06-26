@@ -80,6 +80,7 @@ type BirthOnboardingPanelProps = {
   initialBirthData?: ChartBirthData;
   initialChartRequestId?: string;
   initialStep?: Step;
+  hideRecentRequestPanels?: boolean;
 };
 
 type FormState = {
@@ -199,7 +200,8 @@ export function BirthOnboardingPanel({
   initialAllies = [],
   initialBirthData,
   initialChartRequestId,
-  initialStep
+  initialStep,
+  hideRecentRequestPanels = false
 }: BirthOnboardingPanelProps) {
   const initialChartRequest = initialChartRequestId
     ? initialRequests.find((request) => request.id === initialChartRequestId)
@@ -975,45 +977,49 @@ export function BirthOnboardingPanel({
             )}
           </article>
         ) : null}
-        <article className={`card ${styles.railCard}`}>
-          <h2 className={styles.railTitle}>{ui.self.chartRequestsTitle}</h2>
-          {requests.length ? (
-            <ul className={styles.compactRecordList}>
-              {requests.slice(0, 5).map((request) => (
-                <li key={request.id}>
-                  <div>
-                    <strong>{request.subjectName}</strong>
-                    <span>{compactBirthLine(request.birthData)}</span>
-                  </div>
-                  <em>{reportStatusLabel(request.status)}</em>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>{ui.self.chartRequestsEmpty}</p>
-          )}
-        </article>
-        <article className={`card ${styles.railCard}`}>
-          <h2 className={styles.railTitle}>{ui.self.reportRequestsStatusTitle}</h2>
-          {reportRequests.length ? (
-            <ul className={styles.compactRecordList}>
-              {reportRequests.slice(0, 5).map((request) => {
-                const result = reportResultsByRequestId.get(request.id);
-                return (
-                  <li key={request.id}>
-                    <div>
-                      <strong>{request.subjectName}</strong>
-                      <span>{result?.publicSignal?.headline ?? reportTypeLabel(request.reportType)}</span>
-                    </div>
-                    <em>{reportTypeLabel(request.reportType)}</em>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p>{ui.self.reportRequestsEmpty}</p>
-          )}
-        </article>
+        {!hideRecentRequestPanels ? (
+          <>
+            <article className={`card ${styles.railCard}`}>
+              <h2 className={styles.railTitle}>{ui.self.chartRequestsTitle}</h2>
+              {requests.length ? (
+                <ul className={styles.compactRecordList}>
+                  {requests.slice(0, 5).map((request) => (
+                    <li key={request.id}>
+                      <div>
+                        <strong>{request.subjectName}</strong>
+                        <span>{compactBirthLine(request.birthData)}</span>
+                      </div>
+                      <em>{reportStatusLabel(request.status)}</em>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>{ui.self.chartRequestsEmpty}</p>
+              )}
+            </article>
+            <article className={`card ${styles.railCard}`}>
+              <h2 className={styles.railTitle}>{ui.self.reportRequestsStatusTitle}</h2>
+              {reportRequests.length ? (
+                <ul className={styles.compactRecordList}>
+                  {reportRequests.slice(0, 5).map((request) => {
+                    const result = reportResultsByRequestId.get(request.id);
+                    return (
+                      <li key={request.id}>
+                        <div>
+                          <strong>{request.subjectName}</strong>
+                          <span>{result?.publicSignal?.headline ?? reportTypeLabel(request.reportType)}</span>
+                        </div>
+                        <em>{reportTypeLabel(request.reportType)}</em>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p>{ui.self.reportRequestsEmpty}</p>
+              )}
+            </article>
+          </>
+        ) : null}
       </aside>
     </section>
   );

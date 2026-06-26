@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChartPie, ChevronRight, Pencil, ShieldCheck, Sparkles } from "lucide-react";
+import { BookOpenText, ChartPie, ChevronRight, Pencil, ShieldCheck, Sparkles } from "lucide-react";
 import type { ChartMakerRequest } from "@astra/contracts";
 import { db, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests } from "@astra/db";
 import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
@@ -82,22 +82,6 @@ function formatBirthAnchorSummary(request?: ChartMakerRequest) {
   }
 
   return ui.self.chartAnchorBody(readableDate);
-}
-
-function reportStatusLabel(status: string) {
-  if (status === "queued" || status === "processing") {
-    return ui.self.reportStatusGenerating;
-  }
-  if (status === "completed") {
-    return ui.self.reportStatusReady;
-  }
-  if (status === "failed") {
-    return ui.self.reportStatusFailed;
-  }
-  if (status === "cancelled") {
-    return ui.self.reportStatusCancelled;
-  }
-  return status;
 }
 
 type SelfPageParams = {
@@ -263,10 +247,9 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
                   <li className="compact-list-report-row" key={request.id}>
                     <span>{request.subjectName}</span>
                     <span className="compact-list-report-actions">
-                      <strong>{reportStatusLabel(request.status)}</strong>
                       {result ? (
-                        <Link href={`/library?reportId=${request.id}`}>
-                          {ui.self.reportReadCta}
+                        <Link href={`/library?reportId=${request.id}`} aria-label={ui.self.reportReadCta} title={ui.self.reportReadCta}>
+                          <BookOpenText aria-hidden="true" size={16} />
                         </Link>
                       ) : null}
                     </span>
@@ -296,6 +279,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
           initialBirthData={onboardingChart?.birthData}
           initialChartRequestId={onboardingChart?.id}
           initialStep={onboardingStepFromParam(params.start)}
+          hideRecentRequestPanels
         />
       </section>
     </>
