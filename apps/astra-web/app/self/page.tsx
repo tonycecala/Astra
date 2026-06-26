@@ -220,22 +220,12 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
           <p>{ui.self.starsDescription}</p>
         </article>
         <article className="card self-insight-card">
-          <div className="eyebrow">{ui.self.onboarding}</div>
-          <h2>{profile.onboardingStatus}</h2>
-          <p>{ui.self.onboardingDescription}</p>
-        </article>
-        <article className="card self-insight-card">
           <div className="eyebrow">{ui.self.achievement}</div>
           <h2>{ui.self.noAchievementTitle}</h2>
           <p>{ui.self.noAchievementDescription}</p>
         </article>
       </section>
       <section className="grid" aria-label={ui.self.reportRequestsLabel}>
-        <article className="card self-insight-card">
-          <div className="eyebrow">{ui.self.reportRequestsEyebrow}</div>
-          <h2>{ui.self.reportRequestsTitle}</h2>
-          <p>{ui.self.reportRequestsIntro}</p>
-        </article>
         <article className="card self-insight-card">
           <div className="eyebrow">{ui.self.reportRequestsStatusEyebrow}</div>
           <h2>{ui.self.reportRequestsStatusTitle}</h2>
