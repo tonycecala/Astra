@@ -261,11 +261,6 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
             <p>{ui.self.reportRequestsEmpty}</p>
           )}
         </article>
-        <article className="card">
-          <div className="eyebrow">{ui.self.reportBoundaryEyebrow}</div>
-          <h2>{ui.self.reportBoundaryTitle}</h2>
-          <p>{ui.self.reportBoundaryBody}</p>
-        </article>
       </section>
       <section id="self-birth-onboarding">
         <BirthOnboardingPanel
