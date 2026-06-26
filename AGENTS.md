@@ -83,6 +83,33 @@ Completion requires:
 - desktop/tablet/mobile rendered verification when layout or navigation changes
 - console/page-error review
 
+## Product Design Playbook Enforcement (No-regular-code-review mode)
+
+For any user-facing implementation, the repository-wide approval gate is the Astra design playbook, not ad-hoc code review frequency.
+
+Before coding or shipping, use these files:
+
+- `akashic/playbooks/astra-composer-product-design-patterns.md`
+- `akashic/imports/astra-product-design-pattern-library/source-library/README.md`
+- `akashic/imports/astra-product-design-pattern-library/source-library/audits/ASTRA_DARK_PATTERN_GUARDRAILS.md`
+- `akashic/imports/astra-product-design-pattern-library/source-library/metrics/ASTRA_PATTERN_ANALYTICS_EVENTS.md`
+
+Mandatory checklist:
+
+1. Name the relevant pattern files from `source-library/patterns`.
+2. State the intended user outcome for the change.
+3. Confirm logged-out, empty, loading, success, and error states are defined.
+4. Confirm analytics are documented using the project event contract (or explicitly mark N/A).
+5. Confirm no forbidden/adversarial pattern is used from the guardrail file.
+6. Reference which files changed map to which pattern acceptance criteria.
+
+Required evidence in closeout:
+
+- Route(s) verified in `astra-browser-qa`
+- Pattern(s) referenced and why
+- Boundary notes (public/private, trust/privacy)
+- One-page QA outcome for acceptance criteria above
+
 ## Persistent Local Servers
 
 - Do not rely on foreground `npm run dev`, `nohup`, stale browser tabs, or PID files alone for local app handoff.
