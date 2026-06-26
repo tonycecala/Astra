@@ -108,9 +108,11 @@ function AllyCard({
               </Link>
             ) : null}
             {report ? (
-              <Link aria-label={ui.charts.viewPortrait} className="button secondary" href={`/library?reportId=${encodeURIComponent(report.requestId)}`} title={ui.charts.viewPortrait}>
-                <BookOpenText aria-hidden="true" size={16} />
-              </Link>
+              <span className="compact-list-report-actions">
+                <Link aria-label={ui.charts.viewPortrait} href={`/library?reportId=${encodeURIComponent(report.requestId)}`} title={ui.charts.viewPortrait}>
+                  <BookOpenText aria-hidden="true" size={16} />
+                </Link>
+              </span>
             ) : (
               <Link aria-label={ui.charts.createPortrait} className="button secondary" href={createPortraitHref} title={ui.charts.createPortrait}>
                 <BookOpenText aria-hidden="true" size={16} />
@@ -277,6 +279,7 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
           initialChartRequestId={selectedOnboardingChart?.id}
           initialStep={onboardingStepFromParam(params.start)}
           subjectType="ally"
+          hideSummaryRail
         />
       </section>
     </>

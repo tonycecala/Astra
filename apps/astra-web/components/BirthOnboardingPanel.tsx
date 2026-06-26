@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { type CSSProperties, FormEvent, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, Search, Send } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send } from "lucide-react";
 import type { Ally, AstrologyReportRequest, AstrologyReportResult, BirthPlaceSearchResult, ChartBirthData, ChartMakerRequest } from "@astra/contracts";
 import { displayTimezone } from "../lib/display";
 import { ui } from "../lib/i18n";
@@ -81,6 +82,7 @@ type BirthOnboardingPanelProps = {
   initialChartRequestId?: string;
   initialStep?: Step;
   hideRecentRequestPanels?: boolean;
+  hideSummaryRail?: boolean;
 };
 
 type FormState = {
@@ -201,7 +203,8 @@ export function BirthOnboardingPanel({
   initialBirthData,
   initialChartRequestId,
   initialStep,
-  hideRecentRequestPanels = false
+  hideRecentRequestPanels = false,
+  hideSummaryRail = false
 }: BirthOnboardingPanelProps) {
   const initialChartRequest = initialChartRequestId
     ? initialRequests.find((request) => request.id === initialChartRequestId)
@@ -260,10 +263,6 @@ export function BirthOnboardingPanel({
       ]
     ],
     [form, isAlly, synastryPartner]
-  );
-  const reportResultsByRequestId = useMemo(
-    () => new Map(reportResults.map((result) => [result.requestId, result])),
-    [reportResults]
   );
   const chartRequestsBySubjectId = useMemo(() => {
     const indexed = new Map<string, ChartMakerRequest>();
@@ -953,74 +952,85 @@ export function BirthOnboardingPanel({
         ) : null}
       </article>
 
-      <aside className={styles.summaryRail}>
-        {isAlly ? (
-          <article className={`card ${styles.railCard}`}>
-            <h2 className={styles.railTitle}>{ui.allies.wizardAlliesTitle}</h2>
-            {allies.length ? (
-              <ul className={styles.compactRecordList}>
-                {allies.slice(0, 6).map((ally) => {
-                  const chartRequest = chartRequestsBySubjectId.get(ally.id);
-                  return (
-                    <li key={ally.id}>
-                      <div>
-                        <strong>{ally.name}</strong>
-                        <span>{compactBirthLine(chartRequest?.birthData)}</span>
-                      </div>
-                      <em>{ally.relationship}</em>
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p>{ui.allies.wizardAlliesEmpty}</p>
-            )}
-          </article>
-        ) : null}
-        {!hideRecentRequestPanels ? (
-          <>
+      {!hideSummaryRail ? (
+        <aside className={styles.summaryRail}>
+          {isAlly ? (
             <article className={`card ${styles.railCard}`}>
-              <h2 className={styles.railTitle}>{ui.self.chartRequestsTitle}</h2>
-              {requests.length ? (
+              <h2 className={styles.railTitle}>{ui.allies.wizardAlliesTitle}</h2>
+              {allies.length ? (
                 <ul className={styles.compactRecordList}>
-                  {requests.slice(0, 5).map((request) => (
-                    <li key={request.id}>
-                      <div>
-                        <strong>{request.subjectName}</strong>
-                        <span>{compactBirthLine(request.birthData)}</span>
-                      </div>
-                      <em>{reportStatusLabel(request.status)}</em>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>{ui.self.chartRequestsEmpty}</p>
-              )}
-            </article>
-            <article className={`card ${styles.railCard}`}>
-              <h2 className={styles.railTitle}>{ui.self.reportRequestsStatusTitle}</h2>
-              {reportRequests.length ? (
-                <ul className={styles.compactRecordList}>
-                  {reportRequests.slice(0, 5).map((request) => {
-                    const result = reportResultsByRequestId.get(request.id);
+                  {allies.slice(0, 6).map((ally) => {
+                    const chartRequest = chartRequestsBySubjectId.get(ally.id);
                     return (
-                      <li key={request.id}>
+                      <li key={ally.id}>
                         <div>
-                          <strong>{request.subjectName}</strong>
-                          <span>{result?.publicSignal?.headline ?? reportTypeLabel(request.reportType)}</span>
+                          <strong>{ally.name}</strong>
+                          <span>{compactBirthLine(chartRequest?.birthData)}</span>
                         </div>
-                        <em>{reportTypeLabel(request.reportType)}</em>
+                        <em>{ally.relationship}</em>
                       </li>
                     );
                   })}
                 </ul>
               ) : (
-                <p>{ui.self.reportRequestsEmpty}</p>
+                <p>{ui.allies.wizardAlliesEmpty}</p>
               )}
             </article>
-          </>
-        ) : null}
-      </aside>
+          ) : null}
+          {!hideRecentRequestPanels ? (
+            <>
+              <article className={`card ${styles.railCard}`}>
+                <h2 className={styles.railTitle}>{ui.self.chartRequestsTitle}</h2>
+                {requests.length ? (
+                  <ul className={styles.compactRecordList}>
+                    {requests.slice(0, 5).map((request) => (
+                      <li key={request.id}>
+                        <div>
+                          <strong>{request.subjectName}</strong>
+                          <span>{compactBirthLine(request.birthData)}</span>
+                        </div>
+                        <em>{reportStatusLabel(request.status)}</em>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>{ui.self.chartRequestsEmpty}</p>
+                )}
+              </article>
+              <article className={`card ${styles.railCard}`}>
+                <h2 className={styles.railTitle}>{ui.self.reportRequestsStatusTitle}</h2>
+                {reportRequests.length ? (
+                  <ul className={styles.compactRecordList}>
+                    {reportRequests.slice(0, 5).map((request) => {
+                      return (
+                        <li key={request.id}>
+                          <div>
+                            <strong>
+                              {request.subjectName}
+                              <em className={styles.compactRecordPill}>{reportTypeLabel(request.reportType)}</em>
+                            </strong>
+                          </div>
+                          <span className="compact-list-report-actions">
+                            <Link
+                              aria-label={ui.charts.viewPortrait}
+                              href={`/library?reportId=${encodeURIComponent(request.id)}`}
+                              title={ui.charts.viewPortrait}
+                            >
+                              <BookOpenText aria-hidden="true" size={16} />
+                            </Link>
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <p>{ui.self.reportRequestsEmpty}</p>
+                )}
+              </article>
+            </>
+          ) : null}
+        </aside>
+      ) : null}
     </section>
   );
 }

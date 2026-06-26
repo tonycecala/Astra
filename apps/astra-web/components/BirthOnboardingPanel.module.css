@@ -543,9 +543,9 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
-  min-height: 44px;
+  min-height: 32px;
   border-top: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
-  padding: 7px 0;
+  padding: 2px 0;
 }
 
 .compactRecordList div {
@@ -587,6 +587,12 @@
   font-weight: 750;
   line-height: 1;
   white-space: nowrap;
+}
+
+.compactRecordPill {
+  margin-left: 8px;
+  flex-shrink: 0;
+  opacity: 0.6;
 }
 
 .requestList {

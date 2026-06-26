@@ -1,6 +1,8 @@
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { ChartMakerRequest } from "@astra/contracts";
+import { BookOpenText } from "lucide-react";
 import {
   ASTRA_REPORT_MODEL_ENV,
   ASTRA_REPORT_MODEL_PROFILE_ENV,
@@ -24,12 +26,16 @@ import {
   getCreditLedgerSummary,
   getUserChartMakerRequest,
   listCreditUsers,
+  listUserAllies,
+  listUserAstrologyReportRequests,
+  listUserChartMakerRequests,
   listRecentBetaFeedback,
   listRecentCreditLedger,
   recordAstrologyReportResult,
   recordChartMakerResult
 } from "@astra/db";
 import { and, desc, eq } from "drizzle-orm";
+import birthOnboardingStyles from "../../components/BirthOnboardingPanel.module.css";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
 
@@ -201,6 +207,38 @@ function reportTypeLabel(reportType: string) {
   return ui.library.reportTypeCore;
 }
 
+function reportStatusLabel(status: string) {
+  if (status === "queued" || status === "processing") {
+    return ui.self.reportStatusGenerating;
+  }
+
+  if (status === "completed") {
+    return ui.self.reportStatusReady;
+  }
+
+  if (status === "failed") {
+    return ui.self.reportStatusFailed;
+  }
+
+  if (status === "cancelled") {
+    return ui.self.reportStatusCancelled;
+  }
+
+  return status;
+}
+
+function compactBirthLine(chartRequest?: ChartMakerRequest) {
+  if (!chartRequest?.birthData.date) return ui.self.noBirthData;
+  return [chartRequest.birthData.date, chartRequest.birthData.time, chartRequest.birthData.location].filter(Boolean).join(" · ");
+}
+
+function allyIdFromChartRequest(request: ChartMakerRequest) {
+  const subject = request.context?.subject;
+  if (!subject || typeof subject !== "object" || Array.isArray(subject)) return null;
+  const allyId = "allyId" in subject ? subject.allyId : "subjectId" in subject ? subject.subjectId : null;
+  return typeof allyId === "string" && allyId ? allyId : null;
+}
+
 function defaultModelFor(profile: ReportModelProfile) {
   return reportModelProfileModels[profile][0] ?? "";
 }
@@ -350,7 +388,16 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
     creditUsers.find((user) => user.userId === profile.userId) ??
     creditUsers[0] ??
     null;
-  const [creditSummary, creditLedger, selectedReportRequests, selectedReportResults, betaFeedback] = await Promise.all([
+  const [
+    creditSummary,
+    creditLedger,
+    selectedReportRequests,
+    selectedReportResults,
+    betaFeedback,
+    selectedAllies,
+    selectedChartRequests,
+    selectedReportRequestsForAllies
+  ] = await Promise.all([
     getCreditLedgerSummary(db, selectedCreditUser?.userId ?? null),
     listRecentCreditLedger(db, { userId: selectedCreditUser?.userId ?? null, limit: 100 }),
     selectedCreditUser
@@ -377,8 +424,26 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
           .from(astrologyReportResults)
           .where(eq(astrologyReportResults.userId, selectedCreditUser.userId))
       : [],
-    listRecentBetaFeedback(db, { limit: 20 })
+    listRecentBetaFeedback(db, { limit: 20 }),
+    selectedCreditUser ? listUserAllies(db, selectedCreditUser.userId) : [],
+    selectedCreditUser ? listUserChartMakerRequests(db, selectedCreditUser.userId) : [],
+    selectedCreditUser ? listUserAstrologyReportRequests(db, selectedCreditUser.userId) : []
   ]);
+  const selectedAllyChartRequests = selectedChartRequests.filter((request) => request.source !== "self");
+  const selectedAllyReportRequests = selectedReportRequestsForAllies.filter((request) => request.source === "ally");
+
+  const selectedChartRequestByAllyId = new Map<string, ChartMakerRequest>();
+  for (const request of selectedAllyChartRequests) {
+    const allyId = allyIdFromChartRequest(request);
+    if (allyId && !selectedChartRequestByAllyId.has(allyId)) {
+      selectedChartRequestByAllyId.set(allyId, request);
+    }
+    const importedAllyId = allyId ? `v1-ally:${allyId}` : null;
+    if (importedAllyId && !selectedChartRequestByAllyId.has(importedAllyId)) {
+      selectedChartRequestByAllyId.set(importedAllyId, request);
+    }
+  }
+
   const [requestedReplayRequest] =
     replayRequest && selectedCreditUser && !selectedReportRequests.some((request) => request.id === replayRequest)
       ? await db
@@ -409,6 +474,77 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
         <span className="pill">{ui.admin.signedInAs(profile.email, roleLabel(profile.role))}</span>
       </header>
 
+      <aside className={birthOnboardingStyles.summaryRail} aria-label={ui.admin.ledgerTitle}>
+        <article className={`card ${birthOnboardingStyles.railCard}`}>
+          <h2 className={birthOnboardingStyles.railTitle}>{ui.allies.wizardAlliesTitle}</h2>
+          {selectedAllies.length ? (
+            <ul className={birthOnboardingStyles.compactRecordList}>
+              {selectedAllies.slice(0, 6).map((ally) => {
+                const chartRequest = selectedChartRequestByAllyId.get(ally.id);
+                return (
+                  <li key={ally.id}>
+                    <div>
+                      <strong>{ally.name}</strong>
+                      <span>{compactBirthLine(chartRequest)}</span>
+                    </div>
+                    <em>{ally.relationship}</em>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p>{ui.allies.wizardAlliesEmpty}</p>
+          )}
+        </article>
+        <article className={`card ${birthOnboardingStyles.railCard}`}>
+          <h2 className={birthOnboardingStyles.railTitle}>{ui.self.chartRequestsTitle}</h2>
+          {selectedAllyChartRequests.length ? (
+            <ul className={birthOnboardingStyles.compactRecordList}>
+              {selectedAllyChartRequests.slice(0, 5).map((request) => (
+                <li key={request.id}>
+                  <div>
+                    <strong>{request.subjectName}</strong>
+                    <span>{compactBirthLine(request)}</span>
+                  </div>
+                  <em>{reportStatusLabel(request.status)}</em>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>{ui.self.chartRequestsEmpty}</p>
+          )}
+        </article>
+        <article className={`card ${birthOnboardingStyles.railCard}`}>
+          <h2 className={birthOnboardingStyles.railTitle}>{ui.self.reportRequestsStatusTitle}</h2>
+          {selectedAllyReportRequests.length ? (
+            <ul className={birthOnboardingStyles.compactRecordList}>
+              {selectedAllyReportRequests.slice(0, 5).map((request) => {
+                return (
+                <li key={request.id}>
+                  <div>
+                    <strong>
+                      {request.subjectName}
+                      <em className={birthOnboardingStyles.compactRecordPill}>{reportTypeLabel(request.reportType)}</em>
+                    </strong>
+                  </div>
+                  <span className="compact-list-report-actions">
+                    <Link
+                      aria-label={ui.charts.viewPortrait}
+                      href={`/library?reportId=${encodeURIComponent(request.id)}`}
+                      title={ui.charts.viewPortrait}
+                    >
+                      <BookOpenText aria-hidden="true" size={16} />
+                    </Link>
+                  </span>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p>{ui.self.reportRequestsEmpty}</p>
+          )}
+        </article>
+      </aside>
       <section className="adminPanel" aria-labelledby="admin-ledger-heading">
         <div className="adminPanelHeader">
           <div>
@@ -511,8 +647,9 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
             {!creditUsers.length ? <p>{ui.admin.noUsers}</p> : null}
           </div>
         </div>
+      </section>
 
-        <h3 className="adminSubheading">{ui.admin.ledgerTitle}</h3>
+      <h3 className="adminSubheading">{ui.admin.ledgerTitle}</h3>
         <div className="adminTableShell">
           <div className="adminTable adminLedgerTable" role="table" aria-label={ui.admin.ledgerTitle}>
             <div className="adminRow adminRowHeader" role="row">
@@ -551,7 +688,6 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
             {!creditLedger.length ? <p>{ui.admin.noLedger}</p> : null}
           </div>
         </div>
-      </section>
 
       <section className="adminPanel" aria-labelledby="admin-feedback-heading">
         <div className="adminPanelHeader">

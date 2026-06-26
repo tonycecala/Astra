@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BookOpenText, ChartPie, ChevronRight, Pencil, ShieldCheck, Sparkles } from "lucide-react";
 import type { ChartMakerRequest } from "@astra/contracts";
 import { db, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests } from "@astra/db";
+import birthOnboardingStyles from "../../components/BirthOnboardingPanel.module.css";
 import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
 import { PageHeader } from "../../components/PageHeader";
 import { SelfTabAvatar } from "../../components/SelfTabAvatar";
@@ -46,6 +47,14 @@ function formatTime(value: string) {
   const period = hour >= 12 ? "PM" : "AM";
   const displayHour = hour % 12 || 12;
   return `${displayHour}:${String(minute).padStart(2, "0")} ${period}`;
+}
+
+function reportTypeLabel(reportType: string) {
+  if (reportType === "identity") return ui.library.reportTypeIdentity;
+  if (reportType === "deep") return ui.library.reportTypeDeep;
+  if (reportType === "progressed") return ui.library.reportTypeProgressed;
+  if (reportType === "synastry") return ui.library.reportTypeSynastry;
+  return ui.library.reportTypeCore;
 }
 
 function formatBirthSummary(request?: ChartMakerRequest): BirthSummary | string {
@@ -135,14 +144,12 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
   const onboardingChart = selectedOnboardingChart ?? selfChartRequest;
   const roleLine = normalizeRole(profile.role);
   const birthLine = formatBirthSummary(selfChartRequest);
-  const reportResultsByRequestId = new Map(reportResults.map((result) => [result.requestId, result]));
-
   return (
     <>
       <PageHeader eyebrow={ui.self.eyebrow} title={profile.displayName}>
         {ui.self.intro}
       </PageHeader>
-      <section className="grid" aria-label={ui.self.summaryLabel}>
+      <section className="grid" style={{ paddingBottom: "14px" }} aria-label={ui.self.summaryLabel}>
         <article className="card self-profile-card">
           <SelfTabAvatar className="self-profile-avatar" email={profile.email} initial={fallbackInitial} size={192} />
           <p className="self-profile-role">{roleLine}</p>
@@ -188,7 +195,8 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
           </div>
         </div>
       </section>
-      <section className="grid" aria-label={ui.self.summaryLabel}>
+      <div style={{ display: "grid", gap: "14px" }}>
+        <section className="grid" aria-label={ui.self.summaryLabel}>
         {selfChartRequest ? (
           <Link className="card self-insight-card self-chart-anchor" href="/charts">
             <div className="self-chart-anchor-header">
@@ -224,34 +232,38 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
           <h2>{ui.self.noAchievementTitle}</h2>
           <p>{ui.self.noAchievementDescription}</p>
         </article>
-      </section>
-      <section className="grid" aria-label={ui.self.reportRequestsLabel}>
-        <article className="card self-insight-card">
-          <div className="eyebrow">{ui.self.reportRequestsStatusEyebrow}</div>
-          <h2>{ui.self.reportRequestsStatusTitle}</h2>
-          {reportRequests.length ? (
-            <ul className="compact-list">
-              {reportRequests.slice(0, 4).map((request) => {
-                const result = reportResultsByRequestId.get(request.id);
-                return (
-                  <li className="compact-list-report-row" key={request.id}>
-                    <span>{request.subjectName}</span>
+        </section>
+        <section className={birthOnboardingStyles.summaryRail} aria-label={ui.self.reportRequestsLabel}>
+          <article className={`card ${birthOnboardingStyles.railCard}`}>
+            <h2 className={birthOnboardingStyles.railTitle}>{ui.self.reportRequestsStatusTitle}</h2>
+            {reportRequests.length ? (
+              <ul className={birthOnboardingStyles.compactRecordList}>
+                {reportRequests.slice(0, 5).map((request) => (
+                  <li key={request.id}>
+                    <div>
+                      <strong>
+                        {request.subjectName}
+                        <em className={birthOnboardingStyles.compactRecordPill}>{reportTypeLabel(request.reportType)}</em>
+                      </strong>
+                    </div>
                     <span className="compact-list-report-actions">
-                      {result ? (
-                        <Link href={`/library?reportId=${request.id}`} aria-label={ui.self.reportReadCta} title={ui.self.reportReadCta}>
-                          <BookOpenText aria-hidden="true" size={16} />
-                        </Link>
-                      ) : null}
+                      <Link
+                        aria-label={ui.charts.viewPortrait}
+                        href={`/library?reportId=${encodeURIComponent(request.id)}`}
+                        title={ui.charts.viewPortrait}
+                      >
+                        <BookOpenText aria-hidden="true" size={16} />
+                      </Link>
                     </span>
                   </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p>{ui.self.reportRequestsEmpty}</p>
-          )}
-        </article>
-      </section>
+                ))}
+              </ul>
+            ) : (
+              <p>{ui.self.reportRequestsEmpty}</p>
+            )}
+          </article>
+        </section>
+      </div>
       <section id="self-birth-onboarding">
         <BirthOnboardingPanel
           displayName={profile.displayName}
