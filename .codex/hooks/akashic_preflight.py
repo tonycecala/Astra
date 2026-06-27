@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
-"""Akashic attention gate for Codex hooks."""
+"""Akashic Mail attention gate for Codex hooks."""
 
 from __future__ import annotations
 
-import os
 import json
+import os
 import re
 import sys
 from pathlib import Path
 from typing import Any
 
 
-BLOCKING_STATUS = "new"
-RESOLVED_STATUSES = {"acknowledged", "acted", "deferred", "superseded", "closed"}
-REMEDIATION_COMMAND = re.compile(r"\bak\s+inbox\s+(ack|defer|close)\b")
 EVENT_PRE_TOOL_USE = "PreToolUse"
+REMEDIATION_COMMAND = re.compile(r"\bak\s+mail\s+(claim|close|release|reopen|read|list|status|validate|migrate-agent-inbox)\b")
 
 
 def find_repo_root(start: Path) -> Path | None:
@@ -24,34 +22,46 @@ def find_repo_root(start: Path) -> Path | None:
     return None
 
 
-def frontmatter_status(path: Path) -> str:
+def parse_frontmatter(path: Path) -> dict[str, str]:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---"):
-        return BLOCKING_STATUS
+        return {}
 
     end = text.find("\n---", 3)
     if end == -1:
-        return BLOCKING_STATUS
+        return {}
 
+    values: dict[str, str] = {}
     for line in text[3:end].splitlines():
-        if line.strip().startswith("status:"):
-            return line.split(":", 1)[1].strip().strip("\"'")
-    return BLOCKING_STATUS
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        values[key.strip()] = value.strip().strip("\"'")
+    return values
 
 
-def scan(root: Path) -> list[tuple[Path, str]]:
-    targets = [
-        root / "akashic" / "agent-inbox",
-        root / "akashic" / "warnings",
-    ]
-    blockers: list[tuple[Path, str]] = []
-    for directory in targets:
+def is_blocking_mail(path: Path) -> bool:
+    fm = parse_frontmatter(path)
+    status = fm.get("status")
+    purpose = fm.get("purpose")
+    if status not in {"new", "working"}:
+        return False
+    if purpose not in {"do", "ask"}:
+        return False
+    if fm.get("approval_required") == "true":
+        return purpose == "ask"
+    return True
+
+
+def scan(root: Path) -> list[Path]:
+    blockers: list[Path] = []
+    for box in ("new", "working"):
+        directory = root / "akashic" / "mail" / box
         if not directory.is_dir():
             continue
         for path in sorted(directory.glob("*.md")):
-            status = frontmatter_status(path)
-            if status == BLOCKING_STATUS:
-                blockers.append((path, status))
+            if is_blocking_mail(path):
+                blockers.append(path)
     return blockers
 
 
@@ -118,28 +128,24 @@ def is_allowed_remediation(payload: dict[str, Any], root: Path) -> bool:
     if REMEDIATION_COMMAND.search(command_text(payload)):
         return True
 
-    allowed_dirs = [
-        root / "akashic" / "agent-inbox",
-        root / "akashic" / "warnings",
-    ]
     paths = requested_paths(payload)
     if not paths:
         return False
-    return all(any(is_inside(path if path.is_absolute() else root / path, directory) for directory in allowed_dirs) for path in paths)
+    mail_root = root / "akashic" / "mail"
+    return all(is_inside(path if path.is_absolute() else root / path, mail_root) for path in paths)
 
 
-def print_blockers(root: Path, blockers: list[tuple[Path, str]], *, blocking: bool) -> None:
-    action = "blocked this action" if blocking else "found active messages"
-    print(f"Akashic attention gate {action}.", file=sys.stderr)
-    print("Resolve new Akashic inbox/warning items before product work.", file=sys.stderr)
+def print_blockers(root: Path, blockers: list[Path], *, blocking: bool) -> None:
+    action = "blocked this action" if blocking else "found actionable mail"
+    print(f"Akashic Mail attention gate {action}.", file=sys.stderr)
+    print("Resolve actionable Akashic Mail before product work.", file=sys.stderr)
     print("Allowed remediation while blocked:", file=sys.stderr)
-    print("  - edit files inside akashic/agent-inbox/ or akashic/warnings/", file=sys.stderr)
-    print("  - run ak inbox ack, ak inbox defer, or ak inbox close", file=sys.stderr)
-    print("Set each file status to one of:", file=sys.stderr)
-    print(f"  {', '.join(sorted(RESOLVED_STATUSES))}", file=sys.stderr)
-    print("Blocking files:", file=sys.stderr)
-    for path, status in blockers:
-        print(f"  - {path.relative_to(root)} (status: {status})", file=sys.stderr)
+    print("  - edit files inside akashic/mail/", file=sys.stderr)
+    print("  - run ak mail claim, ak mail close, ak mail release, or ak mail reopen", file=sys.stderr)
+    print("Blocking mail:", file=sys.stderr)
+    for path in blockers:
+        fm = parse_frontmatter(path)
+        print(f"  - {path.relative_to(root)} (purpose: {fm.get('purpose', '?')}, status: {fm.get('status', '?')})", file=sys.stderr)
 
 
 def main() -> int:

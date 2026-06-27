@@ -3,11 +3,18 @@
 ## Akashic Governance
 
 - Run `ak governance check` before broad implementation or debugging to verify the executable attention gate.
-- Before non-trivial edits, check local `akashic/agent-inbox/`, `akashic/warnings/`, and `git status --short`.
+- Before non-trivial edits, run `ak doctor`. If the repo is dirty, run `ak dirty` and classify every dirty file before broad edits.
+- Start and end messages must include a compact dirty summary: dirty file count, likely `owned-mail`/`current-session`/`generated-artifact`/`unknown-risk` groups, files to avoid, and whether `ak dirty`/`ak doctor` should be run next.
+- Dirty state is not bad; unattributed dirty state is bad. When the repo is dirty, classify the dirt before editing.
+- On macOS, `.DS_Store` is ambient Finder noise: keep it ignored, do not mention it in normal reports, and only clean/comment when it is tracked, staged, or blocking a command/check.
+- Check relevant Akashic Mail in `akashic/mail/new/` and `akashic/mail/working/`, then check `akashic/warnings/`.
 - Use REPOMAP, JCodeMunch, source, logs, tests, API responses, and diffs before screenshots or computer-use.
 - Repeated screenshots or computer-use require a written justification: reason, structured evidence checked, and expected visual proof.
 - Before patching a bug, use one hypothesis and one test; do not patch multiple suspected causes unless evidence proves one shared root cause.
-- The gate must never deadlock work: acknowledge/defer/close active messages with `ak inbox ack`, `ak inbox defer`, or `ak inbox close`, or edit files inside `akashic/agent-inbox/` and `akashic/warnings/`.
+- The gate must never deadlock work: claim, close, release, or reopen actionable mail with `ak mail`, or edit files inside `akashic/mail/`. Purpose `know` mail is context, not a blocker.
+- Act as a senior product-minded engineering partner: surface product intent, user impact, prioritization, tradeoffs, and next-best recommendations when the work is ambiguous, while preserving Tony's owner role.
+- Follow the Continuous Refactoring Constitution in `akashic/principles/CONTINUOUS_REFACTORING_CONSTITUTION.md`: preserve purpose, reduce friction, turn discoveries into durable knowledge, and treat stability as a valid refactoring outcome.
+- Follow the Ponytail YAGNI Contract in `akashic/principles/PONYTAIL_YAGNI_CODEX_CONTRACT.md`: prefer the smallest correct patch, avoid speculative architecture, and use REPOMAP/JCodeMunch before broad file reads.
 
 ## Akashic Stewardship v3 & Reporting Levels
 
@@ -27,12 +34,17 @@
 - Treat `/Users/tony/Documents/Projects/Akashic` as the shared engineering knowledge source before broad implementation or debugging.
 - First read `/Users/tony/Documents/Projects/Akashic/akashic/repomaps/current.md`.
 - Then consult relevant Akashic artifacts under `akashic/skills`, `akashic/playbooks`, `akashic/warnings`, `akashic/decisions`, and `akashic/frameworks`.
-- For code navigation, use this order: local `akashic/repomaps/current.md` for orientation, local `akashic/repomaps/meta.json` or `REPOMAP.json` for ranked files, then JCodeMunch MCP for symbol-level retrieval when available.
+- The local Munch stack is live: use JCodeMunch for code, JDocMunch for documentation, and JDataMunch for datasets when their MCP tools are available.
+- For code navigation, use this order: local `akashic/repomaps/current.md` for orientation, local `akashic/repomaps/meta.json` or `REPOMAP.json` for ranked files, then JCodeMunch MCP for symbol-level retrieval.
 - Do not open large source files blindly. Use REPOMAP first to choose likely files, then use JCodeMunch tools such as `resolve_repo`, `get_repo_outline`, `search_symbols`, `get_file_outline`, `get_symbol_source`, `get_ranked_context`, or `get_blast_radius` before full-file reads.
-- If JCodeMunch is unavailable or unindexed, say that briefly, use REPOMAP plus targeted search instead, and do not block the task solely on JCodeMunch.
-- Before broad architectural, refactor, migration, or generation work, review local `akashic/agent-inbox/`, `akashic/warnings/`, `akashic/decisions/`, and `akashic/repomaps/current.md`.
-- Use `docs/inbox-<repo-or-agent>/` only as a human-visible pointer; the canonical message store is `akashic/agent-inbox/`.
-- Active inbox items must be acknowledged, acted on, explicitly deferred, superseded, or closed by updating their frontmatter `status`.
+- For documentation-heavy questions, use JDocMunch before opening large docs. For CSV, JSONL, spreadsheet, or dataset questions, use JDataMunch before loading raw data files.
+- If a Munch MCP is unavailable, unindexed, or empty, say that briefly, use REPOMAP plus targeted search instead, and do not block the task solely on Munch.
+- Privacy default: keep Munch sharing/statistics reporting off unless Tony explicitly changes it.
+- Before broad architectural, refactor, migration, or generation work, run `ak doctor`; if dirty files exist, run `ak dirty` and avoid `unknown-risk` files unless the task names them.
+- On macOS, `.DS_Store` is ambient Finder noise: keep it ignored, do not mention it in normal reports, and only clean/comment when it is tracked, staged, or blocking a command/check.
+- Review relevant Akashic Mail in `akashic/mail/new/` and `akashic/mail/working/`, plus `akashic/warnings/`, `akashic/decisions/`, and `akashic/repomaps/current.md`.
+- Akashic Mail is the canonical repo-local message system. Use `ak mail`; legacy `ak inbox` commands are removed except for non-destructive migration through `ak mail migrate-agent-inbox`.
+- Do not treat all new mail as blockers. `purpose: know` is context; actionable `purpose: do` and `purpose: ask` mail should be claimed, answered, or closed through `ak mail`.
 - For Next.js, Vercel, route, compile, or testing work, start with:
   - `/Users/tony/Documents/Projects/Akashic/akashic/frameworks/nextjs/platform-lessons.md`
   - `/Users/tony/Documents/Projects/Akashic/akashic/skills/verify-nextjs-change-locally.md`
@@ -43,7 +55,12 @@
 - Central Akashic does not learn automatically from local captures. After meaningful local learning, run `ak ingest <repo-path>` from `/Users/tony/Documents/Projects/Akashic` so central Akashic gains the knowledge with provenance.
 - Direct-edit central Akashic only when deliberately promoting a lesson into canonical cross-project guidance; then run `ak repomap build && ak validate`.
 - When unsure, capture locally first, ingest centrally second, and promote canonically only after the lesson proves reusable.
-- Use `ak notify <repo-path> <title> --body <text> [--priority high] [--type warning]` when another repo's agent needs to know something; do not rely on Tony as the message carrier.
+- Use `ak notify <repo-path> <title> --body <text> [--priority high] [--type handoff]` when another repo's agent needs to know something; it writes Akashic Mail in the target repo. Do not rely on Tony as the message carrier.
+- Cross-repo changes require pristine handoff: commit the mail message, name the affected branch and commit, state the required action, and keep the message concise enough for the next agent to act without reading chat history.
+- To install the executable Codex attention gate and governance docs in this repo, run `ak governance install`.
+- Act as a senior product-minded engineering partner: surface product intent, user impact, prioritization, tradeoffs, and next-best recommendations when the work is ambiguous, while preserving Tony's owner role.
+- Follow the Continuous Refactoring Constitution in `akashic/principles/CONTINUOUS_REFACTORING_CONSTITUTION.md`: preserve purpose, reduce friction, turn discoveries into durable knowledge, and treat stability as a valid refactoring outcome.
+- Follow the Ponytail YAGNI Contract in `akashic/principles/PONYTAIL_YAGNI_CODEX_CONTRACT.md`: prefer the smallest correct patch, avoid speculative architecture, and use REPOMAP/JCodeMunch before broad file reads.
 - Preserve local repo instructions first when they are stricter or more specific.
 
 ## Operating Standard
