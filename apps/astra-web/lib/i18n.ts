@@ -222,7 +222,7 @@ export const ui = {
     noAchievementDescription: "New account milestones will appear here after Astra starts writing user-owned activity.",
     chartRequestPanelLabel: "Birth data onboarding",
     chartRequestEyebrow: "Onboarding",
-    chartRequestTitle: "Build the first report request",
+    chartRequestTitle: "Request Report",
     chartRequestIntro: "Set up the minimum birth data Astra needs, then queue the private chart and report request together.",
     onboardingGuideLabel: "Alpha onboarding guidance",
     onboardingGuideTitle: "Alpha path",

@@ -834,33 +834,33 @@ export function BirthOnboardingPanel({
                 <div className={styles.settingsGrid}>
                   <div>
                     <span className={styles.controlLabel}>{ui.self.zodiacModeLabel}</span>
-                    <div className={styles.segmentRow} role="group" aria-label={ui.self.zodiacModeLabel}>
+                    <div className={styles.radioOptionRow} role="radiogroup" aria-label={ui.self.zodiacModeLabel}>
                       {(["tropical", "sidereal"] as const).map((zodiacMode) => (
-                        <button
-                          aria-pressed={form.zodiacMode === zodiacMode}
-                          className={styles.segmentButton}
-                          key={zodiacMode}
-                          onClick={() => updateField("zodiacMode", zodiacMode)}
-                          type="button"
-                        >
-                          {ui.self.zodiacModes[zodiacMode]}
-                        </button>
+                        <label className={styles.radioOption} key={zodiacMode}>
+                          <input
+                            checked={form.zodiacMode === zodiacMode}
+                            name="zodiacMode"
+                            onChange={() => updateField("zodiacMode", zodiacMode)}
+                            type="radio"
+                          />
+                          <span>{ui.self.zodiacModes[zodiacMode]}</span>
+                        </label>
                       ))}
                     </div>
                   </div>
                   <div>
                     <span className={styles.controlLabel}>{ui.self.houseSystemLabel}</span>
-                    <div className={styles.segmentRow} role="group" aria-label={ui.self.houseSystemLabel}>
+                    <div className={styles.radioOptionRow} role="radiogroup" aria-label={ui.self.houseSystemLabel}>
                       {(["whole-sign", "placidus"] as const).map((houseSystem) => (
-                        <button
-                          aria-pressed={form.houseSystem === houseSystem}
-                          className={styles.segmentButton}
-                          key={houseSystem}
-                          onClick={() => updateField("houseSystem", houseSystem)}
-                          type="button"
-                        >
-                          {ui.self.houseSystems[houseSystem]}
-                        </button>
+                        <label className={styles.radioOption} key={houseSystem}>
+                          <input
+                            checked={form.houseSystem === houseSystem}
+                            name="houseSystem"
+                            onChange={() => updateField("houseSystem", houseSystem)}
+                            type="radio"
+                          />
+                          <span>{ui.self.houseSystems[houseSystem]}</span>
+                        </label>
                       ))}
                     </div>
                   </div>

@@ -358,7 +358,7 @@ test.describe("clean-start routes", () => {
     await page.getByRole("link", { name: "Continue to Self" }).click();
 
     await expect(page.getByRole("heading", { name })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Request Report" })).toBeVisible();
     await expect(page.getByLabel("Alpha onboarding guidance")).toHaveCount(0);
     await expect(page.getByLabel("Chart generation flow")).toHaveCount(0);
 
@@ -377,6 +377,12 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("radio", { name: /Core Report/ })).toBeVisible();
     await expect(page.getByRole("radio", { name: /Deep Report/ })).toBeVisible();
     await expect(page.getByText("Chart settings")).toBeVisible();
+    await expect(page.getByRole("radio", { name: "Tropical" })).toBeChecked();
+    await expect(page.getByRole("radio", { name: "Whole Sign" })).toBeChecked();
+    await page.getByRole("radio", { name: "Sidereal" }).check();
+    await page.getByRole("radio", { name: "Placidus" }).check();
+    await expect(page.getByRole("radio", { name: "Sidereal" })).toBeChecked();
+    await expect(page.getByRole("radio", { name: "Placidus" })).toBeChecked();
     await expect(page.getByLabel("Review birth data")).toHaveCount(0);
     await queueButton.focus();
     await page.keyboard.press("Enter");
@@ -478,7 +484,7 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText(checkoutSessionId.slice(0, 14));
 
     await page.goto("/self#self-birth-onboarding");
-    await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Request Report" })).toBeVisible();
     await page.getByRole("button", { exact: true, name: "Next" }).click();
     await chooseUnknownBirthMoment(page, { year: "1961", month: "May", dayLabel: "May 23, 1961" });
     await page.getByRole("button", { exact: true, name: "Next" }).click();
