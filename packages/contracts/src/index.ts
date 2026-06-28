@@ -6,6 +6,31 @@ const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const timeOnlySchema = z.string().regex(/^\d{2}:\d{2}$/);
 const jsonObjectSchema = z.record(z.string(), z.unknown());
 
+function parseDateOnly(value: string) {
+  const [yearText, monthText, dayText] = value.split("-");
+  const year = Number.parseInt(yearText ?? "", 10);
+  const month = Number.parseInt(monthText ?? "", 10);
+  const day = Number.parseInt(dayText ?? "", 10);
+  const parsed = new Date(year, month - 1, day);
+  if (parsed.getFullYear() !== year || parsed.getMonth() !== month - 1 || parsed.getDate() !== day) return null;
+  return parsed;
+}
+
+function isFutureDateOnly(value: string) {
+  const parsed = parseDateOnly(value);
+  if (!parsed) return false;
+  const today = new Date();
+  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  return parsed.getTime() > todayOnly.getTime();
+}
+
+function isValidTimeOnly(value: string) {
+  const [hourText, minuteText] = value.split(":");
+  const hour = Number.parseInt(hourText ?? "", 10);
+  const minute = Number.parseInt(minuteText ?? "", 10);
+  return hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59;
+}
+
 export const userSchema = z.object({
   id: idSchema,
   email: z.string().email(),
@@ -266,25 +291,74 @@ export const chartBirthDataSchema = z
     date: dateOnlySchema,
     time: timeOnlySchema.optional(),
     timezone: z.string().min(1).optional(),
+    birthTimeKnown: z.boolean().optional(),
     location: z.string().min(1).optional(),
     latitude: z.number().min(-90).max(90).optional(),
     longitude: z.number().min(-180).max(180).optional()
   })
   .superRefine((birthData, context) => {
-    const hasPrecisionBundle = Boolean(
-      birthData.time || birthData.timezone || birthData.location || birthData.latitude !== undefined || birthData.longitude !== undefined
-    );
+    if (!parseDateOnly(birthData.date)) {
+      context.addIssue({
+        code: "custom",
+        path: ["date"],
+        message: "Birth date must be a real calendar date."
+      });
+    }
 
-    if (!hasPrecisionBundle) return;
+    if (isFutureDateOnly(birthData.date)) {
+      context.addIssue({
+        code: "custom",
+        path: ["date"],
+        message: "Birth date cannot be in the future."
+      });
+    }
 
-    for (const field of ["time", "timezone", "location"] as const) {
-      if (!birthData[field]) {
+    if (birthData.birthTimeKnown === false) {
+      if (birthData.time) {
         context.addIssue({
           code: "custom",
-          path: [field],
-          message: "Birth time, timezone, and location travel together; provide all three or leave all three blank."
+          path: ["time"],
+          message: "Unknown birth time must not store an exact time."
         });
       }
+      if (!birthData.timezone) {
+        context.addIssue({
+          code: "custom",
+          path: ["timezone"],
+          message: "Timezone is required when birth time is unknown."
+        });
+      }
+      return;
+    }
+
+    if (birthData.time && !isValidTimeOnly(birthData.time)) {
+      context.addIssue({
+        code: "custom",
+        path: ["time"],
+        message: "Birth time must be a real HH:mm time."
+      });
+    }
+
+    const hasTimedBirthMoment = Boolean(birthData.time || birthData.timezone);
+
+    if (hasTimedBirthMoment) {
+      for (const field of ["time", "timezone"] as const) {
+        if (!birthData[field]) {
+          context.addIssue({
+            code: "custom",
+            path: [field],
+            message: "Birth time and timezone travel together; provide both or turn on unknown birth time."
+          });
+        }
+      }
+    }
+
+    if ((birthData.latitude !== undefined || birthData.longitude !== undefined) && !birthData.location) {
+      context.addIssue({
+        code: "custom",
+        path: ["location"],
+        message: "Coordinates require a birth location label."
+      });
     }
   });
 
@@ -372,7 +446,7 @@ export const chartMakerResultSchema = z.object({
   createdAt: isoDateSchema
 });
 
-export const chartMakerPrecisionSchema = z.enum(["date_only", "timed_location"]);
+export const chartMakerPrecisionSchema = z.enum(["date_only", "timed_timezone", "timed_location"]);
 
 export const chartMakerChartDataSchema = z.object({
   schemaVersion: z.literal(1),

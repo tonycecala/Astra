@@ -229,7 +229,11 @@ function reportStatusLabel(status: string) {
 
 function compactBirthLine(chartRequest?: ChartMakerRequest) {
   if (!chartRequest?.birthData.date) return ui.self.noBirthData;
-  return [chartRequest.birthData.date, chartRequest.birthData.time, chartRequest.birthData.location].filter(Boolean).join(" · ");
+  return [
+    chartRequest.birthData.date,
+    chartRequest.birthData.birthTimeKnown === false ? ui.self.birthMomentUnknownTimeShort : chartRequest.birthData.time,
+    chartRequest.birthData.location
+  ].filter(Boolean).join(" · ");
 }
 
 function allyIdFromChartRequest(request: ChartMakerRequest) {

@@ -40,6 +40,26 @@ const dateOnlyRequest = chartMakerRequestSchema.parse({
   }
 });
 
+const timedTimezoneRequest = chartMakerRequestSchema.parse({
+  ...timedRequest,
+  id: "chart_maker_tony_timed_timezone_smoke",
+  birthData: {
+    date: "1961-05-23",
+    time: "09:30",
+    timezone: "America/New_York"
+  }
+});
+
+const unknownTimeRequest = chartMakerRequestSchema.parse({
+  ...timedRequest,
+  id: "chart_maker_tony_unknown_time_smoke",
+  birthData: {
+    date: "1961-05-23",
+    timezone: "America/New_York",
+    birthTimeKnown: false
+  }
+});
+
 if (deriveSunSign("1961-05-23") !== "Gemini") {
   throw new Error("Tony's smoke date should derive a Gemini solar signal.");
 }
@@ -52,8 +72,16 @@ if (chartPrecision(timedRequest.birthData) !== "timed_location") {
   throw new Error("Timed Tony fixture should preserve the full precision bundle.");
 }
 
+if (chartPrecision(timedTimezoneRequest.birthData) !== "timed_timezone") {
+  throw new Error("Timed Tony fixture without place should preserve time and timezone precision.");
+}
+
 if (chartPrecision(dateOnlyRequest.birthData) !== "date_only") {
   throw new Error("Date-only Tony fixture should remain a valid date-only request.");
+}
+
+if (chartPrecision(unknownTimeRequest.birthData) !== "date_only") {
+  throw new Error("Unknown-time Tony fixture should avoid timed chart precision.");
 }
 
 const chartData = buildChartMakerChartData(timedRequest);

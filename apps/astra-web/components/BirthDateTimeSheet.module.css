@@ -1,0 +1,333 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: grid;
+  place-items: end center;
+  padding: 18px;
+  background: color-mix(in srgb, var(--paper) 78%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.sheet {
+  display: grid;
+  width: min(430px, 100%);
+  max-height: min(92vh, 760px);
+  gap: 12px;
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--gold) 24%, var(--line));
+  border-radius: 24px;
+  padding: 10px 10px 14px;
+  background: var(--soft);
+  box-shadow: 0 24px 80px color-mix(in srgb, var(--ink) 20%, transparent);
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+}
+
+.header h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.96rem;
+  font-weight: 760;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.iconButton,
+.primaryAction {
+  min-height: 36px;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.iconButton {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel) 84%, var(--soft));
+  color: var(--ink);
+}
+
+.iconButton:disabled {
+  cursor: default;
+  opacity: 0.38;
+}
+
+.primaryAction {
+  border-radius: 999px;
+  padding: 0 13px;
+  background: var(--gold);
+  color: #171412;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.calendarCard,
+.controlsCard {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+}
+
+.controlRow,
+.unknownRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 11px 14px;
+}
+
+.controlRow + .controlRow,
+.unknownRow {
+  border-top: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+}
+
+.controlRow > span,
+.unknownRow > span {
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 720;
+}
+
+.calendarCard {
+  padding: 10px;
+}
+
+.monthHeader {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+}
+
+.monthHeader strong {
+  color: var(--ink);
+  font-size: 0.98rem;
+  font-weight: 780;
+  text-align: center;
+}
+
+.monthJump {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 104px;
+  gap: 8px;
+  margin: 8px 0 6px;
+}
+
+.monthJump label {
+  display: grid;
+  gap: 4px;
+}
+
+.monthJump span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 760;
+}
+
+.monthJump select,
+.monthJump input {
+  min-width: 0;
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 10px;
+  background: var(--soft);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 720;
+}
+
+.weekdays,
+.dayGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.weekdays {
+  margin: 8px 0 4px;
+}
+
+.weekdays span {
+  display: grid;
+  min-height: 24px;
+  place-items: center;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 760;
+}
+
+.dayButton {
+  display: grid;
+  aspect-ratio: 1;
+  min-width: 0;
+  min-height: 38px;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.dayButton[data-in-month="false"] {
+  color: color-mix(in srgb, var(--muted) 42%, transparent);
+}
+
+.dayButton[data-selected="true"] {
+  background: var(--gold);
+  color: #171412;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--gold) 18%, transparent);
+}
+
+.dayButton:disabled {
+  cursor: default;
+  opacity: 0.32;
+}
+
+.dayButton:focus-visible,
+.iconButton:focus-visible,
+.primaryAction:focus-visible,
+.timeInput:focus-visible,
+.controlRow select:focus-visible,
+.monthJump select:focus-visible,
+.monthJump input:focus-visible,
+.unknownRow input:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--gold) 72%, var(--ink));
+  outline-offset: 2px;
+}
+
+.controlsCard {
+  overflow: hidden;
+}
+
+.controlRow {
+  min-height: 56px;
+}
+
+.controlRow > span,
+.unknownRow > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.controlRow svg,
+.unknownRow svg {
+  color: var(--gold);
+}
+
+.timeInput,
+.controlRow select {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 11px;
+  background: var(--soft);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.timeInput {
+  width: min(174px, 100%);
+}
+
+.controlRow select {
+  width: 100%;
+  min-width: 0;
+}
+
+.timeInput:disabled {
+  opacity: 0.45;
+}
+
+.unknownRow input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--gold);
+}
+
+.unknownRow strong,
+.unknownRow em {
+  display: block;
+  font-style: normal;
+}
+
+.unknownRow em {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 560;
+  line-height: 1.25;
+}
+
+.helperText,
+.errorText {
+  margin: 0 4px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.42;
+}
+
+.errorText {
+  border: 1px solid color-mix(in srgb, var(--rose) 34%, transparent);
+  border-radius: 12px;
+  padding: 9px 11px;
+  background: color-mix(in srgb, var(--rose) 10%, var(--panel));
+  color: var(--rose);
+}
+
+@media (min-width: 760px) {
+  .backdrop {
+    place-items: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .backdrop {
+    padding: 8px;
+  }
+
+  .sheet {
+    width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 22px;
+    padding-bottom: 14px;
+  }
+
+  .controlRow,
+  .unknownRow {
+    min-height: 56px;
+    padding: 11px 12px;
+  }
+
+  .controlRow {
+    grid-template-columns: max-content minmax(0, 1fr);
+  }
+
+  .controlRow select,
+  .timeInput {
+    max-width: 100%;
+  }
+}

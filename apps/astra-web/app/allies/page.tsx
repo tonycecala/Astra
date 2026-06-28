@@ -30,7 +30,11 @@ function latestReportForChartRequest(
 
 function compactBirthLine(chartRequest?: ChartMakerRequest) {
   if (!chartRequest?.birthData.date) return ui.self.noBirthData;
-  return [chartRequest.birthData.date, chartRequest.birthData.time, chartRequest.birthData.location].filter(Boolean).join(" · ");
+  return [
+    chartRequest.birthData.date,
+    chartRequest.birthData.birthTimeKnown === false ? ui.self.birthMomentUnknownTimeShort : chartRequest.birthData.time,
+    chartRequest.birthData.location
+  ].filter(Boolean).join(" · ");
 }
 
 function initialsFor(name: string) {
@@ -87,7 +91,7 @@ function AllyCard({
     ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=report#ally-birth-onboarding`
     : "#ally-birth-onboarding";
   const editDetailsHref = chartRequest
-    ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=birth_details#ally-birth-onboarding`
+    ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=report#ally-birth-onboarding`
     : "#ally-birth-onboarding";
 
   return (
@@ -139,7 +143,7 @@ type AlliesPageParams = {
 };
 
 function onboardingStepFromParam(value?: string) {
-  return value === "birth_details" || value === "report" || value === "review" ? value : undefined;
+  return value === "birth_details" || value === "report" ? value : undefined;
 }
 
 function cleanFilter(value?: string) {
@@ -194,6 +198,7 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
   const selectedOnboardingChart = params.chart
     ? allyChartRequests.find((request) => request.id === params.chart)
     : undefined;
+  const initialOnboardingStep = selectedOnboardingChart ? "report" : onboardingStepFromParam(params.start);
   const clearFilterParams = new URLSearchParams();
   if (params.chart) clearFilterParams.set("chart", params.chart);
   if (params.start) clearFilterParams.set("start", params.start);
@@ -272,12 +277,14 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
           displayName=""
           initialAllies={allies}
           key={selectedOnboardingChart?.id ?? "new-ally-chart"}
+          role={profile.role}
+          starBalance={profile.starBalance}
           initialRequests={allyChartRequests}
           initialReportRequests={allyReportRequests}
           initialReportResults={allyReportResults}
           initialBirthData={selectedOnboardingChart?.birthData}
           initialChartRequestId={selectedOnboardingChart?.id}
-          initialStep={onboardingStepFromParam(params.start)}
+          initialStep={initialOnboardingStep}
           subjectType="ally"
           hideSummaryRail
         />

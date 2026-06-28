@@ -212,10 +212,14 @@ function reportCardType(artifact: LibraryArtifact) {
   return suffix || reportTypeLabel(artifact.reportType);
 }
 
-function reportBirthLine(request?: { birthData?: { date?: string; time?: string; location?: string } }) {
+function reportBirthLine(request?: { birthData?: { date?: string; time?: string; location?: string; birthTimeKnown?: boolean } }) {
   const birthData = request?.birthData;
   if (!birthData?.date) return undefined;
-  return [birthData.date, birthData.time, birthData.location].filter(Boolean).join(" · ");
+  return [
+    birthData.date,
+    birthData.birthTimeKnown === false ? ui.self.birthMomentUnknownTimeShort : birthData.time,
+    birthData.location
+  ].filter(Boolean).join(" · ");
 }
 
 function artifactMatchesFilter(artifact: LibraryArtifact, filter: LibraryReportFilter) {

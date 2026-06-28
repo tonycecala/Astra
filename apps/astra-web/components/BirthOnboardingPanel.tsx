@@ -6,6 +6,16 @@ import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send } from "lucide
 import type { Ally, AstrologyReportRequest, AstrologyReportResult, BirthPlaceSearchResult, ChartBirthData, ChartMakerRequest } from "@astra/contracts";
 import { displayTimezone } from "../lib/display";
 import { ui } from "../lib/i18n";
+import { BirthDateTimeSheet } from "./BirthDateTimeSheet";
+import {
+  type BirthDateTimeValue,
+  defaultBrowserTimezone,
+  formatDisplayTime,
+  formatReadableDateOnly,
+  isFutureDateOnly,
+  isValidDateOnly,
+  isValidTimeOnly
+} from "./BirthDateTimeSheet.helpers";
 import styles from "./BirthOnboardingPanel.module.css";
 
 function supportedTimeZones() {
@@ -17,7 +27,7 @@ function supportedTimeZones() {
 }
 
 const timeZones = supportedTimeZones();
-const steps = ["subject", "birth_details", "report", "review"] as const;
+const steps = ["subject", "birth_details", "report"] as const;
 
 const confirmLayerStyle: CSSProperties = {
   position: "fixed",
@@ -31,10 +41,13 @@ const confirmLayerStyle: CSSProperties = {
 };
 
 const confirmDialogStyle: CSSProperties = {
-  width: "min(430px, 100%)",
+  width: "min(390px, 100%)",
+  maxHeight: "calc(100dvh - 40px)",
+  overflowY: "auto",
+  overscrollBehavior: "contain",
   border: "1px solid color-mix(in srgb, var(--gold) 32%, var(--line))",
   borderRadius: 8,
-  padding: 20,
+  padding: 14,
   background:
     "radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 38%), var(--panel)",
   boxShadow: "0 24px 80px color-mix(in srgb, #000 52%, transparent)"
@@ -42,8 +55,8 @@ const confirmDialogStyle: CSSProperties = {
 
 const confirmRowsStyle: CSSProperties = {
   display: "grid",
-  gap: 8,
-  margin: "16px 0 0"
+  gap: 6,
+  margin: "10px 0 0"
 };
 
 const confirmRowStyle: CSSProperties = {
@@ -53,15 +66,20 @@ const confirmRowStyle: CSSProperties = {
   alignItems: "center",
   border: "1px solid var(--line)",
   borderRadius: 8,
-  padding: "10px 12px",
+  padding: "8px 10px",
   background: "var(--soft)"
 };
 
 const confirmActionsStyle: CSSProperties = {
+  position: "sticky",
+  bottom: -14,
   display: "flex",
   justifyContent: "flex-end",
-  gap: 10,
-  marginTop: 18
+  gap: 8,
+  margin: "12px -14px -14px",
+  padding: "10px 14px 14px",
+  borderTop: "1px solid var(--line)",
+  background: "var(--panel)"
 };
 
 type Step = (typeof steps)[number];
@@ -96,22 +114,31 @@ type FormState = {
   date: string;
   time: string;
   timezone: string;
+  birthTimeKnown: boolean;
   location: string;
   latitude?: number;
   longitude?: number;
 };
 
+function chartSubjectContext(chartRequest?: ChartMakerRequest) {
+  const subject = chartRequest?.context?.subject;
+  return subject && typeof subject === "object" && !Array.isArray(subject)
+    ? subject as { relationship?: unknown; note?: unknown }
+    : undefined;
+}
+
 const defaultForm = (displayName: string, birthData?: ChartBirthData, chartRequest?: ChartMakerRequest): FormState => ({
   subjectName: chartRequest?.subjectName ?? displayName,
-  relationship: "",
-  note: "",
+  relationship: typeof chartSubjectContext(chartRequest)?.relationship === "string" ? chartSubjectContext(chartRequest)?.relationship as string : "",
+  note: typeof chartSubjectContext(chartRequest)?.note === "string" ? chartSubjectContext(chartRequest)?.note as string : "",
   reportType: "core",
   zodiacMode: chartRequest?.context?.chartSettings?.zodiacMode ?? "tropical",
   houseSystem: chartRequest?.context?.chartSettings?.houseSystem ?? "whole-sign",
   synastryPartnerChartRequestId: "",
   date: chartRequest?.birthData.date ?? birthData?.date ?? "",
   time: chartRequest?.birthData.time ?? birthData?.time ?? "",
-  timezone: chartRequest?.birthData.timezone ?? birthData?.timezone ?? "",
+  timezone: chartRequest?.birthData.timezone ?? birthData?.timezone ?? defaultBrowserTimezone(),
+  birthTimeKnown: chartRequest?.birthData.birthTimeKnown ?? birthData?.birthTimeKnown ?? true,
   location: chartRequest?.birthData.location ?? birthData?.location ?? "",
   latitude: chartRequest?.birthData.latitude ?? birthData?.latitude,
   longitude: chartRequest?.birthData.longitude ?? birthData?.longitude
@@ -123,14 +150,15 @@ function optional(value: string) {
 }
 
 function birthDataFor(form: FormState) {
-  const hasTimedDetails = Boolean(optional(form.time) || optional(form.timezone) || optional(form.location));
+  const knownTime = form.birthTimeKnown;
   const birthData = {
     date: form.date,
-    time: hasTimedDetails ? optional(form.time) : undefined,
-    timezone: hasTimedDetails ? optional(form.timezone) : undefined,
-    location: hasTimedDetails ? optional(form.location) : undefined,
-    latitude: hasTimedDetails ? form.latitude : undefined,
-    longitude: hasTimedDetails ? form.longitude : undefined
+    birthTimeKnown: knownTime,
+    time: knownTime ? optional(form.time) : undefined,
+    timezone: optional(form.timezone),
+    location: optional(form.location),
+    latitude: optional(form.location) ? form.latitude : undefined,
+    longitude: optional(form.location) ? form.longitude : undefined
   };
   return Object.fromEntries(Object.entries(birthData).filter(([, value]) => value !== undefined));
 }
@@ -168,7 +196,7 @@ function reportTypeLabel(reportType: ReportType) {
 }
 
 function reportTypeOptions(isAlly: boolean, isAdmin: boolean, canCompareCharts: boolean): ReportType[] {
-  if (!isAdmin) return ["identity", "core"];
+  if (!isAdmin) return ["identity", "core", "deep"];
   return isAlly || canCompareCharts
     ? ["identity", "core", "deep", "progressed", "synastry"]
     : ["identity", "core", "deep", "progressed"];
@@ -183,7 +211,32 @@ function reportTypeCost(reportType: ReportType) {
 
 function compactBirthLine(birthData?: ChartBirthData) {
   if (!birthData?.date) return ui.self.noBirthData;
-  return [birthData.date, birthData.time, birthData.location].filter(Boolean).join(" · ");
+  return [
+    birthData.date,
+    birthData.birthTimeKnown === false ? ui.self.birthMomentUnknownTimeShort : birthData.time,
+    birthData.location
+  ].filter(Boolean).join(" · ");
+}
+
+function birthMomentValueFor(form: FormState): BirthDateTimeValue {
+  return {
+    date: form.date,
+    time: form.birthTimeKnown ? form.time || null : null,
+    timezone: form.timezone,
+    birthTimeKnown: form.birthTimeKnown
+  };
+}
+
+function birthMomentSummary(form: FormState) {
+  if (!form.date) return ui.self.birthMomentNotSelected;
+  const parts = [formatReadableDateOnly(form.date) || form.date];
+  if (form.birthTimeKnown) {
+    parts.push(formatDisplayTime(form.time) || form.time || ui.self.onboardingReviewMissing);
+  } else {
+    parts.push(ui.self.birthMomentUnknownTimeShort);
+  }
+  if (form.timezone) parts.push(displayTimezone(form.timezone));
+  return parts.filter(Boolean).join(" · ");
 }
 
 function chartSubjectId(request: ChartMakerRequest) {
@@ -215,7 +268,7 @@ export function BirthOnboardingPanel({
   const [selectedExistingChartRequestId, setSelectedExistingChartRequestId] = useState(initialChartRequest?.id ?? "");
   const [requests, setRequests] = useState(initialRequests);
   const [reportRequests, setReportRequests] = useState(initialReportRequests);
-  const [reportResults, setReportResults] = useState(initialReportResults);
+  const [, setReportResults] = useState(initialReportResults);
   const [message, setMessage] = useState("");
   const [placeQuery, setPlaceQuery] = useState("");
   const [placeResults, setPlaceResults] = useState<BirthPlaceSearchResult[]>([]);
@@ -225,6 +278,7 @@ export function BirthOnboardingPanel({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmissionComplete, setIsSubmissionComplete] = useState(false);
   const [isConfirmingReport, setIsConfirmingReport] = useState(false);
+  const [isBirthMomentSheetOpen, setIsBirthMomentSheetOpen] = useState(false);
 
   const activeStepIndex = stepIndex(activeStep);
   const isAlly = subjectType === "ally";
@@ -233,7 +287,7 @@ export function BirthOnboardingPanel({
   const availableReportTypes = reportTypeOptions(isAlly, isAdmin, synastryChartOptions.length > 0);
   const panelCopy = isAlly ? ui.allies.wizard : ui.self;
   const isWizardComplete = isSubmissionComplete;
-  const canSubmit = activeStep === "review" && !isWizardComplete;
+  const canSubmit = activeStep === "report" && !isWizardComplete;
   const selectedReportCost = reportTypeCost(form.reportType);
   const balanceAfterReport = starBalance - selectedReportCost;
   const canAffordSelectedReport = isAdmin || balanceAfterReport >= 0;
@@ -241,13 +295,18 @@ export function BirthOnboardingPanel({
     ? requests.find((request) => request.id === selectedExistingChartRequestId)
     : undefined;
   const isUsingExistingChart = Boolean(existingChartRequest);
+  const isExistingChartOrderMode = isAlly && isUsingExistingChart;
+  const visibleSteps: readonly Step[] = isUsingExistingChart ? ["report"] : steps;
+  const visibleStepIndex = visibleSteps.indexOf(activeStep);
+  const displayedStepIndex = visibleStepIndex >= 0 ? visibleStepIndex : 0;
+  const isSingleStepFlow = visibleSteps.length === 1;
   const synastryPartner = useMemo(
     () => synastryChartOptions.find((request) => request.id === form.synastryPartnerChartRequestId),
     [form.synastryPartnerChartRequestId, synastryChartOptions]
   );
   const reviewRows = useMemo(
     () => [
-      [ui.self.onboardingReviewSubject, form.subjectName || ui.self.onboardingReviewMissing],
+      [isAlly ? ui.self.onboardingReviewName : ui.self.onboardingReviewSubject, form.subjectName || ui.self.onboardingReviewMissing],
       ...(isAlly ? ([[ui.self.onboardingReviewRelationship, form.relationship || ui.self.onboardingReviewMissing]] as const) : []),
       [ui.self.onboardingReviewReportType, reportTypeLabel(form.reportType)],
       [ui.self.onboardingReviewChartSettings, `${ui.self.zodiacModes[form.zodiacMode]} · ${ui.self.houseSystems[form.houseSystem]}`],
@@ -257,9 +316,13 @@ export function BirthOnboardingPanel({
       [ui.self.onboardingReviewBirthDate, form.date || ui.self.onboardingReviewMissing],
       [
         ui.self.onboardingReviewPrecision,
-        optional(form.time) || optional(form.timezone) || optional(form.location)
-          ? `${form.time || ui.self.onboardingReviewMissing}, ${displayTimezone(form.timezone) || ui.self.onboardingReviewMissing}, ${form.location || ui.self.onboardingReviewMissing}`
-          : ui.self.onboardingDateOnlyPrecision
+        form.birthTimeKnown
+          ? [
+              formatDisplayTime(form.time) || form.time || ui.self.onboardingReviewMissing,
+              displayTimezone(form.timezone) || ui.self.onboardingReviewMissing,
+              form.location
+            ].filter(Boolean).join(", ")
+          : `${ui.self.birthMomentUnknownTimeShort}, ${displayTimezone(form.timezone) || ui.self.onboardingReviewMissing}${form.location ? `, ${form.location}` : ""}`
       ]
     ],
     [form, isAlly, synastryPartner]
@@ -277,6 +340,19 @@ export function BirthOnboardingPanel({
 
   function updateField(field: keyof FormState, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
+    setIsConfirmingReport(false);
+    setMessage("");
+  }
+
+  function applyBirthMoment(nextValue: BirthDateTimeValue) {
+    setForm((current) => ({
+      ...current,
+      date: nextValue.date,
+      time: nextValue.birthTimeKnown ? nextValue.time ?? "" : "",
+      timezone: nextValue.timezone,
+      birthTimeKnown: nextValue.birthTimeKnown
+    }));
+    setIsBirthMomentSheetOpen(false);
     setIsConfirmingReport(false);
     setMessage("");
   }
@@ -340,13 +416,14 @@ export function BirthOnboardingPanel({
     if (step === "report" && form.reportType === "synastry" && !optional(form.synastryPartnerChartRequestId)) {
       return ui.self.onboardingSynastryPartnerRequired;
     }
-    if (step === "birth_details" && !/^\d{4}-\d{2}-\d{2}$/.test(form.date)) return ui.self.onboardingDateRequired;
+    if (step === "birth_details" && !isValidDateOnly(form.date)) return ui.self.birthMomentDateRequired;
+    if (step === "birth_details" && isFutureDateOnly(form.date)) return ui.self.birthMomentFutureDate;
     if (step === "birth_details") {
-      const hasTimedDetails = Boolean(optional(form.time) || optional(form.timezone) || optional(form.location));
-      if (hasTimedDetails && (!optional(form.time) || !optional(form.timezone) || !optional(form.location))) {
-        return ui.self.onboardingTimedDetailsRequired;
+      if (!optional(form.timezone)) return ui.self.birthMomentTimezoneRequired;
+      if (form.birthTimeKnown) {
+        if (!optional(form.time)) return ui.self.birthMomentTimeRequired;
+        if (!isValidTimeOnly(form.time)) return ui.self.birthMomentTimeInvalid;
       }
-      if (optional(form.time) && !/^\d{2}:\d{2}$/.test(form.time)) return ui.self.onboardingTimeRequired;
     }
     return "";
   }
@@ -504,7 +581,7 @@ export function BirthOnboardingPanel({
         setRequests((current) => [chartRequest, ...current]);
       }
       setReportRequests((current) => [reportPayload.request, ...current]);
-      setActiveStep("review");
+      setActiveStep("report");
       setIsSubmissionComplete(true);
       setMessage(ui.self.chartRequestQueued);
       await generateReport(reportPayload.request.id);
@@ -524,6 +601,7 @@ export function BirthOnboardingPanel({
     setPlaceQuery("");
     setHasSelectedPlace(false);
     setIsConfirmingReport(false);
+    setIsBirthMomentSheetOpen(false);
     setSelectedExistingChartRequestId("");
     setForm(defaultForm(displayName, initialBirthData));
   }
@@ -559,61 +637,108 @@ export function BirthOnboardingPanel({
   return (
     <section className={styles.panel} aria-label={panelCopy.chartRequestPanelLabel}>
       <article className="card">
-        <div className="eyebrow">{panelCopy.chartRequestEyebrow}</div>
-        <h2>{panelCopy.chartRequestTitle}</h2>
-        <p>{panelCopy.chartRequestIntro}</p>
+        {!isExistingChartOrderMode ? <div className="eyebrow">{panelCopy.chartRequestEyebrow}</div> : null}
+        <h2>{isExistingChartOrderMode ? ui.allies.wizard.chartRequestExistingTitle : panelCopy.chartRequestTitle}</h2>
+        {!isExistingChartOrderMode ? <p>{panelCopy.chartRequestIntro}</p> : null}
 
-        <div
-          className={styles.stepper}
-          aria-label={ui.self.onboardingStepsLabel}
-          style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(4, minmax(0, 1fr))", marginTop: 18 }}
-        >
-          {steps.map((step, index) => (
-            <button
-              aria-current={activeStep === step ? "step" : undefined}
-              className={styles.step}
-              key={step}
-              disabled={isWizardComplete}
-              onClick={() => goToStep(step)}
-              style={{
-                background: "transparent",
-                border: 0,
-                borderRadius: 0,
-                color: activeStep === step ? "var(--gold)" : "var(--muted)",
-                display: "grid",
-                fontSize: "0.8rem",
-                fontWeight: 760,
-                gap: 7,
-                justifyItems: "center",
-                minHeight: 36,
-                padding: 0
-              }}
-              type="button"
-            >
-              <span
+        {!isSingleStepFlow ? (
+          <div
+            className={styles.stepper}
+            aria-label={ui.self.onboardingStepsLabel}
+            style={{ display: "grid", gap: 8, gridTemplateColumns: `repeat(${visibleSteps.length}, minmax(0, 1fr))`, marginTop: 18 }}
+          >
+            {visibleSteps.map((step, index) => (
+              <button
+                aria-current={activeStep === step ? "step" : undefined}
+                className={styles.step}
+                key={step}
+                disabled={isWizardComplete}
+                onClick={() => goToStep(step)}
                 style={{
-                  background: activeStep === step ? "var(--gold)" : "color-mix(in srgb, var(--muted) 24%, transparent)",
-                  borderRadius: 999,
-                  color: "transparent",
-                  display: "block",
-                  fontSize: 0,
-                  height: 5,
-                  width: "100%"
+                  background: "transparent",
+                  border: 0,
+                  borderRadius: 0,
+                  color: activeStep === step ? "var(--gold)" : "var(--muted)",
+                  display: "grid",
+                  fontSize: "0.8rem",
+                  fontWeight: 760,
+                  gap: 7,
+                  justifyItems: "center",
+                  minHeight: 36,
+                  padding: 0
                 }}
+                type="button"
               >
-                {index + 1}
-              </span>
-              {ui.self.onboardingSteps[step]}
-            </button>
-          ))}
-        </div>
-        <p className={styles.progressText} aria-live="polite">
-          {isWizardComplete
-            ? ui.self.onboardingProgressQueued
-            : ui.self.onboardingProgress(activeStepIndex + 1, steps.length, ui.self.onboardingSteps[activeStep])}
-        </p>
-
+                <span
+                  style={{
+                    background: activeStep === step ? "var(--gold)" : "color-mix(in srgb, var(--muted) 24%, transparent)",
+                    borderRadius: 999,
+                    color: "transparent",
+                    display: "block",
+                    fontSize: 0,
+                    height: 5,
+                    width: "100%"
+                  }}
+                >
+                  {index + 1}
+                </span>
+                {ui.self.onboardingSteps[step]}
+              </button>
+            ))}
+          </div>
+        ) : null}
         <form className={`auth-form ${styles.form}`} onSubmit={submitChartRequest}>
+          {!isSingleStepFlow ? (
+            <p className={styles.progressText} aria-live="polite">
+              {isWizardComplete
+                ? ui.self.onboardingProgressQueued
+                : ui.self.onboardingProgress(displayedStepIndex + 1, visibleSteps.length, ui.self.onboardingSteps[activeStep])}
+            </p>
+          ) : null}
+          <div className={`${styles.formActions} ${isSingleStepFlow ? styles.formActionsSingle : ""}`}>
+            {!isSingleStepFlow ? (
+              <button
+                className="button secondary"
+                disabled={activeStepIndex === 0 || isSubmitting || isWizardComplete}
+                onClick={(event) => {
+                  event.preventDefault();
+                  goBack();
+                }}
+                type="button"
+              >
+                <ArrowLeft aria-hidden="true" size={18} />
+                {ui.self.onboardingBack}
+              </button>
+            ) : null}
+            {canSubmit ? (
+              <button className="button" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? <Send aria-hidden="true" size={18} /> : null}
+                {isSubmitting ? ui.self.chartRequestWorking : ui.self.chartRequestSubmit}
+              </button>
+            ) : isWizardComplete ? (
+              <div className={styles.completionActions}>
+                <button className={`${styles.buttonDone} button`} type="button" disabled>
+                  <Check aria-hidden="true" size={18} />
+                  {ui.self.chartRequestQueued}
+                </button>
+                <button className="button secondary" onClick={startAnotherOnboarding} type="button">
+                  {ui.self.chartRequestStartOver}
+                </button>
+              </div>
+            ) : (
+              <button
+                className="button"
+                onClick={(event) => {
+                  event.preventDefault();
+                  goNext();
+                }}
+                type="button"
+              >
+                {ui.self.onboardingNext}
+                <ArrowRight aria-hidden="true" size={18} />
+              </button>
+            )}
+          </div>
           {activeStep === "subject" ? (
             <div className={styles.subjectFields}>
               <label>
@@ -656,27 +781,15 @@ export function BirthOnboardingPanel({
           {activeStep === "report" ? (
             <div className={styles.subjectFields}>
               {isUsingExistingChart ? (
-                <dl className={styles.review}>
-                  <div>
-                    <dt>{ui.self.onboardingReviewSubject}</dt>
-                    <dd>{form.subjectName}</dd>
+                <div className={styles.existingChartSummary} aria-label={ui.self.onboardingReviewLabel}>
+                  <div className={styles.existingChartTitleRow}>
+                    <h3>{form.subjectName}</h3>
+                    {form.relationship ? <span>{form.relationship}</span> : null}
                   </div>
-                  <div>
-                    <dt>{ui.self.onboardingReviewBirthDate}</dt>
-                    <dd>{form.date}</dd>
-                  </div>
-                  <div>
-                    <dt>{ui.self.onboardingReviewBirthTime}</dt>
-                    <dd>{form.time || ui.self.onboardingReviewMissing}</dd>
-                  </div>
-                  <div>
-                    <dt>{ui.self.onboardingReviewBirthPlace}</dt>
-                    <dd>{form.location || ui.self.onboardingReviewMissing}</dd>
-                  </div>
-                </dl>
+                  <p>{compactBirthLine(existingChartRequest?.birthData)}</p>
+                </div>
               ) : null}
-              <fieldset className={styles.optionGroup}>
-                <legend>{ui.self.onboardingReportTypeLabel}</legend>
+              <fieldset className={styles.optionGroup} aria-label={ui.self.onboardingReportTypeLabel}>
                 <p className={styles.optionHint}>
                   {isAdmin ? ui.self.onboardingAdminReportFence : ui.self.onboardingCustomerReportFence(starBalance)}
                 </p>
@@ -758,55 +871,19 @@ export function BirthOnboardingPanel({
 
           {activeStep === "birth_details" ? (
             <>
-              <div className={styles.birthDetailsHeader}>
-                <div>
-                  <strong>{ui.self.birthDetailsTitle}</strong>
-                  <span>{ui.self.birthDetailsBody}</span>
-                </div>
-              </div>
-              <label className={styles.fieldWithHint}>
-                <span>{ui.self.chartDateLabel}</span>
-                <input
-                  value={form.date}
-                  onChange={(event) => updateField("date", event.target.value)}
-                  disabled={isUsingExistingChart}
-                  readOnly={isUsingExistingChart}
-                  required
-                  inputMode="numeric"
-                  placeholder={ui.self.chartDatePlaceholder}
-                  autoComplete="bday"
-                />
-                <small>{ui.self.chartDateFormatHint}</small>
-              </label>
-              <div className={styles.formGrid}>
-                <label className={styles.fieldWithHint}>
-                  <span>{ui.self.chartTimeLabel}</span>
-                  <input
-                    value={form.time}
-                    onChange={(event) => updateField("time", event.target.value)}
-                    disabled={isUsingExistingChart}
-                    readOnly={isUsingExistingChart}
-                    inputMode="numeric"
-                    placeholder={ui.self.chartTimePlaceholder}
-                  />
-                  <small>{ui.self.chartTimeFormatHint}</small>
-                </label>
-                <label>
-                  <span>{ui.self.chartTimezoneLabel}</span>
-                  <select
-                    value={form.timezone}
-                    onChange={(event) => updateField("timezone", event.target.value)}
-                    disabled={isUsingExistingChart}
-                  >
-                    <option value="">{ui.self.chartTimezonePlaceholder}</option>
-                    {timeZones.map((timeZone) => (
-                      <option key={timeZone} value={timeZone}>
-                        {timeZone.replaceAll("_", " ")}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
+              <button
+                aria-label={ui.self.birthMomentOpen}
+                className={styles.birthMomentButton}
+                disabled={isUsingExistingChart}
+                onClick={() => setIsBirthMomentSheetOpen(true)}
+                type="button"
+              >
+                <span>
+                  <strong>{ui.self.birthMomentEdit}</strong>
+                  <em>{birthMomentSummary(form)}</em>
+                </span>
+                <span>{isUsingExistingChart ? ui.self.birthMomentLocked : ui.self.birthMomentEditAction}</span>
+              </button>
               <div className={styles.placeSearch}>
                 <label>
                   <span>{ui.self.placeSearchLabel}</span>
@@ -860,51 +937,19 @@ export function BirthOnboardingPanel({
             </>
           ) : null}
 
-          {activeStep === "review" ? (
-            <div className={styles.review} aria-label={ui.self.onboardingReviewLabel}>
-              {reviewRows.map(([label, value]) => (
-                <div key={label}>
-                  <span>{label}</span>
-                  <strong>{value}</strong>
-                </div>
-              ))}
-            </div>
-          ) : null}
-
-          <div className={styles.formActions}>
-            <button
-              className="button secondary"
-              disabled={activeStepIndex === 0 || isSubmitting || isWizardComplete}
-              onClick={goBack}
-              type="button"
-            >
-              <ArrowLeft aria-hidden="true" size={18} />
-              {ui.self.onboardingBack}
-            </button>
-            {canSubmit ? (
-              <button className="button" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? <Send aria-hidden="true" size={18} /> : <Check aria-hidden="true" size={18} />}
-                {isSubmitting ? ui.self.chartRequestWorking : ui.self.chartRequestSubmit}
-              </button>
-            ) : isWizardComplete ? (
-              <div className={styles.completionActions}>
-                <button className={`${styles.buttonDone} button`} type="button" disabled>
-                  <Check aria-hidden="true" size={18} />
-                  {ui.self.chartRequestQueued}
-                </button>
-                <button className="button secondary" onClick={startAnotherOnboarding} type="button">
-                  {ui.self.chartRequestStartOver}
-                </button>
-              </div>
-            ) : (
-              <button className="button" onClick={goNext} type="button">
-                {ui.self.onboardingNext}
-                <ArrowRight aria-hidden="true" size={18} />
-              </button>
-            )}
-          </div>
           {message ? <p className="form-status" aria-live="polite">{message}</p> : null}
         </form>
+        {isBirthMomentSheetOpen ? (
+          <BirthDateTimeSheet
+            ctaLabel={isUsingExistingChart ? ui.self.birthMomentSave : ui.self.birthMomentContinue}
+            disabled={isUsingExistingChart}
+            onClose={() => setIsBirthMomentSheetOpen(false)}
+            onSave={applyBirthMoment}
+            open={isBirthMomentSheetOpen}
+            timezoneOptions={timeZones}
+            value={birthMomentValueFor(form)}
+          />
+        ) : null}
         {isConfirmingReport ? (
           <div className={styles.confirmLayer} data-report-confirm-layer role="presentation" style={confirmLayerStyle}>
             <section
@@ -915,9 +960,15 @@ export function BirthOnboardingPanel({
               role="dialog"
               style={confirmDialogStyle}
             >
-              <div className="eyebrow">{ui.self.onboardingReportTypeLabel}</div>
               <h3 id="report-confirm-title">{ui.self.reportConfirmTitle}</h3>
-              <p>{ui.self.reportConfirmIntro}</p>
+              <dl className={styles.review} aria-label={ui.self.onboardingReviewLabel}>
+                {reviewRows.map(([label, value]) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
               <dl className={styles.confirmRows} data-report-confirm-rows style={confirmRowsStyle}>
                 <div style={confirmRowStyle}>
                   <dt>{ui.self.reportConfirmSelected}</dt>
@@ -932,18 +983,21 @@ export function BirthOnboardingPanel({
                   <dd>{ui.stars.balance(starBalance)}</dd>
                 </div>
               </dl>
-              <p className={styles.confirmNote} data-report-confirm-note>
-                {isAdmin
-                  ? ui.self.reportConfirmAdminNote
-                  : canAffordSelectedReport
-                    ? ui.self.reportConfirmExplorerNote(balanceAfterReport)
-                    : ui.self.reportConfirmInsufficient}
-              </p>
+              {!isAdmin ? (
+                <p className={styles.confirmNote} data-report-confirm-note>
+                  {canAffordSelectedReport ? ui.self.reportConfirmExplorerNote(balanceAfterReport) : ui.self.reportConfirmInsufficient}
+                </p>
+              ) : null}
               <div className={styles.confirmActions} data-report-confirm-actions style={confirmActionsStyle}>
                 <button className="button secondary" type="button" onClick={() => setIsConfirmingReport(false)}>
                   {ui.self.reportConfirmCancel}
                 </button>
-                <button className="button" type="button" onClick={submitConfirmedReport} disabled={isSubmitting || !canAffordSelectedReport}>
+                <button
+                  className={`button ${styles.confirmPrimaryAction}`}
+                  type="button"
+                  onClick={submitConfirmedReport}
+                  disabled={isSubmitting || !canAffordSelectedReport}
+                >
                   {ui.self.reportConfirmOk}
                 </button>
               </div>

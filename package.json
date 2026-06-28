@@ -27,6 +27,7 @@
     "test:auth-code": "node --import tsx scripts/smoke-auth-code.mts",
     "test:chart-maker": "node --import tsx scripts/smoke-chart-maker.mts",
     "test:chart-boundary": "node --import tsx scripts/smoke-chart-boundary.mts",
+    "test:birth-date-time-sheet": "node --import tsx scripts/smoke-birth-date-time-sheet.mts",
     "test:chart-request-api": "node --import tsx scripts/smoke-chart-request-api.mts",
     "test:astrology-engine": "node --import tsx scripts/smoke-astrology-engine.mts",
     "test:ally-api": "node --import tsx scripts/smoke-ally-api.mts",

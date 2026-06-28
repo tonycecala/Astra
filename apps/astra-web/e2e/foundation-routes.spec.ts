@@ -2,7 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 import { createHmac, randomUUID } from "node:crypto";
 import { ASTRA_REPORT_WRITER_ENV, LOCAL_DETERMINISTIC_REPORT_WRITER, buildAstrologyReportResultAsync } from "@astra/astrology";
 import { buildChartMakerRecordResult } from "@astra/chart-maker";
-import { appUserProfiles, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, creditLedgerEntries, db, mirrorCreditBalanceToProfile, recordAstrologyReportResult, recordChartMakerResult } from "@astra/db";
+import { appUserProfiles, createAlly, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, creditLedgerEntries, db, mirrorCreditBalanceToProfile, recordAstrologyReportResult, recordChartMakerResult } from "@astra/db";
 import { eq } from "drizzle-orm";
 
 type JsonObject = Record<string, unknown>;
@@ -85,6 +85,22 @@ async function signInWithOtp(page: Page, input: { email: string; name: string })
   await expect(page.getByRole("heading", { name: input.name })).toBeVisible();
 }
 
+async function chooseUnknownBirthMoment(page: Page, input: { year: string; month: string; dayLabel: string }) {
+  await page.getByRole("button", { name: "Edit birth details" }).click();
+  const dialog = page.getByRole("dialog", { name: "Birth Details" });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByLabel("Birth date calendar")).toBeVisible();
+  await expect(dialog.getByText("Birth moment", { exact: true })).toHaveCount(0);
+  await dialog.getByLabel("Birth year").fill(input.year);
+  await dialog.getByLabel("Birth month").selectOption({ label: input.month });
+  await dialog.getByRole("button", { name: input.dayLabel }).click();
+  await expect(dialog.getByText("Birth time unknown", { exact: true })).toBeVisible();
+  await expect(dialog.getByLabel("Time", { exact: true })).toBeEnabled();
+  await dialog.locator('input[type="checkbox"]').check();
+  await dialog.getByRole("button", { name: "Continue" }).first().click();
+  await expect(dialog).toHaveCount(0);
+}
+
 async function makeProfileAdmin(email: string) {
   const [profile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
   if (!profile) throw new Error(`Expected profile for ${email}.`);
@@ -126,6 +142,35 @@ async function createCompletedChart(email: string, input: { name: string }) {
   });
   const result = await recordChartMakerResult(db, buildChartMakerRecordResult(request));
   return { request, result };
+}
+
+async function createCompletedAllyChart(email: string, input: { name: string; relationship: string }) {
+  const [profile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
+  if (!profile) throw new Error(`Expected profile for ${email}.`);
+  const ally = await createAlly(db, {
+    userId: profile.userId,
+    name: input.name,
+    kind: "person",
+    relationship: input.relationship
+  });
+  const request = await createChartMakerRequest(db, {
+    userId: profile.userId,
+    subjectName: input.name,
+    birthData: {
+      date: "2021-12-23",
+      time: "01:50",
+      timezone: "America/Chicago",
+      location: "Plano, TX"
+    },
+    intent: "playwright-existing-ally-order-qa",
+    context: {
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+      subject: { subjectType: "ally", subjectId: ally.id, allyId: ally.id, displayName: input.name, relationship: input.relationship }
+    },
+    source: "ally"
+  });
+  const result = await recordChartMakerResult(db, buildChartMakerRecordResult(request));
+  return { ally, request, result };
 }
 
 async function createCompletedReport(email: string, input: { chartRequestId?: string; name: string; reportType?: "core" | "deep" | "identity" }) {
@@ -316,26 +361,30 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
     await expect(page.getByLabel("Alpha onboarding guidance")).toHaveCount(0);
     await expect(page.getByLabel("Chart generation flow")).toHaveCount(0);
-    await expect(page.getByText("Step 1 of 4: Your name")).toBeVisible();
+
+    await page.goto("/self#self-birth-onboarding");
+    await expect(page.getByText("Step 1 of 3: Your name")).toBeVisible();
     await expect(page.getByLabel("Your name")).toHaveValue(name);
 
-    const nextButton = page.getByRole("button", { exact: true, name: "Next" });
-    await nextButton.click();
-    await expect(page.getByText("Step 2 of 4: Birth details")).toBeVisible();
-    await page.getByLabel("Birth date").fill("1961-05-23");
-    await nextButton.click();
-    await expect(page.getByText("Step 3 of 4: Report")).toBeVisible();
-    await expect(page.getByText("Core Report")).toBeVisible();
+    await page.getByRole("button", { exact: true, name: "Next" }).click();
+    await expect(page.getByText("Step 2 of 3: Birth details")).toBeVisible();
+    await chooseUnknownBirthMoment(page, { year: "1961", month: "May", dayLabel: "May 23, 1961" });
+    await page.getByRole("button", { exact: true, name: "Next" }).click();
+    await expect(page.getByText("Step 3 of 3: Report")).toBeVisible();
+    const queueButton = page.getByRole("button", { name: "Order Report", exact: true });
+    await expect(queueButton).toBeVisible();
+    await expect(page.getByRole("dialog", { name: "Confirm Report" })).toHaveCount(0);
+    await expect(page.getByRole("radio", { name: /Core Report/ })).toBeVisible();
+    await expect(page.getByRole("radio", { name: /Deep Report/ })).toBeVisible();
     await expect(page.getByText("Chart settings")).toBeVisible();
-    await nextButton.click();
-
-    await expect(page.getByLabel("Review birth data")).toContainText("1961-05-23");
-    await expect(page.getByLabel("Review birth data")).toContainText("Core Report");
-    const queueButton = page.getByRole("button", { name: "Queue chart and report", exact: true });
+    await expect(page.getByLabel("Review birth data")).toHaveCount(0);
     await queueButton.focus();
     await page.keyboard.press("Enter");
-    const confirmDialog = page.getByRole("dialog", { name: "Confirm report" });
+    const confirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
     await expect(confirmDialog).toBeVisible();
+    await expect(confirmDialog.getByLabel("Review birth data")).toContainText("1961-05-23");
+    await expect(confirmDialog.getByLabel("Review birth data")).toContainText("Birth time unknown");
+    await expect(confirmDialog.getByLabel("Review birth data")).toContainText("Core Report");
     await expect(confirmDialog).toContainText("Report selected");
     await expect(confirmDialog).toContainText("Core Report");
     await expect(confirmDialog).toContainText("Cost");
@@ -345,8 +394,22 @@ test.describe("clean-start routes", () => {
     await confirmDialog.getByRole("button", { name: "Cancel" }).click();
     await expect(confirmDialog).toHaveCount(0);
     const onboarding = page.locator('section[aria-label="Birth data onboarding"]');
-    await expect(onboarding.getByRole("heading", { name: "Recent chart requests" })).toBeVisible();
-    await expect(onboarding.getByRole("heading", { name: "Report status" })).toBeVisible();
+    await expect(onboarding.getByLabel("Review birth data")).toHaveCount(0);
+    await expect(onboarding.getByRole("button", { name: "Order Report", exact: true })).toBeVisible();
+
+    const existingAllyChart = await createCompletedAllyChart(email, { name: "Existing Ally", relationship: "Friend" });
+    await page.goto(`/allies?chart=${existingAllyChart.request.id}&start=birth_details#ally-birth-onboarding`);
+    const existingOrderPanel = page.locator('section[aria-label="Ally birth data onboarding"]');
+    await expect(existingOrderPanel.getByRole("heading", { name: "Order an Ally Report" })).toBeVisible();
+    await expect(existingOrderPanel.getByText("Ally report", { exact: true })).toHaveCount(0);
+    await expect(existingOrderPanel.getByText("Name the Ally, add birth data")).toHaveCount(0);
+    await expect(existingOrderPanel.getByText("Step 1 of 1")).toHaveCount(0);
+    await expect(existingOrderPanel.getByRole("button", { name: "Back" })).toHaveCount(0);
+    await expect(existingOrderPanel.getByText("Existing Ally")).toBeVisible();
+    await expect(existingOrderPanel.getByText("Friend", { exact: true })).toBeVisible();
+    await expect(existingOrderPanel.getByText("2021-12-23 · 01:50 · Plano, TX")).toBeVisible();
+    await expect(existingOrderPanel.getByText("Birth date", { exact: true })).toHaveCount(0);
+    await expect(existingOrderPanel.getByText("Birth place", { exact: true })).toHaveCount(0);
 
     await page.goto("/library");
     await expect(page.getByRole("heading", { name: "Artifacts worth keeping" })).toBeVisible();
@@ -416,24 +479,23 @@ test.describe("clean-start routes", () => {
 
     await page.goto("/self#self-birth-onboarding");
     await expect(page.getByRole("heading", { name: "Build the first report request" })).toBeVisible();
-    const nextButton = page.getByRole("button", { exact: true, name: "Next" });
-    await nextButton.click();
-    await page.getByLabel("Birth date").fill("1961-05-23");
-    await nextButton.click();
+    await page.getByRole("button", { exact: true, name: "Next" }).click();
+    await chooseUnknownBirthMoment(page, { year: "1961", month: "May", dayLabel: "May 23, 1961" });
+    await page.getByRole("button", { exact: true, name: "Next" }).click();
     await expect(page.getByText("Deep Report")).toBeVisible();
     await expect(page.getByText("Progressed Report")).toBeVisible();
     await expect(page.getByText("Synastry Report")).toHaveCount(0);
-    await nextButton.click();
-    await page.getByRole("button", { name: "Queue chart and report", exact: true }).focus();
+    await page.getByRole("button", { name: "Order Report", exact: true }).focus();
     await page.keyboard.press("Enter");
-    await expect(page.getByRole("dialog", { name: "Confirm report" })).toContainText("Admin mode records the report cost but does not debit Stars.");
-    await page.getByRole("button", { name: "OK" }).click();
+    const adminConfirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
+    await expect(adminConfirmDialog.getByRole("button", { name: "OK" })).toBeEnabled();
+    await adminConfirmDialog.getByRole("button", { name: "OK" }).click();
     await expect(page.getByText("Report is generating")).toBeVisible();
 
     await page.getByRole("button", { name: "Start another report request" }).click();
-    await nextButton.click();
-    await page.getByLabel("Birth date").fill("1961-05-23");
-    await nextButton.click();
+    await page.getByRole("button", { exact: true, name: "Next" }).click();
+    await chooseUnknownBirthMoment(page, { year: "1961", month: "May", dayLabel: "May 23, 1961" });
+    await page.getByRole("button", { exact: true, name: "Next" }).click();
     await page.getByLabel("Synastry Report").check();
     await expect(page.getByLabel("Comparison chart")).toBeVisible();
     await expect(page.getByLabel("Comparison chart")).toContainText(name);

@@ -68,7 +68,7 @@ function formatBirthSummary(request?: ChartMakerRequest): BirthSummary | string 
   if (!time) {
     return {
       first,
-      second: "Birth time unknown"
+      second: ui.self.birthMomentUnknownTimeShort
     };
   }
 
@@ -101,7 +101,7 @@ type SelfPageParams = {
 };
 
 function onboardingStepFromParam(value?: string) {
-  return value === "birth_details" || value === "report" || value === "review" ? value : undefined;
+  return value === "birth_details" || value === "report" ? value : undefined;
 }
 
 export default async function SelfPage({ searchParams }: SelfPageParams = {}) {

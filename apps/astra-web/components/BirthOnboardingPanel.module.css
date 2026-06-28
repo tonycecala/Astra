@@ -173,21 +173,10 @@
   gap: 12px;
 }
 
-.birthDetailsHeader {
-  display: grid;
-  gap: 4px;
-  border: 1px solid color-mix(in srgb, var(--gold) 26%, var(--line));
-  border-radius: 8px;
-  padding: 12px 14px;
-  background: color-mix(in srgb, var(--gold) 9%, var(--panel));
-}
-
-.birthDetailsHeader strong,
 .fieldWithHint strong {
   color: var(--ink);
 }
 
-.birthDetailsHeader span,
 .fieldWithHint small {
   color: var(--muted);
   line-height: 1.45;
@@ -209,6 +198,117 @@
   color: var(--muted);
   font-size: 13px;
   line-height: 1.35;
+}
+
+.existingChartSummary {
+  min-width: 0;
+}
+
+.existingChartTitleRow {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 10px;
+}
+
+.existingChartTitleRow h3 {
+  overflow: hidden;
+  margin: 0;
+  min-width: 0;
+  color: var(--gold);
+  font-size: clamp(0.875rem, 3vw, 1rem);
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.existingChartTitleRow span {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  min-height: 22px;
+  border: 1px solid color-mix(in srgb, var(--blue) 34%, var(--line));
+  border-radius: 999px;
+  padding: 0 10px;
+  background: color-mix(in srgb, var(--blue) 13%, transparent);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 760;
+}
+
+.existingChartSummary p {
+  overflow: hidden;
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.birthMomentButton {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 72px;
+  border: 1px solid color-mix(in srgb, var(--gold) 32%, var(--line));
+  border-radius: 8px;
+  padding: 13px 14px;
+  background:
+    radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--gold) 10%, transparent), transparent 42%),
+    var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.birthMomentButton > span {
+  min-width: 0;
+}
+
+.birthMomentButton:hover,
+.birthMomentButton:focus-visible {
+  border-color: color-mix(in srgb, var(--gold) 62%, var(--line));
+  outline: none;
+}
+
+.birthMomentButton:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.birthMomentButton span:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.birthMomentButton strong {
+  color: var(--ink);
+  font-size: 0.94rem;
+}
+
+.birthMomentButton em {
+  color: var(--muted);
+  font-style: normal;
+  line-height: 1.4;
+}
+
+.birthMomentButton > span:last-child {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  border-radius: 999px;
+  padding: 0 12px;
+  background: color-mix(in srgb, var(--gold) 18%, var(--soft));
+  color: var(--gold);
+  font-size: 0.84rem;
+  font-weight: 800;
+  max-width: 100%;
+  white-space: normal;
 }
 
 .placeSearch {
@@ -391,22 +491,31 @@
 
 .review {
   display: grid;
-  gap: 10px;
+  gap: 6px;
 }
 
 .review div {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   border-top: 1px solid var(--line);
-  padding-top: 10px;
+  padding-top: 7px;
 }
 
-.review span {
+.review span,
+.review dt {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.review strong {
+.review strong,
+.review dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 760;
   overflow-wrap: anywhere;
 }
 
@@ -417,11 +526,19 @@
   gap: 10px;
 }
 
+.formActionsSingle {
+  justify-content: flex-end;
+}
+
 .formActions button:last-child,
 .completionActions .buttonDone {
   border-color: color-mix(in srgb, var(--gold) 62%, var(--line));
   background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 90%, white), var(--gold));
   color: #1a1305;
+}
+
+.formActions button {
+  min-width: 0;
 }
 
 .completionActions {
@@ -450,10 +567,10 @@
 }
 
 .confirmDialog {
-  width: min(420px, 100%);
+  width: min(390px, 100%);
   border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--line));
   border-radius: 8px;
-  padding: 20px;
+  padding: 14px;
   background:
     radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 38%),
     var(--panel);
@@ -461,20 +578,21 @@
 }
 
 .confirmDialog h3 {
-  margin: 6px 0 8px;
+  margin: 0 0 6px;
   color: var(--gold);
-  font-size: 1.45rem;
+  font-size: 1.12rem;
 }
 
 .confirmDialog p {
+  margin: 0;
   color: var(--muted);
-  line-height: 1.45;
+  line-height: 1.35;
 }
 
 .confirmRows {
   display: grid;
-  gap: 8px;
-  margin: 16px 0 0;
+  gap: 6px;
+  margin: 10px 0 0;
 }
 
 .confirmRows div {
@@ -484,13 +602,13 @@
   align-items: center;
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 8px 10px;
   background: var(--soft);
 }
 
 .confirmRows dt {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -499,19 +617,38 @@
 .confirmRows dd {
   margin: 0;
   color: var(--ink);
+  font-size: 0.92rem;
   font-weight: 800;
   text-align: right;
 }
 
 .confirmNote {
-  margin: 14px 0 0;
+  margin: 10px 0 0;
 }
 
 .confirmActions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.confirmPrimaryAction {
+  min-width: 112px;
+  border-color: color-mix(in srgb, var(--gold) 70%, var(--line));
+  background: var(--gold);
+  color: #1a1305;
+}
+
+.confirmActions button {
+  min-height: 40px;
+  padding-inline: 18px;
+}
+
+.confirmPrimaryAction:disabled {
+  border-color: var(--line);
+  background: var(--soft);
+  color: var(--muted);
 }
 
 .summaryRail {
@@ -642,6 +779,7 @@
 
 @media (max-width: 900px) {
   .panel,
+  .birthMomentButton,
   .formGrid,
   .placeSearch,
   .flowMap,

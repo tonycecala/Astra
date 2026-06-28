@@ -1725,7 +1725,7 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: Rep
         id: `${request.id}:birth-data`,
         kind: "birth_data",
         label: "Birth data",
-        summary: `${request.birthData.date}${request.birthData.time ? ` ${request.birthData.time}` : " date-only"}${request.birthData.location ? ` in ${request.birthData.location}` : ""}.`,
+        summary: `${request.birthData.date}${request.birthData.time ? ` ${request.birthData.time}` : " birth time unknown"}${request.birthData.location ? ` in ${request.birthData.location}` : ""}.`,
         boundary: "private",
         sourceId: request.id
       },

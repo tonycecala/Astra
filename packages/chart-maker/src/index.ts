@@ -70,15 +70,20 @@ export function deriveSeason(date: string) {
 }
 
 export function chartPrecision(birthData: ChartBirthData): ChartMakerPrecision {
-  return birthData.time && birthData.timezone && birthData.location ? "timed_location" : "date_only";
+  if (birthData.birthTimeKnown === false) return "date_only";
+  if (birthData.time && birthData.timezone && birthData.location) return "timed_location";
+  if (birthData.time && birthData.timezone) return "timed_timezone";
+  return "date_only";
 }
 
 function interpretationFor(request: ChartMakerRequest, precision: ChartMakerPrecision) {
   const sunSign = deriveSunSign(request.birthData.date);
   const precisionText =
     precision === "timed_location"
-      ? `The request includes time, timezone, and place, so the handoff preserves the precision bundle for a future full chart engine.`
-      : `The request is date-only, so this module avoids houses, angles, and time-sensitive claims.`;
+      ? `The request includes time, timezone, and place, so the handoff preserves the full precision bundle for a future chart engine.`
+      : precision === "timed_timezone"
+        ? `The request includes time and timezone, so the handoff preserves the timed birth moment without requiring a place.`
+        : `The request is date-only, so this module avoids houses, angles, and time-sensitive claims.`;
 
   return {
     headline: `${request.subjectName} carries a ${sunSign} solar signal`,
@@ -89,6 +94,11 @@ function interpretationFor(request: ChartMakerRequest, precision: ChartMakerPrec
             "This deterministic module is a contract adapter, not a full ephemeris engine.",
             "Time, timezone, location, and coordinates are preserved for the independent ephemeris implementation."
           ]
+        : precision === "timed_timezone"
+          ? [
+              "This deterministic module is a contract adapter, not a full ephemeris engine.",
+              "Time and timezone are preserved; location-specific houses, angles, and coordinates are omitted until a place is supplied."
+            ]
         : [
             "This deterministic module is a contract adapter, not a full ephemeris engine.",
             "Date-only requests omit houses, angles, moon sign, ascendant, and time-sensitive placements."

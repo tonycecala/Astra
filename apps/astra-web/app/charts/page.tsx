@@ -281,5 +281,9 @@ function chartAsReportRequest(chart: ChartMakerRequest): AstrologyReportRequest 
 }
 
 function birthLine(chart: ChartMakerRequest) {
-  return [chart.birthData.date, chart.birthData.time, chart.birthData.location].filter(Boolean).join(" · ");
+  return [
+    chart.birthData.date,
+    chart.birthData.birthTimeKnown === false ? ui.self.birthMomentUnknownTimeShort : chart.birthData.time,
+    chart.birthData.location
+  ].filter(Boolean).join(" · ");
 }

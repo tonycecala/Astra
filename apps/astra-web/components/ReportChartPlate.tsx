@@ -59,7 +59,10 @@ function placementLine(label: string, placement?: ChartPlacement) {
 function formatBirth(request: AstrologyReportRequest | null) {
   const birthData = request?.birthData;
   if (!birthData) return ui.library.reportUnknownChartValue;
-  return [birthData.date, birthData.time].filter(Boolean).join(" · ") || ui.library.reportUnknownChartValue;
+  return [
+    birthData.date,
+    birthData.birthTimeKnown === false ? ui.self.birthMomentUnknownTimeShort : birthData.time
+  ].filter(Boolean).join(" · ") || ui.library.reportUnknownChartValue;
 }
 
 export function ReportChartPlate({

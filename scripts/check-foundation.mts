@@ -54,6 +54,21 @@ chartMakerRequestSchema.parse({
   updatedAt: now
 });
 
+chartMakerRequestSchema.parse({
+  id: "chart_request_unknown_time_smoke",
+  userId: seed.user.id,
+  subjectName: "Tony C",
+  birthData: {
+    date: "1961-05-23",
+    timezone: "America/New_York",
+    birthTimeKnown: false
+  },
+  source: "self",
+  status: "queued",
+  createdAt: now,
+  updatedAt: now
+});
+
 const partialBirthPrecision = chartMakerRequestSchema.safeParse({
   id: "chart_request_partial_precision_smoke",
   userId: seed.user.id,
@@ -68,8 +83,23 @@ const partialBirthPrecision = chartMakerRequestSchema.safeParse({
   updatedAt: now
 });
 if (partialBirthPrecision.success) {
-  throw new Error("Chart request contract must reject partial birth time precision without timezone and location.");
+  throw new Error("Chart request contract must reject birth time without timezone.");
 }
+
+chartMakerRequestSchema.parse({
+  id: "chart_request_timed_timezone_smoke",
+  userId: seed.user.id,
+  subjectName: "Tony C",
+  birthData: {
+    date: "1961-05-23",
+    time: "09:30",
+    timezone: "America/New_York"
+  },
+  source: "self",
+  status: "queued",
+  createdAt: now,
+  updatedAt: now
+});
 
 chartMakerResultSchema.parse({
   id: "chart_result_smoke",
