@@ -163,8 +163,18 @@ function birthDataFor(form: FormState) {
   return Object.fromEntries(Object.entries(birthData).filter(([, value]) => value !== undefined));
 }
 
-function stepIndex(step: Step) {
-  return steps.indexOf(step);
+function birthDataMatchesForm(birthData: ChartBirthData | undefined, form: FormState) {
+  if (!birthData) return false;
+  const knownTime = birthData.birthTimeKnown ?? Boolean(birthData.time);
+  return (
+    birthData.date === form.date &&
+    knownTime === form.birthTimeKnown &&
+    (birthData.time ?? "") === (form.birthTimeKnown ? form.time : "") &&
+    (birthData.timezone ?? "") === form.timezone &&
+    (birthData.location ?? "") === form.location &&
+    birthData.latitude === form.latitude &&
+    birthData.longitude === form.longitude
+  );
 }
 
 function reportStatusLabel(status: string) {
@@ -218,6 +228,15 @@ function compactBirthLine(birthData?: ChartBirthData) {
   ].filter(Boolean).join(" · ");
 }
 
+function compactFormBirthLine(form: FormState) {
+  if (!form.date) return ui.self.noBirthData;
+  return [
+    form.date,
+    form.birthTimeKnown ? form.time : ui.self.birthMomentUnknownTimeShort,
+    form.location
+  ].filter(Boolean).join(" · ");
+}
+
 function birthMomentValueFor(form: FormState): BirthDateTimeValue {
   return {
     date: form.date,
@@ -264,7 +283,7 @@ export function BirthOnboardingPanel({
     : undefined;
   const [form, setForm] = useState<FormState>(() => defaultForm(displayName, initialBirthData, initialChartRequest));
   const [allies, setAllies] = useState(initialAllies);
-  const [activeStep, setActiveStep] = useState<Step>(() => initialStep ?? "subject");
+  const [activeStep, setActiveStep] = useState<Step>(() => (initialChartRequest ? initialStep ?? "report" : initialStep ?? "subject"));
   const [selectedExistingChartRequestId, setSelectedExistingChartRequestId] = useState(initialChartRequest?.id ?? "");
   const [requests, setRequests] = useState(initialRequests);
   const [reportRequests, setReportRequests] = useState(initialReportRequests);
@@ -280,7 +299,6 @@ export function BirthOnboardingPanel({
   const [isConfirmingReport, setIsConfirmingReport] = useState(false);
   const [isBirthMomentSheetOpen, setIsBirthMomentSheetOpen] = useState(false);
 
-  const activeStepIndex = stepIndex(activeStep);
   const isAlly = subjectType === "ally";
   const isAdmin = role === "admin";
   const synastryChartOptions = useMemo(() => requests.filter((request) => request.birthData.date), [requests]);
@@ -296,7 +314,8 @@ export function BirthOnboardingPanel({
     : undefined;
   const isUsingExistingChart = Boolean(existingChartRequest);
   const isExistingChartOrderMode = isAlly && isUsingExistingChart;
-  const visibleSteps: readonly Step[] = isUsingExistingChart ? ["report"] : steps;
+  const isExistingChartLocked = isExistingChartOrderMode;
+  const visibleSteps: readonly Step[] = isExistingChartOrderMode ? ["report"] : isUsingExistingChart ? ["birth_details", "report"] : steps;
   const visibleStepIndex = visibleSteps.indexOf(activeStep);
   const displayedStepIndex = visibleStepIndex >= 0 ? visibleStepIndex : 0;
   const isSingleStepFlow = visibleSteps.length === 1;
@@ -431,7 +450,8 @@ export function BirthOnboardingPanel({
   function goToStep(nextStep: Step) {
     if (isWizardComplete) return;
     const currentError = stepError(activeStep);
-    if (stepIndex(nextStep) > activeStepIndex && currentError) {
+    const nextVisibleIndex = visibleSteps.indexOf(nextStep);
+    if (nextVisibleIndex > displayedStepIndex && currentError) {
       setMessage(currentError);
       return;
     }
@@ -448,7 +468,7 @@ export function BirthOnboardingPanel({
       return;
     }
 
-    const next = steps[activeStepIndex + 1];
+    const next = visibleSteps[displayedStepIndex + 1];
     if (next) {
       setActiveStep(next);
       setIsConfirmingReport(false);
@@ -458,7 +478,7 @@ export function BirthOnboardingPanel({
 
   function goBack() {
     if (isWizardComplete) return;
-    const previous = steps[activeStepIndex - 1];
+    const previous = visibleSteps[displayedStepIndex - 1];
     if (previous) {
       setActiveStep(previous);
       setIsConfirmingReport(false);
@@ -554,9 +574,11 @@ export function BirthOnboardingPanel({
               birthData: synastryPartner.birthData
             }
           : undefined;
+      const canReuseExistingChart = Boolean(existingChartRequest && (isExistingChartLocked || birthDataMatchesForm(existingChartRequest.birthData, form)));
+      const reportBirthData = canReuseExistingChart && existingChartRequest ? existingChartRequest.birthData : birthDataFor(form);
       const body = {
         subjectName: form.subjectName.trim(),
-        birthData: existingChartRequest?.birthData ?? birthDataFor(form),
+        birthData: reportBirthData,
         source: subjectType,
         context: {
           subject: subjectContext,
@@ -564,10 +586,15 @@ export function BirthOnboardingPanel({
           ...(synastryPartnerContext ? { synastryPartner: synastryPartnerContext } : {})
         }
       };
-      const chartRequest = existingChartRequest ?? (await requestJson<{ request: ChartMakerRequest }>("/api/chart-requests", {
-        method: "POST",
-        body: JSON.stringify(body)
-      })).request;
+      let chartRequest: ChartMakerRequest;
+      if (canReuseExistingChart && existingChartRequest) {
+        chartRequest = existingChartRequest;
+      } else {
+        chartRequest = (await requestJson<{ request: ChartMakerRequest }>("/api/chart-requests", {
+          method: "POST",
+          body: JSON.stringify(body)
+        })).request;
+      }
       const reportPayload = await requestJson<{ request: AstrologyReportRequest }>("/api/reports", {
         method: "POST",
         body: JSON.stringify({
@@ -577,7 +604,7 @@ export function BirthOnboardingPanel({
         })
       });
 
-      if (!existingChartRequest) {
+      if (!canReuseExistingChart) {
         setRequests((current) => [chartRequest, ...current]);
       }
       setReportRequests((current) => [reportPayload.request, ...current]);
@@ -699,7 +726,7 @@ export function BirthOnboardingPanel({
             {!isSingleStepFlow ? (
               <button
                 className="button secondary"
-                disabled={activeStepIndex === 0 || isSubmitting || isWizardComplete}
+                disabled={displayedStepIndex === 0 || isSubmitting || isWizardComplete}
                 onClick={(event) => {
                   event.preventDefault();
                   goBack();
@@ -744,8 +771,8 @@ export function BirthOnboardingPanel({
               <label>
                 <span>{panelCopy.chartSubjectLabel}</span>
                 <input
-                  disabled={isUsingExistingChart}
-                  readOnly={isUsingExistingChart}
+                  disabled={isExistingChartLocked}
+                  readOnly={isExistingChartLocked}
                   value={form.subjectName}
                   onChange={(event) => updateField("subjectName", event.target.value)}
                   required
@@ -756,18 +783,18 @@ export function BirthOnboardingPanel({
                   <label>
                     <span>{ui.allies.wizardRelationshipLabel}</span>
                     <input
-                      disabled={isUsingExistingChart}
-                      readOnly={isUsingExistingChart}
+                      disabled={isExistingChartLocked}
+                      readOnly={isExistingChartLocked}
                       value={form.relationship}
                       onChange={(event) => updateField("relationship", event.target.value)}
-                      required={!isUsingExistingChart}
+                      required={!isExistingChartLocked}
                     />
                   </label>
                   <label>
                     <span>{ui.allies.wizardNoteLabel}</span>
                     <textarea
-                      disabled={isUsingExistingChart}
-                      readOnly={isUsingExistingChart}
+                      disabled={isExistingChartLocked}
+                      readOnly={isExistingChartLocked}
                       value={form.note}
                       onChange={(event) => updateField("note", event.target.value)}
                       rows={3}
@@ -786,7 +813,7 @@ export function BirthOnboardingPanel({
                     <h3>{form.subjectName}</h3>
                     {form.relationship ? <span>{form.relationship}</span> : null}
                   </div>
-                  <p>{compactBirthLine(existingChartRequest?.birthData)}</p>
+                  <p>{isExistingChartLocked ? compactBirthLine(existingChartRequest?.birthData) : compactFormBirthLine(form)}</p>
                 </div>
               ) : null}
               <fieldset className={styles.optionGroup} aria-label={ui.self.onboardingReportTypeLabel}>
@@ -874,7 +901,7 @@ export function BirthOnboardingPanel({
               <button
                 aria-label={ui.self.birthMomentOpen}
                 className={styles.birthMomentButton}
-                disabled={isUsingExistingChart}
+                disabled={isExistingChartLocked}
                 onClick={() => setIsBirthMomentSheetOpen(true)}
                 type="button"
               >
@@ -882,7 +909,7 @@ export function BirthOnboardingPanel({
                   <strong>{ui.self.birthMomentEdit}</strong>
                   <em>{birthMomentSummary(form)}</em>
                 </span>
-                <span>{isUsingExistingChart ? ui.self.birthMomentLocked : ui.self.birthMomentEditAction}</span>
+                <span>{isExistingChartLocked ? ui.self.birthMomentLocked : ui.self.birthMomentEditAction}</span>
               </button>
               <div className={styles.placeSearch}>
                 <label>
@@ -893,12 +920,12 @@ export function BirthOnboardingPanel({
                       setHasSelectedPlace(false);
                       setPlaceQuery(event.target.value);
                     }}
-                    disabled={isUsingExistingChart}
-                    readOnly={isUsingExistingChart}
+                    disabled={isExistingChartLocked}
+                    readOnly={isExistingChartLocked}
                     placeholder={ui.self.placeSearchPlaceholder}
                   />
                 </label>
-                <button className="button secondary" disabled={isSearchingPlaces || isUsingExistingChart} onClick={searchPlaces} type="button">
+                <button className="button secondary" disabled={isSearchingPlaces || isExistingChartLocked} onClick={searchPlaces} type="button">
                   <Search aria-hidden="true" size={18} />
                   {isSearchingPlaces ? ui.self.placeSearchWorking : ui.self.placeSearchSubmit}
                 </button>
@@ -929,8 +956,8 @@ export function BirthOnboardingPanel({
                     setHasSelectedPlace(false);
                     updateField("location", event.target.value);
                   }}
-                  disabled={isUsingExistingChart}
-                  readOnly={isUsingExistingChart}
+                  disabled={isExistingChartLocked}
+                  readOnly={isExistingChartLocked}
                 />
               </label>
               <p className="form-status">{ui.self.birthDetailsOptionalHint}</p>
@@ -941,8 +968,8 @@ export function BirthOnboardingPanel({
         </form>
         {isBirthMomentSheetOpen ? (
           <BirthDateTimeSheet
-            ctaLabel={isUsingExistingChart ? ui.self.birthMomentSave : ui.self.birthMomentContinue}
-            disabled={isUsingExistingChart}
+            ctaLabel={isExistingChartLocked ? ui.self.birthMomentSave : ui.self.birthMomentContinue}
+            disabled={isExistingChartLocked}
             onClose={() => setIsBirthMomentSheetOpen(false)}
             onSave={applyBirthMoment}
             open={isBirthMomentSheetOpen}

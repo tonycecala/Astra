@@ -476,7 +476,7 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("heading", { name: "Report bakeoff controls" })).toBeVisible();
     await expect(page.getByLabel("Report request id")).toBeVisible();
     await expect(page.getByLabel("Writer")).toBeVisible();
-    await expect(page.getByLabel("Profile")).toBeVisible();
+    await expect(page.getByLabel("Report")).toBeVisible();
     await expect(page.getByRole("button", { name: "Run Replay" }).first()).toBeVisible();
     await expect(page.getByText("npm run report:bakeoff -- --profiles debug,production")).toBeVisible();
     await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText("Playwright admin parity grant");
@@ -507,6 +507,20 @@ test.describe("clean-start routes", () => {
     await expect(page.getByLabel("Comparison chart")).toContainText(name);
 
     const completedChart = await createCompletedChart(email, { name });
+    await page.goto(`/self?chart=${completedChart.request.id}&start=birth_details#self-birth-onboarding`);
+    const selfEditPanel = page.locator('section[aria-label="Birth data onboarding"]');
+    await expect(selfEditPanel.getByText("Step 1 of 2: Birth details")).toBeVisible();
+    await expect(selfEditPanel.getByText("These saved birth details are locked")).toHaveCount(0);
+    await expect(selfEditPanel.getByLabel("Edit birth details")).toBeEnabled();
+    await expect(selfEditPanel.getByLabel("Search birth place")).toBeEditable();
+    await expect(selfEditPanel.getByLabel("Birth location (optional)")).toBeEditable();
+    await selfEditPanel.getByLabel("Edit birth details").click();
+    const existingSelfBirthDialog = page.getByRole("dialog", { name: "Birth Details" });
+    await expect(existingSelfBirthDialog.getByLabel("Time", { exact: true })).toBeEnabled();
+    await existingSelfBirthDialog.getByRole("button", { name: "Close birth date and time editor" }).click();
+    await selfEditPanel.getByRole("button", { exact: true, name: "Next" }).click();
+    await expect(selfEditPanel.getByText("Step 2 of 2: Report")).toBeVisible();
+
     const completedReport = await createCompletedReport(email, { chartRequestId: completedChart.request.id, name, reportType: "core" });
     await page.goto(`/admin?replayRequest=${completedReport.request.id}`);
     await expect(page.getByLabel("Selected report run inspector")).toContainText(completedReport.request.id.slice(0, 8));

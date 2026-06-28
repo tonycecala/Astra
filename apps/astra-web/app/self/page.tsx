@@ -142,6 +142,12 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
     ? chartRequests.find((request) => request.id === params.chart)
     : undefined;
   const onboardingChart = selectedOnboardingChart ?? selfChartRequest;
+  const requestReportHref = onboardingChart
+    ? `/self?chart=${encodeURIComponent(onboardingChart.id)}&start=report#self-birth-onboarding`
+    : "#self-birth-onboarding";
+  const editBirthDetailsHref = onboardingChart
+    ? `/self?chart=${encodeURIComponent(onboardingChart.id)}&start=birth_details#self-birth-onboarding`
+    : "#self-birth-onboarding";
   const roleLine = normalizeRole(profile.role);
   const birthLine = formatBirthSummary(selfChartRequest);
   return (
@@ -169,14 +175,14 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
               <ChartPie aria-hidden="true" size={16} />
               {ui.self.viewChart}
             </Link>
-            <Link className="button secondary" href="#self-birth-onboarding">
+            <Link className="button secondary" href={requestReportHref}>
               <Sparkles aria-hidden="true" size={16} />
               {ui.self.createProfile}
             </Link>
-            <a className="button secondary" href="#self-birth-onboarding">
+            <Link className="button secondary" href={editBirthDetailsHref}>
               <Pencil aria-hidden="true" size={16} />
               {ui.self.editBirthDetails}
-            </a>
+            </Link>
             {profile.role === "admin" ? (
               <Link className="button secondary" href="/admin">
                 <ShieldCheck aria-hidden="true" size={16} />
