@@ -1,17 +1,20 @@
 ---
 title: "Astra Birth Date and Time UX Implementation Plan"
 type: "implementation-plan"
-status: "ready"
+status: "completed"
 project: "astra"
 created: "2026-06-28"
-updated: "2026-06-28"
+updated: "2026-07-15"
+completed: "2026-06-27"
+archived: "2026-07-15"
+completion_commit: "f996568"
 tags:
   - astra
   - birth-data
   - onboarding
   - ux
   - qa
-source_prompt: "docs/inbox-astra/astra-birth-date-time-ux-codex-prompt.md"
+source_prompt: "docs/inbox-astra/completed/astra-birth-date-time-ux-codex-prompt.md"
 mobbin_reference: "https://mobbin.com/screens/297f6f2f-3444-4e5d-af4b-519295a310e9"
 ---
 
@@ -25,7 +28,7 @@ The user outcome is simple: entering the birth moment should feel calm, precise,
 
 ## Current State
 
-- Design prompt exists at `docs/inbox-astra/astra-birth-date-time-ux-codex-prompt.md`.
+- The completed design prompt is archived at `docs/inbox-astra/completed/astra-birth-date-time-ux-codex-prompt.md`.
 - Existing birth intake lives mainly in `apps/astra-web/components/BirthOnboardingPanel.tsx`.
 - Existing UI copy lives in `apps/astra-web/lib/i18n.ts`; new labels, errors, aria text, and helper copy must go there.
 - Existing contract lives in `packages/contracts/src/index.ts`.
@@ -121,10 +124,10 @@ Analytics decision for this slice: document whether `birth_data_sheet_opened`, `
 - UI copy flows through i18n.
 - Browser-visible QA covers `/self#self-birth-onboarding` and `/allies#ally-birth-onboarding` on desktop and mobile, with tablet if layout changed materially.
 
-## Next Goal Prompt
+## Historical Next Goal Prompt
 
 ```text
-Implement the Astra birth date and time UX from docs/inbox-astra/astra-birth-date-time-ux-implementation-plan.md and docs/inbox-astra/astra-birth-date-time-ux-codex-prompt.md.
+Implement the Astra birth date and time UX from docs/inbox-astra/completed/astra-birth-date-time-ux-implementation-plan.md and docs/inbox-astra/completed/astra-birth-date-time-ux-codex-prompt.md.
 
 Start from a fresh branch named codex/astra-birth-date-time-ux. Run ak governance check, ak doctor, and ak dirty first. Preserve the existing prompt/image dirty files unless they are intentionally included in the final commit.
 

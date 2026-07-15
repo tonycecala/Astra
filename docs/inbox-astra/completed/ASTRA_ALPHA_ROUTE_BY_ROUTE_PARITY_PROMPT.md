@@ -2,9 +2,12 @@
 title: "Astra Alpha Relaunch Route-by-Route Parity Pass"
 type: "codex-inbox-directive"
 project: "Astra Clean Start"
-status: "ready-for-codex"
+status: "completed"
 priority: "P0"
 created: "2026-06-24"
+completed: "2026-06-24"
+archived: "2026-07-15"
+completion_commit: "07054d9"
 mission: "Recover/merge outstanding parity work safely, then restore alpha-critical routes one at a time without overwriting recent improvements."
 ---
 

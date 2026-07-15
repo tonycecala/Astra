@@ -1,22 +1,24 @@
 # inbox-astra
 
-Human-visible pointer for this repo's Akashic inbox.
+Human-visible task briefs and handoffs for Astra.
 
-Canonical machine-readable inbox:
+Canonical machine-readable agent mail:
 
-- `akashic/agent-inbox/`
+- `akashic/mail/new/`
+- `akashic/mail/working/`
 
-Agent-specific workspace:
+Use `ak mail` to claim, close, release, or reopen actionable agent mail. Legacy `akashic/agent-inbox/` files are historical knowledge, not the active mailbox.
 
-- `akashic/agent-inbox/astra/`
+## Human Inbox Lifecycle
 
-Agents should read the canonical inbox before broad architectural, refactor, migration, or generation work. Active messages are resolved by updating their frontmatter `status` to `acknowledged`, `acted`, `deferred`, `superseded`, or `closed`.
+- Keep only live briefs, active requests, and unresolved handoffs in `docs/inbox-astra/`.
+- When a brief's work is completed, the completing agent must update its frontmatter to `status: "completed"` or `status: "superseded"`, add `completed` or `updated` metadata and completion evidence when available, then move it to `docs/inbox-astra/completed/` before closeout.
+- Move related prompts and implementation plans together so the completed record remains understandable.
+- Preserve completed history; do not delete it.
 
-Completed or already-acted handoffs that no longer require agent attention should be filed under:
+Completed or already-acted human handoffs belong under:
 
 - `docs/inbox-astra/completed/`
-
-Keep only live handoffs, active requests, and not-yet-resolved warnings in the canonical inbox.
 
 ## Current Human-Readable Parity Docs
 

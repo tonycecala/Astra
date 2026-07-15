@@ -1,3 +1,13 @@
+---
+title: "Astra Birth Date and Time Entry UX"
+type: "codex-inbox-directive"
+project: "Astra Clean Start"
+status: "completed"
+completed: "2026-06-27"
+archived: "2026-07-15"
+completion_commit: "f996568"
+---
+
 # Codex Prompt: Astra Birth Date & Time Entry UX
 
 ## Mission
