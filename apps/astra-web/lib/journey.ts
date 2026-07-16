@@ -2,11 +2,13 @@ import "server-only";
 
 import type { AstraCard, ComposerAvailabilityCard, ComposerSelectionResponse, StreamItem, UserFeedItem } from "@astra/contracts";
 import { db, listUserFeedItems, readFoundationSnapshot, seedSnapshot } from "@astra/db";
-import { selectComposerCardsForUser } from "./composer-selection";
+import { fetchComposerAvailability, selectComposerCardsForUser } from "./composer-selection";
+import { ui } from "./i18n";
+import { buildPublicComposerPreview, PUBLIC_COMPOSER_SAMPLE_COUNT } from "./public-composer-preview";
 
-type JourneyKind = StreamItem["kind"] | "source_card" | "report_signal" | "manual" | "composer_selected";
+type JourneyKind = StreamItem["kind"] | "source_card" | "report_signal" | "manual" | "composer_selected" | "composer_public_sample";
 type JourneyStatus = StreamItem["status"] | UserFeedItem["state"];
-type JourneyAudience = StreamItem["audience"] | "private" | "public_fallback" | "composer_selected";
+type JourneyAudience = StreamItem["audience"] | "private" | "public_fallback" | "composer_selected" | "public_composer";
 
 export type JourneyComposerSelectionInput = {
   enabled?: boolean;
@@ -24,15 +26,15 @@ export type JourneyStreamCard = {
     status: JourneyStatus;
     audience: JourneyAudience;
     publishedAt: string;
-      source: "private_feed" | "public_fallback" | "composer_selection";
-    };
-    card: AstraCard;
+    source: "private_feed" | "public_fallback" | "composer_selection" | "composer_public";
   };
+  card: AstraCard;
+};
 
 export type JourneyViewModel = {
-  mode: "private" | "public_fallback" | "composer_selected";
+  mode: "private" | "public_fallback" | "public_composer" | "composer_selected";
   streamCards: JourneyStreamCard[];
-  feedState: "private_ready" | "private_empty" | "public_preview" | "composer_selected";
+  feedState: "private_ready" | "private_empty" | "public_preview" | "public_fallback" | "composer_selected";
   composerSelection?: {
     id: string;
     collectionTitle: string;
@@ -141,7 +143,7 @@ function selectedComposerStreamCard(card: ComposerAvailabilityCard, index: numbe
       body: card.excerpt ?? card.body,
       lane: laneForSelectedCard(card),
       tone: index === 0 ? "bright" : "grounded",
-      ctaLabel: "Open",
+      ctaLabel: ui.journey.openCard,
       ctaAction: "open",
       imageUrl: card.imageUrl,
       publishedAt
@@ -159,12 +161,28 @@ async function getPublicFallbackJourney(): Promise<JourneyStreamCard[]> {
 
   return [...streamItems]
     .sort((a, b) => a.position - b.position)
-    .slice(0, 12)
+    .slice(0, PUBLIC_COMPOSER_SAMPLE_COUNT)
     .map((item) => {
       const card = cardsById.get(item.cardId);
       if (!card) throw new Error(`Missing card for stream item ${item.id}`);
       return publicFallbackStreamCard(item, card);
     });
+}
+
+async function getPublicComposerJourney(): Promise<JourneyViewModel> {
+  const availability = await fetchComposerAvailability({
+    requestType: "pool",
+    id: "public",
+    cardIds: [],
+    limit: PUBLIC_COMPOSER_SAMPLE_COUNT
+  });
+  const streamCards = buildPublicComposerPreview(availability, ui.journey.openCard);
+  if (!streamCards.length) throw new Error("COMPOSER_PUBLIC_SAMPLE_EMPTY");
+  return {
+    mode: "public_composer",
+    feedState: "public_preview",
+    streamCards
+  };
 }
 
 export async function getJourneyViewModel(userId?: string, composerSelectionInput: JourneyComposerSelectionInput = {}): Promise<JourneyViewModel> {
@@ -192,11 +210,16 @@ export async function getJourneyViewModel(userId?: string, composerSelectionInpu
   }
 
   if (!userId) {
-    return {
-      mode: "public_fallback",
-      feedState: "public_preview",
-      streamCards: await getPublicFallbackJourney()
-    };
+    try {
+      return await getPublicComposerJourney();
+    } catch (error) {
+      console.error("Public Composer sample unavailable; using the seeded Astra preview.", error);
+      return {
+        mode: "public_fallback",
+        feedState: "public_fallback",
+        streamCards: await getPublicFallbackJourney()
+      };
+    }
   }
 
   const feed = await listUserFeedItems(db, { userId, state: "available", limit: 50 });

@@ -63,7 +63,7 @@ if (!Number.isInteger(signupCredits) || signupCredits <= 0) errors.push("ASTRA_B
 requireExact("ASTRA_PLACE_SEARCH_PROVIDER", "local-fixture");
 notes.push("Place search is fixture-only in this alpha; place remains optional and timezone is entered explicitly.");
 
-const composerUrl = clean("COMPOSER_APP_BASE_URL");
+const composerUrl = requireValue("COMPOSER_APP_BASE_URL");
 if (composerUrl) {
   try {
     const parsed = new URL(composerUrl);
@@ -72,8 +72,6 @@ if (composerUrl) {
   } catch {
     errors.push("COMPOSER_APP_BASE_URL is not a valid URL.");
   }
-} else {
-  notes.push("Composer-selected Journey content is disabled; the normal private Journey remains available.");
 }
 
 if (clean("STRIPE_SECRET_KEY") || clean("STRIPE_SECRET_TEST_KEY") || clean("STRIPE_WEBHOOK_SECRET") || clean("STRIPE_WEBHOOK_TEST_SECRET")) {

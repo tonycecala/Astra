@@ -43,7 +43,7 @@ export function StreamReader({ streamCards }: { streamCards: JourneyStreamCard[]
   const [activeCardId, setActiveCardId] = useState(streamCards[0]?.card.id ?? "");
   const [savedCardIds, setSavedCardIds] = useState<Set<string>>(() => new Set());
   const [reflectedCardIds, setReflectedCardIds] = useState<Set<string>>(() => new Set());
-  const isComposerSelection = streamCards.length > 0 && streamCards.every(({ item }) => item.source === "composer_selection");
+  const isComposerSelection = streamCards.length > 0 && streamCards.every(({ item }) => item.source === "composer_selection" || item.source === "composer_public");
 
   const visibleCards = useMemo(() => {
     if (activeLane === "all") return streamCards;

@@ -1,6 +1,7 @@
 import "server-only";
 
 import {
+  composerAvailabilityRequestSchema,
   composerAvailabilityResponseSchema,
   composerSelectionRequestSchema,
   composerSelectionResponseSchema,
@@ -14,7 +15,10 @@ function clean(value: string | undefined) {
 }
 
 function getComposerBaseUrl() {
-  return clean(process.env.COMPOSER_APP_BASE_URL) || clean(process.env.COMPOSER_APP_SMOKE_BASE_URL) || "http://localhost:3012";
+  const configured = clean(process.env.COMPOSER_APP_BASE_URL) || clean(process.env.COMPOSER_APP_SMOKE_BASE_URL);
+  if (configured) return configured;
+  if (process.env.VERCEL_ENV) throw new Error("COMPOSER_APP_BASE_URL is required for hosted Astra deployments.");
+  return "http://localhost:3012";
 }
 
 function todayDateOnly() {
@@ -46,7 +50,8 @@ function orderedSelection(availability: ComposerAvailabilityResponse, request: C
     .map((item) => item.card);
 }
 
-export async function fetchComposerAvailabilityForSelection(request: ComposerSelectionRequest): Promise<ComposerAvailabilityResponse> {
+export async function fetchComposerAvailability(input: unknown): Promise<ComposerAvailabilityResponse> {
+  const request = composerAvailabilityRequestSchema.parse(input);
   const composerUrl = new URL("/api/library/availability", getComposerBaseUrl());
   composerUrl.searchParams.set("requestType", request.requestType);
   if (request.id) composerUrl.searchParams.set("id", request.id);
@@ -58,6 +63,10 @@ export async function fetchComposerAvailabilityForSelection(request: ComposerSel
   if (!response.ok) throw new Error(body.error ?? "COMPOSER_AVAILABILITY_UNAVAILABLE");
 
   return composerAvailabilityResponseSchema.parse(body.availability);
+}
+
+export async function fetchComposerAvailabilityForSelection(request: ComposerSelectionRequest): Promise<ComposerAvailabilityResponse> {
+  return fetchComposerAvailability(request);
 }
 
 export async function selectComposerCardsForUser(input: Partial<ComposerSelectionRequest> & { userKey: string }): Promise<ComposerSelectionResponse> {

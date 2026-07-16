@@ -17,7 +17,9 @@ function clean(value: string | undefined) {
 }
 
 export function getComposerAccessState(): ComposerAccessState {
-  const isLocked = clean(process.env.COMPOSER_REQUIRE_AUTH) === "1";
+  const configured = clean(process.env.COMPOSER_REQUIRE_AUTH);
+  const isHosted = Boolean(clean(process.env.VERCEL_ENV) || clean(process.env.VERCEL));
+  const isLocked = configured ? configured !== "0" : isHosted;
   return {
     isLocked,
     modeLabel: isLocked ? composerUi.shell.accessLocked : composerUi.shell.localPreview
@@ -25,7 +27,10 @@ export function getComposerAccessState(): ComposerAccessState {
 }
 
 export function getAstraBaseUrl() {
-  return clean(process.env.ASTRA_APP_BASE_URL) || clean(process.env.ASTRA_APP_SMOKE_BASE_URL) || "http://localhost:3011";
+  const configured = clean(process.env.ASTRA_APP_BASE_URL) || clean(process.env.ASTRA_APP_SMOKE_BASE_URL);
+  if (configured) return configured;
+  if (process.env.VERCEL_ENV) throw new Error("ASTRA_APP_BASE_URL is required for hosted Composer deployments.");
+  return "http://localhost:3011";
 }
 
 export function getInternalToken() {

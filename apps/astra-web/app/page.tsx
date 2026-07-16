@@ -48,7 +48,7 @@ export default async function HomePage() {
       </section>
 
       <div className="status-strip">
-        <span className="pill">{view.mode === "private" ? ui.journey.privateFeed : ui.journey.publicFallback}</span>
+        <span className="pill">{view.mode === "private" ? ui.journey.privateFeed : view.mode === "public_composer" ? ui.journey.publicComposerSample : ui.journey.publicFallback}</span>
         <span className="pill">{ui.journey.composerDefaultPath}</span>
         <span className="pill">{ui.journey.noLegacyData}</span>
         <span className="pill">{ui.journey.cardCount(view.streamCards.length)}</span>

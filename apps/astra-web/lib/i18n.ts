@@ -46,6 +46,7 @@ export const ui = {
     dbBackedStream: "DB-backed stream",
     privateFeed: "Private journey",
     publicFallback: "Public fallback",
+    publicComposerSample: "Public Composer sample",
     composerSelected: "Composer selected",
     reportSignalsReady: "Report signals ready",
     composerDefaultPath: "Composer-authored feed",
@@ -58,7 +59,12 @@ export const ui = {
       public_preview: {
         eyebrow: "Preview mode",
         title: "A public sample, not your private Journey",
-        body: "Signed-out readers see fallback cards only. Your personal feed appears after sign-in and Composer publishes user-owned cards."
+        body: "Signed-out readers see a small public sample from Composer. Your personal Journey appears after sign-in and remains private."
+      },
+      public_fallback: {
+        eyebrow: "Preview mode",
+        title: "A public sample, not your private Journey",
+        body: "Astra is showing its small local public sample. Your personal Journey appears after sign-in and remains private."
       },
       private_empty: {
         eyebrow: "First private run",
@@ -113,7 +119,8 @@ export const ui = {
       gift: "Gift",
       ally: "Ally",
       manual: "Manual",
-      composer_selected: "Composer selected"
+      composer_selected: "Composer selected",
+      composer_public_sample: "Composer public sample"
     },
     audiences: {
       all: "All readers",
@@ -121,7 +128,8 @@ export const ui = {
       returning_user: "Returning readers",
       private: "Private journey",
       public_fallback: "Public fallback",
-      composer_selected: "Composer selected"
+      composer_selected: "Composer selected",
+      public_composer: "Public Composer sample"
     },
     statuses: {
       draft: "Draft",

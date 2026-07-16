@@ -16,3 +16,4 @@ output/
 
 # Composer quarry image binaries stay local/remote; commit metadata, not generated media.
 apps/composer-web/public/generated/
+.vercel/
