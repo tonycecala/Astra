@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { type CSSProperties, FormEvent, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send } from "lucide-react";
-import type {
-  Ally,
+import {
+  chartCalculationModeForBirthData,
+  type Ally,
   AstrologyReportRequest,
   AstrologyReportResult,
   BirthPlaceSearchResult,
@@ -152,6 +153,7 @@ function optional(value: string) {
 function reportRequestErrorMessage(code?: string) {
   if (code === "INSUFFICIENT_STARS") return ui.self.reportConfirmInsufficient;
   if (code === "INVALID_REPORT_BASIS") return ui.self.reportBasisInvalid;
+  if (code === "INVALID_CHART_REQUEST") return ui.self.reportRequestInvalid;
   if (code === "INVALID_ASTROLOGY_REPORT_REQUEST") return ui.self.reportRequestInvalid;
   if (code === "AUTH_REQUIRED") return ui.self.reportAuthRequired;
   return "";
@@ -336,13 +338,17 @@ export function BirthOnboardingPanel({
     () => synastryChartOptions.find((request) => request.id === form.synastryPartnerChartRequestId),
     [form.synastryPartnerChartRequestId, synastryChartOptions]
   );
+  const previewBirthData = isExistingChartLocked && existingChartRequest
+    ? existingChartRequest.birthData
+    : birthDataFor(form);
+  const hasHouseCalculation = chartCalculationModeForBirthData(previewBirthData) === "full";
   const reviewRows = useMemo(
     () => [
       [ui.self.onboardingReviewName, form.subjectName || ui.self.onboardingReviewMissing],
       [ui.self.onboardingReviewReportType, reportTypeLabel(form.reportType)],
       [ui.self.reportConfirmBasis, reportBasisLabel(form.reportType)],
       [ui.self.zodiacModeLabel, ui.self.zodiacModes[form.zodiacMode]],
-      [ui.self.houseSystemLabel, ui.self.houseSystems[form.houseSystem]],
+      [ui.self.houseSystemLabel, hasHouseCalculation ? ui.self.houseSystems[form.houseSystem] : ui.self.houseSystemUnavailable],
       ...(form.reportType === "progressed"
         ? ([[ui.self.progressedAsOfLabel, form.progressedAsOfDate]] as const)
         : []),
@@ -352,7 +358,7 @@ export function BirthOnboardingPanel({
       [ui.self.reportConfirmCost, ui.stars.reportCost(selectedReportCost)],
       [ui.self.reportConfirmBalance, ui.stars.balance(starBalance)]
     ],
-    [form, selectedReportCost, starBalance, synastryPartner]
+    [form, hasHouseCalculation, selectedReportCost, starBalance, synastryPartner]
   );
   const chartRequestsBySubjectId = useMemo(() => {
     const indexed = new Map<string, ChartMakerRequest>();
@@ -851,19 +857,23 @@ export function BirthOnboardingPanel({
                   </div>
                   <div className={styles.settingsRow}>
                     <span className={styles.controlLabel}>{ui.self.houseSystemLabel}</span>
-                    <div className={styles.radioOptionRow} role="radiogroup" aria-label={ui.self.houseSystemLabel}>
-                      {(["whole-sign", "placidus"] as const).map((houseSystem) => (
-                        <label className={styles.radioOption} key={houseSystem}>
-                          <input
-                            checked={form.houseSystem === houseSystem}
-                            name="houseSystem"
-                            onChange={() => updateField("houseSystem", houseSystem)}
-                            type="radio"
-                          />
-                          <span>{ui.self.houseSystems[houseSystem]}</span>
-                        </label>
-                      ))}
-                    </div>
+                    {hasHouseCalculation ? (
+                      <div className={styles.radioOptionRow} role="radiogroup" aria-label={ui.self.houseSystemLabel}>
+                        {(["whole-sign", "placidus"] as const).map((houseSystem) => (
+                          <label className={styles.radioOption} key={houseSystem}>
+                            <input
+                              checked={form.houseSystem === houseSystem}
+                              name="houseSystem"
+                              onChange={() => updateField("houseSystem", houseSystem)}
+                              type="radio"
+                            />
+                            <span>{ui.self.houseSystems[houseSystem]}</span>
+                          </label>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className={styles.fieldHint}>{ui.self.houseSystemUnavailable}</span>
+                    )}
                   </div>
                 </div>
               </fieldset>
@@ -977,7 +987,14 @@ export function BirthOnboardingPanel({
                   value={form.location}
                   onChange={(event) => {
                     setHasSelectedPlace(false);
-                    updateField("location", event.target.value);
+                    setForm((current) => ({
+                      ...current,
+                      location: event.target.value,
+                      latitude: undefined,
+                      longitude: undefined
+                    }));
+                    setIsConfirmingReport(false);
+                    setMessage("");
                   }}
                   disabled={isExistingChartLocked}
                   readOnly={isExistingChartLocked}

@@ -13,6 +13,7 @@ import {
   type CreateUserFeedItem,
   type ComposerStreamArtifact,
   type ChartBirthData,
+  type CreateChartBirthData,
   type ChartMakerRequest,
   type ChartMakerResult,
   type PrivateFeedRequest,
@@ -28,6 +29,7 @@ import {
   astrologyReportRequestSchema,
   astrologyReportResultSchema,
   chartBirthDataSchema,
+  createChartBirthDataSchema,
   chartMakerRequestSchema,
   chartMakerResultSchema,
   composerDecisionSchema,
@@ -108,7 +110,7 @@ export type CreateAllyInput = CreateAlly & {
 export type CreateChartMakerRequestInput = {
   userId: string;
   subjectName: string;
-  birthData: ChartBirthData;
+  birthData: CreateChartBirthData;
   question?: string;
   intent?: string;
   context?: Record<string, unknown>;
@@ -1285,7 +1287,7 @@ export async function createChartMakerRequest(
   database: AstraDb,
   input: CreateChartMakerRequestInput
 ): Promise<ChartMakerRequest> {
-  const birthData = chartBirthDataSchema.parse(input.birthData);
+  const birthData = createChartBirthDataSchema.parse(input.birthData);
   const now = new Date();
 
   const [request] = await database
@@ -1331,6 +1333,28 @@ export async function getUserChartMakerRequest(
     .limit(1);
 
   return row ? chartRequestFromRow(row) : null;
+}
+
+export async function updateUserChartMakerBirthData(
+  database: AstraDb,
+  input: {
+    requestId: string;
+    userId: string;
+    birthData: CreateChartBirthData;
+  }
+): Promise<ChartMakerRequest> {
+  const birthData = createChartBirthDataSchema.parse(input.birthData);
+  const [request] = await database
+    .update(chartRequests)
+    .set({ birthData, status: "queued", updatedAt: new Date() })
+    .where(and(eq(chartRequests.id, input.requestId), eq(chartRequests.userId, input.userId)))
+    .returning();
+
+  if (!request) {
+    throw new Error("Chart request was not found for the supplied user.");
+  }
+
+  return chartRequestFromRow(request);
 }
 
 export async function recordChartMakerResult(

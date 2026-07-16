@@ -4,6 +4,7 @@ import {
   type BirthPlaceSearchQuery,
   type BirthPlaceSearchResponse,
   type ChartBirthData,
+  type ChartCalculationMode,
   type ChartSettings,
   type RecordAstrologyReportResult,
   type ReportBasisType,
@@ -144,11 +145,13 @@ type ChartSignature = {
   houseCusps: Array<{ angle: number; house: number }>;
   houseSystem: HouseSystemMode;
   zodiacMode: ZodiacMode;
+  calculationMode: ChartCalculationMode | "legacy";
 };
 
 export type AstrologyChartSnapshot = {
   zodiacMode: ZodiacMode;
   houseSystem: HouseSystemMode;
+  calculationMode: ChartCalculationMode | "legacy";
   placements: Array<{
     bodyId: string;
     angle: number;
@@ -179,11 +182,13 @@ type ResolvedReportBasis = {
     chartRequestId: string;
     subjectName: string;
     birthData: ChartBirthData;
+    calculationMode: ChartCalculationMode | "legacy";
   };
   partner?: {
     chartRequestId: string;
     subjectName: string;
     birthData: ChartBirthData;
+    calculationMode: ChartCalculationMode | "legacy";
   };
   asOfDate?: string;
   legacy: boolean;
@@ -907,12 +912,12 @@ function buildOrigin(birthData: ChartBirthData) {
   });
 }
 
-function pointFromHoroscope(body: string, point: HoroscopePoint): EphemerisPoint | null {
+function pointFromHoroscope(body: string, point: HoroscopePoint, includeHouse = true): EphemerisPoint | null {
   const longitude = point.ChartPosition?.Ecliptic?.DecimalDegrees;
   if (longitude === undefined) return null;
   return {
     ...pointFor(body, longitude),
-    house: point.House?.id,
+    ...(includeHouse && point.House?.id ? { house: point.House.id } : {}),
     retrograde: point.isRetrograde
   };
 }
@@ -925,8 +930,10 @@ function chartSettingsFor(request: AstrologyReportRequest): ChartSettings {
 function buildChartSignatureFor(
   birthData: ChartBirthData,
   chartSettings: ChartSettings,
-  requestId: string
+  requestId: string,
+  calculationMode: ChartCalculationMode | "legacy"
 ): ChartSignature {
+  const includeHouses = calculationMode !== "signs-aspects-only";
   const horoscope = new Horoscope({
     origin: buildOrigin(birthData),
     houseSystem: chartSettings.houseSystem,
@@ -940,7 +947,7 @@ function buildChartSignatureFor(
   const points = horoscopeBodyMap.flatMap(([label, key]) => {
     const point = horoscope.CelestialBodies[key];
     if (!point) return [];
-    const parsed = pointFromHoroscope(label, point);
+    const parsed = pointFromHoroscope(label, point, includeHouses);
     return parsed ? [parsed] : [];
   });
   const sun = points.find((point) => point.body === "Sun");
@@ -950,10 +957,11 @@ function buildChartSignatureFor(
   }
 
   const hasAscendantInputs =
+    includeHouses &&
     birthData.time &&
     birthData.latitude !== undefined &&
     birthData.longitude !== undefined;
-  const ascendant = hasAscendantInputs && horoscope.Ascendant ? pointFromHoroscope("Ascendant", horoscope.Ascendant) ?? undefined : undefined;
+  const ascendant = hasAscendantInputs && horoscope.Ascendant ? pointFromHoroscope("Ascendant", horoscope.Ascendant, includeHouses) ?? undefined : undefined;
   const houseCusps = hasAscendantInputs
     ? (horoscope.Houses ?? []).flatMap((house, index) => {
         const angle = house.ChartPosition?.StartPosition?.Ecliptic?.DecimalDegrees;
@@ -970,15 +978,34 @@ function buildChartSignatureFor(
     points,
     houseCusps,
     houseSystem: chartSettings.houseSystem,
-    zodiacMode: chartSettings.zodiacMode
+    zodiacMode: chartSettings.zodiacMode,
+    calculationMode
   };
 }
 
 function reportBasisFor(request: AstrologyReportRequest): ResolvedReportBasis {
   if (request.reportBasis) {
     return {
-      ...request.reportBasis,
-      legacy: false
+      type: request.reportBasis.type,
+      chartSettings: request.reportBasis.chartSettings,
+      primary: {
+        chartRequestId: request.reportBasis.primary.chartRequestId,
+        subjectName: request.reportBasis.primary.subjectName,
+        birthData: request.reportBasis.primary.birthData,
+        calculationMode: request.reportBasis.primary.calculationMode ?? "legacy"
+      },
+      ...(request.reportBasis.partner
+        ? {
+            partner: {
+              chartRequestId: request.reportBasis.partner.chartRequestId,
+              subjectName: request.reportBasis.partner.subjectName,
+              birthData: request.reportBasis.partner.birthData,
+              calculationMode: request.reportBasis.partner.calculationMode ?? "legacy"
+            }
+          }
+        : {}),
+      ...(request.reportBasis.asOfDate ? { asOfDate: request.reportBasis.asOfDate } : {}),
+      legacy: request.reportBasis.schemaVersion === 1
     };
   }
 
@@ -998,9 +1025,10 @@ function reportBasisFor(request: AstrologyReportRequest): ResolvedReportBasis {
     primary: {
       chartRequestId: request.chartRequestId ?? request.id,
       subjectName: request.subjectName,
-      birthData: request.birthData
+      birthData: request.birthData,
+      calculationMode: "legacy"
     },
-    ...(partner ? { partner } : {}),
+    ...(partner ? { partner: { ...partner, calculationMode: "legacy" as const } } : {}),
     ...(type === "progressed" ? { asOfDate: request.createdAt.slice(0, 10) } : {}),
     legacy: true
   };
@@ -1026,7 +1054,7 @@ function secondaryProgressedBirthData(birthData: ChartBirthData, asOfDate: strin
 
 function buildBasisChartContext(request: AstrologyReportRequest): BasisChartContext {
   const basis = reportBasisFor(request);
-  const primary = buildChartSignatureFor(basis.primary.birthData, basis.chartSettings, request.id);
+  const primary = buildChartSignatureFor(basis.primary.birthData, basis.chartSettings, request.id, basis.primary.calculationMode);
   if (basis.type === "progressed" && basis.asOfDate) {
     return {
       basis,
@@ -1034,7 +1062,8 @@ function buildBasisChartContext(request: AstrologyReportRequest): BasisChartCont
       active: buildChartSignatureFor(
         secondaryProgressedBirthData(basis.primary.birthData, basis.asOfDate),
         basis.chartSettings,
-        request.id
+        request.id,
+        basis.primary.calculationMode
       )
     };
   }
@@ -1043,7 +1072,7 @@ function buildBasisChartContext(request: AstrologyReportRequest): BasisChartCont
       basis,
       primary,
       active: primary,
-      partner: buildChartSignatureFor(basis.partner.birthData, basis.chartSettings, request.id)
+      partner: buildChartSignatureFor(basis.partner.birthData, basis.chartSettings, request.id, basis.partner.calculationMode)
     };
   }
   return { basis, primary, active: primary };
@@ -1070,7 +1099,7 @@ function placementSignal(point: EphemerisPoint) {
   return {
     id: `placement_${bodyId}`,
     label: `${bodyDisplayName(bodyId)} in ${point.sign}${point.house ? ` in the ${houseLabel(point.house)}` : ""}`,
-    facts: [bodyDisplayName(bodyId), point.sign, houseLabel(point.house), point.retrograde ? "retrograde" : ""].filter(Boolean),
+    facts: [bodyDisplayName(bodyId), point.sign, point.house ? houseLabel(point.house) : "", point.retrograde ? "retrograde" : ""].filter(Boolean),
     priority: point.body === "Sun" ? 1 : point.body === "Moon" ? 0.96 : point.body === "Ascendant" ? 0.92 : 0.68
   };
 }
@@ -1198,6 +1227,7 @@ export function buildAstrologyChartSnapshot(input: AstrologyReportRequest): Astr
   return {
     zodiacMode: chartSignature.zodiacMode,
     houseSystem: chartSignature.houseSystem,
+    calculationMode: chartSignature.calculationMode,
     placements,
     aspects,
     houseCusps: buildHouseCusps(chartSignature)
@@ -1459,6 +1489,12 @@ function deterministicChartSettingLabel(value: string) {
   return value.slice(0, 1).toUpperCase() + value.slice(1).replace(/-/g, " ");
 }
 
+function chartCalculationScope(chartSignature: ChartSignature) {
+  return chartSignature.calculationMode === "signs-aspects-only"
+    ? `${deterministicChartSettingLabel(chartSignature.zodiacMode)} zodiac with signs and aspects only; houses and Rising are omitted`
+    : `${deterministicChartSettingLabel(chartSignature.zodiacMode)} zodiac and ${deterministicChartSettingLabel(chartSignature.houseSystem)} houses`;
+}
+
 function elementAdjective(element: string) {
   if (element === "air") return "airy";
   if (element === "earth") return "earthy";
@@ -1472,6 +1508,9 @@ function articleFor(value: string) {
 }
 
 function natalHousePlacementSummary(chartSignature: ChartSignature) {
+  if (chartSignature.calculationMode === "signs-aspects-only") {
+    return "The birth place or exact birth time is unresolved, so houses and Rising are omitted.";
+  }
   const timedPlacements = [chartSignature.sun, chartSignature.moon]
     .filter((point) => point.house)
     .map((point) => `${point.body} in the ${houseLabel(point.house)}`);
@@ -1492,7 +1531,7 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
   const chartHeadline = `${sun.sign} Sun, ${moon.sign} Moon${risingText}`;
   const reportLabel = deterministicReportLabel(request.reportType);
   const headline = `${subject} — ${reportLabel}`;
-  const settingsText = `${deterministicChartSettingLabel(chartSignature.zodiacMode)} zodiac and ${deterministicChartSettingLabel(chartSignature.houseSystem)} houses`;
+  const settingsText = chartCalculationScope(chartSignature);
   const houseText = natalHousePlacementSummary(chartSignature);
 
   const basisSummary = basis.type === "progressed"
@@ -1519,7 +1558,7 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
             : `${subject}'s ${card.title} begins with ${chartHeadline}. The Sun at ${sun.degree} degrees ${sun.sign} gives this pattern ${articleFor(sunElement)} ${sunElement}, ${sunSign.mode} center of gravity. The Moon at ${moon.degree} degrees ${moon.sign} gives the emotional weather ${articleFor(moonElement)} ${moonElement}, ${moonSign.mode} rhythm.`,
         basis.type === "natal"
           ? houseText
-          : `The calculation uses ${settingsText}, and the interpretation follows the resulting signs, houses, and contacts.`,
+          : `The calculation uses ${settingsText}, and the interpretation follows the resulting chart contacts.`,
         `Together, these signals emphasize ${card.capacities.slice(0, 2).join(" and ")}, with ${card.tensions[0]} as the central tension.`,
         `Selected evidence for this section: ${card.evidenceBullets.map((item) => `${item.label} (${item.meaning})`).join("; ")}.`,
         request.question ? `The requested focus is: "${request.question}".` : ""
@@ -1534,7 +1573,7 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
       summary,
       tone: "grounded",
       boundary: "public_signal",
-      provenanceSummary: `${ASTRA_CHART_ROUTINE}: ${basis.type} basis, ${chartSignature.zodiacMode}, ${chartSignature.houseSystem}, ${LOCAL_DETERMINISTIC_REPORT_WRITER}${basis.type === "natal" ? `, Sun ${sun.sign}, Moon ${moon.sign}${ascendant ? `, Rising ${ascendant.sign}` : ""}` : ""}`
+      provenanceSummary: `${ASTRA_CHART_ROUTINE}: ${basis.type} basis, ${chartSignature.zodiacMode}, ${chartSignature.calculationMode === "signs-aspects-only" ? "signs-aspects-only" : chartSignature.houseSystem}, ${LOCAL_DETERMINISTIC_REPORT_WRITER}${basis.type === "natal" ? `, Sun ${sun.sign}, Moon ${moon.sign}${ascendant ? `, Rising ${ascendant.sign}` : ""}` : ""}`
     }
   };
 }
@@ -1651,7 +1690,9 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     "Do not repeat note labels as public labels.",
     "Do not say capacity, risk, developmental task, language domain, primary strain, or priority note in public prose.",
     "Do not invent chart facts.",
-    "Treat Zodiac and Houses as calculation inputs: the prose must reflect the resulting signs, house placements, and evidence, not merely name the selected settings.",
+    chartSignature.calculationMode === "signs-aspects-only"
+      ? "This is a signs-and-aspects-only chart. Do not mention houses, Rising, Ascendant, Midheaven, angles, or house-system effects."
+      : "Treat Zodiac and Houses as calculation inputs: the prose must reflect the resulting signs, house placements, and evidence, not merely name the selected settings.",
     "Do not mention any placement, sign, house, aspect, or timing factor not listed in the section card.",
     "Do not use old stock phrases.",
     "Keep second-person grammar clean: write you want, you understand, you adapt, and you believe; never write you wants, you understands, you adapts, or you believes.",
@@ -1742,7 +1783,9 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     basis.asOfDate ? `- As of: ${basis.asOfDate}` : "",
     request.question ? `- User query: ${request.question}` : "",
     request.intent ? `- Intent: ${request.intent}` : "",
-    `- House system: ${chartSignature.houseSystem}`,
+    chartSignature.calculationMode === "signs-aspects-only"
+      ? "- Chart detail: signs and aspects only; houses and Rising omitted"
+      : `- House system: ${chartSignature.houseSystem}`,
     `- Zodiac: ${chartSignature.zodiacMode}`,
     v1InterpretiveContext?.length ? ["", "V1 interpretive context notes:", ...v1InterpretiveContext.map((note) => `- ${note}`)].join("\n") : "",
     "",
@@ -1879,7 +1922,9 @@ function buildDeepSectionPrompt(input: {
     `Chapter: ${card.title}.`,
     `Target length: ${depth?.target ?? "275-400"} words. Hard minimum: ${depth?.minimum ?? 275}. Hard maximum: ${depth?.maximum ?? 435}.`,
     `Subject: ${request.subjectName}`,
-    `Zodiac: ${chartSignature.zodiacMode}. Houses: ${chartSignature.houseSystem}.`,
+    chartSignature.calculationMode === "signs-aspects-only"
+      ? `Zodiac: ${chartSignature.zodiacMode}. Chart detail: signs and aspects only; do not mention houses, Rising, Ascendant, Midheaven, or angles.`
+      : `Zodiac: ${chartSignature.zodiacMode}. Houses: ${chartSignature.houseSystem}.`,
     `Private governing thesis: ${thesis}`,
     "Use the thesis as a quiet through-line, not as a sentence to repeat.",
     `This chapter must answer, rather than quote or announce, this distinct governing question: ${card.tensions.join("; ")}.`,
@@ -1901,7 +1946,7 @@ function buildDeepSectionPrompt(input: {
     "Mention only chart factors present in this section card. Do not invent transits, progressions, current activation, or seasonal timing.",
     "Avoid textbook astrology, stock spirituality, inflated certainty, and repeated evidence verbs.",
     card.title === "Identity" && sunPlacement
-      ? `The first three sentences must include "${sunPlacement.sign} Sun" or "Sun in ${sunPlacement.sign}" and integrate its house context.`
+      ? `The first three sentences must include "${sunPlacement.sign} Sun" or "Sun in ${sunPlacement.sign}"${chartSignature.calculationMode === "signs-aspects-only" ? "." : " and integrate its house context."}`
       : "",
     card.title === "Integration"
       ? "Synthesize enduring natal patterns into one grounded way of working with the chart. This is not a forecast and must not claim that anything is newly or currently activated."
@@ -2653,7 +2698,9 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: Rep
         id: `${request.id}:engine`,
         kind: "engine",
         label: "Chart routine",
-        summary: `Computed a ${basisSummary} using ${chartSignature.zodiacMode} zodiac and ${chartSignature.houseSystem} houses with ${ASTRA_CHART_ROUTINE}${ascendant ? ", including timed angles" : ", omitting unavailable angles"}.`,
+        summary: chartSignature.calculationMode === "signs-aspects-only"
+          ? `Computed a ${basisSummary} using ${chartSignature.zodiacMode} zodiac with signs and aspects only; houses and Rising were omitted because the saved birth place or exact time was unresolved.`
+          : `Computed a ${basisSummary} using ${chartSignature.zodiacMode} zodiac and ${chartSignature.houseSystem} houses with ${ASTRA_CHART_ROUTINE}${ascendant ? ", including timed angles" : ", omitting unavailable angles"}.`,
         boundary: "private"
       },
       {

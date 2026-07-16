@@ -56,4 +56,21 @@ if (duplicateSynastrySource.success) {
   throw new Error("Synastry basis snapshots must use two different source charts.");
 }
 
+const versionTwoWithoutMode = reportChartBasisSnapshotSchema.safeParse({
+  schemaVersion: 2,
+  type: "natal",
+  chartSettings,
+  primary: source
+});
+if (versionTwoWithoutMode.success) {
+  throw new Error("Version 2 report provenance must record its calculation mode.");
+}
+
+reportChartBasisSnapshotSchema.parse({
+  schemaVersion: 2,
+  type: "natal",
+  chartSettings,
+  primary: { ...source, calculationMode: "signs-aspects-only" }
+});
+
 console.log("Report basis contract smoke passed.");

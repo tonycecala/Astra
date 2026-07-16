@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "resolvedAt": "2026-07-16",
+    "source": "OpenStreetMap Nominatim city search, cross-checked against already resolved Astra records where available"
+  },
+  "places": [
+    {
+      "matches": ["Perth, Australia"],
+      "timezone": "Australia/Perth",
+      "location": "Perth, WA, Australia",
+      "latitude": -31.9558967,
+      "longitude": 115.8605784
+    },
+    {
+      "matches": ["wylie, texas", "Wylie, TX"],
+      "timezone": "America/Chicago",
+      "location": "Wylie, TX, USA",
+      "latitude": 33.0151561,
+      "longitude": -96.5388038
+    },
+    {
+      "matches": ["Castor Valley, CA", "Castro Valley, CA"],
+      "timezone": "America/Los_Angeles",
+      "location": "Castro Valley, CA, USA",
+      "latitude": 37.713606,
+      "longitude": -122.0715658
+    },
+    {
+      "matches": ["Mesquite, TX"],
+      "timezone": "America/Chicago",
+      "location": "Mesquite, TX, USA",
+      "latitude": 32.7666103,
+      "longitude": -96.599472
+    },
+    {
+      "matches": ["Dallas", "Dallas, TX"],
+      "timezone": "America/Chicago",
+      "location": "Dallas, TX, USA",
+      "latitude": 32.7762719,
+      "longitude": -96.7968559
+    },
+    {
+      "matches": ["Washington DC", "Washington, DC"],
+      "timezone": "America/New_York",
+      "location": "Washington, DC, USA",
+      "latitude": 38.8950982,
+      "longitude": -77.0363849
+    },
+    {
+      "matches": ["Fort Worth, TX"],
+      "timezone": "America/Chicago",
+      "location": "Fort Worth, TX, USA",
+      "latitude": 32.753177,
+      "longitude": -97.3327459
+    },
+    {
+      "matches": ["Stevens Point, WI"],
+      "timezone": "America/Chicago",
+      "location": "Stevens Point, WI, USA",
+      "latitude": 44.5234467,
+      "longitude": -89.5844457
+    },
+    {
+      "matches": ["Galveston, TX"],
+      "timezone": "America/Chicago",
+      "location": "Galveston, TX, USA",
+      "latitude": 29.3056996,
+      "longitude": -94.7933252
+    },
+    {
+      "matches": ["Houston", "Houston, TX"],
+      "timezone": "America/Chicago",
+      "location": "Houston, TX, USA",
+      "latitude": 29.7589382,
+      "longitude": -95.3676974
+    },
+    {
+      "matches": ["New York, NY"],
+      "timezone": "America/New_York",
+      "location": "New York, NY, USA",
+      "latitude": 40.7127281,
+      "longitude": -74.0060152
+    },
+    {
+      "matches": ["Plano, TX"],
+      "timezone": "America/Chicago",
+      "location": "Plano, TX, USA",
+      "latitude": 33.0136764,
+      "longitude": -96.6925096
+    }
+  ]
+}

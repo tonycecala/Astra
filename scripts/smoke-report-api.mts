@@ -164,7 +164,7 @@ await db
   .insert(creditLedgerEntries)
   .values({
     userId: smokeProfile.userId,
-    amount: 10,
+    amount: 11,
     eventType: "admin_adjustment",
     source: "report_api_smoke",
     description: "Report API smoke Stars grant",
@@ -174,7 +174,7 @@ await db
   .onConflictDoNothing();
 await mirrorCreditBalanceToProfile(db, smokeProfile.userId);
 const startingBalance = await getCreditBalance(db, smokeProfile.userId);
-if (startingBalance < 10) throw new Error(`Expected at least 10 ledger Stars for report smoke, found ${startingBalance}.`);
+if (startingBalance < 11) throw new Error(`Expected at least 11 ledger Stars for report smoke, found ${startingBalance}.`);
 
 const primaryChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
   method: "POST",
@@ -198,6 +198,26 @@ const primaryChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
 });
 const primaryChartId = String((primaryChart.request as JsonObject | undefined)?.id ?? "");
 if (!primaryChartId) throw new Error("Report API smoke did not create the primary chart.");
+
+const noPlaceChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
+  method: "POST",
+  body: JSON.stringify({
+    subjectName: "No Place",
+    birthData: {
+      date: "1961-05-23",
+      time: "09:30",
+      timezone: "America/New_York",
+      birthTimeKnown: true
+    },
+    context: {
+      subject: { subjectType: "self", displayName: "No Place" },
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    },
+    source: "self"
+  })
+});
+const noPlaceChartId = String((noPlaceChart.request as JsonObject | undefined)?.id ?? "");
+if (!noPlaceChartId) throw new Error("Report API smoke did not create the location-independent chart.");
 
 const publicChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
   method: "POST",
@@ -281,13 +301,25 @@ const publicCreated = await requestJson(`${appBaseUrl}/api/reports`, {
   })
 });
 
+const noPlaceCreated = await requestJson(`${appBaseUrl}/api/reports`, {
+  method: "POST",
+  body: JSON.stringify({
+    chartRequestId: noPlaceChartId,
+    reportType: "identity",
+    reportBasis: {
+      type: "natal",
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    }
+  })
+});
+
 const requestId = (created.request as JsonObject | undefined)?.id;
 if (!requestId) throw new Error("Report API did not return a request id.");
 const publicRequestId = (publicCreated.request as JsonObject | undefined)?.id;
 if (!publicRequestId) throw new Error("Report API did not return a public sample request id.");
 const endingBalance = await getCreditBalance(db, smokeProfile.userId);
-if (endingBalance !== startingBalance - 10) {
-  throw new Error(`Report creation did not debit two Core report spends from the ledger: started ${startingBalance}, ended ${endingBalance}.`);
+if (endingBalance !== startingBalance - 11) {
+  throw new Error(`Report creation did not debit two Core reports and one Identity report: started ${startingBalance}, ended ${endingBalance}.`);
 }
 if (endingBalance > 0) {
   await db.insert(creditLedgerEntries).values({
@@ -321,6 +353,13 @@ if (requestCountAfterInsufficient !== requestCountBeforeInsufficient) {
 }
 const reportRequest = astrologyReportRequestSchema.parse(created.request);
 if (!reportRequest.reportBasis) throw new Error("Report API did not persist the report basis snapshot.");
+if (reportRequest.reportBasis.schemaVersion !== 2 || reportRequest.reportBasis.primary.calculationMode !== "full") {
+  throw new Error("Report API must persist server-derived version 2 full-chart provenance.");
+}
+const noPlaceReportRequest = astrologyReportRequestSchema.parse(noPlaceCreated.request);
+if (noPlaceReportRequest.reportBasis?.schemaVersion !== 2 || noPlaceReportRequest.reportBasis.primary.calculationMode !== "signs-aspects-only") {
+  throw new Error("Report API must persist server-derived signs-and-aspects-only provenance when place is unresolved.");
+}
 const previousEngine = process.env[ASTRA_EPHEMERIS_ENGINE_ENV];
 const previousWriter = process.env[ASTRA_REPORT_WRITER_ENV];
 process.env[ASTRA_EPHEMERIS_ENGINE_ENV] = LOCAL_CHART_ROUTINE_ENGINE;

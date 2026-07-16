@@ -4,6 +4,7 @@ import {
   type ChartMakerPrecision,
   type ChartMakerRequest,
   type RecordChartMakerResult,
+  chartCalculationModeForBirthData,
   chartMakerChartDataSchema,
   chartMakerRequestSchema,
   recordChartMakerResultSchema
@@ -71,7 +72,7 @@ export function deriveSeason(date: string) {
 
 export function chartPrecision(birthData: ChartBirthData): ChartMakerPrecision {
   if (birthData.birthTimeKnown === false) return "date_only";
-  if (birthData.time && birthData.timezone && birthData.location) return "timed_location";
+  if (chartCalculationModeForBirthData(birthData) === "full") return "timed_location";
   if (birthData.time && birthData.timezone) return "timed_timezone";
   return "date_only";
 }

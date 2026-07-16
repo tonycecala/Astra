@@ -5,7 +5,11 @@ import {
   isValidDateOnly,
   isValidTimeOnly
 } from "../apps/astra-web/components/BirthDateTimeSheet.helpers";
-import { chartBirthDataSchema } from "@astra/contracts";
+import {
+  chartBirthDataSchema,
+  chartCalculationModeForBirthData,
+  createChartBirthDataSchema
+} from "@astra/contracts";
 
 const today = new Date(2026, 5, 28);
 const calendar = buildCalendarMonth({
@@ -70,6 +74,38 @@ const future = chartBirthDataSchema.safeParse({
 });
 if (future.success) {
   throw new Error("Future birth dates must be rejected by the contract.");
+}
+
+if (!chartBirthDataSchema.safeParse({ date: "1961-05-23", location: "Imported placeholder", latitude: 0, longitude: 0 }).success) {
+  throw new Error("The legacy birth-data reader must remain compatible with historical placeholder coordinates.");
+}
+
+if (createChartBirthDataSchema.safeParse({ date: "1961-05-23", location: "Imported placeholder", latitude: 0, longitude: 0 }).success) {
+  throw new Error("New charts must reject placeholder 0,0 coordinates.");
+}
+
+if (createChartBirthDataSchema.safeParse({ date: "1961-05-23", location: "Incomplete", latitude: 40.7 }).success) {
+  throw new Error("New charts must reject incomplete coordinate pairs.");
+}
+
+const noPlace = createChartBirthDataSchema.parse({
+  date: "1961-05-23",
+  time: "09:30",
+  timezone: "America/Chicago",
+  birthTimeKnown: true
+});
+if (chartCalculationModeForBirthData(noPlace) !== "signs-aspects-only") {
+  throw new Error("A known time without a resolved place must use signs-and-aspects-only calculation.");
+}
+
+const resolvedPlace = createChartBirthDataSchema.parse({
+  ...noPlace,
+  location: "Dallas, TX, USA",
+  latitude: 32.7762719,
+  longitude: -96.7968559
+});
+if (chartCalculationModeForBirthData(resolvedPlace) !== "full") {
+  throw new Error("A known time with a resolved place must use full chart calculation.");
 }
 
 console.log("Birth date/time sheet smoke passed.");

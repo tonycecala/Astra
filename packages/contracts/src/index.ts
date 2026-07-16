@@ -366,6 +366,55 @@ export const chartBirthDataSchema = z
     }
   });
 
+export const createChartBirthDataSchema = chartBirthDataSchema.superRefine((birthData, context) => {
+  const hasLatitude = birthData.latitude !== undefined;
+  const hasLongitude = birthData.longitude !== undefined;
+
+  if (hasLatitude !== hasLongitude) {
+    context.addIssue({
+      code: "custom",
+      path: hasLatitude ? ["longitude"] : ["latitude"],
+      message: "Birth coordinates must include both latitude and longitude."
+    });
+  }
+
+  if (birthData.latitude === 0 && birthData.longitude === 0) {
+    context.addIssue({
+      code: "custom",
+      path: ["latitude"],
+      message: "Placeholder coordinates cannot be used for a new chart."
+    });
+  }
+});
+
+export const chartCalculationModeSchema = z.enum(["full", "signs-aspects-only"]);
+
+type BirthCoordinateInput = {
+  birthTimeKnown?: boolean;
+  time?: string;
+  timezone?: string;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
+};
+
+export function hasResolvedBirthCoordinates(birthData: BirthCoordinateInput) {
+  return Boolean(
+    birthData.location?.trim() &&
+    Number.isFinite(birthData.latitude) &&
+    Number.isFinite(birthData.longitude) &&
+    !(birthData.latitude === 0 && birthData.longitude === 0)
+  );
+}
+
+export function chartCalculationModeForBirthData(birthData: BirthCoordinateInput) {
+  return birthData.birthTimeKnown !== false &&
+    Boolean(birthData.time && birthData.timezone) &&
+    hasResolvedBirthCoordinates(birthData)
+    ? "full" as const
+    : "signs-aspects-only" as const;
+}
+
 export const chartSubjectTypeSchema = z.enum(["self", "ally"]);
 
 export const chartSubjectContextSchema = z.object({
@@ -436,7 +485,7 @@ export const chartMakerRequestSchema = z.object({
 
 export const createChartMakerRequestSchema = z.object({
   subjectName: z.string().min(1),
-  birthData: chartBirthDataSchema,
+  birthData: createChartBirthDataSchema,
   question: z.string().min(1).optional(),
   intent: z.string().min(1).optional(),
   context: chartRequestContextSchema.optional(),
@@ -510,7 +559,8 @@ export const reportChartSourceSnapshotSchema = z.object({
   subjectType: chartSubjectTypeSchema,
   subjectId: idSchema.optional(),
   subjectName: z.string().min(1),
-  birthData: chartBirthDataSchema
+  birthData: chartBirthDataSchema,
+  calculationMode: chartCalculationModeSchema.optional()
 });
 export const reportChartBasisInputSchema = z.discriminatedUnion("type", [
   z.object({
@@ -530,7 +580,7 @@ export const reportChartBasisInputSchema = z.discriminatedUnion("type", [
 ]);
 export const reportChartBasisSnapshotSchema = z
   .object({
-    schemaVersion: z.literal(1),
+    schemaVersion: z.union([z.literal(1), z.literal(2)]),
     type: reportBasisTypeSchema,
     chartSettings: explicitChartSettingsSchema,
     primary: reportChartSourceSnapshotSchema,
@@ -552,6 +602,12 @@ export const reportChartBasisSnapshotSchema = z
     }
     if (basis.partner?.chartRequestId === basis.primary.chartRequestId) {
       context.addIssue({ code: "custom", path: ["partner", "chartRequestId"], message: "Synastry requires two different charts." });
+    }
+    if (basis.schemaVersion === 2 && !basis.primary.calculationMode) {
+      context.addIssue({ code: "custom", path: ["primary", "calculationMode"], message: "Version 2 report snapshots require the primary calculation mode." });
+    }
+    if (basis.schemaVersion === 2 && basis.partner && !basis.partner.calculationMode) {
+      context.addIssue({ code: "custom", path: ["partner", "calculationMode"], message: "Version 2 report snapshots require the comparison calculation mode." });
     }
   });
 export const reportBoundarySchema = z.enum(["private", "public_signal"]);
@@ -922,6 +978,8 @@ export type ComposerPrivateFeedWriteResponse = z.infer<typeof composerPrivateFee
 export type ComposerOnboardingCardsWrite = z.infer<typeof composerOnboardingCardsWriteSchema>;
 export type ComposerOnboardingCardsWriteResponse = z.infer<typeof composerOnboardingCardsWriteResponseSchema>;
 export type ChartBirthData = z.infer<typeof chartBirthDataSchema>;
+export type CreateChartBirthData = z.infer<typeof createChartBirthDataSchema>;
+export type ChartCalculationMode = z.infer<typeof chartCalculationModeSchema>;
 export type ChartSubjectType = z.infer<typeof chartSubjectTypeSchema>;
 export type ChartSubjectContext = z.infer<typeof chartSubjectContextSchema>;
 export type ChartSettings = z.infer<typeof chartSettingsSchema>;

@@ -54,6 +54,12 @@ function formatChartSetting(value: string) {
   return ui.library.reportUnknownChartValue;
 }
 
+function formatChartDetail(mode: AstrologyChartSnapshot["calculationMode"]) {
+  if (mode === "full") return ui.library.reportChartDetailFull;
+  if (mode === "signs-aspects-only") return ui.library.reportChartDetailSignsOnly;
+  return ui.library.reportChartDetailLegacy;
+}
+
 function placementLine(label: string, placement?: ChartPlacement) {
   if (!placement) return null;
   return `${label} ${placement.sign} ${formatHouse(placement.house)}`.trim();
@@ -145,8 +151,20 @@ export function ReportChartPlate({
             <dd>{provenChartSettings ? formatChartSetting(provenChartSettings.zodiacMode) : ui.library.reportUnknownChartValue}</dd>
           </div>
           <div>
+            <dt>{ui.library.reportChartDetail}</dt>
+            <dd>{formatChartDetail(chart.calculationMode)}</dd>
+          </div>
+          <div>
             <dt>{ui.library.reportChartHouses}</dt>
-            <dd>{provenChartSettings ? formatChartSetting(provenChartSettings.houseSystem) : ui.library.reportUnknownChartValue}</dd>
+            <dd>
+              {chart.calculationMode === "full"
+                ? provenChartSettings
+                  ? formatChartSetting(provenChartSettings.houseSystem)
+                  : ui.library.reportUnknownChartValue
+                : chart.calculationMode === "signs-aspects-only"
+                  ? ui.library.reportChartHousesOmitted
+                  : ui.library.reportChartDetailLegacy}
+            </dd>
           </div>
           {reportBasis?.asOfDate ? (
             <div>

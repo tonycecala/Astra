@@ -32,6 +32,7 @@
     "alpha:promote-admin": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/promote-alpha-admin.mts",
     "data:export-user": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/export-user-data.mts",
     "data:import-user": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/import-user-data.mts",
+    "data:repair-birth-places": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/repair-birth-place-coordinates.mts",
     "test:user-data-portability": "node --import tsx scripts/smoke-user-data-portability.mts",
     "test:chart-maker": "node --import tsx scripts/smoke-chart-maker.mts",
     "test:chart-boundary": "node --import tsx scripts/smoke-chart-boundary.mts",

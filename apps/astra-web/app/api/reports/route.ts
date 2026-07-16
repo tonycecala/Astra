@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import {
+  chartCalculationModeForBirthData,
   createAstrologyReportRequestSchema,
   type ChartMakerRequest,
   type ReportChartBasisSnapshot,
@@ -52,7 +53,8 @@ function sourceSnapshot(chartRequest: ChartMakerRequest, userId: string): Report
     subjectType,
     ...(subjectId ? { subjectId } : {}),
     subjectName: chartRequest.subjectName,
-    birthData: chartRequest.birthData
+    birthData: chartRequest.birthData,
+    calculationMode: chartCalculationModeForBirthData(chartRequest.birthData)
   };
 }
 
@@ -130,7 +132,7 @@ export async function POST(request: Request) {
   }
 
   const reportBasis: ReportChartBasisSnapshot = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     type: parsed.data.reportBasis.type,
     chartSettings: parsed.data.reportBasis.chartSettings,
     primary,

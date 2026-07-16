@@ -65,6 +65,17 @@ async function requestJson(url: string, init?: RequestInit) {
   return text ? (JSON.parse(text) as JsonObject) : {};
 }
 
+async function expectStatus(url: string, expectedStatus: number, init?: RequestInit) {
+  const headers = new Headers(init?.headers);
+  headers.set("origin", appBaseUrl);
+  if (cookieHeader) headers.set("cookie", cookieHeader);
+  if (init?.body && !headers.has("content-type")) headers.set("content-type", "application/json");
+  const response = await fetch(url, { ...init, headers });
+  if (response.status !== expectedStatus) {
+    throw new Error(`${url} returned ${response.status}; expected ${expectedStatus}: ${await response.text()}`);
+  }
+}
+
 function findOtp(value: unknown): string | null {
   if (typeof value === "string") return value.match(/\b\d{6}\b/)?.[0] ?? null;
   if (Array.isArray(value)) {
@@ -121,6 +132,22 @@ await requestJson(`${authBaseUrl}/email-otp/send-verification-otp`, {
 await requestJson(`${authBaseUrl}/sign-in/email-otp`, {
   method: "POST",
   body: JSON.stringify({ email, otp: await readOtpFromMailpit(), name })
+});
+
+await expectStatus(`${appBaseUrl}/api/chart-requests`, 400, {
+  method: "POST",
+  body: JSON.stringify({
+    subjectName: "Placeholder location",
+    birthData: {
+      date: "1961-05-23",
+      time: "09:30",
+      timezone: "America/New_York",
+      location: "Imported placeholder",
+      latitude: 0,
+      longitude: 0
+    },
+    source: "self"
+  })
 });
 
 const created = await requestJson(`${appBaseUrl}/api/chart-requests`, {

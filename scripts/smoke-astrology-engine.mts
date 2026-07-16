@@ -135,10 +135,10 @@ const explicitNatalRequest = astrologyReportRequestSchema.parse({
   id: "astrology_explicit_natal",
   reportType: "identity",
   reportBasis: {
-    schemaVersion: 1,
+    schemaVersion: 2,
     type: "natal",
     chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
-    primary: primarySource
+    primary: { ...primarySource, calculationMode: "full" }
   }
 });
 const siderealNatalRequest = astrologyReportRequestSchema.parse({
@@ -171,15 +171,58 @@ if (tropicalHouses === placidusHouses) {
   throw new Error("Whole Sign and Placidus settings must alter calculated house evidence for a timed chart.");
 }
 
+const signsOnlyBirthData = {
+  date: "1961-05-23",
+  time: "09:30",
+  timezone: "America/New_York",
+  birthTimeKnown: true
+} as const;
+const signsOnlyRequest = astrologyReportRequestSchema.parse({
+  ...reportRequest,
+  id: "astrology_signs_only",
+  birthData: signsOnlyBirthData,
+  reportBasis: {
+    schemaVersion: 2,
+    type: "natal",
+    chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+    primary: { ...primarySource, birthData: signsOnlyBirthData, calculationMode: "signs-aspects-only" }
+  }
+});
+const signsOnlyPlacidusRequest = astrologyReportRequestSchema.parse({
+  ...signsOnlyRequest,
+  id: "astrology_signs_only_placidus",
+  reportBasis: {
+    ...signsOnlyRequest.reportBasis,
+    chartSettings: { zodiacMode: "tropical", houseSystem: "placidus" }
+  }
+});
+const signsOnlySnapshot = buildAstrologyChartSnapshot(signsOnlyRequest);
+const signsOnlyPlacidusSnapshot = buildAstrologyChartSnapshot(signsOnlyPlacidusRequest);
+if (signsOnlySnapshot.calculationMode !== "signs-aspects-only") {
+  throw new Error("An unresolved place must be marked as signs-and-aspects-only.");
+}
+if (signsOnlySnapshot.houseCusps.length || signsOnlySnapshot.placements.some((placement) => placement.house || placement.bodyId === "ascendant")) {
+  throw new Error("Signs-and-aspects-only charts must omit houses and the Ascendant.");
+}
+if (!signsOnlySnapshot.aspects.length) {
+  throw new Error("Signs-and-aspects-only charts must retain trustworthy aspect evidence.");
+}
+if (
+  JSON.stringify(signsOnlySnapshot.placements) !== JSON.stringify(signsOnlyPlacidusSnapshot.placements) ||
+  JSON.stringify(signsOnlySnapshot.aspects) !== JSON.stringify(signsOnlyPlacidusSnapshot.aspects)
+) {
+  throw new Error("House-system selection must not alter a location-independent chart.");
+}
+
 const progressedRequest = astrologyReportRequestSchema.parse({
   ...reportRequest,
   id: "astrology_progressed_basis",
   reportType: "progressed",
   reportBasis: {
-    schemaVersion: 1,
+    schemaVersion: 2,
     type: "progressed",
     chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
-    primary: primarySource,
+    primary: { ...primarySource, calculationMode: "full" },
     asOfDate: "2026-07-15"
   }
 });
@@ -194,10 +237,10 @@ const synastryRequest = astrologyReportRequestSchema.parse({
   id: "astrology_synastry_basis",
   reportType: "synastry",
   reportBasis: {
-    schemaVersion: 1,
+    schemaVersion: 2,
     type: "synastry",
     chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
-    primary: primarySource,
+    primary: { ...primarySource, calculationMode: "full" },
     partner: {
       chartRequestId: "chart_partner",
       subjectType: "ally",
@@ -210,7 +253,8 @@ const synastryRequest = astrologyReportRequestSchema.parse({
         location: "Chicago, IL, USA",
         latitude: 41.8781,
         longitude: -87.6298
-      }
+      },
+      calculationMode: "signs-aspects-only"
     }
   }
 });
