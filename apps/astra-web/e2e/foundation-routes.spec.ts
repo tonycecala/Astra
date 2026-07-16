@@ -381,10 +381,15 @@ test.describe("clean-start routes", () => {
     await page.goto("/login");
     await expect(page.locator(".loginShell")).toHaveCSS("background-color", "rgb(238, 232, 220)");
     await expect(page.locator(".loginCard")).toHaveCSS("background-color", "rgba(255, 255, 255, 0.88)");
+    await page.getByLabel("Name").fill("Theme Contrast Smoke");
+    await page.getByLabel("Email").fill(`theme-contrast-${Date.now()}@example.com`);
+    await page.getByRole("button", { name: "Send code" }).click();
+    await expect(page.locator(".loginStatus-success")).toHaveCSS("color", "rgb(71, 107, 85)");
 
     await page.getByRole("button", { name: "Switch to dark mode" }).first().click();
     await expect(page.locator(".loginShell")).toHaveCSS("background-color", "rgb(8, 5, 13)");
     await expect(page.locator(".loginCard")).toHaveCSS("background-color", "rgba(8, 13, 24, 0.62)");
+    await expect(page.locator(".loginStatus-success")).toHaveCSS("color", "rgb(131, 199, 162)");
   });
 
   test("login route exposes Better Auth controls", async ({ page }) => {

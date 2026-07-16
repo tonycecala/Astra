@@ -2311,15 +2311,15 @@ html[data-astra-theme="dark"] .reportReaderDocument {
 }
 
 .loginStatus-error {
-  color: #fecaca;
-  border: 1px solid rgba(248, 113, 113, 0.18);
-  background: rgba(127, 29, 29, 0.16);
+  color: var(--rose);
+  border: 1px solid color-mix(in srgb, var(--rose) 28%, transparent);
+  background: color-mix(in srgb, var(--rose) 12%, transparent);
 }
 
 .loginStatus-success {
-  color: #d9f99d;
-  border: 1px solid rgba(132, 204, 22, 0.16);
-  background: rgba(63, 98, 18, 0.13);
+  color: var(--green);
+  border: 1px solid color-mix(in srgb, var(--green) 28%, transparent);
+  background: color-mix(in srgb, var(--green) 12%, transparent);
 }
 
 .loginStatus-loading {

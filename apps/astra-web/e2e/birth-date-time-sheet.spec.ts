@@ -56,7 +56,7 @@ async function signInWithOtp(page: Page, input: { email: string; name: string })
   await page.getByRole("button", { name: "Send code" }).click();
   await page.getByLabel("Code").fill(await readOtpFromMailpit(input.email));
   await page.getByRole("button", { name: "Verify code" }).click();
-  await expect(page.getByRole("heading", { name: input.name })).toBeVisible();
+  await expect(page.locator(".self-profile-name")).toHaveText(input.name);
 }
 
 async function chooseUnknownBirthMoment(page: Page) {
