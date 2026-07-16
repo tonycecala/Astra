@@ -464,7 +464,7 @@ export const ui = {
     sharedReportEyebrow: "Shared Astra Report",
     sharedReportUnavailableTitle: "Shared report unavailable",
     sharedReportUnavailableBody: "This share link is private, expired, revoked, or unavailable.",
-    selectedReportBack: "Click/Tap to Close Report",
+    selectedReportBack: "Close",
     selectedReportFallbackTitle: "Astrology report",
     selectedReportNoSummary: "Report summary is not yet available.",
     selectedReportNoSections: "No report sections were generated yet.",

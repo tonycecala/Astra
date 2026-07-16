@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { X } from "lucide-react";
 
 import { buildAstrologyChartSnapshot, buildAstrologyReportSectionEvidence } from "@astra/astrology";
 import type { AstrologyReportRequest, AstrologyReportResult } from "@astra/contracts";
@@ -39,8 +40,9 @@ export function ReportReader({
           <p>{report.summary || ui.library.selectedReportNoSummary}</p>
         </div>
         {backHref ? (
-          <Link className="button secondary" href={backHref}>
-            {ui.library.selectedReportBack}
+          <Link aria-label={ui.library.selectedReportBack} className="reportReaderClose button secondary" href={backHref}>
+            <X aria-hidden="true" size={17} strokeWidth={2.2} />
+            <span>{ui.library.selectedReportBack}</span>
           </Link>
         ) : null}
       </header>

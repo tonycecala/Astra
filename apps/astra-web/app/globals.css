@@ -1491,11 +1491,11 @@ a.card-link:focus-visible {
 }
 
 .reportReaderHeader {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 22px;
-  padding: 18px 0 2px;
+  gap: 14px 22px;
+  padding: 12px 0 2px;
 }
 
 .reportReaderHeader > div {
@@ -1504,16 +1504,37 @@ a.card-link:focus-visible {
 }
 
 .reportReaderHeader h1 {
-  margin: 0;
-  font-size: clamp(2.25rem, 5vw, 4rem);
-  line-height: 1.05;
+  max-width: 24ch;
+  margin: 3px 0 0;
+  color: var(--gold);
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-weight: 520;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.02;
+}
+
+.reportReaderHeader .eyebrow {
+  color: color-mix(in srgb, var(--blue) 62%, var(--gold));
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .reportReaderHeader p {
   max-width: 760px;
+  margin: 9px 0 0;
   color: var(--muted);
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 0.96rem;
+  line-height: 1.48;
+}
+
+.reportReaderClose {
+  min-height: 36px;
+  gap: 5px;
+  padding: 0 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
 }
 
 .reportReaderDocument {
@@ -1673,20 +1694,22 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 0;
-  border-block: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: color-mix(in srgb, var(--soft) 72%, transparent);
 }
 
 .reportSavedPill {
   display: inline-flex;
   align-items: center;
-  min-height: 34px;
-  padding: 0 11px;
-  border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--line));
-  border-radius: 999px;
+  min-height: 28px;
+  padding: 0 3px;
   color: var(--gold);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
@@ -1703,12 +1726,57 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 34px;
+  min-height: 36px;
+  border: 1px solid var(--line);
   gap: 7px;
   padding: 0 10px;
   border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: inherit;
   font-size: 0.82rem;
   font-weight: 850;
+}
+
+.reportActionsToolbar .primaryButton {
+  border-color: color-mix(in srgb, var(--gold) 62%, var(--line));
+  background: var(--gold);
+  color: #1a1305;
+}
+
+.reportActionsToolbar .secondaryButton {
+  border-color: color-mix(in srgb, var(--line) 86%, var(--gold));
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+}
+
+.reportActionsToolbar .dangerButton {
+  border-color: color-mix(in srgb, var(--rose) 34%, var(--line));
+  background: color-mix(in srgb, var(--rose) 7%, var(--panel));
+  color: var(--rose);
+}
+
+.reportActionsToolbar button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--gold) 72%, transparent);
+  outline-offset: 2px;
+}
+
+.reportActionsToolbar button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+@media (max-width: 900px) {
+  .reportActionsToolbar .secondaryButton,
+  .reportActionsToolbar .dangerButton {
+    width: 36px;
+    padding-inline: 0;
+  }
+
+  .reportActionsToolbar .secondaryButton span,
+  .reportActionsToolbar .dangerButton span {
+    display: none;
+  }
 }
 
 .reportShareBox {
@@ -4078,11 +4146,21 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
 
 @media (max-width: 760px) {
   .reportReaderHeader {
-    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
   }
 
   .reportReaderHeader h1 {
-    font-size: clamp(2rem, 12vw, 3.1rem);
+    font-size: clamp(1.9rem, 10vw, 2.6rem);
+  }
+
+  .reportReaderClose span {
+    display: none;
+  }
+
+  .reportReaderClose {
+    width: 36px;
+    padding: 0;
   }
 
   .reportReaderDocument {
@@ -4101,7 +4179,11 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
   .reportActionsToolbar .primaryButton,
   .reportActionsToolbar .secondaryButton,
   .reportActionsToolbar .dangerButton {
-    flex: 1 1 calc(50% - 8px);
+    flex: 0 0 36px;
+  }
+
+  .reportActionsToolbar .primaryButton {
+    flex: 1 1 96px;
   }
 
   .reportShareActions .secondaryButton,

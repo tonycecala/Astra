@@ -189,27 +189,27 @@ export function ReportReaderActions({
       <div className="reportActionsPanel">
         <span className="reportSavedPill">{labels.savedLabel}</span>
         <div className="reportActionsToolbar">
-          <button className="primaryButton" type="button" onClick={createShareLink} disabled={sharing} aria-busy={sharing}>
+          <button aria-label={sharing ? labels.sharingReport : labels.shareReport} className="primaryButton" type="button" title={sharing ? labels.sharingReport : labels.shareReport} onClick={createShareLink} disabled={sharing} aria-busy={sharing}>
             <Share2 className="buttonIcon" aria-hidden="true" size={18} strokeWidth={2.2} />
             <span>{sharing ? labels.sharingReport : labels.shareReport}</span>
           </button>
-          <button className="secondaryButton" type="button" onClick={() => copyText(window.location.href, labels.linkCopied)}>
+          <button aria-label={labels.copyLink} className="secondaryButton" type="button" title={labels.copyLink} onClick={() => copyText(window.location.href, labels.linkCopied)}>
             <LinkIcon className="buttonIcon" aria-hidden="true" size={18} strokeWidth={2.2} />
             <span>{labels.copyLink}</span>
           </button>
-          <button className="secondaryButton" type="button" onClick={downloadMarkdown}>
+          <button aria-label={labels.downloadMarkdown} className="secondaryButton" type="button" title={labels.downloadMarkdown} onClick={downloadMarkdown}>
             <Download className="buttonIcon" aria-hidden="true" size={18} strokeWidth={2.2} />
             <span>{labels.downloadMarkdown}</span>
           </button>
-          <button className="secondaryButton" type="button" onClick={() => copyText(markdown, labels.copiedMarkdown)}>
+          <button aria-label={labels.copyMarkdown} className="secondaryButton" type="button" title={labels.copyMarkdown} onClick={() => copyText(markdown, labels.copiedMarkdown)}>
             <Copy className="buttonIcon" aria-hidden="true" size={18} strokeWidth={2.2} />
             <span>{labels.copyMarkdown}</span>
           </button>
-          <button className="secondaryButton" type="button" onClick={() => window.print()}>
+          <button aria-label={labels.printReport} className="secondaryButton" type="button" title={labels.printReport} onClick={() => window.print()}>
             <Printer className="buttonIcon" aria-hidden="true" size={18} strokeWidth={2.2} />
             <span>{labels.printReport}</span>
           </button>
-          <button className="dangerButton" type="button" onClick={deleteReport} disabled={deleting} aria-busy={deleting}>
+          <button aria-label={deleting ? labels.deletingReport : labels.deleteReport} className="dangerButton" type="button" title={deleting ? labels.deletingReport : labels.deleteReport} onClick={deleteReport} disabled={deleting} aria-busy={deleting}>
             <Trash2 className="buttonIcon" aria-hidden="true" size={18} strokeWidth={2.2} />
             <span>{deleting ? labels.deletingReport : labels.deleteReport}</span>
           </button>

@@ -146,15 +146,38 @@ const chartSettings = panel.getByRole("group", { name: "Chart settings" });
 const reportChoices = panel.getByRole("group", { name: "Report", exact: true });
 images.set("settings", await capture(chartSettings));
 images.set("report", await capture(reportChoices));
+const zodiacRowBox = await chartSettings.getByRole("radiogroup", { name: "Zodiac" }).boundingBox();
+const housesRowBox = await chartSettings.getByRole("radiogroup", { name: "Houses" }).boundingBox();
+if (!zodiacRowBox || !housesRowBox || housesRowBox.y - (zodiacRowBox.y + zodiacRowBox.height) > 8) {
+  throw new Error("Chart settings rows are not using compact single spacing.");
+}
 
 await panel.getByRole("button", { name: "Order Report", exact: true }).click();
 const confirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
 images.set("confirm", await capture(confirmDialog));
+const confirmTitleAlignment = await confirmDialog.getByRole("heading", { name: "Confirm Report" }).evaluate((element) => getComputedStyle(element).textAlign);
+if (confirmTitleAlignment !== "center") throw new Error("Confirm Report title is not centered.");
 await confirmDialog.getByRole("button", { name: "Order Report", exact: true }).click();
 await page.waitForURL(/\/library\?reportId=/, { timeout: 30_000 });
 await page.locator(".reportDocumentPlate").waitFor();
 images.set("arrival", await captureReportArrival(page));
 images.set("provenance", await capture(page.locator(".reportDocumentPlate")));
+
+const reportActionHeights = await page.locator(".reportActionsToolbar button").evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().height));
+if (!reportActionHeights.length || Math.max(...reportActionHeights) - Math.min(...reportActionHeights) > 1) {
+  throw new Error("Library report actions do not share a stable height.");
+}
+
+await page.setViewportSize({ width: 390, height: 844 });
+await page.locator(".reportReaderHeader").scrollIntoViewIfNeeded();
+const mobileReportMetrics = await page.evaluate(() => ({
+  actionButtons: document.querySelectorAll(".reportActionsToolbar button").length,
+  hasOverflow: document.documentElement.scrollWidth > window.innerWidth,
+  titleSize: Number.parseFloat(getComputedStyle(document.querySelector(".reportReaderHeader h1")!).fontSize)
+}));
+if (mobileReportMetrics.hasOverflow || mobileReportMetrics.actionButtons !== 6 || mobileReportMetrics.titleSize > 42) {
+  throw new Error(`Mobile Library report header/actions failed layout checks: ${JSON.stringify(mobileReportMetrics)}`);
+}
 
 const stages = [
   { key: "person", title: "Name the person", label: "New chart only", body: "Self starts prefilled. A new Ally also asks relationship. Existing saved charts skip to step 4." },

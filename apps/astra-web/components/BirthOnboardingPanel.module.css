@@ -438,13 +438,13 @@
 .settingsGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2px;
+  gap: 0;
 }
 
 .chartSettingsGroup {
-  gap: 2px;
+  gap: 0;
   min-height: 0;
-  padding: 5px 10px 7px;
+  padding: 4px 10px 5px;
 }
 
 .settingsRow {
@@ -452,7 +452,7 @@
   grid-template-columns: minmax(58px, 0.42fr) minmax(0, 1fr);
   gap: 10px;
   align-items: center;
-  min-height: 34px;
+  min-height: 28px;
 }
 
 .radioOptionRow {
@@ -601,6 +601,8 @@
   margin: 0 0 6px;
   color: var(--gold);
   font-size: 1.12rem;
+  font-weight: 800;
+  text-align: center;
 }
 
 .confirmDialog p {
