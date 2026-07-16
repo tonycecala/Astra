@@ -135,8 +135,13 @@ test.describe("birth date and time sheet", () => {
     await page.getByRole("button", { name: "Order Report", exact: true }).focus();
     await page.keyboard.press("Enter");
     const confirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
-    await expect(confirmDialog.getByLabel("Review birth data")).toContainText("1961-05-23");
-    await expect(confirmDialog.getByLabel("Review birth data")).toContainText("Birth time unknown");
+    const reportReview = confirmDialog.getByLabel("Review report order");
+    await expect(reportReview).toContainText("Identity Report");
+    await expect(reportReview).toContainText("Natal chart");
+    await expect(reportReview).toContainText("Tropical");
+    await expect(reportReview).toContainText("Whole Sign");
+    await expect(reportReview).not.toContainText("1961-05-23");
+    await expect(reportReview).not.toContainText("Birth time unknown");
     await confirmDialog.getByRole("button", { name: "Cancel" }).click();
 
     const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
@@ -158,12 +163,12 @@ test.describe("birth date and time sheet", () => {
       await page.getByRole("button", { name: "Order Report", exact: true }).focus();
       await page.keyboard.press("Enter");
       const allyConfirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
-      await expect(allyConfirmDialog.getByLabel("Review birth data")).toContainText("Name");
-      await expect(allyConfirmDialog.getByLabel("Review birth data")).not.toContainText("Your name");
+      await expect(allyConfirmDialog.getByLabel("Review report order")).toContainText("Name");
+      await expect(allyConfirmDialog.getByLabel("Review report order")).not.toContainText("Your name");
       await expect(allyConfirmDialog).toContainText("Current balance");
       await expect(allyConfirmDialog).toContainText("30 Stars");
       await expect(allyConfirmDialog).not.toContainText("Not enough Stars");
-      await expect(allyConfirmDialog.getByRole("button", { name: "OK" })).toBeVisible();
+      await expect(allyConfirmDialog.getByRole("button", { name: "Order Report" })).toBeVisible();
       await expect(allyConfirmDialog.getByRole("button", { name: "Cancel" })).toBeVisible();
       await allyConfirmDialog.getByRole("button", { name: "Cancel" }).click();
       await expect(allyConfirmDialog).toHaveCount(0);
@@ -171,13 +176,19 @@ test.describe("birth date and time sheet", () => {
       await page.goto("/self#self-birth-onboarding");
       await page.getByRole("button", { name: "Next", exact: true }).click();
       await chooseKnownBirthMomentWithoutPlace(page);
+      const savedBirthDetails = page.getByRole("button", { name: "Edit birth details" });
+      await expect(savedBirthDetails).toContainText("May 23, 1961");
+      await expect(savedBirthDetails).toContainText("9:30 AM");
+      await expect(savedBirthDetails).toContainText("America/Chicago");
       await page.getByRole("button", { name: "Next", exact: true }).click();
       await page.getByRole("button", { name: "Order Report", exact: true }).focus();
       await page.keyboard.press("Enter");
       const timedConfirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
-      await expect(timedConfirmDialog.getByLabel("Review birth data")).toContainText("9:30");
-      await expect(timedConfirmDialog.getByLabel("Review birth data")).toContainText("America/Chicago");
-      await expect(timedConfirmDialog.getByLabel("Review birth data")).not.toContainText("Birth time unknown");
+      const timedReportReview = timedConfirmDialog.getByLabel("Review report order");
+      await expect(timedReportReview).toContainText("Identity Report");
+      await expect(timedReportReview).toContainText("Natal chart");
+      await expect(timedReportReview).not.toContainText("9:30");
+      await expect(timedReportReview).not.toContainText("America/Chicago");
       await timedConfirmDialog.getByRole("button", { name: "Cancel" }).click();
 
       await page.getByRole("button", { name: "Switch to dark mode" }).first().click();

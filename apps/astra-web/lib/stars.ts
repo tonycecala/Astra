@@ -11,9 +11,8 @@ export function isStarPackKey(value: string): value is StarPackKey {
 }
 
 export function starCostForReportType(reportType: string) {
-  if (reportType === "identity") return 1;
-  if (reportType === "core" || reportType === "core_self" || reportType === "progressed") return 5;
-  if (reportType === "deep" || reportType === "synastry") return 10;
+  if (isOrderableReportType(reportType)) return reportProductFor(reportType).costStars;
+  if (reportType === "core_self" || reportType === "chart_interpretation") return 5;
   return 0;
 }
 
@@ -46,3 +45,4 @@ export function stripePriceIdForStarPack(packKey: StarPackKey) {
 
   return "";
 }
+import { isOrderableReportType, reportProductFor } from "./reportCatalog";

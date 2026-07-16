@@ -3,8 +3,10 @@ import {
   type AstrologyReportRequest,
   type BirthPlaceSearchQuery,
   type BirthPlaceSearchResponse,
+  type ChartBirthData,
   type ChartSettings,
   type RecordAstrologyReportResult,
+  type ReportBasisType,
   astrologyReportRequestSchema,
   birthPlaceSearchQuerySchema,
   birthPlaceSearchResponseSchema,
@@ -137,6 +139,30 @@ export type AstrologyChartSnapshot = {
 type ReportWriterInput = {
   request: AstrologyReportRequest;
   chartSignature: ChartSignature;
+};
+
+type ResolvedReportBasis = {
+  type: ReportBasisType;
+  chartSettings: ChartSettings;
+  primary: {
+    chartRequestId: string;
+    subjectName: string;
+    birthData: ChartBirthData;
+  };
+  partner?: {
+    chartRequestId: string;
+    subjectName: string;
+    birthData: ChartBirthData;
+  };
+  asOfDate?: string;
+  legacy: boolean;
+};
+
+type BasisChartContext = {
+  basis: ResolvedReportBasis;
+  primary: ChartSignature;
+  active: ChartSignature;
+  partner?: ChartSignature;
 };
 
 type ReportDraft = Pick<RecordAstrologyReportResult, "summary" | "sections" | "publicSignal">;
@@ -536,6 +562,7 @@ export function buildAstrologyEngineUnavailableResult(
     engine: ASTRA_ASTROLOGY_REPORT_ADAPTER,
     engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
     status: "failed",
+    reportBasis: request.reportBasis,
     error: `${missingEngine} Astra will not fabricate a production astrology report.`,
     sections: [],
     provenance: [
@@ -567,7 +594,8 @@ function buildReportWriterUnavailableResult(input: AstrologyReportRequest, write
     engine: ASTRA_ASTROLOGY_REPORT_ADAPTER,
     engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
     status: "failed",
-    error: `Report writer "${writer}" is not wired. Astra will not spend credits or call an LLM without an explicit writer route.`,
+    error: `Report writer "${writer}" is not wired. Astra will not call an LLM without an explicit writer route.`,
+    reportBasis: request.reportBasis,
     sections: [],
     provenance: [
       {
@@ -601,7 +629,8 @@ function buildReportModelConfigUnavailableResult(
     engine: ASTRA_ASTROLOGY_REPORT_ADAPTER,
     engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
     status: "failed",
-    error: `${DEBUG_MODEL_REPORT_WRITER} requires explicit model configuration (${missing.join(", ")}). Astra will not call a model, spend credits, or leak private chart data without this configuration.`,
+    error: `${DEBUG_MODEL_REPORT_WRITER} requires explicit model configuration (${missing.join(", ")}). Astra will not call a model or leak private chart data without this configuration.`,
+    reportBasis: request.reportBasis,
     sections: [],
     provenance: [
       {
@@ -635,6 +664,7 @@ function buildReportModelProviderUnavailableResult(
     engine: ASTRA_ASTROLOGY_REPORT_ADAPTER,
     engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
     status: "failed",
+    reportBasis: request.reportBasis,
     error: `Report model provider "${provider}" is not wired. Supported debug providers: ${OPENAI_REPORT_MODEL_PROVIDER}, ${OPENROUTER_REPORT_MODEL_PROVIDER}.`,
     sections: [],
     provenance: [
@@ -658,6 +688,7 @@ function buildReportModelCallFailedResult(input: AstrologyReportRequest, message
     engine: ASTRA_ASTROLOGY_REPORT_ADAPTER,
     engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
     status: "failed",
+    reportBasis: request.reportBasis,
     error: `${DEBUG_MODEL_REPORT_WRITER} failed before a report draft was accepted: ${message}`,
     sections: [],
     provenance: [
@@ -735,9 +766,9 @@ function toLocalBirthTime(time?: string) {
   };
 }
 
-function buildOrigin(request: AstrologyReportRequest) {
-  const [yearText, monthText, dayText] = request.birthData.date.split("-");
-  const { hour, minute } = toLocalBirthTime(request.birthData.time);
+function buildOrigin(birthData: ChartBirthData) {
+  const [yearText, monthText, dayText] = birthData.date.split("-");
+  const { hour, minute } = toLocalBirthTime(birthData.time);
 
   return new Origin({
     year: Number.parseInt(yearText ?? "", 10),
@@ -745,8 +776,8 @@ function buildOrigin(request: AstrologyReportRequest) {
     date: Number.parseInt(dayText ?? "", 10),
     hour,
     minute,
-    latitude: request.birthData.latitude ?? 0,
-    longitude: request.birthData.longitude ?? 0
+    latitude: birthData.latitude ?? 0,
+    longitude: birthData.longitude ?? 0
   });
 }
 
@@ -761,13 +792,17 @@ function pointFromHoroscope(body: string, point: HoroscopePoint): EphemerisPoint
 }
 
 function chartSettingsFor(request: AstrologyReportRequest): ChartSettings {
+  if (request.reportBasis) return request.reportBasis.chartSettings;
   return chartSettingsSchema.parse(request.context?.chartSettings ?? {});
 }
 
-function buildChartSignature(request: AstrologyReportRequest): ChartSignature {
-  const chartSettings = chartSettingsFor(request);
+function buildChartSignatureFor(
+  birthData: ChartBirthData,
+  chartSettings: ChartSettings,
+  requestId: string
+): ChartSignature {
   const horoscope = new Horoscope({
-    origin: buildOrigin(request),
+    origin: buildOrigin(birthData),
     houseSystem: chartSettings.houseSystem,
     zodiac: chartSettings.zodiacMode,
     aspectPoints: ["bodies", "angles"],
@@ -785,13 +820,13 @@ function buildChartSignature(request: AstrologyReportRequest): ChartSignature {
   const sun = points.find((point) => point.body === "Sun");
   const moon = points.find((point) => point.body === "Moon");
   if (!sun || !moon) {
-    throw new Error(`Chart routine did not return Sun and Moon for report request ${request.id}.`);
+    throw new Error(`Chart routine did not return Sun and Moon for report request ${requestId}.`);
   }
 
   const hasAscendantInputs =
-    request.birthData.time &&
-    request.birthData.latitude !== undefined &&
-    request.birthData.longitude !== undefined;
+    birthData.time &&
+    birthData.latitude !== undefined &&
+    birthData.longitude !== undefined;
   const ascendant = hasAscendantInputs && horoscope.Ascendant ? pointFromHoroscope("Ascendant", horoscope.Ascendant) ?? undefined : undefined;
 
   return {
@@ -802,6 +837,85 @@ function buildChartSignature(request: AstrologyReportRequest): ChartSignature {
     houseSystem: chartSettings.houseSystem,
     zodiacMode: chartSettings.zodiacMode
   };
+}
+
+function reportBasisFor(request: AstrologyReportRequest): ResolvedReportBasis {
+  if (request.reportBasis) {
+    return {
+      ...request.reportBasis,
+      legacy: false
+    };
+  }
+
+  const type: ReportBasisType = request.reportType === "progressed" ? "progressed" : request.reportType === "synastry" ? "synastry" : "natal";
+  const partnerContext = request.context?.synastryPartner;
+  const partner = partnerContext?.birthData
+    ? {
+        chartRequestId: partnerContext.chartRequestId,
+        subjectName: partnerContext.subjectName,
+        birthData: partnerContext.birthData
+      }
+    : undefined;
+
+  return {
+    type,
+    chartSettings: chartSettingsFor(request),
+    primary: {
+      chartRequestId: request.chartRequestId ?? request.id,
+      subjectName: request.subjectName,
+      birthData: request.birthData
+    },
+    ...(partner ? { partner } : {}),
+    ...(type === "progressed" ? { asOfDate: request.createdAt.slice(0, 10) } : {}),
+    legacy: true
+  };
+}
+
+function secondaryProgressedBirthData(birthData: ChartBirthData, asOfDate: string): ChartBirthData {
+  const [birthYear, birthMonth, birthDay] = birthData.date.split("-").map(Number);
+  const [asOfYear, asOfMonth, asOfDay] = asOfDate.split("-").map(Number);
+  const { hour, minute } = toLocalBirthTime(birthData.time);
+  const birthDateMs = Date.UTC(birthYear ?? 0, (birthMonth ?? 1) - 1, birthDay ?? 1, hour, minute);
+  const asOfDateMs = Date.UTC(asOfYear ?? 0, (asOfMonth ?? 1) - 1, asOfDay ?? 1, hour, minute);
+  const elapsedDays = Math.max(0, (asOfDateMs - birthDateMs) / 86_400_000);
+  const progressedDate = new Date(birthDateMs + (elapsedDays / 365.2425) * 86_400_000);
+  const date = progressedDate.toISOString().slice(0, 10);
+  const time = `${String(progressedDate.getUTCHours()).padStart(2, "0")}:${String(progressedDate.getUTCMinutes()).padStart(2, "0")}`;
+  return {
+    ...birthData,
+    date,
+    time,
+    birthTimeKnown: true
+  };
+}
+
+function buildBasisChartContext(request: AstrologyReportRequest): BasisChartContext {
+  const basis = reportBasisFor(request);
+  const primary = buildChartSignatureFor(basis.primary.birthData, basis.chartSettings, request.id);
+  if (basis.type === "progressed" && basis.asOfDate) {
+    return {
+      basis,
+      primary,
+      active: buildChartSignatureFor(
+        secondaryProgressedBirthData(basis.primary.birthData, basis.asOfDate),
+        basis.chartSettings,
+        request.id
+      )
+    };
+  }
+  if (basis.type === "synastry" && basis.partner) {
+    return {
+      basis,
+      primary,
+      active: primary,
+      partner: buildChartSignatureFor(basis.partner.birthData, basis.chartSettings, request.id)
+    };
+  }
+  return { basis, primary, active: primary };
+}
+
+function buildChartSignature(request: AstrologyReportRequest): ChartSignature {
+  return buildBasisChartContext(request).active;
 }
 
 function formatPoint(point: EphemerisPoint) {
@@ -918,7 +1032,8 @@ function aspectTypeForDistance(distance: number): AstrologyChartSnapshot["aspect
 }
 
 function buildHouseCusps(chartSignature: ChartSignature) {
-  const firstHouseSignLongitude = chartSignature.ascendant ? Math.floor(chartSignature.ascendant.longitude / 30) * 30 : 0;
+  if (!chartSignature.ascendant) return [];
+  const firstHouseSignLongitude = Math.floor(chartSignature.ascendant.longitude / 30) * 30;
   return Array.from({ length: 12 }, (_, index) => ({
     angle: normalizeDegrees(firstHouseSignLongitude + index * 30),
     house: index + 1
@@ -980,9 +1095,43 @@ function compactInterpretiveNote(note: InterpretiveNote) {
   return parts.length ? parts.join(": ") : null;
 }
 
+type RawReportSignal = ReportSectionSignalCard["chartSignals"][number] & { sections: string[] };
+
+function reportSectionSignalCardsFromRawSignals(rawSignals: RawReportSignal[], headings: readonly string[]) {
+  return headings.map((heading) => {
+    const meaning = sectionSignalMeanings[heading] ?? sectionSignalMeanings.Identity;
+    const selected = rawSignals
+      .filter((signal) => signal.sections.includes(heading))
+      .sort((left, right) => {
+        const leftPriority = heading === "Identity" && left.id.includes("sun") ? left.priority + 2 : left.priority;
+        const rightPriority = heading === "Identity" && right.id.includes("sun") ? right.priority + 2 : right.priority;
+        return rightPriority - leftPriority;
+      })
+      .slice(0, heading === "Right Now" ? 3 : 4);
+    const fallback = selected.length ? selected : rawSignals.slice().sort((left, right) => right.priority - left.priority).slice(0, 2);
+    const chartSignals = fallback.map((signal) => ({
+      id: signal.id,
+      label: signal.label,
+      facts: signal.facts,
+      priority: signal.priority
+    }));
+    return {
+      title: heading,
+      chartSignals,
+      capacities: meaning.capacities,
+      risks: meaning.risks,
+      tensions: meaning.tensions,
+      developmentalTasks: meaning.developmentalTasks,
+      evidenceBullets: chartSignals.map((signal) => ({
+        label: signal.label,
+        meaning: signal.facts.join("; ")
+      }))
+    };
+  });
+}
+
 function buildReportSectionSignalCards(chartSignature: ChartSignature, headings: readonly string[]): ReportSectionSignalCard[] {
-  type RawSignal = ReportSectionSignalCard["chartSignals"][number] & { sections: string[] };
-  const rawSignals: RawSignal[] = [];
+  const rawSignals: RawReportSignal[] = [];
   const placements = [
     ...chartSignature.points,
     ...(chartSignature.ascendant ? [chartSignature.ascendant] : [])
@@ -1041,41 +1190,104 @@ function buildReportSectionSignalCards(chartSignature: ChartSignature, headings:
     });
   }
 
-  return headings.map((heading) => {
-    const meaning = sectionSignalMeanings[heading] ?? sectionSignalMeanings.Identity;
-    const selected = rawSignals
-      .filter((signal) => signal.sections.includes(heading))
-      .sort((left, right) => {
-        const leftPriority = heading === "Identity" && left.id.includes("sun") ? left.priority + 2 : left.priority;
-        const rightPriority = heading === "Identity" && right.id.includes("sun") ? right.priority + 2 : right.priority;
-        return rightPriority - leftPriority;
-      })
-      .slice(0, heading === "Right Now" ? 3 : 4);
-    const fallback = selected.length ? selected : rawSignals.slice().sort((left, right) => right.priority - left.priority).slice(0, 2);
-    const chartSignals = fallback.map((signal) => ({
-      id: signal.id,
-      label: signal.label,
-      facts: signal.facts,
-      priority: signal.priority
+  return reportSectionSignalCardsFromRawSignals(rawSignals, headings);
+}
+
+function crossChartSignals(
+  left: ChartSignature,
+  right: ChartSignature,
+  labels: { left: string; right: string },
+  idPrefix: string
+): RawReportSignal[] {
+  const signals: RawReportSignal[] = [];
+  for (const leftPoint of left.points) {
+    for (const rightPoint of right.points) {
+      const match = aspectMatchForDistance(Math.abs(leftPoint.longitude - rightPoint.longitude));
+      if (!match) continue;
+      const leftBody = bodyIdFor(leftPoint.body);
+      const rightBody = bodyIdFor(rightPoint.body);
+      signals.push({
+        id: `${idPrefix}_${leftBody}_${match.type}_${rightBody}`,
+        label: `${labels.left} ${bodyDisplayName(leftBody)} ${match.type} ${labels.right} ${bodyDisplayName(rightBody)}`,
+        facts: [
+          `${bodyDisplayName(leftBody)} ${match.type} ${bodyDisplayName(rightBody)}`,
+          `${leftPoint.degree} degrees ${leftPoint.sign}`,
+          `${rightPoint.degree} degrees ${rightPoint.sign}`,
+          `orb ${match.orb} degrees`
+        ],
+        priority: Number(Math.max(0.25, 1 - match.orb / 10).toFixed(3)),
+        sections: sectionsForAspect(leftBody, rightBody)
+      });
+    }
+  }
+  return signals;
+}
+
+function progressedReportSectionSignalCards(context: BasisChartContext, headings: readonly string[]) {
+  const baseCards = buildReportSectionSignalCards(context.active, headings);
+  const progressedSignals = crossChartSignals(context.active, context.primary, { left: "Progressed", right: "natal" }, "progressed_to_natal");
+  return baseCards.map((card) => {
+    const placements = card.chartSignals.map((signal) => ({
+      ...signal,
+      id: `progressed_${signal.id}`,
+      label: signal.label.startsWith("Progressed") ? signal.label : `Progressed ${signal.label}`,
+      facts: [...signal.facts, `secondary progression as of ${context.basis.asOfDate}`]
     }));
+    const crossSignals = progressedSignals
+      .filter((signal) => signal.sections.includes(card.title))
+      .sort((left, right) => right.priority - left.priority)
+      .slice(0, 2);
+    const chartSignals = [...crossSignals, ...placements].sort((left, right) => right.priority - left.priority).slice(0, 4);
     return {
-      title: heading,
+      ...card,
       chartSignals,
-      capacities: meaning.capacities,
-      risks: meaning.risks,
-      tensions: meaning.tensions,
-      developmentalTasks: meaning.developmentalTasks,
-      evidenceBullets: chartSignals.map((signal) => ({
-        label: signal.label,
-        meaning: signal.facts.join("; ")
-      }))
+      evidenceBullets: chartSignals.map((signal) => ({ label: signal.label, meaning: signal.facts.join("; ") }))
     };
   });
 }
 
+function synastryReportSectionSignalCards(context: BasisChartContext, headings: readonly string[]) {
+  if (!context.partner || !context.basis.partner) return buildReportSectionSignalCards(context.primary, headings);
+  const primaryName = context.basis.primary.subjectName;
+  const partnerName = context.basis.partner.subjectName;
+  const rawSignals = crossChartSignals(context.primary, context.partner, { left: primaryName, right: partnerName }, "synastry");
+  rawSignals.push({
+    id: "synastry_sun_pair",
+    label: `${primaryName} ${context.primary.sun.sign} Sun with ${partnerName} ${context.partner.sun.sign} Sun`,
+    facts: [`Sun in ${context.primary.sun.sign}`, `Sun in ${context.partner.sun.sign}`, "two-chart Sun comparison"],
+    priority: 0.95,
+    sections: [...synastryReportHeadings]
+  });
+  const bothBirthTimesKnown = context.basis.primary.birthData.birthTimeKnown !== false &&
+    Boolean(context.basis.primary.birthData.time) &&
+    context.basis.partner.birthData.birthTimeKnown !== false &&
+    Boolean(context.basis.partner.birthData.time);
+  if (bothBirthTimesKnown) {
+    rawSignals.push({
+      id: "synastry_moon_pair",
+      label: `${primaryName} ${context.primary.moon.sign} Moon with ${partnerName} ${context.partner.moon.sign} Moon`,
+      facts: [`Moon in ${context.primary.moon.sign}`, `Moon in ${context.partner.moon.sign}`, "timed two-chart Moon comparison"],
+      priority: 0.9,
+      sections: ["Communication", "Stability", "Friction"]
+    });
+  } else {
+    for (let index = rawSignals.length - 1; index >= 0; index -= 1) {
+      const signal = rawSignals[index];
+      if (signal && /(?:^|_)(moon|ascendant)(?:_|$)/.test(signal.id)) rawSignals.splice(index, 1);
+    }
+  }
+  return reportSectionSignalCardsFromRawSignals(rawSignals, headings);
+}
+
+function buildReportSectionSignalCardsForRequest(request: AstrologyReportRequest, headings: readonly string[]) {
+  const context = buildBasisChartContext(request);
+  if (context.basis.type === "progressed") return progressedReportSectionSignalCards(context, headings);
+  if (context.basis.type === "synastry") return synastryReportSectionSignalCards(context, headings);
+  return buildReportSectionSignalCards(context.primary, headings);
+}
+
 export function buildAstrologyReportSectionEvidence(input: AstrologyReportRequest, headings: readonly string[]): AstrologyReportSectionEvidence[] {
-  const chartSignature = buildChartSignature(input);
-  return buildReportSectionSignalCards(chartSignature, headings).map((card) => ({
+  return buildReportSectionSignalCardsForRequest(input, headings).map((card) => ({
     title: card.title,
     evidenceBullets: card.evidenceBullets
   }));
@@ -1124,6 +1336,7 @@ function deterministicChartSettingLabel(value: string) {
 }
 
 function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterInput): ReportDraft {
+  const basis = reportBasisFor(request);
   const { sun, moon, ascendant } = chartSignature;
   const sunSign = signForLongitude(sun.longitude);
   const moonSign = signForLongitude(moon.longitude);
@@ -1141,9 +1354,14 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
     : "The reading lens is the computed birth-data pattern because no optional question was supplied.";
   const intentText = request.intent ? `Intent marker: ${request.intent}.` : "No optional intent marker was supplied.";
 
-  const summary = `${subject}'s ${reportLabel.toLowerCase()} is grounded in ${chartHeadline}. ${houseText}`;
+  const basisSummary = basis.type === "progressed"
+    ? `a secondary progressed chart as of ${basis.asOfDate}`
+    : basis.type === "synastry" && basis.partner
+      ? `a two-chart comparison with ${basis.partner.subjectName}`
+      : chartHeadline;
+  const summary = `${subject}'s ${reportLabel.toLowerCase()} is grounded in ${basisSummary}. ${basis.type === "natal" ? houseText : ""}`.trim();
   const headings = reportHeadingsFor(request);
-  const sectionCards = buildReportSectionSignalCards(chartSignature, headings);
+  const sectionCards = buildReportSectionSignalCardsForRequest(request, headings);
 
   return {
     summary,
@@ -1151,14 +1369,20 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
       id: sectionIdFromTitle(request.id, card.title, index),
       title: card.title,
       body: [
-        `${subject}'s ${card.title} section is grounded in ${chartHeadline}. The Sun sits at ${sun.degree} degrees ${sun.sign}, giving the report a ${sunSign.element} and ${sunSign.mode} center of gravity. The Moon sits at ${moon.degree} degrees ${moon.sign}, giving the emotional weather a ${moonSign.element} and ${moonSign.mode} rhythm.`,
-        ascendant
-          ? `The Ascendant is ${formatPoint(ascendant)}, so ${deterministicChartSettingLabel(chartSignature.houseSystem)} houses shape the timed chart field.`
-          : "No timed Ascendant was supplied, so house language stays out of the public signature.",
+        basis.type === "synastry" && basis.partner
+          ? `${card.title} compares ${subject}'s chart with ${basis.partner.subjectName}'s chart through the cross-chart contacts selected below.`
+          : basis.type === "progressed"
+            ? `${card.title} is grounded in the secondary progressed chart for ${basis.asOfDate}, read in relationship to the natal chart.`
+            : `${subject}'s ${card.title} section is grounded in ${chartHeadline}. The Sun sits at ${sun.degree} degrees ${sun.sign}, giving the report a ${sunSign.element} and ${sunSign.mode} center of gravity. The Moon sits at ${moon.degree} degrees ${moon.sign}, giving the emotional weather a ${moonSign.element} and ${moonSign.mode} rhythm.`,
+        basis.type === "natal"
+          ? ascendant
+            ? `The Ascendant is ${formatPoint(ascendant)}, so ${deterministicChartSettingLabel(chartSignature.houseSystem)} houses shape the timed chart field.`
+            : "No timed Ascendant was supplied, so house language stays out of the public signature."
+          : `The calculation uses ${deterministicChartSettingLabel(chartSignature.zodiacMode)} zodiac and ${deterministicChartSettingLabel(chartSignature.houseSystem)} houses.`,
         `Selected evidence for this section: ${card.evidenceBullets.map((item) => `${item.label} (${item.meaning})`).join("; ")}.`,
         `${questionText}. ${intentText}`,
         index === 0
-          ? `This draft was produced by ${LOCAL_DETERMINISTIC_REPORT_WRITER}: no LLM call, no paid provider, no credit spend.`
+          ? `This draft was produced by ${LOCAL_DETERMINISTIC_REPORT_WRITER} without an external model call.`
           : "The deterministic writer keeps this as private structure and exposes only the concise public signal to Composer."
       ].join(" "),
       emphasis: index === 0 ? "primary" : card.title === "Right Now" || card.title === "Integration" ? "practice" : "supporting"
@@ -1171,7 +1395,7 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
       summary,
       tone: "grounded",
       boundary: "public_signal",
-      provenanceSummary: `${ASTRA_CHART_ROUTINE}: ${chartSignature.zodiacMode}, ${chartSignature.houseSystem}, ${LOCAL_DETERMINISTIC_REPORT_WRITER}, Sun ${sun.sign}, Moon ${moon.sign}${ascendant ? `, Rising ${ascendant.sign}` : ""}`
+      provenanceSummary: `${ASTRA_CHART_ROUTINE}: ${basis.type} basis, ${chartSignature.zodiacMode}, ${chartSignature.houseSystem}, ${LOCAL_DETERMINISTIC_REPORT_WRITER}${basis.type === "natal" ? `, Sun ${sun.sign}, Moon ${moon.sign}${ascendant ? `, Rising ${ascendant.sign}` : ""}` : ""}`
     }
   };
 }
@@ -1265,9 +1489,10 @@ function parseModelDraft(text: string, request: AstrologyReportRequest, chartSig
 }
 
 function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: ChartSignature, previousErrors: string[] = []) {
+  const basis = reportBasisFor(request);
   const headings = reportHeadingsFor(request);
   const v1InterpretiveContext = v1InterpretiveContextFromRequest(request);
-  const sectionCards = buildReportSectionSignalCards(chartSignature, headings);
+  const sectionCards = buildReportSectionSignalCardsForRequest(request, headings);
   const requiredHeadings = headings.map((heading) => `## ${heading}`).join("\n");
   const sunPlacement = chartSignature.points.find((point) => point.body === "Sun");
   return [
@@ -1276,7 +1501,11 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     "Use the notes the way a human writer uses notes: understand them, synthesize them, then write fresh second-person prose.",
     "Before writing, infer one report-level governing thesis from the repeated signals, strongest placements, tensions, and developmental tasks.",
     "Do not print that thesis as a separate heading. Let it quietly organize every section.",
-    "This is a natal/person report.",
+    basis.type === "progressed"
+      ? `This is a secondary progressed report as of ${basis.asOfDate}. Interpret progressed placements and progressed-to-natal contacts, not generic natal traits.`
+      : basis.type === "synastry"
+        ? `This is a two-chart synastry report${basis.partner ? ` comparing ${basis.primary.subjectName} with ${basis.partner.subjectName}` : ""}. Interpret cross-chart contacts, not either person as a standalone natal profile.`
+        : "This is a natal person report.",
     "Use direct second person: you and your.",
     "Do not use third-person labels for the subject.",
     "Do not write about the subject as a case file. Address the reader directly even when the subject name is synthetic.",
@@ -1359,6 +1588,8 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     "Report context:",
     `- Subject: ${request.subjectName}`,
     `- Report type: ${request.reportType}`,
+    `- Report basis: ${basis.type}`,
+    basis.asOfDate ? `- As of: ${basis.asOfDate}` : "",
     request.question ? `- User query: ${request.question}` : "",
     request.intent ? `- Intent: ${request.intent}` : "",
     `- House system: ${chartSignature.houseSystem}`,
@@ -1383,7 +1614,7 @@ function reportHeadingsFor(request: AstrologyReportRequest) {
 function validateModelDraft(request: AstrologyReportRequest, draft: ReportDraft, chartSignature: ChartSignature) {
   const errors: string[] = [];
   const requiredHeadings = reportHeadingsFor(request);
-  const sectionCards = buildReportSectionSignalCards(chartSignature, requiredHeadings);
+  const sectionCards = buildReportSectionSignalCardsForRequest(request, requiredHeadings);
   const sectionTitles = new Set((draft.sections ?? []).map((section) => section.title.trim().toLowerCase()));
   const sectionWordCounts = (draft.sections ?? []).map((section) => ({
     title: section.title,
@@ -1708,9 +1939,16 @@ async function writeOpenRouterDebugModelReportText(
 
 function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: ReportDraft): RecordAstrologyReportResult {
   const request = astrologyReportRequestSchema.parse(input);
-  const chartSignature = buildChartSignature(request);
+  const basisContext = buildBasisChartContext(request);
+  const chartSignature = basisContext.active;
+  const basis = basisContext.basis;
   const { ascendant } = chartSignature;
   const reportDraft = draft ?? writeDeterministicCoreReport({ request, chartSignature });
+  const basisSummary = basis.type === "progressed"
+    ? `secondary progression as of ${basis.asOfDate}`
+    : basis.type === "synastry" && basis.partner
+      ? `two-chart synastry with ${basis.partner.subjectName}`
+      : "natal chart";
 
   return recordAstrologyReportResultSchema.parse({
     requestId: request.id,
@@ -1718,6 +1956,7 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: Rep
     engine: LOCAL_CHART_ROUTINE_ENGINE,
     engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
     status: "completed",
+    reportBasis: request.reportBasis,
     summary: reportDraft.summary,
     sections: reportDraft.sections,
     provenance: [
@@ -1725,7 +1964,7 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: Rep
         id: `${request.id}:birth-data`,
         kind: "birth_data",
         label: "Birth data",
-        summary: `${request.birthData.date}${request.birthData.time ? ` ${request.birthData.time}` : " birth time unknown"}${request.birthData.location ? ` in ${request.birthData.location}` : ""}.`,
+        summary: `${basis.primary.birthData.date}${basis.primary.birthData.time ? ` ${basis.primary.birthData.time}` : " birth time unknown"}${basis.primary.birthData.location ? ` in ${basis.primary.birthData.location}` : ""}${basis.partner ? `; compared with ${basis.partner.subjectName}'s saved birth data` : ""}.`,
         boundary: "private",
         sourceId: request.id
       },
@@ -1733,14 +1972,14 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: Rep
         id: `${request.id}:engine`,
         kind: "engine",
         label: "Chart routine",
-        summary: `Computed ${chartSignature.zodiacMode} Sun, Moon,${ascendant ? " Ascendant," : ""} planetary ecliptic longitudes, and ${chartSignature.houseSystem} chart signature with ${ASTRA_CHART_ROUTINE}.`,
+        summary: `Computed a ${basisSummary} using ${chartSignature.zodiacMode} zodiac and ${chartSignature.houseSystem} houses with ${ASTRA_CHART_ROUTINE}${ascendant ? ", including timed angles" : ", omitting unavailable angles"}.`,
         boundary: "private"
       },
       {
         id: `${request.id}:writer`,
         kind: "manual",
         label: "Report writer",
-        summary: `Wrote private sections and public signal with ${LOCAL_DETERMINISTIC_REPORT_WRITER}; no LLM provider, no paid route, no credit spend.`,
+        summary: `Wrote private sections and the public signal with ${LOCAL_DETERMINISTIC_REPORT_WRITER}; no external model provider was called.`,
         boundary: "private"
       },
       {

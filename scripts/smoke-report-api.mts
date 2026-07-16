@@ -176,65 +176,108 @@ await mirrorCreditBalanceToProfile(db, smokeProfile.userId);
 const startingBalance = await getCreditBalance(db, smokeProfile.userId);
 if (startingBalance < 10) throw new Error(`Expected at least 10 ledger Stars for report smoke, found ${startingBalance}.`);
 
-await expectAuthedStatus(`${appBaseUrl}/api/reports`, 403, {
+const primaryChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
+  method: "POST",
+  body: JSON.stringify({
+    subjectName: name,
+    birthData: {
+      date: "1961-05-23",
+      time: "09:30",
+      timezone: "America/New_York",
+      birthTimeKnown: true,
+      location: "New York, NY, USA",
+      latitude: 40.7128,
+      longitude: -74.006
+    },
+    context: {
+      subject: { subjectType: "self", displayName: name },
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    },
+    source: "self"
+  })
+});
+const primaryChartId = String((primaryChart.request as JsonObject | undefined)?.id ?? "");
+if (!primaryChartId) throw new Error("Report API smoke did not create the primary chart.");
+
+const publicChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
+  method: "POST",
+  body: JSON.stringify({
+    subjectName: "Albert Einstein",
+    birthData: {
+      date: "1879-03-14",
+      time: "11:30",
+      timezone: "Europe/Berlin",
+      birthTimeKnown: true,
+      location: "Ulm, Germany",
+      latitude: 48.4011,
+      longitude: 9.9876
+    },
+    context: {
+      subject: { subjectType: "self", displayName: "Albert Einstein" },
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    },
+    source: "import"
+  })
+});
+const publicChartId = String((publicChart.request as JsonObject | undefined)?.id ?? "");
+if (!publicChartId) throw new Error("Report API smoke did not create the public sample chart.");
+
+await expectAuthedStatus(`${appBaseUrl}/api/reports`, 400, {
   method: "POST",
   body: JSON.stringify({
     reportType: "deep",
-    subjectName: name,
-    birthData: {
-      date: "1961-05-23"
-    },
-    source: "self"
+    chartRequestId: primaryChartId
+  })
+});
+await expectAuthedStatus(`${appBaseUrl}/api/reports`, 400, {
+  method: "POST",
+  body: JSON.stringify({
+    chartRequestId: "not-owned-chart",
+    reportType: "identity",
+    reportBasis: {
+      type: "natal",
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    }
+  })
+});
+await expectAuthedStatus(`${appBaseUrl}/api/reports`, 400, {
+  method: "POST",
+  body: JSON.stringify({
+    chartRequestId: primaryChartId,
+    reportType: "identity",
+    reportBasis: {
+      type: "progressed",
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+      asOfDate: "2026-07-15"
+    }
   })
 });
 
 const created = await requestJson(`${appBaseUrl}/api/reports`, {
   method: "POST",
   body: JSON.stringify({
-    reportType: "core_self",
-    subjectName: name,
-    birthData: {
-      date: "1961-05-23",
-      time: "09:30",
-      timezone: "America/New_York",
-      location: "New York, NY, USA",
-      latitude: 40.7128,
-      longitude: -74.006
+    chartRequestId: primaryChartId,
+    reportType: "core",
+    reportBasis: {
+      type: "natal",
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
     },
     question: "What report shape should Astra preserve for the stream?",
-    intent: "tony-report-api-smoke",
-    context: {
-      source: "test:report-api",
-      chartSettings: {
-        zodiacMode: "tropical",
-        houseSystem: "whole-sign"
-      }
-    },
-    source: "self"
+    intent: "tony-report-api-smoke"
   })
 });
 
 const publicCreated = await requestJson(`${appBaseUrl}/api/reports`, {
   method: "POST",
   body: JSON.stringify({
-    reportType: "core_self",
-    subjectName: "Albert Einstein",
-    birthData: {
-      date: "1879-03-14",
-      time: "11:30",
-      timezone: "Europe/Berlin",
-      location: "Ulm, Germany",
-      latitude: 48.4011,
-      longitude: 9.9876
+    chartRequestId: publicChartId,
+    reportType: "core",
+    reportBasis: {
+      type: "natal",
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
     },
     question: "What should this public sample preserve?",
-    intent: "public-sample-report-api-smoke",
-    context: {
-      source: "Astria public data",
-      sourceUrl: "https://www.astro.com/astro-databank/Einstein,_Albert",
-      roddenRating: "AA"
-    },
-    source: "import"
+    intent: "public-sample-report-api-smoke"
   })
 });
 
@@ -246,7 +289,38 @@ const endingBalance = await getCreditBalance(db, smokeProfile.userId);
 if (endingBalance !== startingBalance - 10) {
   throw new Error(`Report creation did not debit two Core report spends from the ledger: started ${startingBalance}, ended ${endingBalance}.`);
 }
+if (endingBalance > 0) {
+  await db.insert(creditLedgerEntries).values({
+    userId: smokeProfile.userId,
+    amount: -endingBalance,
+    eventType: "admin_adjustment",
+    source: "report_api_smoke",
+    description: "Drain isolated smoke balance for insufficient-Stars coverage",
+    idempotencyKey: `report_api_smoke_drain:${smokeProfile.userId}`,
+    metadata: { actor: "script" }
+  });
+  await mirrorCreditBalanceToProfile(db, smokeProfile.userId);
+}
+const requestsBeforeInsufficient = await requestJson(`${appBaseUrl}/api/reports`);
+const requestCountBeforeInsufficient = Array.isArray(requestsBeforeInsufficient.requests) ? requestsBeforeInsufficient.requests.length : 0;
+await expectAuthedStatus(`${appBaseUrl}/api/reports`, 402, {
+  method: "POST",
+  body: JSON.stringify({
+    chartRequestId: primaryChartId,
+    reportType: "identity",
+    reportBasis: {
+      type: "natal",
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    }
+  })
+});
+const requestsAfterInsufficient = await requestJson(`${appBaseUrl}/api/reports`);
+const requestCountAfterInsufficient = Array.isArray(requestsAfterInsufficient.requests) ? requestsAfterInsufficient.requests.length : 0;
+if (requestCountAfterInsufficient !== requestCountBeforeInsufficient) {
+  throw new Error("An insufficient-Stars purchase must not create a report request.");
+}
 const reportRequest = astrologyReportRequestSchema.parse(created.request);
+if (!reportRequest.reportBasis) throw new Error("Report API did not persist the report basis snapshot.");
 const previousEngine = process.env[ASTRA_EPHEMERIS_ENGINE_ENV];
 const previousWriter = process.env[ASTRA_REPORT_WRITER_ENV];
 process.env[ASTRA_EPHEMERIS_ENGINE_ENV] = LOCAL_CHART_ROUTINE_ENGINE;
@@ -254,8 +328,8 @@ process.env[ASTRA_REPORT_WRITER_ENV] = LOCAL_DETERMINISTIC_REPORT_WRITER;
 const alternateChartSettingsPayload = buildAstrologyReportResult({
   ...reportRequest,
   id: `${reportRequest.id}:sidereal-placidus`,
-  context: {
-    ...(reportRequest.context ?? {}),
+  reportBasis: {
+    ...reportRequest.reportBasis,
     chartSettings: {
       zodiacMode: "sidereal",
       houseSystem: "placidus"
@@ -303,8 +377,8 @@ if (!String(((generated.result as JsonObject).publicSignal as JsonObject).proven
   throw new Error("User report generation route did not preserve deterministic writer provenance.");
 }
 const generatedSections = Array.isArray((generated.result as JsonObject).sections) ? ((generated.result as JsonObject).sections as JsonObject[]) : [];
-if (configuredWriter === LOCAL_DETERMINISTIC_REPORT_WRITER && !generatedSections.some((section) => String(section.body).includes("no LLM call, no paid provider, no credit spend"))) {
-  throw new Error("User report generation route did not prove the non-LLM, non-paid writer route.");
+if (configuredWriter === LOCAL_DETERMINISTIC_REPORT_WRITER && !generatedSections.some((section) => String(section.body).includes("without an external model call"))) {
+  throw new Error("User report generation route did not prove the local non-model writer route.");
 }
 if (configuredWriter === DEBUG_MODEL_REPORT_WRITER && !String(((generated.result as JsonObject).publicSignal as JsonObject).provenanceSummary).includes(DEBUG_MODEL_REPORT_WRITER)) {
   throw new Error("User report generation route did not preserve debug model writer provenance.");

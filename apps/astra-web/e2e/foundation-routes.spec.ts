@@ -14,7 +14,7 @@ const routes = [
   { path: "/self", heading: "Sign in to see your Astra", mobileHeading: "Self" },
   { path: "/charts", heading: "Sign in to see your charts", mobileHeading: "Charts" },
   { path: "/library", heading: "Artifacts worth keeping", mobileHeading: "Library" },
-  { path: "/gifts", heading: "Stars stay accountable", mobileHeading: "Gifts" },
+  { path: "/gifts", heading: "Sign in to see Gifts", mobileHeading: "Gifts" },
   { path: "/login", heading: "Welcome back to Astra" }
 ];
 
@@ -195,6 +195,29 @@ async function createCompletedReport(email: string, input: { chartRequestId?: st
       chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
       subject: { subjectType: "self", displayName: input.name }
     },
+    ...(input.chartRequestId
+      ? {
+          reportBasis: {
+            schemaVersion: 1 as const,
+            type: "natal" as const,
+            chartSettings: { zodiacMode: "tropical" as const, houseSystem: "whole-sign" as const },
+            primary: {
+              chartRequestId: input.chartRequestId,
+              subjectType: "self" as const,
+              subjectId: profile.userId,
+              subjectName: input.name,
+              birthData: {
+                date: "1961-05-23",
+                time: "09:30",
+                timezone: "America/New_York",
+                location: "New York, NY, USA",
+                latitude: 40.7128,
+                longitude: -74.006
+              }
+            }
+          }
+        }
+      : {}),
     source: "self"
   });
   const result = await recordAstrologyReportResult(
@@ -374,33 +397,41 @@ test.describe("clean-start routes", () => {
     const queueButton = page.getByRole("button", { name: "Order Report", exact: true });
     await expect(queueButton).toBeVisible();
     await expect(page.getByRole("dialog", { name: "Confirm Report" })).toHaveCount(0);
+    const identityReport = page.getByRole("radio", { name: /Identity Report/ });
+    await expect(identityReport).toBeChecked();
     await expect(page.getByRole("radio", { name: /Core Report/ })).toBeVisible();
     await expect(page.getByRole("radio", { name: /Deep Report/ })).toBeVisible();
-    await expect(page.getByText("Chart settings")).toBeVisible();
+    const chartSettings = page.getByRole("group", { name: "Chart settings" });
+    await expect(chartSettings).toBeVisible();
+    const settingsBox = await chartSettings.boundingBox();
+    const identityBox = await identityReport.boundingBox();
+    if (!settingsBox || !identityBox || settingsBox.height > 170 || settingsBox.y >= identityBox.y) {
+      throw new Error(`Chart settings must appear first and stay compact. Settings=${JSON.stringify(settingsBox)} Identity=${JSON.stringify(identityBox)}`);
+    }
     await expect(page.getByRole("radio", { name: "Tropical" })).toBeChecked();
     await expect(page.getByRole("radio", { name: "Whole Sign" })).toBeChecked();
     await page.getByRole("radio", { name: "Sidereal" }).check();
     await page.getByRole("radio", { name: "Placidus" }).check();
     await expect(page.getByRole("radio", { name: "Sidereal" })).toBeChecked();
     await expect(page.getByRole("radio", { name: "Placidus" })).toBeChecked();
-    await expect(page.getByLabel("Review birth data")).toHaveCount(0);
+    await expect(page.getByLabel("Review report order")).toHaveCount(0);
     await queueButton.focus();
     await page.keyboard.press("Enter");
     const confirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
     await expect(confirmDialog).toBeVisible();
-    await expect(confirmDialog.getByLabel("Review birth data")).toContainText("1961-05-23");
-    await expect(confirmDialog.getByLabel("Review birth data")).toContainText("Birth time unknown");
-    await expect(confirmDialog.getByLabel("Review birth data")).toContainText("Core Report");
-    await expect(confirmDialog).toContainText("Report selected");
-    await expect(confirmDialog).toContainText("Core Report");
+    await expect(confirmDialog.getByLabel("Review report order")).toContainText("Identity Report");
+    await expect(confirmDialog).toContainText("Based on");
+    await expect(confirmDialog).toContainText("Natal chart");
+    await expect(confirmDialog).toContainText("Sidereal");
+    await expect(confirmDialog).toContainText("Placidus");
     await expect(confirmDialog).toContainText("Cost");
-    await expect(confirmDialog).toContainText("5 Stars");
+    await expect(confirmDialog).toContainText("1 Star");
     await expect(confirmDialog).toContainText("Current balance");
-    await expect(confirmDialog.getByRole("button", { name: "OK" })).toBeVisible();
+    await expect(confirmDialog.getByRole("button", { name: "Order Report" })).toBeVisible();
     await confirmDialog.getByRole("button", { name: "Cancel" }).click();
     await expect(confirmDialog).toHaveCount(0);
     const onboarding = page.locator('section[aria-label="Birth data onboarding"]');
-    await expect(onboarding.getByLabel("Review birth data")).toHaveCount(0);
+    await expect(onboarding.getByLabel("Review report order")).toHaveCount(0);
     await expect(onboarding.getByRole("button", { name: "Order Report", exact: true })).toBeVisible();
 
     const existingAllyChart = await createCompletedAllyChart(email, { name: "Existing Ally", relationship: "Friend" });
@@ -476,7 +507,7 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("heading", { name: "Report bakeoff controls" })).toBeVisible();
     await expect(page.getByLabel("Report request id")).toBeVisible();
     await expect(page.getByLabel("Writer")).toBeVisible();
-    await expect(page.getByLabel("Report")).toBeVisible();
+    await expect(page.locator('select[name="modelProfile"]')).toBeVisible();
     await expect(page.getByRole("button", { name: "Run Replay" }).first()).toBeVisible();
     await expect(page.getByText("npm run report:bakeoff -- --profiles debug,production")).toBeVisible();
     await expect(page.getByRole("table", { name: "Recent ledger entries" })).toContainText("Playwright admin parity grant");
@@ -490,18 +521,18 @@ test.describe("clean-start routes", () => {
     await page.getByRole("button", { exact: true, name: "Next" }).click();
     await expect(page.getByText("Deep Report")).toBeVisible();
     await expect(page.getByText("Progressed Report")).toBeVisible();
-    await expect(page.getByText("Synastry Report")).toHaveCount(0);
+    await expect(page.getByText("Synastry Report")).toBeVisible();
     await page.getByRole("button", { name: "Order Report", exact: true }).focus();
     await page.keyboard.press("Enter");
     const adminConfirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
-    await expect(adminConfirmDialog.getByRole("button", { name: "OK" })).toBeEnabled();
-    await adminConfirmDialog.getByRole("button", { name: "OK" }).click();
-    await expect(page.getByText("Report is generating")).toBeVisible();
+    await expect(adminConfirmDialog.getByRole("button", { name: "Order Report" })).toBeEnabled();
+    await adminConfirmDialog.getByRole("button", { name: "Order Report" }).click();
+    await expect(page.getByRole("heading", { name: `${name} — Identity Report` })).toBeVisible({ timeout: 15_000 });
 
-    await page.getByRole("button", { name: "Start another report request" }).click();
-    await page.getByRole("button", { exact: true, name: "Next" }).click();
-    await chooseUnknownBirthMoment(page, { year: "1961", month: "May", dayLabel: "May 23, 1961" });
-    await page.getByRole("button", { exact: true, name: "Next" }).click();
+    await createCompletedChart(email, { name: "Admin Comparison" });
+    await page.goto("/self#self-birth-onboarding");
+    await expect(page.getByRole("heading", { name: "Request Report" })).toBeVisible();
+    await expect(page.getByText("Step 2 of 2: Report")).toBeVisible();
     await page.getByLabel("Synastry Report").check();
     await expect(page.getByLabel("Comparison chart")).toBeVisible();
     await expect(page.getByLabel("Comparison chart")).toContainText(name);
@@ -532,7 +563,7 @@ test.describe("clean-start routes", () => {
     await page.goto("/charts");
     await expect(page.getByRole("heading", { name: "Saved charts" })).toBeVisible();
     await expect(page.getByLabel("Saved charts list").getByRole("heading", { name }).first()).toBeVisible();
-    await expect(page.getByText("Portrait ready")).toBeVisible();
+    await expect(page.getByText("Portrait ready").first()).toBeVisible();
     const selectedChart = page.getByLabel("Selected chart");
     await expect(selectedChart.getByLabel("Full natal chart wheel")).toBeVisible();
     await expect(selectedChart.getByLabel("Aspect legend")).toBeVisible();
@@ -543,20 +574,26 @@ test.describe("clean-start routes", () => {
     await expect(page).toHaveURL(new RegExp(`/library\\?reportId=${completedReport.request.id}`));
 
     await page.goto("/library");
-    const reportFilters = page.getByRole("navigation", { name: "Report filters" });
+    const reportFilters = page.getByRole("region", { name: "Report filters" });
     await expect(reportFilters).toBeVisible();
-    await expect(reportFilters.getByRole("link", { name: /Core/ })).toBeVisible();
-    await reportFilters.getByRole("link", { name: /Core/ }).click();
+    const reportFilterSelect = reportFilters.getByRole("combobox", { name: "Report filters" });
+    await expect(reportFilterSelect).toContainText("Core");
+    await reportFilterSelect.selectOption("core");
+    await reportFilters.getByRole("button", { name: "Search" }).click();
     await expect(page).toHaveURL(/filter=core/);
-    await expect(page.getByText(`${name} — Core Report`)).toBeVisible();
+    await expect(page.getByRole("link", { name: new RegExp(`View report: ${name}.*Core Report`) })).toBeVisible();
     await page.getByLabel("Search Library").fill(name);
     await page.getByRole("button", { name: "Search" }).click();
     await expect(page).toHaveURL(/q=Astra/);
     await createAstrologyReportShare(db, { requestId: completedReport.request.id, userId: completedReport.request.userId, baseUrl: "http://localhost:3011" });
     await page.goto("/library?filter=shared");
-    await expect(page.getByText(`${name} — Core Report`)).toBeVisible();
+    await expect(page.getByRole("link", { name: new RegExp(`View report: ${name}.*Core Report`) })).toBeVisible();
     await page.getByRole("link", { name: new RegExp(`View report: ${name}`) }).first().click();
     await expect(page.getByRole("heading", { name: `${name} — Core Report` })).toBeVisible();
+    const reportChartPlate = page.getByLabel("Birth data and chart snapshot");
+    await expect(reportChartPlate).toContainText("Natal chart");
+    await expect(reportChartPlate).toContainText("Tropical");
+    await expect(reportChartPlate).toContainText("Whole Sign");
     await expect(page.getByRole("heading", { name: "How did this portrait land?" })).toBeVisible();
     const debugDetails = page.locator("details.reportDebugDetails");
     await expect(debugDetails).toContainText("Report debug details");

@@ -222,7 +222,9 @@ const chart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
       subject: {
         subjectType: "self",
         displayName: name
-      }
+      },
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+      v1InterpretiveNotes
     },
     source: "self"
   })
@@ -235,18 +237,12 @@ const created = await requestJson(`${appBaseUrl}/api/reports`, {
   body: JSON.stringify({
     chartRequestId,
     reportType: "deep",
-    subjectName: name,
-    birthData: tonyBirthData,
-    question: "Create the Deep Report in the v1 voice and structure.",
-    intent: "tony-deep-sonnet-v1-parity",
-    context: {
-      subject: {
-        subjectType: "self",
-        displayName: name
-      },
-      v1InterpretiveNotes
+    reportBasis: {
+      type: "natal",
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
     },
-    source: "self"
+    question: "Create the Deep Report in the v1 voice and structure.",
+    intent: "tony-deep-sonnet-v1-parity"
   })
 });
 

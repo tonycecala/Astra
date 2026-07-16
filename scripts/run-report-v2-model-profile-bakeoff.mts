@@ -148,7 +148,11 @@ for (const profile of profiles) {
       birthData: tonyBirthData,
       question: `Create the v1 parity chart context for Tony's ${profile} Deep report.`,
       intent: `tony-deep-${profile}-v1-parity`,
-      context: { subject: { subjectType: "self", displayName: "Tony Cecala" } },
+      context: {
+        subject: { subjectType: "self", displayName: "Tony Cecala" },
+        chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+        v1InterpretiveNotes
+      },
       source: "self"
     })
   });
@@ -160,15 +164,12 @@ for (const profile of profiles) {
     body: JSON.stringify({
       chartRequestId,
       reportType: "deep",
-      subjectName: "Tony Cecala",
-      birthData: tonyBirthData,
-      question: `Create the Deep Report in the v1 voice and structure using the ${profile} profile.`,
-      intent: `tony-deep-${profile}-v1-parity`,
-      context: {
-        subject: { subjectType: "self", displayName: "Tony Cecala" },
-        v1InterpretiveNotes
+      reportBasis: {
+        type: "natal",
+        chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
       },
-      source: "self"
+      question: `Create the Deep Report in the v1 voice and structure using the ${profile} profile.`,
+      intent: `tony-deep-${profile}-v1-parity`
     })
   });
   const requestId = String((created.request as JsonObject | undefined)?.id ?? "");

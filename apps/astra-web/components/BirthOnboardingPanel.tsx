@@ -3,9 +3,18 @@
 import Link from "next/link";
 import { type CSSProperties, FormEvent, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send } from "lucide-react";
-import type { Ally, AstrologyReportRequest, AstrologyReportResult, BirthPlaceSearchResult, ChartBirthData, ChartMakerRequest } from "@astra/contracts";
+import type {
+  Ally,
+  AstrologyReportRequest,
+  AstrologyReportResult,
+  BirthPlaceSearchResult,
+  ChartBirthData,
+  ChartMakerRequest,
+  OrderableAstrologyReportType
+} from "@astra/contracts";
 import { displayTimezone } from "../lib/display";
 import { ui } from "../lib/i18n";
+import { REPORT_PRODUCT_ORDER, reportProductFor } from "../lib/reportCatalog";
 import { BirthDateTimeSheet } from "./BirthDateTimeSheet";
 import {
   type BirthDateTimeValue,
@@ -53,23 +62,6 @@ const confirmDialogStyle: CSSProperties = {
   boxShadow: "0 24px 80px color-mix(in srgb, #000 52%, transparent)"
 };
 
-const confirmRowsStyle: CSSProperties = {
-  display: "grid",
-  gap: 6,
-  margin: "10px 0 0"
-};
-
-const confirmRowStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "minmax(0, 1fr) auto",
-  gap: 12,
-  alignItems: "center",
-  border: "1px solid var(--line)",
-  borderRadius: 8,
-  padding: "8px 10px",
-  background: "var(--soft)"
-};
-
 const confirmActionsStyle: CSSProperties = {
   position: "sticky",
   bottom: -14,
@@ -83,7 +75,7 @@ const confirmActionsStyle: CSSProperties = {
 };
 
 type Step = (typeof steps)[number];
-type ReportType = AstrologyReportRequest["reportType"];
+type ReportType = OrderableAstrologyReportType;
 type ZodiacMode = "tropical" | "sidereal";
 type HouseSystemMode = "whole-sign" | "placidus";
 
@@ -111,6 +103,7 @@ type FormState = {
   zodiacMode: ZodiacMode;
   houseSystem: HouseSystemMode;
   synastryPartnerChartRequestId: string;
+  progressedAsOfDate: string;
   date: string;
   time: string;
   timezone: string;
@@ -127,14 +120,21 @@ function chartSubjectContext(chartRequest?: ChartMakerRequest) {
     : undefined;
 }
 
+function localDateOnly() {
+  const today = new Date();
+  const offset = today.getTimezoneOffset() * 60_000;
+  return new Date(today.getTime() - offset).toISOString().slice(0, 10);
+}
+
 const defaultForm = (displayName: string, birthData?: ChartBirthData, chartRequest?: ChartMakerRequest): FormState => ({
   subjectName: chartRequest?.subjectName ?? displayName,
   relationship: typeof chartSubjectContext(chartRequest)?.relationship === "string" ? chartSubjectContext(chartRequest)?.relationship as string : "",
   note: typeof chartSubjectContext(chartRequest)?.note === "string" ? chartSubjectContext(chartRequest)?.note as string : "",
-  reportType: "core",
-  zodiacMode: chartRequest?.context?.chartSettings?.zodiacMode ?? "tropical",
-  houseSystem: chartRequest?.context?.chartSettings?.houseSystem ?? "whole-sign",
+  reportType: "identity",
+  zodiacMode: "tropical",
+  houseSystem: "whole-sign",
   synastryPartnerChartRequestId: "",
+  progressedAsOfDate: localDateOnly(),
   date: chartRequest?.birthData.date ?? birthData?.date ?? "",
   time: chartRequest?.birthData.time ?? birthData?.time ?? "",
   timezone: chartRequest?.birthData.timezone ?? birthData?.timezone ?? defaultBrowserTimezone(),
@@ -147,6 +147,14 @@ const defaultForm = (displayName: string, birthData?: ChartBirthData, chartReque
 function optional(value: string) {
   const clean = value.trim();
   return clean ? clean : undefined;
+}
+
+function reportRequestErrorMessage(code?: string) {
+  if (code === "INSUFFICIENT_STARS") return ui.self.reportConfirmInsufficient;
+  if (code === "INVALID_REPORT_BASIS") return ui.self.reportBasisInvalid;
+  if (code === "INVALID_ASTROLOGY_REPORT_REQUEST") return ui.self.reportRequestInvalid;
+  if (code === "AUTH_REQUIRED") return ui.self.reportAuthRequired;
+  return "";
 }
 
 function birthDataFor(form: FormState) {
@@ -197,7 +205,7 @@ function reportStatusLabel(status: string) {
   return status;
 }
 
-function reportTypeLabel(reportType: ReportType) {
+function reportTypeLabel(reportType: AstrologyReportRequest["reportType"]) {
   if (reportType === "identity") return ui.library.reportTypeIdentity;
   if (reportType === "deep") return ui.library.reportTypeDeep;
   if (reportType === "progressed") return ui.library.reportTypeProgressed;
@@ -205,18 +213,16 @@ function reportTypeLabel(reportType: ReportType) {
   return ui.library.reportTypeCore;
 }
 
-function reportTypeOptions(isAlly: boolean, isAdmin: boolean, canCompareCharts: boolean): ReportType[] {
-  if (!isAdmin) return ["identity", "core", "deep"];
-  return isAlly || canCompareCharts
-    ? ["identity", "core", "deep", "progressed", "synastry"]
-    : ["identity", "core", "deep", "progressed"];
+function reportTypeCost(reportType: ReportType) {
+  return reportProductFor(reportType).costStars;
 }
 
-function reportTypeCost(reportType: ReportType) {
-  if (reportType === "identity") return 1;
-  if (reportType === "core" || reportType === "core_self" || reportType === "progressed") return 5;
-  if (reportType === "deep" || reportType === "synastry") return 10;
-  return 0;
+function reportBasisLabel(reportType: ReportType) {
+  return ui.self.reportBasisTypes[reportProductFor(reportType).basis];
+}
+
+function chartSubjectType(request: ChartMakerRequest) {
+  return request.context?.subject?.subjectType ?? (request.source === "ally" ? "ally" : "self");
 }
 
 function compactBirthLine(birthData?: ChartBirthData) {
@@ -301,8 +307,15 @@ export function BirthOnboardingPanel({
 
   const isAlly = subjectType === "ally";
   const isAdmin = role === "admin";
-  const synastryChartOptions = useMemo(() => requests.filter((request) => request.birthData.date), [requests]);
-  const availableReportTypes = reportTypeOptions(isAlly, isAdmin, synastryChartOptions.length > 0);
+  const synastryChartOptions = useMemo(
+    () => requests.filter((request) =>
+      request.birthData.date &&
+      request.id !== selectedExistingChartRequestId &&
+      (isAdmin || chartSubjectType(request) !== subjectType)
+    ),
+    [isAdmin, requests, selectedExistingChartRequestId, subjectType]
+  );
+  const availableReportTypes = REPORT_PRODUCT_ORDER;
   const panelCopy = isAlly ? ui.allies.wizard : ui.self;
   const isWizardComplete = isSubmissionComplete;
   const canSubmit = activeStep === "report" && !isWizardComplete;
@@ -325,26 +338,21 @@ export function BirthOnboardingPanel({
   );
   const reviewRows = useMemo(
     () => [
-      [isAlly ? ui.self.onboardingReviewName : ui.self.onboardingReviewSubject, form.subjectName || ui.self.onboardingReviewMissing],
-      ...(isAlly ? ([[ui.self.onboardingReviewRelationship, form.relationship || ui.self.onboardingReviewMissing]] as const) : []),
+      [ui.self.onboardingReviewName, form.subjectName || ui.self.onboardingReviewMissing],
       [ui.self.onboardingReviewReportType, reportTypeLabel(form.reportType)],
-      [ui.self.onboardingReviewChartSettings, `${ui.self.zodiacModes[form.zodiacMode]} · ${ui.self.houseSystems[form.houseSystem]}`],
+      [ui.self.reportConfirmBasis, reportBasisLabel(form.reportType)],
+      [ui.self.zodiacModeLabel, ui.self.zodiacModes[form.zodiacMode]],
+      [ui.self.houseSystemLabel, ui.self.houseSystems[form.houseSystem]],
+      ...(form.reportType === "progressed"
+        ? ([[ui.self.progressedAsOfLabel, form.progressedAsOfDate]] as const)
+        : []),
       ...(form.reportType === "synastry"
         ? ([[ui.self.onboardingReviewSynastryPartner, synastryPartner?.subjectName ?? ui.self.onboardingReviewMissing]] as const)
         : []),
-      [ui.self.onboardingReviewBirthDate, form.date || ui.self.onboardingReviewMissing],
-      [
-        ui.self.onboardingReviewPrecision,
-        form.birthTimeKnown
-          ? [
-              formatDisplayTime(form.time) || form.time || ui.self.onboardingReviewMissing,
-              displayTimezone(form.timezone) || ui.self.onboardingReviewMissing,
-              form.location
-            ].filter(Boolean).join(", ")
-          : `${ui.self.birthMomentUnknownTimeShort}, ${displayTimezone(form.timezone) || ui.self.onboardingReviewMissing}${form.location ? `, ${form.location}` : ""}`
-      ]
+      [ui.self.reportConfirmCost, ui.stars.reportCost(selectedReportCost)],
+      [ui.self.reportConfirmBalance, ui.stars.balance(starBalance)]
     ],
-    [form, isAlly, synastryPartner]
+    [form, selectedReportCost, starBalance, synastryPartner]
   );
   const chartRequestsBySubjectId = useMemo(() => {
     const indexed = new Map<string, ChartMakerRequest>();
@@ -435,6 +443,11 @@ export function BirthOnboardingPanel({
     if (step === "report" && form.reportType === "synastry" && !optional(form.synastryPartnerChartRequestId)) {
       return ui.self.onboardingSynastryPartnerRequired;
     }
+    if (step === "report" && form.reportType === "progressed") {
+      if (!form.birthTimeKnown || !optional(form.time)) return ui.self.onboardingProgressedTimeRequired;
+      if (!isValidDateOnly(form.progressedAsOfDate)) return ui.self.onboardingProgressedDateRequired;
+      if (form.progressedAsOfDate < form.date) return ui.self.onboardingProgressedDateBeforeBirth;
+    }
     if (step === "birth_details" && !isValidDateOnly(form.date)) return ui.self.birthMomentDateRequired;
     if (step === "birth_details" && isFutureDateOnly(form.date)) return ui.self.birthMomentFutureDate;
     if (step === "birth_details") {
@@ -458,6 +471,10 @@ export function BirthOnboardingPanel({
     setActiveStep(nextStep);
     setIsConfirmingReport(false);
     setMessage("");
+  }
+
+  function stepLabel(step: Step) {
+    return isAlly && step === "subject" ? ui.allies.wizard.subjectStepLabel : ui.self.onboardingSteps[step];
   }
 
   function goNext() {
@@ -495,15 +512,15 @@ export function BirthOnboardingPanel({
       }
     });
     const text = await response.text();
-    let payload = { error: ui.self.chartRequestError } as T & { error?: string };
+    let payload = { error: ui.self.chartRequestError } as T & { error?: string; message?: string };
     if (text) {
       try {
-        payload = JSON.parse(text) as T & { error?: string };
+        payload = JSON.parse(text) as T & { error?: string; message?: string };
       } catch {
         payload = { error: text } as T & { error?: string };
       }
     }
-    if (!response.ok) throw new Error(payload.error || ui.self.chartRequestError);
+    if (!response.ok) throw new Error(reportRequestErrorMessage(payload.error) || payload.message || payload.error || ui.self.chartRequestError);
     return payload;
   }
 
@@ -566,24 +583,15 @@ export function BirthOnboardingPanel({
         zodiacMode: form.zodiacMode,
         houseSystem: form.houseSystem
       };
-      const synastryPartnerContext =
-        form.reportType === "synastry" && synastryPartner
-          ? {
-              chartRequestId: synastryPartner.id,
-              subjectName: synastryPartner.subjectName,
-              birthData: synastryPartner.birthData
-            }
-          : undefined;
       const canReuseExistingChart = Boolean(existingChartRequest && (isExistingChartLocked || birthDataMatchesForm(existingChartRequest.birthData, form)));
       const reportBirthData = canReuseExistingChart && existingChartRequest ? existingChartRequest.birthData : birthDataFor(form);
-      const body = {
+      const chartBody = {
         subjectName: form.subjectName.trim(),
         birthData: reportBirthData,
         source: subjectType,
         context: {
           subject: subjectContext,
-          chartSettings,
-          ...(synastryPartnerContext ? { synastryPartner: synastryPartnerContext } : {})
+          chartSettings
         }
       };
       let chartRequest: ChartMakerRequest;
@@ -592,15 +600,21 @@ export function BirthOnboardingPanel({
       } else {
         chartRequest = (await requestJson<{ request: ChartMakerRequest }>("/api/chart-requests", {
           method: "POST",
-          body: JSON.stringify(body)
+          body: JSON.stringify(chartBody)
         })).request;
       }
+      const basisType = reportProductFor(form.reportType).basis;
+      const reportBasis = basisType === "progressed"
+        ? { type: basisType, chartSettings, asOfDate: form.progressedAsOfDate }
+        : basisType === "synastry"
+          ? { type: basisType, chartSettings, partnerChartRequestId: form.synastryPartnerChartRequestId }
+          : { type: basisType, chartSettings };
       const reportPayload = await requestJson<{ request: AstrologyReportRequest }>("/api/reports", {
         method: "POST",
         body: JSON.stringify({
-          ...body,
           chartRequestId: chartRequest.id,
-          reportType: form.reportType
+          reportType: form.reportType,
+          reportBasis
         })
       });
 
@@ -664,9 +678,9 @@ export function BirthOnboardingPanel({
   return (
     <section className={styles.panel} aria-label={panelCopy.chartRequestPanelLabel}>
       <article className="card">
-        {!isExistingChartOrderMode ? <div className="eyebrow">{panelCopy.chartRequestEyebrow}</div> : null}
-        <h2>{isExistingChartOrderMode ? ui.allies.wizard.chartRequestExistingTitle : panelCopy.chartRequestTitle}</h2>
-        {!isExistingChartOrderMode ? <p>{panelCopy.chartRequestIntro}</p> : null}
+        {!isAlly && !isExistingChartOrderMode ? <div className="eyebrow">{panelCopy.chartRequestEyebrow}</div> : null}
+        <h2>{isAlly ? ui.allies.wizard.chartRequestExistingTitle : panelCopy.chartRequestTitle}</h2>
+        {!isAlly && !isExistingChartOrderMode ? <p>{panelCopy.chartRequestIntro}</p> : null}
 
         {!isSingleStepFlow ? (
           <div
@@ -709,7 +723,7 @@ export function BirthOnboardingPanel({
                 >
                   {index + 1}
                 </span>
-                {ui.self.onboardingSteps[step]}
+                {stepLabel(step)}
               </button>
             ))}
           </div>
@@ -719,7 +733,7 @@ export function BirthOnboardingPanel({
             <p className={styles.progressText} aria-live="polite">
               {isWizardComplete
                 ? ui.self.onboardingProgressQueued
-                : ui.self.onboardingProgress(displayedStepIndex + 1, visibleSteps.length, ui.self.onboardingSteps[activeStep])}
+                : ui.self.onboardingProgress(displayedStepIndex + 1, visibleSteps.length, stepLabel(activeStep))}
             </p>
           ) : null}
           <div className={`${styles.formActions} ${isSingleStepFlow ? styles.formActionsSingle : ""}`}>
@@ -816,50 +830,10 @@ export function BirthOnboardingPanel({
                   <p>{isExistingChartLocked ? compactBirthLine(existingChartRequest?.birthData) : compactFormBirthLine(form)}</p>
                 </div>
               ) : null}
-              <fieldset className={styles.optionGroup} aria-label={ui.self.onboardingReportTypeLabel}>
-                <p className={styles.optionHint}>
-                  {isAdmin ? ui.self.onboardingAdminReportFence : ui.self.onboardingCustomerReportFence(starBalance)}
-                </p>
-                {availableReportTypes.map((reportType) => (
-                  <label className={styles.option} key={reportType}>
-                    <input
-                      checked={form.reportType === reportType}
-                      name="reportType"
-                      onChange={() => selectReportType(reportType)}
-                      type="radio"
-                    />
-                    <span>
-                      <strong className={styles.optionTitle}>
-                        {reportTypeLabel(reportType)}
-                        {" "}
-                        <em>{isAdmin ? ui.self.onboardingAdminBadge : ui.stars.reportCost(reportTypeCost(reportType))}</em>
-                      </strong>
-                      {ui.self.onboardingReportTypeDescriptions[reportType]}
-                    </span>
-                  </label>
-                ))}
-              </fieldset>
-              {form.reportType === "synastry" ? (
-                <label>
-                  <span>{ui.self.synastryPartnerLabel}</span>
-                  <select
-                    value={form.synastryPartnerChartRequestId}
-                    onChange={(event) => updateField("synastryPartnerChartRequestId", event.target.value)}
-                  >
-                    <option value="">{ui.self.synastryPartnerPlaceholder}</option>
-                    {synastryChartOptions.map((request) => (
-                      <option key={request.id} value={request.id}>
-                        {request.subjectName} · {request.birthData.date}
-                      </option>
-                    ))}
-                  </select>
-                  {!synastryChartOptions.length ? <small className={styles.fieldHint}>{ui.self.synastryPartnerEmpty}</small> : null}
-                </label>
-              ) : null}
-              <fieldset className={styles.optionGroup}>
+              <fieldset className={`${styles.optionGroup} ${styles.chartSettingsGroup}`}>
                 <legend>{ui.self.chartSettingsLabel}</legend>
                 <div className={styles.settingsGrid}>
-                  <div>
+                  <div className={styles.settingsRow}>
                     <span className={styles.controlLabel}>{ui.self.zodiacModeLabel}</span>
                     <div className={styles.radioOptionRow} role="radiogroup" aria-label={ui.self.zodiacModeLabel}>
                       {(["tropical", "sidereal"] as const).map((zodiacMode) => (
@@ -875,7 +849,7 @@ export function BirthOnboardingPanel({
                       ))}
                     </div>
                   </div>
-                  <div>
+                  <div className={styles.settingsRow}>
                     <span className={styles.controlLabel}>{ui.self.houseSystemLabel}</span>
                     <div className={styles.radioOptionRow} role="radiogroup" aria-label={ui.self.houseSystemLabel}>
                       {(["whole-sign", "placidus"] as const).map((houseSystem) => (
@@ -893,6 +867,55 @@ export function BirthOnboardingPanel({
                   </div>
                 </div>
               </fieldset>
+              <fieldset className={styles.optionGroup} aria-label={ui.self.onboardingReportTypeLabel}>
+                {availableReportTypes.map((reportType) => (
+                  <label className={styles.option} key={reportType}>
+                    <input
+                      checked={form.reportType === reportType}
+                      name="reportType"
+                      onChange={() => selectReportType(reportType)}
+                      type="radio"
+                    />
+                    <span>
+                      <strong className={styles.optionTitle}>
+                        {reportTypeLabel(reportType)}
+                        {" "}
+                        <em>{ui.self.reportOptionMeta(reportTypeCost(reportType), reportBasisLabel(reportType))}</em>
+                      </strong>
+                      {ui.self.onboardingReportTypeDescriptions[reportType]}
+                    </span>
+                  </label>
+                ))}
+              </fieldset>
+              {form.reportType === "progressed" ? (
+                <label>
+                  <span>{ui.self.progressedAsOfLabel}</span>
+                  <input
+                    max={localDateOnly()}
+                    min={form.date || undefined}
+                    type="date"
+                    value={form.progressedAsOfDate}
+                    onChange={(event) => updateField("progressedAsOfDate", event.target.value)}
+                  />
+                </label>
+              ) : null}
+              {form.reportType === "synastry" ? (
+                <label>
+                  <span>{ui.self.synastryPartnerLabel}</span>
+                  <select
+                    value={form.synastryPartnerChartRequestId}
+                    onChange={(event) => updateField("synastryPartnerChartRequestId", event.target.value)}
+                  >
+                    <option value="">{ui.self.synastryPartnerPlaceholder}</option>
+                    {synastryChartOptions.map((request) => (
+                      <option key={request.id} value={request.id}>
+                        {request.subjectName} · {request.birthData.date}
+                      </option>
+                    ))}
+                  </select>
+                  {!synastryChartOptions.length ? <small className={styles.fieldHint}>{ui.self.synastryPartnerEmpty}</small> : null}
+                </label>
+              ) : null}
             </div>
           ) : null}
 
@@ -995,20 +1018,6 @@ export function BirthOnboardingPanel({
                     <dd>{value}</dd>
                   </div>
                 ))}
-              </dl>
-              <dl className={styles.confirmRows} data-report-confirm-rows style={confirmRowsStyle}>
-                <div style={confirmRowStyle}>
-                  <dt>{ui.self.reportConfirmSelected}</dt>
-                  <dd>{reportTypeLabel(form.reportType)}</dd>
-                </div>
-                <div style={confirmRowStyle}>
-                  <dt>{ui.self.reportConfirmCost}</dt>
-                  <dd>{ui.stars.reportCost(selectedReportCost)}</dd>
-                </div>
-                <div style={confirmRowStyle}>
-                  <dt>{ui.self.reportConfirmBalance}</dt>
-                  <dd>{ui.stars.balance(starBalance)}</dd>
-                </div>
               </dl>
               {!isAdmin ? (
                 <p className={styles.confirmNote} data-report-confirm-note>

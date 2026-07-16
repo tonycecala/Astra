@@ -1,22 +1,25 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
-import { createAstrologyReportRequestSchema } from "@astra/contracts";
-import { createAstrologyReportRequest, db, getCreditBalance, listUserAstrologyReportRequests, spendCreditsForReport } from "@astra/db";
+import {
+  createAstrologyReportRequestSchema,
+  type ChartMakerRequest,
+  type ReportChartBasisSnapshot,
+  type ReportChartSourceSnapshot
+} from "@astra/contracts";
+import { db, getUserChartMakerRequest, listUserAstrologyReportRequests, purchaseAstrologyReportRequest } from "@astra/db";
 import { getAstraAuthContext } from "../../../lib/auth/profile";
-import { starCostForReportType } from "../../../lib/stars";
+import { reportProductFor } from "../../../lib/reportCatalog";
 
 function unauthorized() {
   return NextResponse.json({ error: "AUTH_REQUIRED" }, { status: 401 });
 }
 
-const customerReportTypes = new Set(["identity", "core", "core_self"]);
-
-function forbiddenReportType() {
-  return NextResponse.json({ error: "REPORT_TYPE_REQUIRES_ADMIN_OR_STARS" }, { status: 403 });
-}
-
 function insufficientStars(requiredStars: number) {
   return NextResponse.json({ error: "INSUFFICIENT_STARS", requiredStars }, { status: 402 });
+}
+
+function invalidBasis(message: string) {
+  return NextResponse.json({ error: "INVALID_REPORT_BASIS", message }, { status: 400 });
 }
 
 function reportTierFromUrl(url: URL) {
@@ -38,6 +41,23 @@ function reportMatchesSubject(request: { chartRequestId?: string; subjectName: s
   const context = request.context && typeof request.context === "object" && !Array.isArray(request.context) ? (request.context as Record<string, unknown>) : {};
   const subject = context.subject && typeof context.subject === "object" && !Array.isArray(context.subject) ? (context.subject as Record<string, unknown>) : {};
   return subject.id === subjectId || subject.subjectId === subjectId || request.subjectName === subjectId;
+}
+
+function sourceSnapshot(chartRequest: ChartMakerRequest, userId: string): ReportChartSourceSnapshot {
+  const subject = chartRequest.context?.subject;
+  const subjectType = subject?.subjectType ?? (chartRequest.source === "ally" ? "ally" : "self");
+  const subjectId = subject?.allyId ?? subject?.subjectId ?? (subjectType === "self" ? userId : undefined);
+  return {
+    chartRequestId: chartRequest.id,
+    subjectType,
+    ...(subjectId ? { subjectId } : {}),
+    subjectName: chartRequest.subjectName,
+    birthData: chartRequest.birthData
+  };
+}
+
+function chartPairAllowedForCustomer(primary: ReportChartSourceSnapshot, partner: ReportChartSourceSnapshot) {
+  return new Set([primary.subjectType, partner.subjectType]).size === 2;
 }
 
 export async function GET(request: Request) {
@@ -71,32 +91,88 @@ export async function POST(request: Request) {
     );
   }
 
-  const reportType = parsed.data.reportType ?? "core";
-  const requiredStars = starCostForReportType(reportType);
-
-  if (profile.role !== "admin") {
-    if (!customerReportTypes.has(reportType)) return forbiddenReportType();
-    const balance = await getCreditBalance(db, profile.userId);
-    if (balance < requiredStars) return insufficientStars(requiredStars);
+  const product = reportProductFor(parsed.data.reportType);
+  if (parsed.data.reportBasis.type !== product.basis) {
+    return invalidBasis(`${parsed.data.reportType} reports require a ${product.basis} basis.`);
   }
 
-  const requestId = randomUUID();
-  const reportRequest = await createAstrologyReportRequest(db, {
-    id: requestId,
-    ...parsed.data,
-    costCredits: requiredStars,
+  const primaryChart = await getUserChartMakerRequest(db, {
+    requestId: parsed.data.chartRequestId,
     userId: profile.userId
   });
+  if (!primaryChart) return invalidBasis("The source chart was not found for this account.");
 
-  if (profile.role !== "admin" && requiredStars > 0) {
-    await spendCreditsForReport(db, {
-      amount: requiredStars,
-      description: `${reportType} report`,
-      requestId,
-      reportType,
-      userId: profile.userId
-    });
+  const primary = sourceSnapshot(primaryChart, profile.userId);
+  let partner: ReportChartSourceSnapshot | undefined;
+
+  if (parsed.data.reportBasis.type === "progressed") {
+    if (primary.birthData.birthTimeKnown === false || !primary.birthData.time) {
+      return invalidBasis("Progressed reports require a known birth time.");
+    }
+    if (parsed.data.reportBasis.asOfDate < primary.birthData.date) {
+      return invalidBasis("The progressed as-of date cannot be before the birth date.");
+    }
   }
 
-  return NextResponse.json({ request: reportRequest }, { status: 201 });
+  if (parsed.data.reportBasis.type === "synastry") {
+    if (parsed.data.reportBasis.partnerChartRequestId === primary.chartRequestId) {
+      return invalidBasis("Synastry requires two different charts.");
+    }
+    const partnerChart = await getUserChartMakerRequest(db, {
+      requestId: parsed.data.reportBasis.partnerChartRequestId,
+      userId: profile.userId
+    });
+    if (!partnerChart) return invalidBasis("The comparison chart was not found for this account.");
+    partner = sourceSnapshot(partnerChart, profile.userId);
+    if (profile.role !== "admin" && !chartPairAllowedForCustomer(primary, partner)) {
+      return invalidBasis("Synastry is available between Self and an Ally.");
+    }
+  }
+
+  const reportBasis: ReportChartBasisSnapshot = {
+    schemaVersion: 1,
+    type: parsed.data.reportBasis.type,
+    chartSettings: parsed.data.reportBasis.chartSettings,
+    primary,
+    ...(partner ? { partner } : {}),
+    ...(parsed.data.reportBasis.type === "progressed" ? { asOfDate: parsed.data.reportBasis.asOfDate } : {})
+  };
+  const context = {
+    ...(primaryChart.context ?? {}),
+    chartSettings: reportBasis.chartSettings,
+    ...(partner
+      ? {
+          synastryPartner: {
+            chartRequestId: partner.chartRequestId,
+            subjectName: partner.subjectName,
+            birthData: partner.birthData
+          }
+        }
+      : {})
+  };
+  const requestId = randomUUID();
+
+  try {
+    const purchased = await purchaseAstrologyReportRequest(db, {
+      id: requestId,
+      userId: profile.userId,
+      chartRequestId: primary.chartRequestId,
+      reportType: parsed.data.reportType,
+      subjectName: primary.subjectName,
+      birthData: primary.birthData,
+      question: parsed.data.question,
+      intent: parsed.data.intent,
+      context,
+      source: primaryChart.source,
+      costCredits: product.costStars,
+      reportBasis,
+      bypassCreditDebit: profile.role === "admin"
+    });
+    return NextResponse.json({ request: purchased.request, balanceAfter: purchased.balanceAfter }, { status: 201 });
+  } catch (error) {
+    if (error instanceof Error && error.message === "insufficient_credits") {
+      return insufficientStars(product.costStars);
+    }
+    throw error;
+  }
 }

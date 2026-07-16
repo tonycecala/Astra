@@ -9,6 +9,8 @@ import {
   DEBUG_MODEL_REPORT_WRITER,
   LOCAL_CHART_ROUTINE_ENGINE,
   LOCAL_DETERMINISTIC_REPORT_WRITER,
+  buildAstrologyChartSnapshot,
+  buildAstrologyReportSectionEvidence,
   buildAstrologyReportResult,
   buildAstrologyReportResultAsync
 } from "@astra/astrology";
@@ -99,8 +101,8 @@ for (const phrase of expectedSignature) {
 if (completed.sections.length < 3) {
   throw new Error("Configured astrology report should include core, planetary, and practice sections.");
 }
-if (!completed.sections.some((section) => section.body.includes("no LLM call, no paid provider, no credit spend"))) {
-  throw new Error("Configured astrology report should prove the non-LLM, non-paid writer route.");
+if (!completed.sections.some((section) => section.body.includes("without an external model call"))) {
+  throw new Error("Configured astrology report should prove the local non-model writer route.");
 }
 if (!completed.provenance.some((entry) => entry.kind === "engine")) {
   throw new Error("Configured astrology report should include engine provenance.");
@@ -119,6 +121,110 @@ if (
 }
 if (!completed.publicSignal.provenanceSummary.includes(LOCAL_DETERMINISTIC_REPORT_WRITER)) {
   throw new Error("Configured astrology report should expose deterministic writer provenance in the public signal summary.");
+}
+
+const primarySource = {
+  chartRequestId: "chart_primary",
+  subjectType: "self",
+  subjectId: reportRequest.userId,
+  subjectName: reportRequest.subjectName,
+  birthData: reportRequest.birthData
+} as const;
+const explicitNatalRequest = astrologyReportRequestSchema.parse({
+  ...reportRequest,
+  id: "astrology_explicit_natal",
+  reportType: "identity",
+  reportBasis: {
+    schemaVersion: 1,
+    type: "natal",
+    chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+    primary: primarySource
+  }
+});
+const siderealNatalRequest = astrologyReportRequestSchema.parse({
+  ...explicitNatalRequest,
+  id: "astrology_sidereal_natal",
+  reportBasis: {
+    ...explicitNatalRequest.reportBasis,
+    chartSettings: { zodiacMode: "sidereal", houseSystem: "whole-sign" }
+  }
+});
+const placidusNatalRequest = astrologyReportRequestSchema.parse({
+  ...explicitNatalRequest,
+  id: "astrology_placidus_natal",
+  reportBasis: {
+    ...explicitNatalRequest.reportBasis,
+    chartSettings: { zodiacMode: "tropical", houseSystem: "placidus" }
+  }
+});
+const tropicalSnapshot = buildAstrologyChartSnapshot(explicitNatalRequest);
+const siderealSnapshot = buildAstrologyChartSnapshot(siderealNatalRequest);
+const placidusSnapshot = buildAstrologyChartSnapshot(placidusNatalRequest);
+const tropicalSun = tropicalSnapshot.placements.find((placement) => placement.bodyId === "sun");
+const siderealSun = siderealSnapshot.placements.find((placement) => placement.bodyId === "sun");
+if (!tropicalSun || !siderealSun || tropicalSun.angle === siderealSun.angle) {
+  throw new Error("Tropical and Sidereal settings must alter calculated placement evidence.");
+}
+const tropicalHouses = tropicalSnapshot.placements.map((placement) => placement.house).join(",");
+const placidusHouses = placidusSnapshot.placements.map((placement) => placement.house).join(",");
+if (tropicalHouses === placidusHouses) {
+  throw new Error("Whole Sign and Placidus settings must alter calculated house evidence for a timed chart.");
+}
+
+const progressedRequest = astrologyReportRequestSchema.parse({
+  ...reportRequest,
+  id: "astrology_progressed_basis",
+  reportType: "progressed",
+  reportBasis: {
+    schemaVersion: 1,
+    type: "progressed",
+    chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+    primary: primarySource,
+    asOfDate: "2026-07-15"
+  }
+});
+const progressedEvidence = buildAstrologyReportSectionEvidence(progressedRequest, ["Current Chapter", "Progressed Sun"]);
+const progressedLabels = progressedEvidence.flatMap((section) => section.evidenceBullets.map((bullet) => bullet.label));
+if (!progressedLabels.some((label) => label.startsWith("Progressed")) || !progressedLabels.some((label) => label.includes("natal"))) {
+  throw new Error(`Progressed reports must contain progressed placements and progressed-to-natal contacts. Got: ${progressedLabels.join(" | ")}`);
+}
+
+const synastryRequest = astrologyReportRequestSchema.parse({
+  ...reportRequest,
+  id: "astrology_synastry_basis",
+  reportType: "synastry",
+  reportBasis: {
+    schemaVersion: 1,
+    type: "synastry",
+    chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+    primary: primarySource,
+    partner: {
+      chartRequestId: "chart_partner",
+      subjectType: "ally",
+      subjectId: "ally_partner",
+      subjectName: "Partner",
+      birthData: {
+        date: "1964-09-08",
+        birthTimeKnown: false,
+        timezone: "America/Chicago",
+        location: "Chicago, IL, USA",
+        latitude: 41.8781,
+        longitude: -87.6298
+      }
+    }
+  }
+});
+const synastryEvidence = buildAstrologyReportSectionEvidence(synastryRequest, ["Attraction", "Communication"]);
+const synastryLabels = synastryEvidence.flatMap((section) => section.evidenceBullets.map((bullet) => bullet.label));
+if (!synastryLabels.some((label) => label.includes("Tony C") && label.includes("Partner"))) {
+  throw new Error(`Synastry must contain two-chart evidence. Got: ${synastryLabels.join(" | ")}`);
+}
+if (synastryLabels.some((label) => /Moon|Ascendant|house/i.test(label))) {
+  throw new Error(`Unknown-time Synastry must omit Moon, angles, and houses. Got: ${synastryLabels.join(" | ")}`);
+}
+const synastryCompleted = buildAstrologyReportResult(synastryRequest);
+if (synastryCompleted.reportBasis?.type !== "synastry") {
+  throw new Error("Generated results must preserve the immutable report basis snapshot.");
 }
 
 const publicCompleted = buildAstrologyReportResult(einsteinPublicRequest);

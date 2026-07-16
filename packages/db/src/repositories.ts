@@ -20,6 +20,7 @@ import {
   type PublicStreamItem,
   type RecordChartMakerResult,
   type RecordAstrologyReportResult,
+  type ReportChartBasisSnapshot,
   type SourceCard,
   type UserFeedItem,
   allySchema,
@@ -32,7 +33,7 @@ import {
   composerDecisionSchema,
   createComposerDecisionSchema,
   createAllySchema,
-  createAstrologyReportRequestSchema,
+  reportChartBasisSnapshotSchema,
   createUserFeedItemSchema,
   composerStreamArtifactSchema,
   type FoundationSeed,
@@ -126,6 +127,14 @@ export type CreateAstrologyReportRequestInput = {
   context?: Record<string, unknown>;
   source?: AstrologyReportRequest["source"];
   costCredits?: number;
+  reportBasis?: ReportChartBasisSnapshot;
+};
+
+export type PurchaseAstrologyReportRequestInput = CreateAstrologyReportRequestInput & {
+  id: string;
+  costCredits: number;
+  reportBasis: ReportChartBasisSnapshot;
+  bypassCreditDebit?: boolean;
 };
 
 export type RecordChartMakerResultInput = RecordChartMakerResult;
@@ -278,6 +287,7 @@ function astrologyReportRequestFromRow(row: typeof astrologyReportRequests.$infe
     engine: row.engine ?? undefined,
     engineVersion: row.engineVersion ?? undefined,
     costCredits: row.costCredits,
+    reportBasis: row.reportBasis ?? undefined,
     createdAt: toIsoDate(row.createdAt),
     updatedAt: toIsoDate(row.updatedAt)
   });
@@ -295,6 +305,7 @@ function astrologyReportResultFromRow(row: typeof astrologyReportResults.$inferS
     sections: row.sections,
     provenance: row.provenance,
     publicSignal: row.publicSignal ?? undefined,
+    reportBasis: row.reportBasis ?? undefined,
     error: row.error ?? undefined,
     createdAt: toIsoDate(row.createdAt)
   });
@@ -1374,16 +1385,8 @@ export async function createAstrologyReportRequest(
   database: AstraDb,
   input: CreateAstrologyReportRequestInput
 ): Promise<AstrologyReportRequest> {
-  const parsed = createAstrologyReportRequestSchema.parse({
-    chartRequestId: input.chartRequestId,
-    reportType: input.reportType ?? "core_self",
-    subjectName: input.subjectName,
-    birthData: input.birthData,
-    question: input.question,
-    intent: input.intent,
-    context: input.context,
-    source: input.source ?? "self"
-  });
+  const birthData = chartBirthDataSchema.parse(input.birthData);
+  const reportBasis = input.reportBasis ? reportChartBasisSnapshotSchema.parse(input.reportBasis) : undefined;
   const now = new Date();
 
   const [request] = await database
@@ -1391,23 +1394,93 @@ export async function createAstrologyReportRequest(
     .values({
       id: input.id,
       userId: input.userId,
-      chartRequestId: parsed.chartRequestId ?? null,
-      reportType: parsed.reportType,
-      subjectName: parsed.subjectName,
-      birthData: parsed.birthData,
-      question: parsed.question ?? null,
-      intent: parsed.intent ?? null,
-      context: parsed.context ?? {},
-      source: parsed.source,
+      chartRequestId: input.chartRequestId ?? null,
+      reportType: input.reportType ?? "core_self",
+      subjectName: input.subjectName,
+      birthData,
+      question: input.question ?? null,
+      intent: input.intent ?? null,
+      context: input.context ?? {},
+      source: input.source ?? "self",
       boundary: "private",
       status: "queued",
       costCredits: input.costCredits ?? 0,
+      reportBasis: reportBasis ?? null,
       createdAt: now,
       updatedAt: now
     })
     .returning();
 
   return astrologyReportRequestFromRow(request);
+}
+
+export async function purchaseAstrologyReportRequest(
+  database: AstraDb,
+  input: PurchaseAstrologyReportRequestInput
+): Promise<{ balanceAfter?: number; request: AstrologyReportRequest }> {
+  const birthData = chartBirthDataSchema.parse(input.birthData);
+  const reportBasis = reportChartBasisSnapshotSchema.parse(input.reportBasis);
+  const now = new Date();
+
+  return database.transaction(async (tx) => {
+    let balanceAfter: number | undefined;
+
+    if (!input.bypassCreditDebit && input.costCredits > 0) {
+      await tx.execute(sql`select ${appUserProfiles.userId} from ${appUserProfiles} where ${appUserProfiles.userId} = ${input.userId} for update`);
+      const [balanceRow] = await tx
+        .select({ balance: sql<number>`coalesce(sum(${creditLedgerEntries.amount}), 0)::integer` })
+        .from(creditLedgerEntries)
+        .where(eq(creditLedgerEntries.userId, input.userId));
+      const balance = Number(balanceRow?.balance ?? 0);
+      if (balance < input.costCredits) throw new Error("insufficient_credits");
+      balanceAfter = balance - input.costCredits;
+    }
+
+    const [row] = await tx
+      .insert(astrologyReportRequests)
+      .values({
+        id: input.id,
+        userId: input.userId,
+        chartRequestId: input.chartRequestId ?? null,
+        reportType: input.reportType ?? "identity",
+        subjectName: input.subjectName,
+        birthData,
+        question: input.question ?? null,
+        intent: input.intent ?? null,
+        context: input.context ?? {},
+        source: input.source ?? "self",
+        boundary: "private",
+        status: "queued",
+        costCredits: input.costCredits,
+        reportBasis,
+        createdAt: now,
+        updatedAt: now
+      })
+      .returning();
+
+    if (!input.bypassCreditDebit && input.costCredits > 0) {
+      await tx.insert(creditLedgerEntries).values({
+        userId: input.userId,
+        amount: -input.costCredits,
+        eventType: "report_spend",
+        source: "report_generation",
+        description: `${input.reportType ?? "identity"} report`,
+        relatedReportRequestId: input.id,
+        idempotencyKey: `report_spend:${input.userId}:${input.id}`,
+        metadata: {
+          reportType: input.reportType ?? "identity",
+          reportBasis: reportBasis.type,
+          chartSettings: reportBasis.chartSettings
+        }
+      });
+      await tx
+        .update(appUserProfiles)
+        .set({ starBalance: balanceAfter ?? 0, updatedAt: now })
+        .where(eq(appUserProfiles.userId, input.userId));
+    }
+
+    return { request: astrologyReportRequestFromRow(row), balanceAfter };
+  });
 }
 
 export async function getCreditBalance(database: AstraDb, userId?: string | null) {
@@ -1615,34 +1688,6 @@ export async function listRecentCreditLedger(database: AstraDb, input: { limit?:
     ...row,
     metadata: row.metadata && typeof row.metadata === "object" && !Array.isArray(row.metadata) ? (row.metadata as Record<string, unknown>) : {}
   }));
-}
-
-export async function spendCreditsForReport(
-  database: AstraDb,
-  input: { amount: number; description: string; reportType: string; requestId: string; userId: string }
-) {
-  if (!Number.isInteger(input.amount) || input.amount <= 0) return null;
-  const existing = await database.select().from(creditLedgerEntries).where(eq(creditLedgerEntries.idempotencyKey, `report_spend:${input.userId}:${input.requestId}`)).limit(1);
-  if (existing[0]) return existing[0];
-
-  const balance = await getCreditBalance(database, input.userId);
-  if (balance < input.amount) throw new Error("insufficient_credits");
-
-  const [entry] = await database
-    .insert(creditLedgerEntries)
-    .values({
-      userId: input.userId,
-      amount: -Math.abs(input.amount),
-      eventType: "report_spend",
-      source: "report_generation",
-      description: input.description,
-      relatedReportRequestId: input.requestId,
-      idempotencyKey: `report_spend:${input.userId}:${input.requestId}`,
-      metadata: { reportType: input.reportType }
-    })
-    .returning();
-  await mirrorCreditBalanceToProfile(database, input.userId);
-  return entry;
 }
 
 export async function recordPendingStripeCheckout(
@@ -2082,6 +2127,7 @@ export async function recordAstrologyReportResult(
         sections: input.sections,
         provenance: input.provenance,
         publicSignal: input.publicSignal ?? null,
+        reportBasis: input.reportBasis ?? null,
         error: input.error ?? null,
         createdAt: now
       })
@@ -2095,6 +2141,7 @@ export async function recordAstrologyReportResult(
           sections: input.sections,
           provenance: input.provenance,
           publicSignal: input.publicSignal ?? null,
+          reportBasis: input.reportBasis ?? null,
           error: input.error ?? null,
           createdAt: now
         }

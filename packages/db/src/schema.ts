@@ -252,6 +252,7 @@ export const astrologyReportRequests = pgTable(
     engine: text("engine"),
     engineVersion: text("engine_version"),
     costCredits: integer("cost_credits").notNull().default(0),
+    reportBasis: jsonb("report_basis"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
   },
@@ -279,6 +280,7 @@ export const astrologyReportResults = pgTable(
     sections: jsonb("sections").notNull().default(sql`'[]'::jsonb`),
     provenance: jsonb("provenance").notNull().default(sql`'[]'::jsonb`),
     publicSignal: jsonb("public_signal"),
+    reportBasis: jsonb("report_basis"),
     error: text("error"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
   },

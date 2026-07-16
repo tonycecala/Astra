@@ -71,6 +71,13 @@
       "when": 1782265942176,
       "tag": "0009_greedy_crystal",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1784171748408,
+      "tag": "0010_good_shockwave",
+      "breakpoints": true
     }
   ]
 }

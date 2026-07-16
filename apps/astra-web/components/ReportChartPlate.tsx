@@ -57,7 +57,7 @@ function placementLine(label: string, placement?: ChartPlacement) {
 }
 
 function formatBirth(request: AstrologyReportRequest | null) {
-  const birthData = request?.birthData;
+  const birthData = request?.reportBasis?.primary.birthData ?? request?.birthData;
   if (!birthData) return ui.library.reportUnknownChartValue;
   return [
     birthData.date,
@@ -83,6 +83,8 @@ export function ReportChartPlate({
     placementLine(ui.library.reportChartMoon, placementByBody.get("moon")),
     placementLine(ui.library.reportChartAsc, placementByBody.get("ascendant"))
   ].filter((line): line is string => Boolean(line));
+  const reportBasis = request?.reportBasis;
+  const primaryBirthData = reportBasis?.primary.birthData ?? request?.birthData;
 
   return (
     <aside className="reportDocumentPlate" aria-label={ui.library.reportChartPlateLabel}>
@@ -130,8 +132,14 @@ export function ReportChartPlate({
       <div className="reportDocumentPlateText">
         <p className="reportDocumentPlateKicker">{ui.library.reportChartBirthData}</p>
         <p className="reportDocumentPlatePrimary">{formatBirth(request)}</p>
-        {request?.birthData.location ? <p className="reportDocumentPlateSecondary">{request.birthData.location}</p> : null}
+        {primaryBirthData?.location ? <p className="reportDocumentPlateSecondary">{primaryBirthData.location}</p> : null}
         <dl className="reportDocumentPlateFacts">
+          {reportBasis ? (
+            <div>
+              <dt>{ui.library.reportChartBasis}</dt>
+              <dd>{ui.library.reportBasisTypes[reportBasis.type]}</dd>
+            </div>
+          ) : null}
           <div>
             <dt>{ui.library.reportChartZodiac}</dt>
             <dd>{formatChartSetting(chart.zodiacMode)}</dd>
@@ -146,6 +154,18 @@ export function ReportChartPlate({
             <dt>{ui.library.reportChartHouses}</dt>
             <dd>{formatChartSetting(chart.houseSystem)}</dd>
           </div>
+          {reportBasis?.asOfDate ? (
+            <div>
+              <dt>{ui.library.reportChartAsOf}</dt>
+              <dd>{reportBasis.asOfDate}</dd>
+            </div>
+          ) : null}
+          {reportBasis?.partner ? (
+            <div>
+              <dt>{ui.library.reportChartComparison}</dt>
+              <dd>{reportBasis.partner.subjectName}</dd>
+            </div>
+          ) : null}
         </dl>
       </div>
     </aside>

@@ -31,6 +31,10 @@ function isValidTimeOnly(value: string) {
   return hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59;
 }
 
+const reportAsOfDateSchema = dateOnlySchema.refine((value) => Boolean(parseDateOnly(value)), {
+  message: "As-of date must be a real calendar date."
+});
+
 export const userSchema = z.object({
   id: idSchema,
   email: z.string().email(),
@@ -378,6 +382,11 @@ export const chartSettingsSchema = z.object({
   houseSystem: z.enum(["whole-sign", "placidus"]).default("whole-sign")
 });
 
+export const explicitChartSettingsSchema = z.object({
+  zodiacMode: z.enum(["tropical", "sidereal"]),
+  houseSystem: z.enum(["whole-sign", "placidus"])
+});
+
 export const synastryPartnerSchema = z.object({
   chartRequestId: idSchema,
   subjectName: z.string().min(1),
@@ -494,6 +503,57 @@ export const astrologyReportTypeSchema = z.enum([
   "daily_stream",
   "question_intention"
 ]);
+export const orderableAstrologyReportTypeSchema = z.enum(["identity", "core", "deep", "progressed", "synastry"]);
+export const reportBasisTypeSchema = z.enum(["natal", "progressed", "synastry"]);
+export const reportChartSourceSnapshotSchema = z.object({
+  chartRequestId: idSchema,
+  subjectType: chartSubjectTypeSchema,
+  subjectId: idSchema.optional(),
+  subjectName: z.string().min(1),
+  birthData: chartBirthDataSchema
+});
+export const reportChartBasisInputSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("natal"),
+    chartSettings: explicitChartSettingsSchema
+  }),
+  z.object({
+    type: z.literal("progressed"),
+    chartSettings: explicitChartSettingsSchema,
+    asOfDate: reportAsOfDateSchema
+  }),
+  z.object({
+    type: z.literal("synastry"),
+    chartSettings: explicitChartSettingsSchema,
+    partnerChartRequestId: idSchema
+  })
+]);
+export const reportChartBasisSnapshotSchema = z
+  .object({
+    schemaVersion: z.literal(1),
+    type: reportBasisTypeSchema,
+    chartSettings: explicitChartSettingsSchema,
+    primary: reportChartSourceSnapshotSchema,
+    partner: reportChartSourceSnapshotSchema.optional(),
+    asOfDate: reportAsOfDateSchema.optional()
+  })
+  .superRefine((basis, context) => {
+    if (basis.type === "progressed" && !basis.asOfDate) {
+      context.addIssue({ code: "custom", path: ["asOfDate"], message: "Progressed reports require an as-of date." });
+    }
+    if (basis.type === "synastry" && !basis.partner) {
+      context.addIssue({ code: "custom", path: ["partner"], message: "Synastry reports require a comparison chart." });
+    }
+    if (basis.type !== "progressed" && basis.asOfDate) {
+      context.addIssue({ code: "custom", path: ["asOfDate"], message: "Only progressed reports may include an as-of date." });
+    }
+    if (basis.type !== "synastry" && basis.partner) {
+      context.addIssue({ code: "custom", path: ["partner"], message: "Only synastry reports may include a comparison chart." });
+    }
+    if (basis.partner?.chartRequestId === basis.primary.chartRequestId) {
+      context.addIssue({ code: "custom", path: ["partner", "chartRequestId"], message: "Synastry requires two different charts." });
+    }
+  });
 export const reportBoundarySchema = z.enum(["private", "public_signal"]);
 
 export const astrologyReportSectionSchema = z.object({
@@ -539,18 +599,17 @@ export const astrologyReportRequestSchema = z.object({
   engine: z.string().min(1).optional(),
   engineVersion: z.string().min(1).optional(),
   costCredits: z.number().int().nonnegative().default(0),
+  reportBasis: reportChartBasisSnapshotSchema.optional(),
   createdAt: isoDateSchema,
   updatedAt: isoDateSchema
 });
 
 export const createAstrologyReportRequestSchema = z.object({
-  chartRequestId: idSchema.optional(),
-  reportType: astrologyReportTypeSchema.default("core"),
-  subjectName: z.string().min(1),
-  birthData: chartBirthDataSchema,
+  chartRequestId: idSchema,
+  reportType: orderableAstrologyReportTypeSchema.default("identity"),
+  reportBasis: reportChartBasisInputSchema,
   question: z.string().min(1).optional(),
   intent: z.string().min(1).optional(),
-  context: chartRequestContextSchema.optional(),
   source: z.enum(["self", "ally", "composer", "import"]).default("self")
 });
 
@@ -565,6 +624,7 @@ export const astrologyReportResultSchema = z.object({
   sections: z.array(astrologyReportSectionSchema).default([]),
   provenance: z.array(astrologyReportProvenanceSchema).default([]),
   publicSignal: astrologyReportPublicSignalSchema.optional(),
+  reportBasis: reportChartBasisSnapshotSchema.optional(),
   error: z.string().min(1).optional(),
   createdAt: isoDateSchema
 });
@@ -579,6 +639,7 @@ export const recordAstrologyReportResultSchema = z.object({
   sections: z.array(astrologyReportSectionSchema).default([]),
   provenance: z.array(astrologyReportProvenanceSchema).default([]),
   publicSignal: astrologyReportPublicSignalSchema.optional(),
+  reportBasis: reportChartBasisSnapshotSchema.optional(),
   error: z.string().min(1).optional()
 });
 
@@ -716,6 +777,7 @@ export type ChartBirthData = z.infer<typeof chartBirthDataSchema>;
 export type ChartSubjectType = z.infer<typeof chartSubjectTypeSchema>;
 export type ChartSubjectContext = z.infer<typeof chartSubjectContextSchema>;
 export type ChartSettings = z.infer<typeof chartSettingsSchema>;
+export type ExplicitChartSettings = z.infer<typeof explicitChartSettingsSchema>;
 export type ChartRequestContext = z.infer<typeof chartRequestContextSchema>;
 export type BirthPlaceSearchQuery = z.infer<typeof birthPlaceSearchQuerySchema>;
 export type BirthPlaceSearchResult = z.infer<typeof birthPlaceSearchResultSchema>;
@@ -728,6 +790,11 @@ export type ChartMakerChartData = z.infer<typeof chartMakerChartDataSchema>;
 export type RecordChartMakerResult = z.infer<typeof recordChartMakerResultSchema>;
 export type AstrologyReportStatus = z.infer<typeof astrologyReportStatusSchema>;
 export type AstrologyReportType = z.infer<typeof astrologyReportTypeSchema>;
+export type OrderableAstrologyReportType = z.infer<typeof orderableAstrologyReportTypeSchema>;
+export type ReportBasisType = z.infer<typeof reportBasisTypeSchema>;
+export type ReportChartSourceSnapshot = z.infer<typeof reportChartSourceSnapshotSchema>;
+export type ReportChartBasisInput = z.infer<typeof reportChartBasisInputSchema>;
+export type ReportChartBasisSnapshot = z.infer<typeof reportChartBasisSnapshotSchema>;
 export type ReportBoundary = z.infer<typeof reportBoundarySchema>;
 export type AstrologyReportSection = z.infer<typeof astrologyReportSectionSchema>;
 export type AstrologyReportProvenance = z.infer<typeof astrologyReportProvenanceSchema>;

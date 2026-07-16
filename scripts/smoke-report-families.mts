@@ -130,32 +130,68 @@ if (!internalToken) {
   throw new Error("ASTRA_INTERNAL_API_TOKEN is required for the report families smoke.");
 }
 
+const primaryChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
+  method: "POST",
+  body: JSON.stringify({
+    subjectName: "Report Family Primary",
+    birthData: {
+      date: "1990-04-11",
+      time: "08:20",
+      timezone: "America/Chicago",
+      birthTimeKnown: true,
+      location: "Austin, TX, USA",
+      latitude: 30.2672,
+      longitude: -97.7431
+    },
+    context: {
+      subject: { subjectType: "self", displayName: "Report Family Primary" },
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    },
+    source: "self"
+  })
+});
+const primaryChartId = String((primaryChart.request as JsonObject | undefined)?.id ?? "");
+if (!primaryChartId) throw new Error("Report families smoke did not create a primary chart.");
+
+const partnerChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
+  method: "POST",
+  body: JSON.stringify({
+    subjectName: "Report Family Partner",
+    birthData: {
+      date: "1992-09-23",
+      time: "17:45",
+      timezone: "America/Chicago",
+      birthTimeKnown: true,
+      location: "Dallas, TX, USA",
+      latitude: 32.7767,
+      longitude: -96.797
+    },
+    context: {
+      subject: { subjectType: "ally", subjectId: "report-family-partner", allyId: "report-family-partner", displayName: "Report Family Partner" },
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    },
+    source: "ally"
+  })
+});
+const partnerChartId = String((partnerChart.request as JsonObject | undefined)?.id ?? "");
+if (!partnerChartId) throw new Error("Report families smoke did not create a partner chart.");
+
 const generatedIds: string[] = [];
 
 for (const [reportType, headings] of Object.entries(expectedHeadings)) {
+  const basis = reportType === "progressed"
+    ? { type: "progressed", chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }, asOfDate: "2026-07-15" }
+    : reportType === "synastry"
+      ? { type: "synastry", chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }, partnerChartRequestId: partnerChartId }
+      : { type: "natal", chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" } };
   const created = await requestJson(`${appBaseUrl}/api/reports`, {
     method: "POST",
     body: JSON.stringify({
+      chartRequestId: primaryChartId,
       reportType,
-      subjectName: `Family ${reportType}`,
-      birthData: {
-        date: "1990-04-11",
-        time: "08:20",
-        timezone: "America/Chicago",
-        location: "Austin, TX, USA",
-        latitude: 30.2672,
-        longitude: -97.7431
-      },
+      reportBasis: basis,
       question: `Generate the ${reportType} report family.`,
-      intent: `report-family-smoke:${reportType}`,
-      context: {
-        subject: {
-          subjectType: reportType === "synastry" ? "ally" : "self",
-          displayName: `Family ${reportType}`,
-          relationship: reportType === "synastry" ? "Comparison" : undefined
-        }
-      },
-      source: reportType === "synastry" ? "ally" : "self"
+      intent: `report-family-smoke:${reportType}`
     })
   });
   const requestId = String((created.request as JsonObject | undefined)?.id ?? "");
@@ -176,6 +212,11 @@ for (const [reportType, headings] of Object.entries(expectedHeadings)) {
     if (!titles.includes(heading)) {
       throw new Error(`${reportType} report missing ${heading}. Got: ${titles.join(", ")}`);
     }
+  }
+  const resultBasis = result?.reportBasis as JsonObject | undefined;
+  const expectedBasis = reportType === "progressed" ? "progressed" : reportType === "synastry" ? "synastry" : "natal";
+  if (resultBasis?.type !== expectedBasis) {
+    throw new Error(`${reportType} result did not preserve its ${expectedBasis} basis.`);
   }
   generatedIds.push(requestId);
 }
