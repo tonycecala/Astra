@@ -11,6 +11,7 @@ import {
   OPENROUTER_REPORT_MODEL_PROVIDER,
   buildAstrologyReportResult,
   buildAstrologyReportResultAsync,
+  resolveAstrologyReportGenerationConfig,
   reportModelProfileModels
 } from "@astra/astrology";
 import { astrologyReportRequestSchema } from "@astra/contracts";
@@ -75,6 +76,28 @@ assert.deepEqual(result.generationMetadata, {
 });
 assert.ok((result.generationMetadata?.latencyMs ?? -1) >= 0);
 assert.deepEqual(reportModelProfileModels.production, ["anthropic/claude-sonnet-5", "google/gemini-3.5-flash"]);
+assert.deepEqual(
+  resolveAstrologyReportGenerationConfig({
+    [ASTRA_REPORT_MODEL_PROFILE_ENV]: "production"
+  }),
+  {
+    ephemerisEngine: undefined,
+    reportWriter: "local-deterministic-writer",
+    reportModelProfile: "production",
+    reportModelProvider: OPENROUTER_REPORT_MODEL_PROVIDER,
+    reportModel: "anthropic/claude-sonnet-5",
+    openaiApiKey: undefined,
+    openRouterApiKey: undefined,
+    openRouterBaseUrl: "https://openrouter.ai/api/v1"
+  }
+);
+assert.equal(
+  resolveAstrologyReportGenerationConfig({
+    [ASTRA_REPORT_MODEL_PROFILE_ENV]: "production",
+    [ASTRA_REPORT_MODEL_ENV]: "google/gemini-3.5-flash"
+  }).reportModel,
+  "google/gemini-3.5-flash"
+);
 assert.ok(reportModelProfileModels.premium_bakeoff.includes("openai/gpt-5.6-sol"));
 assert.ok(reportModelProfileModels.premium_bakeoff.includes("anthropic/claude-opus-4.8"));
 

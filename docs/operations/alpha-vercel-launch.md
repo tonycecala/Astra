@@ -82,6 +82,8 @@ ASTRA_ADMIN_ENABLED=1
 COMPOSER_APP_BASE_URL=https://COMPOSER_ALPHA_BRANCH_URL
 ```
 
+Leave `ASTRA_REPORT_MODEL` unset so the production profile resolves to `anthropic/claude-sonnet-5`. Leave `ASTRA_REPORT_MODEL_PROVIDER` unset as well; the production profile resolves it to OpenRouter. Gemini 3.5 Flash remains an explicit admin replay fallback, not an automatic customer-report failover.
+
 Generate fresh alpha-only values for `BETTER_AUTH_SECRET` and `ASTRA_INTERNAL_API_TOKEN`. Do not copy local development secrets. Do not add Stripe variables.
 
 After pulling the branch-scoped environment locally, validate names and behavior without printing secrets:

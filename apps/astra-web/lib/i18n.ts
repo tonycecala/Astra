@@ -678,11 +678,11 @@ export const ui = {
     modelProvider: "Provider",
     modelProfile: "Report",
     modelProfiles: {
-      smoke: "System Test (GPT-5.4 Nano)",
+      smoke: "System Test (GPT-5.6 Luna)",
       debug: "Quick Draft (Haiku 4.5)",
-      debug_alt: "Standard Draft (GPT-5.4 Mini)",
-      production: "Polished Report (Sonnet 4.6)",
-      premium_bakeoff: "Best-of-Three (Sonnet 4.6 + GPT-5.5 + Gemini 3.1 Pro)"
+      debug_alt: "Operational Fallback (Gemini 3.5 Flash)",
+      production: "Polished Report (Sonnet 5)",
+      premium_bakeoff: "Quality Bakeoff"
     },
     noLedger: "No credit ledger entries yet.",
     noReports: "No report requests for this user yet.",

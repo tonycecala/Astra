@@ -52,6 +52,14 @@ try {
 requireExact("ASTRA_EPHEMERIS_ENGINE", "local-chart-routine");
 requireExact("ASTRA_REPORT_WRITER", "debug-model-writer");
 requireExact("ASTRA_REPORT_MODEL_PROFILE", "production");
+const reportModelProvider = clean("ASTRA_REPORT_MODEL_PROVIDER");
+if (reportModelProvider && reportModelProvider !== "openrouter") {
+  errors.push("ASTRA_REPORT_MODEL_PROVIDER must be openrouter when explicitly set for alpha.");
+}
+const reportModel = clean("ASTRA_REPORT_MODEL");
+if (reportModel && reportModel !== "anthropic/claude-sonnet-5") {
+  errors.push("ASTRA_REPORT_MODEL must be anthropic/claude-sonnet-5 when explicitly set for alpha; use the admin replay path for fallback bakeoffs.");
+}
 requireExact("ASTRA_ADMIN_ENABLED", "1");
 if (!clean("ASTRA_OPENROUTER_API_KEY") && !clean("OPENROUTER_API_KEY")) {
   errors.push("ASTRA_OPENROUTER_API_KEY or OPENROUTER_API_KEY is required for alpha reports.");
