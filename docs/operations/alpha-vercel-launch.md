@@ -5,7 +5,7 @@
 - URL: `https://alpha.astraportrait.com`
 - Git branch: `alpha`
 - Vercel projects: `astra-alpha` and `composer-alpha`, both pinned to `alpha`
-- Data: isolated Neon alpha branch
+- Data: isolated `astra_alpha_20260716` database in Neon
 - Email: Resend from a verified `astraportrait.com` sender
 - Payments: disabled; new alpha accounts receive beta Stars
 - Logged-out home: four public cards retrieved from Composer, with Astra seed fallback
@@ -16,51 +16,50 @@ Tony is needed only for these account-level actions:
 
 1. Create the private GitHub repository and authorize the push destination.
 2. Sign in to Vercel, authorize its GitHub connection, and import the repository.
-3. Sign in to Neon and authorize creation of the isolated alpha database branch.
-4. Verify the Resend sender domain if it is not already verified.
-5. Approve the Vercel and Cloudflare domain connection for `alpha.astraportrait.com`.
+3. Verify the Resend sender domain if it is not already verified.
+4. Approve the Vercel and Cloudflare domain connection for `alpha.astraportrait.com`.
 
 ## Vercel Projects
 
-Import the Git repository twice as separate monorepo projects.
+Connect the Git repository twice as separate monorepo projects. Both projects use `alpha` as their Production Branch; their Production variables are therefore isolated to this dedicated branch and never reach Astraea or Astra `main`.
 
 For `astra-alpha`:
 
-- Root Directory: `apps/astra-web`
+- Root Directory: repository root
 - Framework: Next.js
-- Include source files outside Root Directory: enabled
-- Production branch: leave the repository default unchanged
-- Alpha: deploy `alpha` as a Preview branch
-- Domain: connect `alpha.astraportrait.com` to Preview, Git branch `alpha`
+- Build Command: `npm --workspace apps/astra-web run build`
+- Output Directory: `apps/astra-web/.next`
+- Production Branch: `alpha`
+- Domain: connect `alpha.astraportrait.com` to this project's Production deployment
 
 For `composer-alpha`:
 
-- Root Directory: `apps/composer-web`
+- Root Directory: repository root
 - Framework: Next.js
-- Include source files outside Root Directory: enabled
-- Alpha: deploy the same `alpha` branch
-- No public custom domain is required; use its stable Vercel branch URL from Astra
+- Build Command: `npm --workspace apps/composer-web run build`
+- Output Directory: `apps/composer-web/.next`
+- Production Branch: `alpha`
+- No public custom domain is required; Astra uses `https://composer-alpha.vercel.app`
 - Public routes: `/api/library/availability` and `/api/status`
 - Operator UI and mutation APIs: locked behind `ASTRA_INTERNAL_API_TOKEN`
 
-Do not attach the alpha domain to an arbitrary commit URL. The branch alias must follow the newest successful `alpha` deployment.
+Do not attach the alpha domain to an arbitrary commit URL. It must follow the newest successful Production deployment from `alpha`.
 
 ## Isolated Database
 
-Create a Neon branch dedicated to this alpha. Never reuse the local database URL and do not point alpha at an unrelated production database.
+Use the dedicated `astra_alpha_20260716` Neon database created for this alpha. It shares no tables or records with the existing `neondb` databases. Never reuse the local database URL and do not point alpha at an existing production database.
 
 With the alpha database URL available only in the current shell:
 
 ```bash
 ASTRA_DATABASE_URL='postgresql://...' npm run db:migrate
-ASTRA_DATABASE_URL='postgresql://...' npm run db:seed -- --execute
 ```
 
-The seed establishes public Journey cards. Every signed-in alpha user receives the configured one-time beta Stars grant.
+Composer's public sample is repository-backed, so the private alpha database begins empty. Every signed-in alpha user receives the configured one-time beta Stars grant.
 
 ## Branch-Scoped Variables
 
-Set these on Vercel for Preview, restricted to Git branch `alpha`:
+Set these on `astra-alpha` for Production. The project tracks only Git branch `alpha`:
 
 ```text
 ASTRA_DATABASE_URL
@@ -70,7 +69,7 @@ NEXT_PUBLIC_SITE_URL=https://alpha.astraportrait.com
 ASTRA_INTERNAL_API_TOKEN
 ASTRA_EMAIL_DELIVERY=resend
 ASTRA_EMAIL_FROM=Astra <hello@VERIFIED_ASTRAPORTRAIT_DOMAIN>
-RESEND_PREVIEW
+RESEND_PROD
 ASTRA_BETA_SIGNUP_CREDITS=30
 ASTRA_PLACE_SEARCH_PROVIDER=local-fixture
 ASTRA_EPHEMERIS_ENGINE=local-chart-routine
@@ -79,7 +78,7 @@ ASTRA_REPORT_MODEL_PROFILE=production
 ASTRA_OPENROUTER_API_KEY
 ASTRA_OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 ASTRA_ADMIN_ENABLED=1
-COMPOSER_APP_BASE_URL=https://COMPOSER_ALPHA_BRANCH_URL
+COMPOSER_APP_BASE_URL=https://composer-alpha.vercel.app
 ```
 
 Leave `ASTRA_REPORT_MODEL` unset so the production profile resolves to `anthropic/claude-sonnet-5`. Leave `ASTRA_REPORT_MODEL_PROVIDER` unset as well; the production profile resolves it to OpenRouter. Gemini 3.5 Flash remains an explicit admin replay fallback, not an automatic customer-report failover.
@@ -92,7 +91,7 @@ After pulling the branch-scoped environment locally, validate names and behavior
 npm run check:alpha-env
 ```
 
-Set these on `composer-alpha` for Preview, restricted to Git branch `alpha`:
+Set these on `composer-alpha` for Production. This project also tracks only Git branch `alpha`:
 
 ```text
 ASTRA_DATABASE_URL
@@ -114,7 +113,7 @@ Tony signs in once through the live alpha. Then promote only that exact email ag
 ```bash
 npm run alpha:promote-admin -- astramaster@tony.io
 ASTRA_ALPHA_ADMIN_CONFIRM=alpha.astraportrait.com \
-  vercel env run -e preview --git-branch alpha -- \
+  vercel env run -e production -- \
   npm run alpha:promote-admin -- astramaster@tony.io --execute
 ```
 

@@ -40,7 +40,11 @@ if (internalToken && internalToken.length < 32) errors.push("ASTRA_INTERNAL_API_
 
 requireExact("ASTRA_EMAIL_DELIVERY", "resend");
 try {
-  const email = resolveEmailDeliveryConfig({ ...process.env, VERCEL_ENV: "preview" });
+  const vercelEnv = clean("VERCEL_ENV") || "preview";
+  if (vercelEnv !== "preview" && vercelEnv !== "production") {
+    errors.push("VERCEL_ENV must be preview or production for hosted alpha validation.");
+  }
+  const email = resolveEmailDeliveryConfig({ ...process.env, VERCEL_ENV: vercelEnv });
   if (email.mode !== "resend") errors.push("Hosted alpha email must use Resend.");
   if (email.mode === "resend" && !/@(?:[a-z0-9-]+\.)*astraportrait\.com(?:>|$)/i.test(email.from)) {
     errors.push("ASTRA_EMAIL_FROM must use the verified astraportrait.com domain or one of its subdomains.");
