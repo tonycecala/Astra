@@ -224,6 +224,7 @@ type OpenAIResponse = {
 
 type OpenAICompatibleChatResponse = {
   choices?: Array<{
+    finish_reason?: unknown;
     message?: {
       content?: unknown;
     };
@@ -231,6 +232,9 @@ type OpenAICompatibleChatResponse = {
   usage?: {
     prompt_tokens?: unknown;
     completion_tokens?: unknown;
+    completion_tokens_details?: {
+      reasoning_tokens?: unknown;
+    };
     total_tokens?: unknown;
     cost?: unknown;
   };
@@ -239,6 +243,7 @@ type OpenAICompatibleChatResponse = {
 type ModelUsage = {
   inputTokens?: number;
   outputTokens?: number;
+  reasoningTokens?: number;
   totalTokens?: number;
   estimatedSpend?: number;
 };
@@ -246,12 +251,14 @@ type ModelUsage = {
 type ModelWriterResponse = {
   text: string;
   usage: ModelUsage;
+  finishReason?: string;
   latencyMs: number;
 };
 
 type ValidatedWriterPart = {
   attemptCount: number;
   usage: ModelUsage;
+  finishReason?: string;
   latencyMs: number;
   failures: ReportGenerationRetryFailure[];
 };
@@ -1787,15 +1794,17 @@ function retryFailure(
   attempt: number,
   issues: ReportGenerationRetryIssue[],
   latencyMs: number,
-  usage: ModelUsage = {}
+  usage: ModelUsage = {},
+  finishReason?: string
 ): ReportGenerationRetryFailure {
-  return { attempt, issues, ...usage, latencyMs };
+  return { attempt, issues, ...usage, ...(finishReason ? { finishReason } : {}), latencyMs };
 }
 
 function partGenerationMetadata(part: ValidatedWriterPart) {
   return {
     attemptCount: part.attemptCount,
     ...part.usage,
+    ...(part.finishReason ? { finishReason: part.finishReason } : {}),
     latencyMs: part.latencyMs,
     failures: part.failures
   };
@@ -1918,8 +1927,8 @@ async function generateValidatedDeepThesis(request: AstrologyReportRequest, card
     usage = mergeModelUsage(usage, response.usage);
     latencyMs += response.latencyMs;
     const errors = validateDeepThesis(response.text);
-    if (!errors.length) return { thesis: normalizeDeepThesis(response.text), attemptCount: attempt, usage, latencyMs, failures };
-    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage));
+    if (!errors.length) return { thesis: normalizeDeepThesis(response.text), attemptCount: attempt, usage, finishReason: response.finishReason, latencyMs, failures };
+    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage, response.finishReason));
     previousErrors = errors.map((error) => error.message);
   }
   throw new DeepPartGenerationError(
@@ -1958,9 +1967,9 @@ async function generateValidatedDeepSection(input: {
     const errors = validateDeepSection({ ...input, text: response.text });
     if (!errors.length) {
       const section = markdownSectionsFromText(response.text, input.request)[0]!;
-      return { section, attemptCount: attempt, usage, latencyMs, failures };
+      return { section, attemptCount: attempt, usage, finishReason: response.finishReason, latencyMs, failures };
     }
-    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage));
+    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage, response.finishReason));
     previousErrors = errors.map((error) => error.message);
   }
   throw new DeepPartGenerationError(
@@ -2370,9 +2379,11 @@ function addOptionalNumbers(left: number | undefined, right: number | undefined)
 }
 
 function mergeModelUsage(left: ModelUsage, right: ModelUsage): ModelUsage {
+  const reasoningTokens = addOptionalNumbers(left.reasoningTokens, right.reasoningTokens);
   return {
     inputTokens: addOptionalNumbers(left.inputTokens, right.inputTokens),
     outputTokens: addOptionalNumbers(left.outputTokens, right.outputTokens),
+    ...(reasoningTokens === undefined ? {} : { reasoningTokens }),
     totalTokens: addOptionalNumbers(left.totalTokens, right.totalTokens),
     estimatedSpend: addOptionalNumbers(left.estimatedSpend, right.estimatedSpend)
   };
@@ -2491,6 +2502,7 @@ async function writeOpenRouterModelText(
         }
       ],
       max_tokens: maxOutputTokens,
+      ...(request.reportType === "deep" ? { reasoning: { effort: "none" } } : {}),
       temperature: 0.3
     })
   });
@@ -2505,9 +2517,11 @@ async function writeOpenRouterModelText(
     usage: {
       inputTokens: nonnegativeInteger(payload.usage?.prompt_tokens),
       outputTokens: nonnegativeInteger(payload.usage?.completion_tokens),
+      reasoningTokens: nonnegativeInteger(payload.usage?.completion_tokens_details?.reasoning_tokens),
       totalTokens: nonnegativeInteger(payload.usage?.total_tokens),
       estimatedSpend: nonnegativeNumber(payload.usage?.cost)
     },
+    finishReason: typeof payload.choices?.[0]?.finish_reason === "string" ? payload.choices[0].finish_reason : undefined,
     latencyMs: Date.now() - startedAt
   };
 }
@@ -2654,6 +2668,9 @@ async function buildDebugModelReportResult(
         provider: config.reportModelProvider,
         model: config.reportModel,
         modelProfile: config.reportModelProfile,
+        ...(request.reportType === "deep" && config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
+          ? { reasoningEffort: "none" as const }
+          : {}),
         promptVersion: ASTRA_REPORT_PROMPT_VERSION,
         attemptCount: error.generation.attemptCount,
         ...error.generation.usage,
@@ -2674,6 +2691,9 @@ async function buildDebugModelReportResult(
       provider: config.reportModelProvider,
       model: config.reportModel,
       modelProfile: config.reportModelProfile,
+      ...(request.reportType === "deep" && config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
+        ? { reasoningEffort: "none" as const }
+        : {}),
       promptVersion: ASTRA_REPORT_PROMPT_VERSION,
       attemptCount: generation.attemptCount,
       ...generation.usage,

@@ -45,6 +45,27 @@ The model never owns section order, evidence rendering, report provenance, or pu
 
 Generation metadata records the thesis and every chapter's attempts, tokens, estimated spend, and model latency. Every rejected attempt also retains structured failure codes, human-readable reasons, and its available token/spend/latency data. Rejected prose is not persisted. Aggregate latency is wall-clock time; chapter latencies overlap because concurrency is intentional.
 
+## Visible Output Budget
+
+OpenRouter models can spend completion tokens on extended reasoning as well as customer-visible prose. Deep Report generation therefore sends `reasoning.effort: none` for its OpenRouter writer calls. The governing thesis and section signal cards already perform the planning split; the model call's job is to turn that resolved context into a bounded chapter. The 1,400-token chapter allowance is reserved for visible prose rather than shared with an implicit reasoning budget.
+
+Generation metadata records the requested reasoning effort, provider-reported reasoning tokens, and finish reason. This makes a future provider or model-default change observable instead of inferring truncation from word counts after the fact.
+
+The controlled Felicia comparison used the same immutable Tropical, Whole Sign chart snapshot and Claude Sonnet 5 before and after this policy:
+
+| Measure | Default reasoning | Reasoning disabled |
+|---|---:|---:|
+| Attempts | 14 | 11 |
+| Depth retries | 3 | 0 |
+| Total retries | 4 | 1 |
+| Writer spend | $0.1688 | $0.0838 |
+| Wall-clock time | 92 seconds | 50 seconds |
+| Report words | 3,253 | 3,197 |
+| Chart references per 1,000 words | 25.5 | 28.2 |
+| Practical sentences | 28 | 35 |
+
+All nine chapters kept their existing depth floors on the first attempt. The one remaining retry was the separate public-language rule for `the person`; this decision does not weaken that rule or any depth, evidence, or natal-timing validator.
+
 ## Recovered Report Comparison
 
 The first production comparison used Tony's unchanged Tropical, Whole Sign Self chart and Claude Sonnet 5 for both reports.

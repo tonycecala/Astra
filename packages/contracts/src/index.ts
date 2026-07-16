@@ -612,8 +612,10 @@ export const reportGenerationRetryFailureSchema = z.object({
   issues: z.array(reportGenerationRetryIssueSchema).min(1),
   inputTokens: z.number().int().nonnegative().optional(),
   outputTokens: z.number().int().nonnegative().optional(),
+  reasoningTokens: z.number().int().nonnegative().optional(),
   totalTokens: z.number().int().nonnegative().optional(),
   estimatedSpend: z.number().nonnegative().optional(),
+  finishReason: z.string().min(1).optional(),
   latencyMs: z.number().int().nonnegative()
 });
 
@@ -621,8 +623,10 @@ const reportGenerationPartMetadataSchema = z.object({
   attemptCount: z.number().int().positive(),
   inputTokens: z.number().int().nonnegative().optional(),
   outputTokens: z.number().int().nonnegative().optional(),
+  reasoningTokens: z.number().int().nonnegative().optional(),
   totalTokens: z.number().int().nonnegative().optional(),
   estimatedSpend: z.number().nonnegative().optional(),
+  finishReason: z.string().min(1).optional(),
   latencyMs: z.number().int().nonnegative(),
   failures: z.array(reportGenerationRetryFailureSchema).optional()
 });
@@ -636,8 +640,10 @@ export const reportGenerationMetadataSchema = z.object({
   attemptCount: z.number().int().positive(),
   inputTokens: z.number().int().nonnegative().optional(),
   outputTokens: z.number().int().nonnegative().optional(),
+  reasoningTokens: z.number().int().nonnegative().optional(),
   totalTokens: z.number().int().nonnegative().optional(),
   estimatedSpend: z.number().nonnegative().optional(),
+  reasoningEffort: z.enum(["none", "minimal", "low", "medium", "high", "xhigh", "max"]).optional(),
   latencyMs: z.number().int().nonnegative().optional(),
   orchestration: z.enum(["monolithic", "sectioned-v1"]).optional(),
   thesis: reportGenerationPartMetadataSchema.optional(),

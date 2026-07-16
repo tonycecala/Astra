@@ -69,10 +69,12 @@ function sectionWordTarget(title: string) {
 function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTransport?: boolean; timingFailure?: boolean } = {}) {
   const calls = new Map<string, number>();
   const prompts = new Map<string, string[]>();
+  const requestBodies: Array<Record<string, unknown>> = [];
   let active = 0;
   let maxActive = 0;
   const fetchImpl = async (_url: string | URL | Request, init?: RequestInit) => {
-    const body = JSON.parse(String(init?.body)) as { messages?: Array<{ content?: string }> };
+    const body = JSON.parse(String(init?.body)) as { messages?: Array<{ content?: string }> } & Record<string, unknown>;
+    requestBodies.push(body);
     const prompt = body.messages?.map((message) => message.content ?? "").join("\n") ?? "";
     const title = sectionTitleFromPrompt(prompt) ?? "Thesis";
     const count = (calls.get(title) ?? 0) + 1;
@@ -86,13 +88,13 @@ function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTranspor
     const content = title === "Thesis"
       ? "A private intelligence seeks public usefulness without sacrificing discernment, while courage and imagination repeatedly test whether desire can become disciplined action. The report should show how sensitivity, range, and visible initiative become trustworthy when they are given structure, proportion, honest relationship, and practical form."
       : `## ${title}\n\n${prose(title, words, options.timingFailure && title === "Integration")}`;
-    const choices = title === "Work" && options.retryWorkTransport && count === 1 ? [] : [{ message: { content } }];
-    return new Response(JSON.stringify({ choices, usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2, cost: 0 } }), {
+    const choices = title === "Work" && options.retryWorkTransport && count === 1 ? [] : [{ finish_reason: "stop", message: { content } }];
+    return new Response(JSON.stringify({ choices, usage: { prompt_tokens: 1, completion_tokens: 1, completion_tokens_details: { reasoning_tokens: 0 }, total_tokens: 2, cost: 0 } }), {
       status: 200,
       headers: { "content-type": "application/json" }
     });
   };
-  return { fetchImpl, calls, prompts, maxActive: () => maxActive };
+  return { fetchImpl, calls, prompts, requestBodies, maxActive: () => maxActive };
 }
 
 const provider = sectionedProvider({ retryEmotions: true, retryWorkTransport: true });
@@ -103,6 +105,8 @@ const completed = await buildAstrologyReportResultAsync(request, {
 assert.equal(completed.status, "completed");
 assert.equal(completed.generationMetadata?.orchestration, "sectioned-v1");
 assert.equal(completed.generationMetadata?.attemptCount, 12);
+assert.equal(completed.generationMetadata?.reasoningEffort, "none");
+assert.equal(completed.generationMetadata?.reasoningTokens, 0);
 assert.equal(completed.generationMetadata?.thesis?.attemptCount, 1);
 assert.equal(completed.generationMetadata?.sections?.length, 9);
 assert.equal(completed.generationMetadata?.sections?.find((section) => section.title === "Emotions")?.attemptCount, 2);
@@ -112,6 +116,8 @@ assert.equal(emotionsMetadata?.failures?.[0]?.attempt, 1);
 assert.equal(emotionsMetadata?.failures?.[0]?.issues[0]?.code, "below_minimum");
 assert.match(emotionsMetadata?.failures?.[0]?.issues[0]?.message ?? "", /must be at least 300 words/);
 assert.equal(emotionsMetadata?.failures?.[0]?.inputTokens, 1);
+assert.equal(emotionsMetadata?.failures?.[0]?.reasoningTokens, 0);
+assert.equal(emotionsMetadata?.failures?.[0]?.finishReason, "stop");
 assert.ok((emotionsMetadata?.failures?.[0]?.latencyMs ?? -1) >= 0);
 assert.equal("text" in (emotionsMetadata?.failures?.[0] ?? {}), false);
 const workMetadata = completed.generationMetadata?.sections?.find((section) => section.title === "Work");
@@ -127,6 +133,8 @@ assert.equal(provider.maxActive(), 3);
 assert.match(provider.prompts.get("Emotions")?.[1] ?? "", /must be at least 300 words/);
 assert.doesNotMatch(provider.prompts.get("Work")?.[1] ?? "", /## Emotions/);
 assert.match(provider.prompts.get("Integration")?.[0] ?? "", /not a forecast/);
+assert.ok(provider.requestBodies.length > 0);
+for (const body of provider.requestBodies) assert.deepEqual(body.reasoning, { effort: "none" });
 
 const timingProvider = sectionedProvider({ timingFailure: true });
 const falseTiming = await buildAstrologyReportResultAsync(request, { env, fetchImpl: timingProvider.fetchImpl });
