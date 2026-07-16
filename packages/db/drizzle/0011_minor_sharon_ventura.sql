@@ -1,0 +1,1 @@
+ALTER TABLE "astrology_report_results" ADD COLUMN "generation_metadata" jsonb;

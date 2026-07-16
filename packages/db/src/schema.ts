@@ -281,6 +281,7 @@ export const astrologyReportResults = pgTable(
     provenance: jsonb("provenance").notNull().default(sql`'[]'::jsonb`),
     publicSignal: jsonb("public_signal"),
     reportBasis: jsonb("report_basis"),
+    generationMetadata: jsonb("generation_metadata"),
     error: text("error"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
   },

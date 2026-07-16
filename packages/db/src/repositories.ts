@@ -306,6 +306,7 @@ function astrologyReportResultFromRow(row: typeof astrologyReportResults.$inferS
     provenance: row.provenance,
     publicSignal: row.publicSignal ?? undefined,
     reportBasis: row.reportBasis ?? undefined,
+    generationMetadata: row.generationMetadata ?? undefined,
     error: row.error ?? undefined,
     createdAt: toIsoDate(row.createdAt)
   });
@@ -2128,6 +2129,7 @@ export async function recordAstrologyReportResult(
         provenance: input.provenance,
         publicSignal: input.publicSignal ?? null,
         reportBasis: input.reportBasis ?? null,
+        generationMetadata: input.generationMetadata ?? null,
         error: input.error ?? null,
         createdAt: now
       })
@@ -2142,6 +2144,7 @@ export async function recordAstrologyReportResult(
           provenance: input.provenance,
           publicSignal: input.publicSignal ?? null,
           reportBasis: input.reportBasis ?? null,
+          generationMetadata: input.generationMetadata ?? null,
           error: input.error ?? null,
           createdAt: now
         }

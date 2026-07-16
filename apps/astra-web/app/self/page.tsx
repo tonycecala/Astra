@@ -119,7 +119,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
             <div className="eyebrow">{ui.login.codeFlowEyebrow}</div>
             <h2>{ui.login.title}</h2>
             <p>{ui.login.intro}</p>
-            <Link className="button" href="/">
+            <Link className="button" href="/login?next=/self">
               {ui.self.signInCta}
             </Link>
           </article>

@@ -583,6 +583,20 @@ export const astrologyReportPublicSignalSchema = z.object({
   provenanceSummary: z.string().min(1)
 });
 
+export const reportGenerationMetadataSchema = z.object({
+  writer: z.string().min(1),
+  provider: z.string().min(1).optional(),
+  model: z.string().min(1).optional(),
+  modelProfile: z.string().min(1).optional(),
+  promptVersion: z.string().min(1),
+  attemptCount: z.number().int().positive(),
+  inputTokens: z.number().int().nonnegative().optional(),
+  outputTokens: z.number().int().nonnegative().optional(),
+  totalTokens: z.number().int().nonnegative().optional(),
+  estimatedSpend: z.number().nonnegative().optional(),
+  latencyMs: z.number().int().nonnegative().optional()
+});
+
 export const astrologyReportRequestSchema = z.object({
   id: idSchema,
   userId: idSchema,
@@ -625,6 +639,7 @@ export const astrologyReportResultSchema = z.object({
   provenance: z.array(astrologyReportProvenanceSchema).default([]),
   publicSignal: astrologyReportPublicSignalSchema.optional(),
   reportBasis: reportChartBasisSnapshotSchema.optional(),
+  generationMetadata: reportGenerationMetadataSchema.optional(),
   error: z.string().min(1).optional(),
   createdAt: isoDateSchema
 });
@@ -640,6 +655,7 @@ export const recordAstrologyReportResultSchema = z.object({
   provenance: z.array(astrologyReportProvenanceSchema).default([]),
   publicSignal: astrologyReportPublicSignalSchema.optional(),
   reportBasis: reportChartBasisSnapshotSchema.optional(),
+  generationMetadata: reportGenerationMetadataSchema.optional(),
   error: z.string().min(1).optional()
 });
 

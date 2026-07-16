@@ -377,6 +377,16 @@ test.describe("clean-start routes", () => {
     await expect(page.locator("html")).toHaveAttribute("data-astra-theme", "light");
   });
 
+  test("login surface follows the Astra theme", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.locator(".loginShell")).toHaveCSS("background-color", "rgb(238, 232, 220)");
+    await expect(page.locator(".loginCard")).toHaveCSS("background-color", "rgba(255, 255, 255, 0.88)");
+
+    await page.getByRole("button", { name: "Switch to dark mode" }).first().click();
+    await expect(page.locator(".loginShell")).toHaveCSS("background-color", "rgb(8, 5, 13)");
+    await expect(page.locator(".loginCard")).toHaveCSS("background-color", "rgba(8, 13, 24, 0.62)");
+  });
+
   test("login route exposes Better Auth controls", async ({ page }) => {
     await page.goto("/login");
     await expect(page.getByLabel("Authentication panel")).toBeVisible();
@@ -393,9 +403,9 @@ test.describe("clean-start routes", () => {
     const name = "Astra Onboarding Smoke";
 
     await signInWithOtp(page, { email, name });
-    await page.getByRole("link", { name: "Continue to Self" }).click();
+    await expect(page).toHaveURL(/\/self(?:[?#]|$)/);
 
-    await expect(page.getByRole("heading", { name })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Request Report" })).toBeVisible();
     await expect(page.getByLabel("Alpha onboarding guidance")).toHaveCount(0);
     await expect(page.getByLabel("Chart generation flow")).toHaveCount(0);

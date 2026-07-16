@@ -300,7 +300,16 @@ function resultPublicHeadline(value: unknown) {
   return textValue(asRecord(value).headline);
 }
 
-function reportProviderModel(request: { context: unknown } | null, result: { provenance: unknown; error: string | null } | null) {
+function reportProviderModel(request: { context: unknown } | null, result: { provenance: unknown; generationMetadata: unknown; error: string | null } | null) {
+  const current = asRecord(result?.generationMetadata);
+  const currentProvider = metadataText(current.provider);
+  const currentModel = metadataText(current.model);
+  if (currentProvider || currentModel) {
+    return {
+      provider: currentProvider || ui.admin.notRecorded,
+      model: currentModel || ui.admin.notRecorded
+    };
+  }
   const v1 = reportV1Metadata(request);
   const provider = metadataText(v1.provider);
   const model = metadataText(v1.model);
@@ -322,7 +331,17 @@ function reportProviderModel(request: { context: unknown } | null, result: { pro
   };
 }
 
-function reportUsageMetadata(request: { context: unknown } | null, result: { provenance: unknown; error: string | null } | null) {
+function reportUsageMetadata(request: { context: unknown } | null, result: { provenance: unknown; generationMetadata: unknown; error: string | null } | null) {
+  const current = asRecord(result?.generationMetadata);
+  if (current.inputTokens || current.outputTokens || current.totalTokens || current.estimatedSpend || current.latencyMs) {
+    return {
+      input: metadataCount(current.inputTokens),
+      output: metadataCount(current.outputTokens),
+      total: metadataCount(current.totalTokens),
+      spend: metadataSpend(current.estimatedSpend),
+      latency: metadataLatency(current.latencyMs)
+    };
+  }
   const v1 = reportV1Metadata(request);
   if (v1.inputTokens || v1.outputTokens || v1.totalTokens || v1.estimatedSpend || v1.latencyMs) {
     return {
@@ -422,6 +441,7 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
             summary: astrologyReportResults.summary,
             provenance: astrologyReportResults.provenance,
             publicSignal: astrologyReportResults.publicSignal,
+            generationMetadata: astrologyReportResults.generationMetadata,
             error: astrologyReportResults.error,
             createdAt: astrologyReportResults.createdAt
           })

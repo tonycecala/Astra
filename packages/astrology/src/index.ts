@@ -35,6 +35,8 @@ export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
+export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07";
+const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 
 type ZodiacMode = ChartSettings["zodiacMode"];
 type HouseSystemMode = ChartSettings["houseSystem"];
@@ -68,11 +70,18 @@ export const reportModelProfilePurposes: Record<ReportModelProfile, string> = {
 };
 
 export const reportModelProfileModels: Record<ReportModelProfile, string[]> = {
-  smoke: ["openai/gpt-5.4-nano"],
+  smoke: ["openai/gpt-5.6-luna"],
   debug: ["anthropic/claude-haiku-4.5"],
-  debug_alt: ["openai/gpt-5.4-mini"],
-  production: ["anthropic/claude-sonnet-4.6"],
-  premium_bakeoff: ["anthropic/claude-sonnet-4.6", "openai/gpt-5.5", "google/gemini-3.1-pro-preview"]
+  debug_alt: ["google/gemini-3.5-flash"],
+  production: ["anthropic/claude-sonnet-5", "google/gemini-3.5-flash"],
+  premium_bakeoff: [
+    "anthropic/claude-sonnet-5",
+    "openai/gpt-5.6-terra",
+    "google/gemini-3.5-flash",
+    "anthropic/claude-opus-4.8",
+    "openai/gpt-5.6-sol",
+    "anthropic/claude-fable-5"
+  ]
 };
 
 export type AstrologyReportGenerationConfig = {
@@ -202,6 +211,11 @@ type OpenAIResponse = {
       type?: string;
     }>;
   }>;
+  usage?: {
+    input_tokens?: unknown;
+    output_tokens?: unknown;
+    total_tokens?: unknown;
+  };
 };
 
 type OpenAICompatibleChatResponse = {
@@ -210,6 +224,25 @@ type OpenAICompatibleChatResponse = {
       content?: unknown;
     };
   }>;
+  usage?: {
+    prompt_tokens?: unknown;
+    completion_tokens?: unknown;
+    total_tokens?: unknown;
+    cost?: unknown;
+  };
+};
+
+type ModelUsage = {
+  inputTokens?: number;
+  outputTokens?: number;
+  totalTokens?: number;
+  estimatedSpend?: number;
+};
+
+type ModelWriterResponse = {
+  text: string;
+  usage: ModelUsage;
+  latencyMs: number;
 };
 
 type HoroscopeCtor = {
@@ -1887,13 +1920,40 @@ function maxModelOutputTokensFor(request: AstrologyReportRequest) {
   return 3200;
 }
 
-async function parseValidatedModelDraft(input: ReportWriterInput, writer: (previousErrors?: string[]) => Promise<string>) {
+function nonnegativeNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : undefined;
+}
+
+function nonnegativeInteger(value: unknown) {
+  const number = nonnegativeNumber(value);
+  return number === undefined ? undefined : Math.round(number);
+}
+
+function addOptionalNumbers(left: number | undefined, right: number | undefined) {
+  if (left === undefined && right === undefined) return undefined;
+  return (left ?? 0) + (right ?? 0);
+}
+
+function mergeModelUsage(left: ModelUsage, right: ModelUsage): ModelUsage {
+  return {
+    inputTokens: addOptionalNumbers(left.inputTokens, right.inputTokens),
+    outputTokens: addOptionalNumbers(left.outputTokens, right.outputTokens),
+    totalTokens: addOptionalNumbers(left.totalTokens, right.totalTokens),
+    estimatedSpend: addOptionalNumbers(left.estimatedSpend, right.estimatedSpend)
+  };
+}
+
+async function parseValidatedModelDraft(input: ReportWriterInput, writer: (previousErrors?: string[]) => Promise<ModelWriterResponse>) {
   let previousErrors: string[] = [];
+  let usage: ModelUsage = {};
+  let latencyMs = 0;
   for (let attempt = 0; attempt < 3; attempt += 1) {
-    const text = await writer(previousErrors);
-    const draft = parseModelDraft(text, input.request, input.chartSignature);
-    const errors = [...validateRawModelText(text), ...validateModelDraft(input.request, draft, input.chartSignature)];
-    if (!errors.length) return draft;
+    const response = await writer(previousErrors);
+    usage = mergeModelUsage(usage, response.usage);
+    latencyMs += response.latencyMs;
+    const draft = parseModelDraft(response.text, input.request, input.chartSignature);
+    const errors = [...validateRawModelText(response.text), ...validateModelDraft(input.request, draft, input.chartSignature)];
+    if (!errors.length) return { draft, attemptCount: attempt + 1, usage, latencyMs };
     previousErrors = errors;
   }
 
@@ -1905,9 +1965,11 @@ async function writeOpenAIDebugModelReportText(
   config: Required<Pick<AstrologyReportGenerationConfig, "reportModel" | "openaiApiKey">>,
   fetchImpl: typeof fetch,
   previousErrors: string[] = []
-): Promise<string> {
+): Promise<ModelWriterResponse> {
+  const startedAt = Date.now();
   const response = await fetchImpl("https://api.openai.com/v1/responses", {
     method: "POST",
+    signal: AbortSignal.timeout(ASTRA_REPORT_MODEL_TIMEOUT_MS),
     headers: {
       authorization: `Bearer ${config.openaiApiKey}`,
       "content-type": "application/json"
@@ -1924,7 +1986,15 @@ async function writeOpenAIDebugModelReportText(
     throw new Error(payload.error?.message || `OpenAI Responses API failed with ${response.status}.`);
   }
 
-  return extractOpenAIText(payload);
+  return {
+    text: extractOpenAIText(payload),
+    usage: {
+      inputTokens: nonnegativeInteger(payload.usage?.input_tokens),
+      outputTokens: nonnegativeInteger(payload.usage?.output_tokens),
+      totalTokens: nonnegativeInteger(payload.usage?.total_tokens)
+    },
+    latencyMs: Date.now() - startedAt
+  };
 }
 
 async function writeOpenRouterDebugModelReportText(
@@ -1932,11 +2002,13 @@ async function writeOpenRouterDebugModelReportText(
   config: Required<Pick<AstrologyReportGenerationConfig, "reportModel" | "openRouterApiKey" | "openRouterBaseUrl">>,
   fetchImpl: typeof fetch,
   previousErrors: string[] = []
-): Promise<string> {
+): Promise<ModelWriterResponse> {
   const baseUrl = config.openRouterBaseUrl.replace(/\/+$/, "");
   const endpoint = baseUrl.endsWith("/chat/completions") ? baseUrl : `${baseUrl}/chat/completions`;
+  const startedAt = Date.now();
   const response = await fetchImpl(endpoint, {
     method: "POST",
+    signal: AbortSignal.timeout(ASTRA_REPORT_MODEL_TIMEOUT_MS),
     headers: {
       authorization: `Bearer ${config.openRouterApiKey}`,
       "content-type": "application/json",
@@ -1961,7 +2033,16 @@ async function writeOpenRouterDebugModelReportText(
     throw new Error(payload.error?.message || `OpenRouter chat completions API failed with ${response.status}.`);
   }
 
-  return extractOpenAICompatibleChatText(payload);
+  return {
+    text: extractOpenAICompatibleChatText(payload),
+    usage: {
+      inputTokens: nonnegativeInteger(payload.usage?.prompt_tokens),
+      outputTokens: nonnegativeInteger(payload.usage?.completion_tokens),
+      totalTokens: nonnegativeInteger(payload.usage?.total_tokens),
+      estimatedSpend: nonnegativeNumber(payload.usage?.cost)
+    },
+    latencyMs: Date.now() - startedAt
+  };
 }
 
 function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: ReportDraft): RecordAstrologyReportResult {
@@ -1984,6 +2065,11 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: Rep
     engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
     status: "completed",
     reportBasis: request.reportBasis,
+    generationMetadata: {
+      writer: LOCAL_DETERMINISTIC_REPORT_WRITER,
+      promptVersion: ASTRA_REPORT_PROMPT_VERSION,
+      attemptCount: 1
+    },
     summary: reportDraft.summary,
     sections: reportDraft.sections,
     provenance: [
@@ -2041,6 +2127,7 @@ async function buildDebugModelReportResult(
   const chartSignature = buildChartSignature(request);
   let draft: ReportDraft;
   let writerSummary: string;
+  let generation: Awaited<ReturnType<typeof parseValidatedModelDraft>>;
   try {
     if (config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER) {
       if (!config.openRouterApiKey || !config.openRouterBaseUrl) {
@@ -2054,7 +2141,7 @@ async function buildDebugModelReportResult(
       const openRouterApiKey = config.openRouterApiKey;
       const openRouterBaseUrl = config.openRouterBaseUrl;
       const writerInput = { request, chartSignature };
-      draft = await parseValidatedModelDraft(
+      generation = await parseValidatedModelDraft(
         writerInput,
         (previousErrors) =>
           writeOpenRouterDebugModelReportText(
@@ -2068,6 +2155,7 @@ async function buildDebugModelReportResult(
             previousErrors
           )
       );
+      draft = generation.draft;
       writerSummary = `${OPENROUTER_REPORT_MODEL_PROVIDER}/${config.reportModel}`;
     } else {
       if (!config.openaiApiKey) {
@@ -2076,7 +2164,7 @@ async function buildDebugModelReportResult(
       const reportModel = config.reportModel;
       const openaiApiKey = config.openaiApiKey;
       const writerInput = { request, chartSignature };
-      draft = await parseValidatedModelDraft(
+      generation = await parseValidatedModelDraft(
         writerInput,
         (previousErrors) =>
           writeOpenAIDebugModelReportText(
@@ -2086,6 +2174,7 @@ async function buildDebugModelReportResult(
             previousErrors
           )
       );
+      draft = generation.draft;
       writerSummary = `${OPENAI_REPORT_MODEL_PROVIDER}/${config.reportModel}`;
     }
   } catch (error) {
@@ -2095,6 +2184,16 @@ async function buildDebugModelReportResult(
 
   return recordAstrologyReportResultSchema.parse({
     ...result,
+    generationMetadata: {
+      writer: DEBUG_MODEL_REPORT_WRITER,
+      provider: config.reportModelProvider,
+      model: config.reportModel,
+      modelProfile: config.reportModelProfile,
+      promptVersion: ASTRA_REPORT_PROMPT_VERSION,
+      attemptCount: generation.attemptCount,
+      ...generation.usage,
+      latencyMs: generation.latencyMs
+    },
     provenance: [
       ...result.provenance.filter((entry) => entry.id !== `${request.id}:writer`),
       {

@@ -140,22 +140,23 @@ function ReportDebugDetails({ report, request }: { report: AstrologyReportResult
 function reportModelDebugRows(report: AstrologyReportResult, request: AstrologyReportRequest | null) {
   const context = recordFrom(request?.context);
   const v1 = recordFrom(context.v1);
-  const provider = debugText(v1.provider);
-  const model = debugText(v1.model);
+  const current = recordFrom(report.generationMetadata);
+  const provider = debugText(current.provider) || debugText(v1.provider);
+  const model = debugText(current.model) || debugText(v1.model);
   const writer = [provider, model].filter(Boolean).join(" · ") || [debugText(report.engine), debugText(report.engineVersion)].filter(Boolean).join(" · ");
   const rows: Array<readonly [string, string]> = [];
   pushDebugRow(rows, ui.library.debugWriter, writer);
   pushDebugRow(rows, ui.library.debugProvider, provider);
   pushDebugRow(rows, ui.library.debugModel, model);
-  pushDebugRow(rows, ui.library.debugModelProfile, v1.modelProfile);
-  pushDebugRow(rows, ui.library.debugPrompt, v1.promptVersion);
+  pushDebugRow(rows, ui.library.debugModelProfile, current.modelProfile || v1.modelProfile);
+  pushDebugRow(rows, ui.library.debugPrompt, current.promptVersion || v1.promptVersion);
   pushDebugRow(rows, ui.library.debugVoice, v1.voice);
   pushDebugRow(rows, ui.library.debugFormat, v1.format);
-  pushDebugRow(rows, ui.library.debugInputTokens, formatCount(v1.inputTokens));
-  pushDebugRow(rows, ui.library.debugOutputTokens, formatCount(v1.outputTokens));
-  pushDebugRow(rows, ui.library.debugTotalTokens, formatCount(v1.totalTokens));
-  pushDebugRow(rows, ui.library.debugSpend, formatSpend(v1.estimatedSpend));
-  pushDebugRow(rows, ui.library.debugLatency, formatLatency(v1.latencyMs));
+  pushDebugRow(rows, ui.library.debugInputTokens, formatCount(current.inputTokens ?? v1.inputTokens));
+  pushDebugRow(rows, ui.library.debugOutputTokens, formatCount(current.outputTokens ?? v1.outputTokens));
+  pushDebugRow(rows, ui.library.debugTotalTokens, formatCount(current.totalTokens ?? v1.totalTokens));
+  pushDebugRow(rows, ui.library.debugSpend, formatSpend(current.estimatedSpend ?? v1.estimatedSpend));
+  pushDebugRow(rows, ui.library.debugLatency, formatLatency(current.latencyMs ?? v1.latencyMs));
   pushDebugRow(rows, ui.library.debugV1Document, v1.reportDocumentId);
   return rows;
 }

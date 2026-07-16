@@ -23,6 +23,10 @@ function shouldCaptureEmailToFile() {
   return clean(process.env.ASTRA_EMAIL_DELIVERY) === "file";
 }
 
+function shouldUseLocalSmtp() {
+  return clean(process.env.ASTRA_EMAIL_DELIVERY) === "smtp";
+}
+
 async function captureLocalEmail(input: SendEmailInput) {
   const outboxDir = clean(process.env.ASTRA_EMAIL_CAPTURE_DIR) || ".astra-email";
   await mkdir(outboxDir, { recursive: true });
@@ -40,7 +44,7 @@ export async function sendEmail(input: SendEmailInput) {
   }
 
   const apiKey = resendKey();
-  if (apiKey) {
+  if (apiKey && !shouldUseLocalSmtp()) {
     const resend = new Resend(apiKey);
     await resend.emails.send({
       from: "Astra <hello@updates.astra.local>",

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Script from "next/script";
 import { Sparkles } from "lucide-react";
 import { AppNavigation } from "../components/AppNavigation";
 import { SidebarAccountControls, TopBar } from "../components/TopBar";
@@ -18,9 +19,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
+        <Script id="astra-theme" strategy="beforeInteractive">{`
 try {
   var storedTheme = window.localStorage && window.localStorage.getItem("astra:theme:v1");
   var cookieMatch = document.cookie.match(/(?:^|; )astra_theme=([^;]+)/);
@@ -31,9 +30,7 @@ try {
 } catch {
   document.documentElement.dataset.astraTheme = "light";
 }
-            `.trim()
-          }}
-        />
+        `.trim()}</Script>
       </head>
       <body>
         <div className="shell">
