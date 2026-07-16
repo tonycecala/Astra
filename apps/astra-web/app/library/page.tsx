@@ -5,7 +5,6 @@ import type { Artifact } from "@astra/contracts";
 import { PageHeader } from "../../components/PageHeader";
 import { ReportReader, formatReportDate, reportSubjectContext, reportTypeLabel } from "../../components/ReportReader";
 import { astrologyReportShares, db, getUserAstrologyReportResult, getUserAstrologyReportRequest, listUserArtifacts, listUserAstrologyReportRequests, listUserAstrologyReportResults } from "@astra/db";
-import { getFoundationViewModel } from "../../lib/foundation";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
 import { and, eq } from "drizzle-orm";
@@ -39,18 +38,38 @@ export default async function LibraryPage({ searchParams }: LibraryPageParams) {
   const query = normalizeQuery(q);
 
   const { profile } = await getAstraAuthContext();
-  const view = profile ? { artifacts: await getUserLibraryArtifacts(profile.userId) } : await getFoundationViewModel();
+  if (!profile) {
+    return (
+      <>
+        <PageHeader eyebrow={ui.library.eyebrow} title={ui.library.title}>
+          {ui.library.intro}
+        </PageHeader>
+        <section className="auth-gate-grid" aria-label={ui.library.listLabel}>
+          <article className="card auth-gate-card">
+            <div className="eyebrow">{ui.login.codeFlowEyebrow}</div>
+            <h2>{ui.login.title}</h2>
+            <p>{ui.login.intro}</p>
+            <Link className="button" href="/login?next=/library">
+              {ui.self.signInCta}
+            </Link>
+          </article>
+        </section>
+      </>
+    );
+  }
+
+  const view = { artifacts: await getUserLibraryArtifacts(profile.userId) };
   const filteredArtifacts = filterLibraryArtifacts(view.artifacts as LibraryArtifact[], activeFilter, query);
   const filterCounts = reportFilterCounts(view.artifacts as LibraryArtifact[]);
   const selectedReport =
-    normalizedReportId && profile
+    normalizedReportId
       ? await getUserAstrologyReportResult(db, {
           requestId: normalizedReportId,
           userId: profile.userId
         })
       : null;
   const selectedRequest =
-    normalizedReportId && profile
+    normalizedReportId
       ? await getUserAstrologyReportRequest(db, {
           requestId: normalizedReportId,
           userId: profile.userId
