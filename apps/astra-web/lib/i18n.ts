@@ -486,6 +486,7 @@ export const ui = {
     reportTypeIdentity: "Identity Report",
     reportTypeCore: "Core Report",
     reportTypeDeep: "Deep Report",
+    reportSectionIntegration: "Integration",
     reportTypeProgressed: "Progressed Report",
     reportTypeSynastry: "Synastry Report",
     reportTypeCoreSelf: "Core Report",

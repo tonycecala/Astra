@@ -12,8 +12,8 @@ let cookieHeader = "";
 
 const expectedHeadings: Record<string, string[]> = {
   identity: ["Identity"],
-  core: ["Identity", "Relationships", "Work", "Right Now"],
-  deep: ["Identity", "Emotions", "Relationships", "Work", "Drive", "Gifts", "Blind Spots", "Growth", "Right Now"],
+  core: ["Identity", "Relationships", "Work", "Integration"],
+  deep: ["Identity", "Emotions", "Relationships", "Work", "Drive", "Gifts", "Blind Spots", "Growth", "Integration"],
   progressed: ["Current Chapter", "Progressed Sun", "Progressed Moon", "Integration"],
   synastry: ["Attraction", "Friction", "Communication", "Stability"]
 };

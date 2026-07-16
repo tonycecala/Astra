@@ -212,7 +212,7 @@ function buildComparison(input: {
       `### ${change.title}\n\nThis section is ${Math.abs(change.delta).toLocaleString()} words ${change.delta >= 0 ? "longer" : "shorter"}. The new version opens:\n\n> ${opening(change.body)}\n`
     ).join("\n") +
     `\n## Section-by-section view\n\n| Section | Previous words | Sonnet 5 words | Length change | Shared sentences |\n|---|---:|---:|---:|---:|\n${sectionRows}\n\n` +
-    `## How to read this\n\nA low shared-sentence percentage does not mean the astrology changed. It means Sonnet 5 synthesized the same chart evidence in its own language. The most useful test is whether the new report feels more specific, psychologically usable, and cumulative as it moves from Identity through Right Now, rather than merely being longer.\n\n` +
+    `## How to read this\n\nA low shared-sentence percentage does not mean the astrology changed. It means Sonnet 5 synthesized the same chart evidence in its own language. The most useful test is whether the new report feels more specific, psychologically usable, and cumulative as it moves from Identity through Integration, rather than merely being longer.\n\n` +
     `## Provenance\n\n- Previous report ID: \`${textFrom(input.prior.request.id)}\`\n- New report ID: \`${textFrom(input.next.request.id)}\`\n- Subject: Tony Cecala\n- Birth data: unchanged saved Self chart\n- Zodiac: ${label(input.chartSettings.zodiacMode)}\n- Houses: ${label(input.chartSettings.houseSystem)}\n- Previous model: ${oldModel}\n- New model: ${newModel}\n`;
 }
 

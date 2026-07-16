@@ -29,7 +29,7 @@ export function ReportReader({
   const title = reportDisplayTitle(request, report.publicSignal?.headline);
   const evidenceByTitle = buildReportEvidenceByTitle(request, report);
   const reportMarkdown = reportMarkdownFrom(report, request, title, subject.name, evidenceByTitle);
-  const sectionMarkdown = reportSectionsMarkdownFrom(report, evidenceByTitle);
+  const sectionMarkdown = reportSectionsMarkdownFrom(report, request, evidenceByTitle);
   const chartSnapshot = buildReportChartSnapshot(request);
 
   return (
@@ -262,17 +262,22 @@ function reportMarkdownFrom(
   const sections = report.sections
     .map((section) => {
       const evidence = evidenceMarkdownFor(section.title, evidenceByTitle);
-      return [`## ${section.title}`, customerFacingReportBody(section.body), evidence].filter(Boolean).join("\n\n");
+      return [`## ${customerFacingSectionTitle(section.title, request)}`, customerFacingReportBody(section.body), evidence].filter(Boolean).join("\n\n");
     })
     .join("\n\n");
 
   return [`# ${title}`, metadata.join("\n"), report.summary ? `> ${report.summary}` : "", sections].filter(Boolean).join("\n\n");
 }
 
-function reportSectionsMarkdownFrom(report: AstrologyReportResult, evidenceByTitle: ReportEvidenceByTitle) {
+function reportSectionsMarkdownFrom(report: AstrologyReportResult, request: AstrologyReportRequest | null, evidenceByTitle: ReportEvidenceByTitle) {
   return report.sections
-    .map((section) => [`## ${section.title}`, customerFacingReportBody(section.body), evidenceMarkdownFor(section.title, evidenceByTitle)].filter(Boolean).join("\n\n"))
+    .map((section) => [`## ${customerFacingSectionTitle(section.title, request)}`, customerFacingReportBody(section.body), evidenceMarkdownFor(section.title, evidenceByTitle)].filter(Boolean).join("\n\n"))
     .join("\n\n");
+}
+
+function customerFacingSectionTitle(title: string, request: AstrologyReportRequest | null) {
+  const natalFamily = request?.reportType === "core" || request?.reportType === "core_self" || request?.reportType === "chart_interpretation" || request?.reportType === "deep";
+  return natalFamily && title === "Right Now" ? ui.library.reportSectionIntegration : title;
 }
 
 function buildReportChartSnapshot(request: AstrologyReportRequest | null) {

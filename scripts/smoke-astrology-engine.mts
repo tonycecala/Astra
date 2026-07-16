@@ -306,7 +306,7 @@ const successfulModelFetch: typeof fetch = async (url, init) => {
         "",
         "The model draft stays inside the chart evidence supplied by the section cards. It treats work as an expression of the same Gemini/Virgo/Cancer pattern and does not invent a new public headline.",
         "",
-        "## Right Now",
+        "## Integration",
         "",
         "Right now, the model draft adds a private reflection prompt while public signal publishing stays deterministic. It gives the reader one practical sentence without changing the stored public signal summary."
       ].join("\n")
@@ -325,7 +325,7 @@ if (debugModelCompleted.status !== "completed") {
 if (!debugModelCompleted.summary?.includes("Model draft kept")) {
   throw new Error("Debug model writer did not preserve the mocked private summary.");
 }
-if (debugModelCompleted.sections.length !== 4 || !debugModelCompleted.sections.some((section) => section.title === "Right Now")) {
+if (debugModelCompleted.sections.length !== 4 || !debugModelCompleted.sections.some((section) => section.title === "Integration")) {
   throw new Error("Debug model writer did not preserve the mocked private sections.");
 }
 if (debugModelCompleted.publicSignal?.headline !== "Tony C — Core Report") {
@@ -375,7 +375,7 @@ const unsupportedClaimFetch: typeof fetch = async () => {
         "",
         "The model draft keeps work material short for this validation path.",
         "",
-        "## Right Now",
+        "## Integration",
         "",
         "The model draft keeps current-season material short for this validation path."
       ].join("\n")

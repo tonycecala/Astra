@@ -40,7 +40,7 @@ const v1InterpretiveNotes = [
     meaning: "Inspired action and mythic imagination are strong, but vision must be tested against reality quickly."
   },
   {
-    label: "Right Now",
+    label: "Integration",
     thesis: "Uranus conjunct the natal Sun marks an identity reset through liberation, technology, voice, networks, and private awakening becoming public expression."
   }
 ];

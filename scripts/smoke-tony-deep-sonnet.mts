@@ -94,7 +94,7 @@ const v1InterpretiveNotes = [
     thesis: "Growth comes from making vision testable and letting private intelligence become shared contribution without scattering the center."
   },
   {
-    label: "Right Now",
+    label: "Integration",
     thesis: "Uranus conjunct the natal Sun marks an identity reset through liberation, technology, voice, networks, and private awakening becoming public expression."
   }
 ];
@@ -256,7 +256,7 @@ const result = generated.result as JsonObject | undefined;
 if (result?.status !== "completed") throw new Error("Tony Deep Sonnet report did not complete.");
 
 const sections = Array.isArray(result.sections) ? (result.sections as JsonObject[]) : [];
-const expectedHeadings = ["Identity", "Emotions", "Relationships", "Work", "Drive", "Gifts", "Blind Spots", "Growth", "Right Now"];
+const expectedHeadings = ["Identity", "Emotions", "Relationships", "Work", "Drive", "Gifts", "Blind Spots", "Growth", "Integration"];
 const titles = sections.map((section) => String(section.title ?? ""));
 for (const heading of expectedHeadings) {
   if (!titles.includes(heading)) {
@@ -297,7 +297,7 @@ try {
   await page.goto(reportUrl, { waitUntil: "networkidle" });
   await page.getByText("Deep Portrait").first().waitFor();
   await page.getByRole("heading", { name: "Identity" }).waitFor();
-  await page.getByRole("heading", { name: "Right Now" }).waitFor();
+  await page.getByRole("heading", { name: "Integration" }).waitFor();
   await page.screenshot({
     path: join(outputDir, "job1-tony-deep-sonnet-report-desktop.png"),
     fullPage: true

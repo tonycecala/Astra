@@ -37,6 +37,7 @@ export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
 export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
+const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
 
 type ZodiacMode = ChartSettings["zodiacMode"];
 type HouseSystemMode = ChartSettings["houseSystem"];
@@ -321,8 +322,8 @@ const horoscopeLib = (horoscopeNamespace.default ?? horoscopeNamespace["module.e
 const { Horoscope, Origin } = horoscopeLib;
 
 const personIdentityReportHeadings = ["Identity"] as const;
-const personCoreReportHeadings = ["Identity", "Relationships", "Work", "Right Now"] as const;
-const personDeepReportHeadings = ["Identity", "Emotions", "Relationships", "Work", "Drive", "Gifts", "Blind Spots", "Growth", "Right Now"] as const;
+const personCoreReportHeadings = ["Identity", "Relationships", "Work", "Integration"] as const;
+const personDeepReportHeadings = ["Identity", "Emotions", "Relationships", "Work", "Drive", "Gifts", "Blind Spots", "Growth", "Integration"] as const;
 const synastryReportHeadings = ["Attraction", "Friction", "Communication", "Stability"] as const;
 const progressedReportHeadings = ["Current Chapter", "Progressed Sun", "Progressed Moon", "Integration"] as const;
 const forbiddenReportFragments = [
@@ -1151,7 +1152,7 @@ function reportSectionSignalCardsFromRawSignals(rawSignals: RawReportSignal[], h
         const rightPriority = heading === "Identity" && right.id.includes("sun") ? right.priority + 2 : right.priority;
         return rightPriority - leftPriority;
       })
-      .slice(0, heading === "Right Now" ? 3 : 4);
+      .slice(0, heading === "Right Now" || heading === "Integration" ? 3 : 4);
     const fallback = selected.length ? selected : rawSignals.slice().sort((left, right) => right.priority - left.priority).slice(0, 2);
     const chartSignals = fallback.map((signal) => ({
       id: signal.id,
@@ -1585,10 +1586,16 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
           "Deep Report depth rules:",
           "- Identity should be 400-500 words.",
           "- Do not undershoot the Identity minimum; 350 words is a hard floor.",
+          "- Emotions, Relationships, and Work should each be 300-425 words.",
+          "- Drive, Gifts, Blind Spots, and Growth should each be 275-400 words.",
+          "- Integration should be 225-325 words.",
+          "- The complete Deep Report should be at least 2,625 words across its nine chapters.",
           "- Identity must feel expanded beyond an Identity Report.",
           "- Include fuller synthesis, chart ruler when relevant, and major identity aspects from the Identity card.",
-          "- You may include a complete growth or practice sentence.",
-          "- Because Deep has many sections, keep the Identity section rich without trying to carry the entire report alone."
+          "- Every section must include a complete growth or practice sentence.",
+          "- Give each section its own governing question and section-specific secondary signal.",
+          "- When a signal repeats, do not repeat its thesis, warning, or practice; interpret a different consequence of that signal in the section's life domain.",
+          "- Identity must not carry the report alone. The remaining eight sections must sustain premium interpretive depth."
         ].join("\n")
       : request.reportType === "core" || request.reportType === "core_self" || request.reportType === "chart_interpretation"
         ? [
@@ -1605,7 +1612,7 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     requiredHeadings,
     "",
     "Use the required headings exactly as written.",
-    'If Right Now is selected, the heading must be exactly "## Right Now"; never write "## Timing" or any timing heading variant.',
+    'If Integration is selected, the heading must be exactly "## Integration"; do not rename it Right Now, Timing, or Current Chapter.',
     "",
     "Write only the prose body for each selected section.",
     "Do not write Chart Evidence.",
@@ -1639,8 +1646,12 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     "Avoid repeated evidence verbs such as grounds, links, indicates, highlights, and suggests.",
     "When the same signal appears in multiple sections, interpret it through that section's function instead of repeating the same sentence.",
     "Identity opening rule: begin Identity from the Sun placement unless the Identity card has no Sun signal. The first or second sentence must include the exact phrase '[Sign] Sun' or 'Sun in [Sign]' using the Sun sign from the Identity card. Include Sun house or house-system nuance when present, then integrate Mercury/Sun relationship, chart ruler or Ascendant, and dominant identity aspects or themes. Do not make the Sun generic or treat it as standalone Sun-sign astrology.",
-    "Right Now must begin with a paragraph that starts exactly: Right now,",
-    "Right Now must include the active timing signal, natal target or cycle context, interpretation, and practical instruction when those notes are present.",
+    basis.type === "natal"
+      ? "Integration must synthesize enduring natal patterns into a practical way of working with the chart. It is not a forecast and must not claim a transit, progression, season, or unusual current activation."
+      : "Use timing language only from the supplied dated evidence.",
+    basis.type === "natal"
+      ? "Across every natal section, avoid forecast language such as this season, current activation, currently active, or unusually active. Present-day practical language is welcome; invented celestial timing is not."
+      : "",
     "Do not include Generation Metadata. The application appends it after validation.",
     previousErrors.length ? "The previous draft failed validation. Rewrite the full report and avoid these errors:" : "",
     ...previousErrors.map((error) => `- ${error}`),
@@ -1702,6 +1713,42 @@ function validateModelDraft(request: AstrologyReportRequest, draft: ReportDraft,
     const identityWords = sectionWordCounts.find((section) => section.title.trim().toLowerCase() === "identity")?.words ?? 0;
     if (identityWords > 0 && identityWords < 350) {
       errors.push(`${request.reportType === "deep" ? "Deep" : "Core"} Identity should be at least 350 words; found ${identityWords}.`);
+    }
+  }
+
+  if (request.reportType === "deep") {
+    const minimumWordsBySection = new Map([
+      ["identity", 350],
+      ["emotions", 300],
+      ["relationships", 300],
+      ["work", 300],
+      ["drive", 275],
+      ["gifts", 275],
+      ["blind spots", 275],
+      ["growth", 275],
+      ["integration", 225]
+    ]);
+    for (const section of sectionWordCounts) {
+      const minimum = minimumWordsBySection.get(section.title.trim().toLowerCase());
+      if (minimum && section.words < minimum) {
+        errors.push(`Deep ${section.title} should be at least ${minimum} words; found ${section.words}.`);
+      }
+    }
+    const totalWords = sectionWordCounts.reduce((total, section) => total + section.words, 0);
+    if (totalWords < 2625) errors.push(`Deep Report should be at least 2625 words; found ${totalWords}.`);
+  }
+
+  if (reportBasisFor(request).type === "natal") {
+    const natalProse = draft.sections?.map((section) => section.body).join("\n") ?? "";
+    const unsupportedTiming = [
+      /\bcurrently active\b/i,
+      /\bcurrently activated\b/i,
+      /\bunusually active\b/i,
+      /\bpressing closer than usual\b/i,
+      /\bthis (?:current )?season\b/i
+    ];
+    if (unsupportedTiming.some((pattern) => pattern.test(natalProse))) {
+      errors.push("Natal reports must not imply current timing without dated transit or progressed evidence.");
     }
   }
 
@@ -1920,6 +1967,10 @@ function maxModelOutputTokensFor(request: AstrologyReportRequest) {
   return 3200;
 }
 
+function reportModelTimeoutMsFor(request: AstrologyReportRequest) {
+  return request.reportType === "deep" ? ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS : ASTRA_REPORT_MODEL_TIMEOUT_MS;
+}
+
 function nonnegativeNumber(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : undefined;
 }
@@ -1969,7 +2020,7 @@ async function writeOpenAIDebugModelReportText(
   const startedAt = Date.now();
   const response = await fetchImpl("https://api.openai.com/v1/responses", {
     method: "POST",
-    signal: AbortSignal.timeout(ASTRA_REPORT_MODEL_TIMEOUT_MS),
+    signal: AbortSignal.timeout(reportModelTimeoutMsFor(input.request)),
     headers: {
       authorization: `Bearer ${config.openaiApiKey}`,
       "content-type": "application/json"
@@ -2008,7 +2059,7 @@ async function writeOpenRouterDebugModelReportText(
   const startedAt = Date.now();
   const response = await fetchImpl(endpoint, {
     method: "POST",
-    signal: AbortSignal.timeout(ASTRA_REPORT_MODEL_TIMEOUT_MS),
+    signal: AbortSignal.timeout(reportModelTimeoutMsFor(input.request)),
     headers: {
       authorization: `Bearer ${config.openRouterApiKey}`,
       "content-type": "application/json",
