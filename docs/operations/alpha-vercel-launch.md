@@ -39,7 +39,7 @@ For `composer-alpha`:
 - Build Command: `npm --workspace apps/composer-web run build`
 - Output Directory: `apps/composer-web/.next`
 - Production Branch: `alpha`
-- No public custom domain is required; Astra uses `https://composer-alpha.vercel.app`
+- No public custom domain is required; Astra uses `https://composer-alpha-astra-labs.vercel.app`
 - Public routes: `/api/library/availability` and `/api/status`
 - Operator UI and mutation APIs: locked behind `ASTRA_INTERNAL_API_TOKEN`
 
@@ -78,7 +78,7 @@ ASTRA_REPORT_MODEL_PROFILE=production
 ASTRA_OPENROUTER_API_KEY
 ASTRA_OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 ASTRA_ADMIN_ENABLED=1
-COMPOSER_APP_BASE_URL=https://composer-alpha.vercel.app
+COMPOSER_APP_BASE_URL=https://composer-alpha-astra-labs.vercel.app
 ```
 
 Leave `ASTRA_REPORT_MODEL` unset so the production profile resolves to `anthropic/claude-sonnet-5`. Leave `ASTRA_REPORT_MODEL_PROVIDER` unset as well; the production profile resolves it to OpenRouter. Gemini 3.5 Flash remains an explicit admin replay fallback, not an automatic customer-report failover.
