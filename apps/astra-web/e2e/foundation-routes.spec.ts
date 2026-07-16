@@ -173,9 +173,19 @@ async function createCompletedAllyChart(email: string, input: { name: string; re
   return { ally, request, result };
 }
 
-async function createCompletedReport(email: string, input: { chartRequestId?: string; name: string; reportType?: "core" | "deep" | "identity" }) {
+async function createCompletedReport(email: string, input: {
+  chartRequestId?: string;
+  name: string;
+  reportType?: "core" | "deep" | "identity";
+  chartSettings?: {
+    zodiacMode: "tropical" | "sidereal";
+    houseSystem: "whole-sign" | "placidus";
+  };
+  includeLegacyWriterCopy?: boolean;
+}) {
   const [profile] = await db.select().from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
   if (!profile) throw new Error(`Expected profile for ${email}.`);
+  const chartSettings = input.chartSettings ?? { zodiacMode: "tropical" as const, houseSystem: "whole-sign" as const };
   const request = await createAstrologyReportRequest(db, {
     id: randomUUID(),
     userId: profile.userId,
@@ -192,7 +202,7 @@ async function createCompletedReport(email: string, input: { chartRequestId?: st
     },
     intent: "playwright-library-filter-qa",
     context: {
-      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
+      chartSettings,
       subject: { subjectType: "self", displayName: input.name }
     },
     ...(input.chartRequestId
@@ -200,7 +210,7 @@ async function createCompletedReport(email: string, input: { chartRequestId?: st
           reportBasis: {
             schemaVersion: 1 as const,
             type: "natal" as const,
-            chartSettings: { zodiacMode: "tropical" as const, houseSystem: "whole-sign" as const },
+            chartSettings,
             primary: {
               chartRequestId: input.chartRequestId,
               subjectType: "self" as const,
@@ -220,15 +230,20 @@ async function createCompletedReport(email: string, input: { chartRequestId?: st
       : {}),
     source: "self"
   });
-  const result = await recordAstrologyReportResult(
-    db,
-    await buildAstrologyReportResultAsync(request, {
+  const generatedResult = await buildAstrologyReportResultAsync(request, {
       env: {
         ...process.env,
         [ASTRA_REPORT_WRITER_ENV]: LOCAL_DETERMINISTIC_REPORT_WRITER
       }
-    })
-  );
+    });
+  const result = await recordAstrologyReportResult(db, input.includeLegacyWriterCopy
+    ? {
+        ...generatedResult,
+        sections: generatedResult.sections.map((section, index) => index === 0
+          ? { ...section, body: `${section.body} This draft was produced by local-deterministic-writer without an external model call.` }
+          : section)
+      }
+    : generatedResult);
   return { request, result };
 }
 
@@ -552,7 +567,13 @@ test.describe("clean-start routes", () => {
     await selfEditPanel.getByRole("button", { exact: true, name: "Next" }).click();
     await expect(selfEditPanel.getByText("Step 2 of 2: Report")).toBeVisible();
 
-    const completedReport = await createCompletedReport(email, { chartRequestId: completedChart.request.id, name, reportType: "core" });
+    const completedReport = await createCompletedReport(email, {
+      chartRequestId: completedChart.request.id,
+      name,
+      reportType: "core",
+      chartSettings: { zodiacMode: "sidereal", houseSystem: "placidus" },
+      includeLegacyWriterCopy: true
+    });
     await page.goto(`/admin?replayRequest=${completedReport.request.id}`);
     await expect(page.getByLabel("Selected report run inspector")).toContainText(completedReport.request.id.slice(0, 8));
     await expect(page.getByLabel("Selected report run inspector")).toContainText("completed");
@@ -590,10 +611,12 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("link", { name: new RegExp(`View report: ${name}.*Core Report`) })).toBeVisible();
     await page.getByRole("link", { name: new RegExp(`View report: ${name}`) }).first().click();
     await expect(page.getByRole("heading", { name: `${name} — Core Report` })).toBeVisible();
-    const reportChartPlate = page.getByLabel("Birth data and chart snapshot");
+    const reportChartPlate = page.getByLabel("Report basis and chart snapshot");
+    await expect(reportChartPlate.getByText("Report basis", { exact: true })).toBeVisible();
     await expect(reportChartPlate).toContainText("Natal chart");
-    await expect(reportChartPlate).toContainText("Tropical");
-    await expect(reportChartPlate).toContainText("Whole Sign");
+    await expect(reportChartPlate).toContainText("Sidereal");
+    await expect(reportChartPlate).toContainText("Placidus");
+    await expect(page.locator(".reportMarkdown")).not.toContainText("local-deterministic-writer");
     await expect(page.getByRole("heading", { name: "How did this portrait land?" })).toBeVisible();
     const debugDetails = page.locator("details.reportDebugDetails");
     await expect(debugDetails).toContainText("Report debug details");

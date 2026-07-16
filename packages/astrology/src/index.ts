@@ -111,6 +111,7 @@ type ChartSignature = {
   moon: EphemerisPoint;
   ascendant?: EphemerisPoint;
   points: EphemerisPoint[];
+  houseCusps: Array<{ angle: number; house: number }>;
   houseSystem: HouseSystemMode;
   zodiacMode: ZodiacMode;
 };
@@ -249,9 +250,21 @@ type HoroscopePoint = {
   isRetrograde?: boolean;
 };
 
+type HoroscopeHouse = {
+  id?: number;
+  ChartPosition?: {
+    StartPosition?: {
+      Ecliptic?: {
+        DecimalDegrees?: number;
+      };
+    };
+  };
+};
+
 type HoroscopeLike = {
   Ascendant?: HoroscopePoint;
   CelestialBodies: Record<string, HoroscopePoint | undefined>;
+  Houses?: HoroscopeHouse[];
 };
 
 const horoscopeNamespace = horoscopeModule as unknown as {
@@ -828,12 +841,21 @@ function buildChartSignatureFor(
     birthData.latitude !== undefined &&
     birthData.longitude !== undefined;
   const ascendant = hasAscendantInputs && horoscope.Ascendant ? pointFromHoroscope("Ascendant", horoscope.Ascendant) ?? undefined : undefined;
+  const houseCusps = hasAscendantInputs
+    ? (horoscope.Houses ?? []).flatMap((house, index) => {
+        const angle = house.ChartPosition?.StartPosition?.Ecliptic?.DecimalDegrees;
+        return angle === undefined
+          ? []
+          : [{ angle: normalizeDegrees(angle), house: house.id ?? index + 1 }];
+      })
+    : [];
 
   return {
     sun,
     moon,
     ascendant,
     points,
+    houseCusps,
     houseSystem: chartSettings.houseSystem,
     zodiacMode: chartSettings.zodiacMode
   };
@@ -916,12 +938,6 @@ function buildBasisChartContext(request: AstrologyReportRequest): BasisChartCont
 
 function buildChartSignature(request: AstrologyReportRequest): ChartSignature {
   return buildBasisChartContext(request).active;
-}
-
-function formatPoint(point: EphemerisPoint) {
-  const houseText = point.house ? `, house ${point.house}` : "";
-  const retrogradeText = point.retrograde ? ", retrograde" : "";
-  return `${point.body} ${point.degree} degrees ${point.sign}${houseText}${retrogradeText}`;
 }
 
 function bodyDisplayName(bodyId: string) {
@@ -1032,12 +1048,7 @@ function aspectTypeForDistance(distance: number): AstrologyChartSnapshot["aspect
 }
 
 function buildHouseCusps(chartSignature: ChartSignature) {
-  if (!chartSignature.ascendant) return [];
-  const firstHouseSignLongitude = Math.floor(chartSignature.ascendant.longitude / 30) * 30;
-  return Array.from({ length: 12 }, (_, index) => ({
-    angle: normalizeDegrees(firstHouseSignLongitude + index * 30),
-    house: index + 1
-  }));
+  return chartSignature.ascendant ? chartSignature.houseCusps : [];
 }
 
 export function buildAstrologyChartSnapshot(input: AstrologyReportRequest): AstrologyChartSnapshot {
@@ -1335,6 +1346,28 @@ function deterministicChartSettingLabel(value: string) {
   return value.slice(0, 1).toUpperCase() + value.slice(1).replace(/-/g, " ");
 }
 
+function elementAdjective(element: string) {
+  if (element === "air") return "airy";
+  if (element === "earth") return "earthy";
+  if (element === "fire") return "fiery";
+  if (element === "water") return "watery";
+  return element;
+}
+
+function articleFor(value: string) {
+  return /^[aeiou]/i.test(value) ? "an" : "a";
+}
+
+function natalHousePlacementSummary(chartSignature: ChartSignature) {
+  const timedPlacements = [chartSignature.sun, chartSignature.moon]
+    .filter((point) => point.house)
+    .map((point) => `${point.body} in the ${houseLabel(point.house)}`);
+  if (!chartSignature.ascendant || timedPlacements.length === 0) {
+    return "No timed Ascendant was supplied, so house-specific interpretation is omitted.";
+  }
+  return `${deterministicChartSettingLabel(chartSignature.houseSystem)} places the ${timedPlacements.join(" and the ")}, with ${chartSignature.ascendant.sign} rising.`;
+}
+
 function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterInput): ReportDraft {
   const basis = reportBasisFor(request);
   const { sun, moon, ascendant } = chartSignature;
@@ -1346,22 +1379,19 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
   const chartHeadline = `${sun.sign} Sun, ${moon.sign} Moon${risingText}`;
   const reportLabel = deterministicReportLabel(request.reportType);
   const headline = `${subject} — ${reportLabel}`;
-  const houseText = ascendant
-    ? `${deterministicChartSettingLabel(chartSignature.houseSystem)} houses begin with ${ascendant.sign} as the first-house field.`
-    : "No timed Ascendant was supplied, so house language stays out of the public signature.";
-  const questionText = request.question
-    ? `The reading lens is the user's question: "${request.question}"`
-    : "The reading lens is the computed birth-data pattern because no optional question was supplied.";
-  const intentText = request.intent ? `Intent marker: ${request.intent}.` : "No optional intent marker was supplied.";
+  const settingsText = `${deterministicChartSettingLabel(chartSignature.zodiacMode)} zodiac and ${deterministicChartSettingLabel(chartSignature.houseSystem)} houses`;
+  const houseText = natalHousePlacementSummary(chartSignature);
 
   const basisSummary = basis.type === "progressed"
-    ? `a secondary progressed chart as of ${basis.asOfDate}`
+    ? `the secondary progressed chart as of ${basis.asOfDate}`
     : basis.type === "synastry" && basis.partner
-      ? `a two-chart comparison with ${basis.partner.subjectName}`
-      : chartHeadline;
-  const summary = `${subject}'s ${reportLabel.toLowerCase()} is grounded in ${basisSummary}. ${basis.type === "natal" ? houseText : ""}`.trim();
+      ? `the two-chart comparison with ${basis.partner.subjectName}`
+      : `the natal chart: ${chartHeadline}`;
+  const summary = `${subject}'s ${reportLabel.toLowerCase()} uses ${basisSummary}, calculated with ${settingsText}. ${basis.type === "natal" ? houseText : ""}`.trim();
   const headings = reportHeadingsFor(request);
   const sectionCards = buildReportSectionSignalCardsForRequest(request, headings);
+  const sunElement = elementAdjective(sunSign.element);
+  const moonElement = elementAdjective(moonSign.element);
 
   return {
     summary,
@@ -1372,18 +1402,14 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
         basis.type === "synastry" && basis.partner
           ? `${card.title} compares ${subject}'s chart with ${basis.partner.subjectName}'s chart through the cross-chart contacts selected below.`
           : basis.type === "progressed"
-            ? `${card.title} is grounded in the secondary progressed chart for ${basis.asOfDate}, read in relationship to the natal chart.`
-            : `${subject}'s ${card.title} section is grounded in ${chartHeadline}. The Sun sits at ${sun.degree} degrees ${sun.sign}, giving the report a ${sunSign.element} and ${sunSign.mode} center of gravity. The Moon sits at ${moon.degree} degrees ${moon.sign}, giving the emotional weather a ${moonSign.element} and ${moonSign.mode} rhythm.`,
+            ? `${card.title} reads the secondary progressed chart for ${basis.asOfDate} in relationship to the natal chart.`
+            : `${subject}'s ${card.title} begins with ${chartHeadline}. The Sun at ${sun.degree} degrees ${sun.sign} gives this pattern ${articleFor(sunElement)} ${sunElement}, ${sunSign.mode} center of gravity. The Moon at ${moon.degree} degrees ${moon.sign} gives the emotional weather ${articleFor(moonElement)} ${moonElement}, ${moonSign.mode} rhythm.`,
         basis.type === "natal"
-          ? ascendant
-            ? `The Ascendant is ${formatPoint(ascendant)}, so ${deterministicChartSettingLabel(chartSignature.houseSystem)} houses shape the timed chart field.`
-            : "No timed Ascendant was supplied, so house language stays out of the public signature."
-          : `The calculation uses ${deterministicChartSettingLabel(chartSignature.zodiacMode)} zodiac and ${deterministicChartSettingLabel(chartSignature.houseSystem)} houses.`,
+          ? houseText
+          : `The calculation uses ${settingsText}, and the interpretation follows the resulting signs, houses, and contacts.`,
+        `Together, these signals emphasize ${card.capacities.slice(0, 2).join(" and ")}, with ${card.tensions[0]} as the central tension.`,
         `Selected evidence for this section: ${card.evidenceBullets.map((item) => `${item.label} (${item.meaning})`).join("; ")}.`,
-        `${questionText}. ${intentText}`,
-        index === 0
-          ? `This draft was produced by ${LOCAL_DETERMINISTIC_REPORT_WRITER} without an external model call.`
-          : "The deterministic writer keeps this as private structure and exposes only the concise public signal to Composer."
+        request.question ? `The requested focus is: "${request.question}".` : ""
       ].join(" "),
       emphasis: index === 0 ? "primary" : card.title === "Right Now" || card.title === "Integration" ? "practice" : "supporting"
     })),
@@ -1512,6 +1538,7 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     "Do not repeat note labels as public labels.",
     "Do not say capacity, risk, developmental task, language domain, primary strain, or priority note in public prose.",
     "Do not invent chart facts.",
+    "Treat Zodiac and Houses as calculation inputs: the prose must reflect the resulting signs, house placements, and evidence, not merely name the selected settings.",
     "Do not mention any placement, sign, house, aspect, or timing factor not listed in the section card.",
     "Do not use old stock phrases.",
     "Keep second-person grammar clean: write you want, you understand, you adapt, and you believe; never write you wants, you understands, you adapts, or you believes.",

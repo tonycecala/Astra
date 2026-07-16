@@ -377,8 +377,8 @@ if (!String(((generated.result as JsonObject).publicSignal as JsonObject).proven
   throw new Error("User report generation route did not preserve deterministic writer provenance.");
 }
 const generatedSections = Array.isArray((generated.result as JsonObject).sections) ? ((generated.result as JsonObject).sections as JsonObject[]) : [];
-if (configuredWriter === LOCAL_DETERMINISTIC_REPORT_WRITER && !generatedSections.some((section) => String(section.body).includes("without an external model call"))) {
-  throw new Error("User report generation route did not prove the local non-model writer route.");
+if (generatedSections.some((section) => /local-deterministic-writer|external model call|intent marker/i.test(String(section.body)))) {
+  throw new Error("User report generation route exposed writer or generation internals in customer prose.");
 }
 if (configuredWriter === DEBUG_MODEL_REPORT_WRITER && !String(((generated.result as JsonObject).publicSignal as JsonObject).provenanceSummary).includes(DEBUG_MODEL_REPORT_WRITER)) {
   throw new Error("User report generation route did not preserve debug model writer provenance.");

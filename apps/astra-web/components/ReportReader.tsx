@@ -234,6 +234,21 @@ export function formatReportDate(value: string) {
 
 type ReportEvidenceByTitle = Record<string, Array<{ label: string; meaning: string }>>;
 
+const legacyCustomerCopyPatterns = [
+  /\s*The reading lens is the computed birth-data pattern because no optional question was supplied\.\.?/gi,
+  /\s*No optional intent marker was supplied\./gi,
+  /\s*Intent marker:\s*[^.]*\./gi,
+  /\s*This draft was produced by local-deterministic-writer without an external model call\./gi,
+  /\s*The deterministic writer keeps this as private structure and exposes only the concise public signal to Composer\./gi
+];
+
+function customerFacingReportBody(body: string) {
+  return legacyCustomerCopyPatterns
+    .reduce((cleaned, pattern) => cleaned.replace(pattern, ""), body)
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 function reportMarkdownFrom(
   report: AstrologyReportResult,
   request: AstrologyReportRequest | null,
@@ -250,7 +265,7 @@ function reportMarkdownFrom(
   const sections = report.sections
     .map((section) => {
       const evidence = evidenceMarkdownFor(section.title, evidenceByTitle);
-      return [`## ${section.title}`, section.body.trim(), evidence].filter(Boolean).join("\n\n");
+      return [`## ${section.title}`, customerFacingReportBody(section.body), evidence].filter(Boolean).join("\n\n");
     })
     .join("\n\n");
 
@@ -259,7 +274,7 @@ function reportMarkdownFrom(
 
 function reportSectionsMarkdownFrom(report: AstrologyReportResult, evidenceByTitle: ReportEvidenceByTitle) {
   return report.sections
-    .map((section) => [`## ${section.title}`, section.body.trim(), evidenceMarkdownFor(section.title, evidenceByTitle)].filter(Boolean).join("\n\n"))
+    .map((section) => [`## ${section.title}`, customerFacingReportBody(section.body), evidenceMarkdownFor(section.title, evidenceByTitle)].filter(Boolean).join("\n\n"))
     .join("\n\n");
 }
 

@@ -1784,8 +1784,8 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   float: left;
   display: grid;
   gap: 9px;
-  width: 184px;
-  max-width: 184px;
+  width: 208px;
+  max-width: 208px;
   margin: 3px 1.5em 10px 0;
   padding: 10px;
   border: 1px solid color-mix(in srgb, var(--gold) 30%, var(--line));
@@ -1933,8 +1933,8 @@ html[data-astra-theme="dark"] .reportReaderDocument {
 
 .reportDocumentPlateFacts div {
   display: grid;
-  grid-template-columns: 52px minmax(0, 1fr);
-  gap: 10px;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 8px;
   align-items: baseline;
 }
 
@@ -1948,13 +1948,12 @@ html[data-astra-theme="dark"] .reportReaderDocument {
 .reportDocumentPlateFacts dt {
   color: var(--gold);
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .reportDocumentPlateFacts dd {
   color: var(--ink);
-  text-transform: capitalize;
 }
 
 .reportMarkdown {
@@ -4093,6 +4092,8 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
 
   .reportDocumentPlate {
     float: none;
+    grid-template-columns: 112px minmax(0, 1fr);
+    align-items: start;
     width: 100%;
     max-width: none;
     margin: 0 0 18px;

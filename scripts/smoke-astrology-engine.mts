@@ -101,8 +101,8 @@ for (const phrase of expectedSignature) {
 if (completed.sections.length < 3) {
   throw new Error("Configured astrology report should include core, planetary, and practice sections.");
 }
-if (!completed.sections.some((section) => section.body.includes("without an external model call"))) {
-  throw new Error("Configured astrology report should prove the local non-model writer route.");
+if (completed.sections.some((section) => /local-deterministic-writer|external model call|intent marker/i.test(section.body))) {
+  throw new Error("Customer report prose must not expose writer or generation internals.");
 }
 if (!completed.provenance.some((entry) => entry.kind === "engine")) {
   throw new Error("Configured astrology report should include engine provenance.");

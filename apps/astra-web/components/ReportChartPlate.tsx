@@ -48,7 +48,10 @@ function formatHouse(house?: number) {
 
 function formatChartSetting(value: string) {
   if (value === "whole-sign") return ui.library.reportChartWholeSign;
-  return value.slice(0, 1).toUpperCase() + value.slice(1).replace(/-/g, " ");
+  if (value === "placidus") return ui.library.reportChartPlacidus;
+  if (value === "tropical") return ui.library.reportChartTropical;
+  if (value === "sidereal") return ui.library.reportChartSidereal;
+  return ui.library.reportUnknownChartValue;
 }
 
 function placementLine(label: string, placement?: ChartPlacement) {
@@ -85,6 +88,10 @@ export function ReportChartPlate({
   ].filter((line): line is string => Boolean(line));
   const reportBasis = request?.reportBasis;
   const primaryBirthData = reportBasis?.primary.birthData ?? request?.birthData;
+  const provenChartSettings = reportBasis?.chartSettings ?? request?.context?.chartSettings;
+  const basisLabel = reportBasis
+    ? ui.library.reportBasisTypes[reportBasis.type]
+    : ui.library.reportBasisLegacy;
 
   return (
     <aside className="reportDocumentPlate" aria-label={ui.library.reportChartPlateLabel}>
@@ -130,29 +137,16 @@ export function ReportChartPlate({
         })}
       </svg>
       <div className="reportDocumentPlateText">
-        <p className="reportDocumentPlateKicker">{ui.library.reportChartBirthData}</p>
-        <p className="reportDocumentPlatePrimary">{formatBirth(request)}</p>
-        {primaryBirthData?.location ? <p className="reportDocumentPlateSecondary">{primaryBirthData.location}</p> : null}
+        <p className="reportDocumentPlateKicker">{ui.library.reportChartBasis}</p>
+        <p className="reportDocumentPlatePrimary">{basisLabel}</p>
         <dl className="reportDocumentPlateFacts">
-          {reportBasis ? (
-            <div>
-              <dt>{ui.library.reportChartBasis}</dt>
-              <dd>{ui.library.reportBasisTypes[reportBasis.type]}</dd>
-            </div>
-          ) : null}
           <div>
             <dt>{ui.library.reportChartZodiac}</dt>
-            <dd>{formatChartSetting(chart.zodiacMode)}</dd>
+            <dd>{provenChartSettings ? formatChartSetting(provenChartSettings.zodiacMode) : ui.library.reportUnknownChartValue}</dd>
           </div>
-          {anchors.map((line) => (
-            <div key={line}>
-              <dt>{line.split(" ")[0]}</dt>
-              <dd>{line.split(" ").slice(1).join(" ")}</dd>
-            </div>
-          ))}
           <div>
             <dt>{ui.library.reportChartHouses}</dt>
-            <dd>{formatChartSetting(chart.houseSystem)}</dd>
+            <dd>{provenChartSettings ? formatChartSetting(provenChartSettings.houseSystem) : ui.library.reportUnknownChartValue}</dd>
           </div>
           {reportBasis?.asOfDate ? (
             <div>
@@ -166,6 +160,22 @@ export function ReportChartPlate({
               <dd>{reportBasis.partner.subjectName}</dd>
             </div>
           ) : null}
+          <div>
+            <dt>{ui.library.reportChartBirthData}</dt>
+            <dd>{formatBirth(request)}</dd>
+          </div>
+          {primaryBirthData?.location ? (
+            <div>
+              <dt>{ui.library.reportChartLocation}</dt>
+              <dd>{primaryBirthData.location}</dd>
+            </div>
+          ) : null}
+          {anchors.map((line) => (
+            <div key={line}>
+              <dt>{line.split(" ")[0]}</dt>
+              <dd>{line.split(" ").slice(1).join(" ")}</dd>
+            </div>
+          ))}
         </dl>
       </div>
     </aside>

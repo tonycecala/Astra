@@ -33,6 +33,7 @@
     "test:ally-api": "node --import tsx scripts/smoke-ally-api.mts",
     "test:report-api": "node --import tsx scripts/smoke-report-api.mts",
     "test:report-basis-contracts": "node --import tsx scripts/smoke-report-basis-contracts.mts",
+    "test:report-settings-quality": "node --import tsx scripts/smoke-report-settings-quality.mts",
     "test:report-families": "node --import tsx scripts/smoke-report-families.mts",
     "test:tony-deep-sonnet": "node --import tsx scripts/smoke-tony-deep-sonnet.mts",
     "test:stripe-checkout": "node --import tsx scripts/smoke-stripe-checkout.mts",
