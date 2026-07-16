@@ -25,6 +25,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "node --import tsx scripts/check-foundation.mts",
     "test:auth-code": "node --import tsx scripts/smoke-auth-code.mts",
+    "test:auth-profile-concurrency": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/smoke-auth-profile-concurrency.mts",
     "test:email-config": "node --import tsx scripts/smoke-email-config.mts",
     "check:alpha-env": "node --import tsx scripts/check-alpha-deployment-env.mts",
     "check:composer-alpha-env": "node --import tsx scripts/check-composer-alpha-env.mts",
