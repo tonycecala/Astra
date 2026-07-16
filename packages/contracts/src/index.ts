@@ -659,6 +659,64 @@ export const recordAstrologyReportResultSchema = z.object({
   error: z.string().min(1).optional()
 });
 
+export const portableUserDataBundleSchema = z
+  .object({
+    format: z.literal("astra-portable-user-data"),
+    schemaVersion: z.literal(1),
+    exportedAt: isoDateSchema,
+    source: z
+      .object({
+        label: z.string().min(1)
+      })
+      .strict(),
+    account: z
+      .object({
+        sourceUserId: idSchema,
+        email: z.string().email(),
+        displayName: z.string().min(1)
+      })
+      .strict(),
+    data: z
+      .object({
+        allies: z.array(allySchema),
+        chartRequests: z.array(chartMakerRequestSchema),
+        chartResults: z.array(chartMakerResultSchema),
+        reportRequests: z.array(astrologyReportRequestSchema),
+        reportResults: z.array(astrologyReportResultSchema)
+      })
+      .strict()
+  })
+  .strict()
+  .superRefine((bundle, context) => {
+    const expectedUserId = bundle.account.sourceUserId;
+    const ownedRows = [
+      ...bundle.data.allies.map((row) => ["allies", row.id, row.userId] as const),
+      ...bundle.data.chartRequests.map((row) => ["chartRequests", row.id, row.userId] as const),
+      ...bundle.data.chartResults.map((row) => ["chartResults", row.id, row.userId] as const),
+      ...bundle.data.reportRequests.map((row) => ["reportRequests", row.id, row.userId] as const),
+      ...bundle.data.reportResults.map((row) => ["reportResults", row.id, row.userId] as const)
+    ];
+    for (const [collection, id, userId] of ownedRows) {
+      if (userId !== expectedUserId) {
+        context.addIssue({ code: "custom", path: ["data", collection], message: `${id} is not owned by the exported account.` });
+      }
+    }
+
+    const chartRequestIds = new Set(bundle.data.chartRequests.map((row) => row.id));
+    for (const result of bundle.data.chartResults) {
+      if (!chartRequestIds.has(result.requestId)) {
+        context.addIssue({ code: "custom", path: ["data", "chartResults"], message: `${result.id} references a chart request outside the bundle.` });
+      }
+    }
+
+    const reportRequestIds = new Set(bundle.data.reportRequests.map((row) => row.id));
+    for (const result of bundle.data.reportResults) {
+      if (!reportRequestIds.has(result.requestId)) {
+        context.addIssue({ code: "custom", path: ["data", "reportResults"], message: `${result.id} references a report request outside the bundle.` });
+      }
+    }
+  });
+
 export const composerVoiceIdSchema = z.enum(["guide", "companion", "prompt"]);
 
 export const composerVoiceCardSchema = z.object({
@@ -819,6 +877,7 @@ export type AstrologyReportRequest = z.infer<typeof astrologyReportRequestSchema
 export type CreateAstrologyReportRequest = z.infer<typeof createAstrologyReportRequestSchema>;
 export type AstrologyReportResult = z.infer<typeof astrologyReportResultSchema>;
 export type RecordAstrologyReportResult = z.infer<typeof recordAstrologyReportResultSchema>;
+export type PortableUserDataBundle = z.infer<typeof portableUserDataBundleSchema>;
 export type ComposerVoiceId = z.infer<typeof composerVoiceIdSchema>;
 export type ComposerVoiceCard = z.infer<typeof composerVoiceCardSchema>;
 export type ComposerVoiceValidationError = z.infer<typeof composerVoiceValidationErrorSchema>;
