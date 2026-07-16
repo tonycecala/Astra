@@ -596,6 +596,7 @@ export const reportGenerationRetryReasonCodeSchema = z.enum([
   "below_minimum",
   "above_maximum",
   "forbidden_fragment",
+  "third_person_subject",
   "unsupported_claim",
   "evidence_mismatch",
   "identity_opening",
@@ -616,7 +617,26 @@ export const reportGenerationRetryFailureSchema = z.object({
   totalTokens: z.number().int().nonnegative().optional(),
   estimatedSpend: z.number().nonnegative().optional(),
   finishReason: z.string().min(1).optional(),
+  rejectedText: z.string().min(1).optional(),
   latencyMs: z.number().int().nonnegative()
+});
+
+const reportReadabilityMetricSchema = z.object({
+  wordCount: z.number().int().nonnegative(),
+  sentenceCount: z.number().int().positive(),
+  syllableCount: z.number().int().nonnegative(),
+  averageSentenceWords: z.number().nonnegative(),
+  polysyllabicWordRate: z.number().nonnegative(),
+  fleschReadingEase: z.number(),
+  fleschKincaidGrade: z.number()
+});
+
+const reportReadabilityMetadataSchema = z.object({
+  algorithm: z.literal("flesch-kincaid-en-us-v1"),
+  targetGradeMin: z.literal(7),
+  targetGradeMax: z.literal(8),
+  overall: reportReadabilityMetricSchema,
+  sections: z.array(reportReadabilityMetricSchema.extend({ title: z.string().min(1) }))
 });
 
 const reportGenerationPartMetadataSchema = z.object({
@@ -647,7 +667,8 @@ export const reportGenerationMetadataSchema = z.object({
   latencyMs: z.number().int().nonnegative().optional(),
   orchestration: z.enum(["monolithic", "sectioned-v1"]).optional(),
   thesis: reportGenerationPartMetadataSchema.optional(),
-  sections: z.array(reportGenerationPartMetadataSchema.extend({ title: z.string().min(1) })).optional()
+  sections: z.array(reportGenerationPartMetadataSchema.extend({ title: z.string().min(1) })).optional(),
+  readability: reportReadabilityMetadataSchema.optional()
 });
 
 export const astrologyReportRequestSchema = z.object({

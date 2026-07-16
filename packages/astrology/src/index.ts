@@ -17,6 +17,19 @@ import {
   recordAstrologyReportResultSchema
 } from "@astra/contracts";
 import * as horoscopeModule from "circular-natal-horoscope-js";
+import {
+  ASTRA_PLAINSPOKEN_READING_GRADE_MAX,
+  ASTRA_PLAINSPOKEN_READING_GRADE_MIN,
+  ASTRA_READABILITY_ALGORITHM,
+  measureReportReadability
+} from "./readability";
+
+export {
+  ASTRA_PLAINSPOKEN_READING_GRADE_MAX,
+  ASTRA_PLAINSPOKEN_READING_GRADE_MIN,
+  ASTRA_READABILITY_ALGORITHM,
+  measureReportReadability
+} from "./readability";
 
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER = "astra-astrology-report-adapter";
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION = "0.1.0";
@@ -38,7 +51,7 @@ export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
-export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07";
+export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-plainspoken-v3";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
 
@@ -383,10 +396,20 @@ const forbiddenReportFragments = [
   "Primary strain:",
   "Developmental task:",
   "Language domain:",
-  "Priority note:",
-  "this person",
-  "the person"
+  "Priority note:"
 ];
+const thirdPersonSubjectVerbs = [
+  "is", "isn't", "was", "wasn't", "has", "hasn't", "had", "does", "doesn't", "did",
+  "can", "can't", "cannot", "could", "couldn't", "may", "might", "must", "should", "shouldn't",
+  "will", "won't", "would", "wouldn't", "tends", "needs", "wants", "seeks", "feels", "thinks",
+  "believes", "finds", "learns", "struggles", "shows", "carries", "holds", "brings", "moves", "uses",
+  "makes", "knows", "prefers", "avoids", "values", "experiences", "works", "acts", "responds", "reacts",
+  "loves", "gives", "takes", "keeps", "tries"
+];
+const thirdPersonSubjectLabelPattern = new RegExp(
+  `(?:^|[.!?]\\s+|\\n+)(?:this|the) person(?:['’]s|\\s+(?:${thirdPersonSubjectVerbs.join("|")}))\\b`,
+  "i"
+);
 
 const bodyDisplayNames: Record<string, string> = {
   sun: "Sun",
@@ -1743,7 +1766,7 @@ const deepSectionDepth: Record<string, { minimum: number; target: string; maximu
 function buildDeepThesisPrompt(request: AstrologyReportRequest, cards: ReportSectionSignalCard[]) {
   return [
     "You are planning one premium astrology report from structured section notes.",
-    "Return one private governing thesis of 35-75 words as plain prose, with no heading, bullets, JSON, or metadata.",
+    "Return one private governing thesis. Aim for 35-75 words and never exceed 90 words. Use plain prose with no heading, bullets, JSON, or metadata.",
     "This thesis is an internal writing compass, not customer-facing copy.",
     "Name the central human tension that can organize all nine chapters without reducing them to one repeated lesson.",
     "Do not mention planets, signs, houses, aspects, astrology, chart factors, or timing claims.",
@@ -1765,7 +1788,7 @@ function validateDeepThesis(text: string) {
   const thesis = normalizeDeepThesis(text);
   const words = wordCount(thesis);
   const errors: ReportGenerationRetryIssue[] = [];
-  if (words < 35 || words > 75) errors.push(retryIssue("thesis_length", `Governing thesis must be 35-75 words; found ${words}.`));
+  if (words < 35 || words > 90) errors.push(retryIssue("thesis_length", `Governing thesis must be 35-90 words; found ${words}.`));
   if (/^\s*[\[{]/.test(text) || /^#+\s/m.test(text) || /^[-*]\s/m.test(text)) {
     errors.push(retryIssue("thesis_format", "Governing thesis must be one plain prose paragraph."));
   }
@@ -1795,9 +1818,17 @@ function retryFailure(
   issues: ReportGenerationRetryIssue[],
   latencyMs: number,
   usage: ModelUsage = {},
-  finishReason?: string
+  finishReason?: string,
+  rejectedText?: string
 ): ReportGenerationRetryFailure {
-  return { attempt, issues, ...usage, ...(finishReason ? { finishReason } : {}), latencyMs };
+  return {
+    attempt,
+    issues,
+    ...usage,
+    ...(finishReason ? { finishReason } : {}),
+    ...(rejectedText?.trim() ? { rejectedText } : {}),
+    latencyMs
+  };
 }
 
 function partGenerationMetadata(part: ValidatedWriterPart) {
@@ -1839,7 +1870,16 @@ function buildDeepSectionPrompt(input: {
     `Zodiac: ${chartSignature.zodiacMode}. Houses: ${chartSignature.houseSystem}.`,
     `Private governing thesis: ${thesis}`,
     "Use the thesis as a quiet through-line, not as a sentence to repeat.",
-    `This chapter's distinct governing question must arise from: ${card.tensions.join("; ")}.`,
+    `This chapter must answer, rather than quote or announce, this distinct governing question: ${card.tensions.join("; ")}.`,
+    "VOICE MODE: PLAINSPOKEN",
+    "Target a 7th to 8th grade reading level without dumbing down the insight.",
+    "Use short sentences, everyday words, direct statements, and observable behavior.",
+    "Say what happens, what it costs, and what can change. If a simpler sentence works, use it.",
+    "Sound like a wise, experienced person speaking plainly: warm and lived-in, never academic, clinical, ornate, or stylized.",
+    "Mix short and medium sentences. Keep adult psychological nuance; plain does not mean choppy or childish.",
+    "Open with an observable behavior, a clear claim, or a chart factor. Do not announce the chapter's question or begin with stock setup such as 'Here's the question.'",
+    "Use words such as actually, real, really, and here's sparingly; do not turn them into a repeated voice tic.",
+    "Use needed astrology terms accurately, then explain their human meaning in ordinary language.",
     "Speak directly to the reader using you and your.",
     "Translate chart factors into specific lived experience, psychological usefulness, and one practical next move.",
     "Include the chapter's gift, cost, tension, and practice naturally without using those words as labels.",
@@ -1848,7 +1888,7 @@ function buildDeepSectionPrompt(input: {
     "Mention only chart factors present in this section card. Do not invent transits, progressions, current activation, or seasonal timing.",
     "Avoid textbook astrology, stock spirituality, inflated certainty, and repeated evidence verbs.",
     card.title === "Identity" && sunPlacement
-      ? `The first or second sentence must include "${sunPlacement.sign} Sun" or "Sun in ${sunPlacement.sign}" and integrate its house context.`
+      ? `The first three sentences must include "${sunPlacement.sign} Sun" or "Sun in ${sunPlacement.sign}" and integrate its house context.`
       : "",
     card.title === "Integration"
       ? "Synthesize enduring natal patterns into one grounded way of working with the chart. This is not a forecast and must not claim that anything is newly or currently activated."
@@ -1889,14 +1929,17 @@ function validateDeepSection(input: {
       errors.push(retryIssue("forbidden_fragment", `Forbidden public fragment found: ${fragment}`));
     }
   }
+  if (thirdPersonSubjectLabelPattern.test(visibleText)) {
+    errors.push(retryIssue("third_person_subject", "Third-person subject label found; address the report subject as you or your."));
+  }
   errors.push(...validateUnsupportedSectionClaims({ sections: [section] } as ReportDraft, [input.card], input.chartSignature).map((message) =>
     retryIssue(message.startsWith("Missing visible chart evidence") ? "evidence_mismatch" : "unsupported_claim", message)
   ));
   if (input.card.title === "Identity") {
     const sun = input.chartSignature.points.find((point) => point.body === "Sun");
-    const firstTwoSentences = section.body.split(/(?<=[.!?])\s+/).slice(0, 2).join(" ");
-    if (sun && !new RegExp(`\\b(${sun.sign}\\s+Sun|Sun\\s+in\\s+${sun.sign})\\b`, "i").test(firstTwoSentences)) {
-      errors.push(retryIssue("identity_opening", `Identity opening must mention ${sun.sign} Sun or Sun in ${sun.sign} in the first 1-2 sentences.`));
+    const firstThreeSentences = section.body.split(/(?<=[.!?])\s+/).slice(0, 3).join(" ");
+    if (sun && !new RegExp(`\\b(${sun.sign}\\s+Sun|Sun\\s+in\\s+${sun.sign})\\b`, "i").test(firstThreeSentences)) {
+      errors.push(retryIssue("identity_opening", `Identity opening must mention ${sun.sign} Sun or Sun in ${sun.sign} in the first three sentences.`));
     }
   }
   if (reportBasisFor(input.request).type === "natal" && /\b(currently active|currently activated|unusually active|pressing closer than usual|this (?:current )?season)\b/i.test(section.body)) {
@@ -1928,7 +1971,7 @@ async function generateValidatedDeepThesis(request: AstrologyReportRequest, card
     latencyMs += response.latencyMs;
     const errors = validateDeepThesis(response.text);
     if (!errors.length) return { thesis: normalizeDeepThesis(response.text), attemptCount: attempt, usage, finishReason: response.finishReason, latencyMs, failures };
-    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage, response.finishReason));
+    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage, response.finishReason, response.text));
     previousErrors = errors.map((error) => error.message);
   }
   throw new DeepPartGenerationError(
@@ -1969,7 +2012,7 @@ async function generateValidatedDeepSection(input: {
       const section = markdownSectionsFromText(response.text, input.request)[0]!;
       return { section, attemptCount: attempt, usage, finishReason: response.finishReason, latencyMs, failures };
     }
-    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage, response.finishReason));
+    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage, response.finishReason, response.text));
     previousErrors = errors.map((error) => error.message);
   }
   throw new DeepPartGenerationError(
@@ -2150,12 +2193,12 @@ function validateModelDraft(request: AstrologyReportRequest, draft: ReportDraft,
   }
 
   for (const fragment of forbiddenReportFragments) {
-    if ((fragment === "the person" || fragment === "this person") && !new RegExp(`\\b${fragment}\\b`, "i").test(visibleText)) {
-      continue;
-    }
     if (lowerText.includes(fragment.toLowerCase())) {
       errors.push(`Forbidden public fragment found: ${fragment}`);
     }
+  }
+  if (thirdPersonSubjectLabelPattern.test(visibleText)) {
+    errors.push("Third-person subject label found; address the report subject as you or your.");
   }
 
   errors.push(...validateUnsupportedSectionClaims(draft, sectionCards, chartSignature));
@@ -2169,6 +2212,19 @@ function validateRawModelText(text: string) {
     errors.push("Writer output must not include Chart Evidence; evidence is rendered deterministically.");
   }
   return errors;
+}
+
+function reportReadabilityMetadata(sections: AstrologyReportSection[]) {
+  return {
+    algorithm: ASTRA_READABILITY_ALGORITHM,
+    targetGradeMin: ASTRA_PLAINSPOKEN_READING_GRADE_MIN,
+    targetGradeMax: ASTRA_PLAINSPOKEN_READING_GRADE_MAX,
+    overall: measureReportReadability(sections.map((section) => `${section.title}. ${section.body}`).join("\n")),
+    sections: sections.map((section) => ({
+      title: section.title,
+      ...measureReportReadability(section.body)
+    }))
+  } as const;
 }
 
 const zodiacSignNames = zodiacSigns.map((sign) => sign.name);
@@ -2705,7 +2761,8 @@ async function buildDebugModelReportResult(
             sections: sectionedGeneration.sections.map((section) => ({
               title: section.section.title,
               ...partGenerationMetadata(section)
-            }))
+            })),
+            readability: reportReadabilityMetadata(draft.sections)
           }
         : { orchestration: "monolithic" as const })
     },

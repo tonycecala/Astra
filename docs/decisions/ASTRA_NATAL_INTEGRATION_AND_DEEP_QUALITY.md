@@ -34,16 +34,18 @@ The target is not length for its own sake. Each chapter must use a distinct gove
 
 Deep Reports use `sectioned-v1` orchestration:
 
-1. Astra asks the writer for one private 35-75 word governing thesis from all nine section planning cards.
+1. Astra asks the writer for one private governing thesis from all nine section planning cards. The target is 35-75 words; a coherent thesis remains valid up to 90 words because it is private planning context, not customer copy.
 2. Each chapter receives that shared thesis and only its own section signal card.
 3. Astra writes up to three chapters concurrently.
 4. Every chapter is validated independently for its heading, depth, supported chart claims, and natal timing language.
 5. Only a failed chapter is retried, up to three total attempts. Successful chapters are never regenerated because another chapter failed.
 6. Astra assembles accepted chapters in the code-owned heading order, derives the summary from Identity, and retains deterministic public signals and Chart Evidence.
 
+Identity must ground its opening in the correct Sun sign and house context within the first three sentences. Two short human hooks before that evidence are valid; requiring the factor in sentence one or two caused proven rewrites of otherwise sound prose.
+
 The model never owns section order, evidence rendering, report provenance, or public metadata. The thesis is an ephemeral writing compass and is not customer-facing report content.
 
-Generation metadata records the thesis and every chapter's attempts, tokens, estimated spend, and model latency. Every rejected attempt also retains structured failure codes, human-readable reasons, and its available token/spend/latency data. Rejected prose is not persisted. Aggregate latency is wall-clock time; chapter latencies overlap because concurrency is intentional.
+Generation metadata records the thesis and every chapter's attempts, tokens, estimated spend, and model latency. Every rejected attempt also retains structured failure codes, human-readable reasons, its available token/spend/latency data, and the rejected prose for private audit. Aggregate latency is wall-clock time; chapter latencies overlap because concurrency is intentional.
 
 ## Visible Output Budget
 
@@ -64,7 +66,43 @@ The controlled Felicia comparison used the same immutable Tropical, Whole Sign c
 | Chart references per 1,000 words | 25.5 | 28.2 |
 | Practical sentences | 28 | 35 |
 
-All nine chapters kept their existing depth floors on the first attempt. The one remaining retry was the separate public-language rule for `the person`; this decision does not weaken that rule or any depth, evidence, or natal-timing validator.
+All nine chapters kept their existing depth floors on the first attempt. The one remaining retry was the separate public-language rule for `the person`; the later audit below narrows that rule using retained production evidence.
+
+## Plainspoken Voice And Retry Audit
+
+The recovered Astria Plainspoken contract is now explicit in every Deep chapter prompt:
+
+- Target a 7th-8th grade reading level without reducing the insight.
+- Use everyday words, direct statements, observable behavior, and short-to-medium sentences.
+- Say what happens, what it costs, and what can change.
+- Sound warm, experienced, and lived-in without academic, clinical, ornate, or stylized dialect.
+- Preserve adult psychological nuance. Plain does not mean childish or clipped.
+
+Flesch-Kincaid grade, reading ease, sentence length, and polysyllabic-word rate are recorded with each completed sectioned Deep Report. They are advisory telemetry, not retry gates. Astrology vocabulary and proper names make formulaic grade levels imprecise; buying a new chapter solely to satisfy a readability formula would repeat the validator-cost problem this audit is correcting.
+
+Rejected chapter or thesis prose is retained with its structured retry reason, token use, spend, and latency in the same private generation record. It is not rendered in Library or shared-report pages. Retention makes false-positive review possible without guessing from a reason code.
+
+The retry audit narrowed only cases supported by retained evidence:
+
+1. `the person` and `this person` are no longer forbidden substrings. A sentence-level rule rejects direct subject labels such as `This person tends to...` while allowing natural phrases such as `the person you choose`.
+2. A coherent private governing thesis may be up to 90 words. The target remains 35-75, but an 86-word thesis proved that the previous hard maximum could reject useful internal context with no customer-facing benefit.
+3. Identity may use two short human hooks before naming the correct Sun sign and house context. The chart factor must appear within the first three sentences; two production drafts proved the old first-or-second-sentence rule rejected correctly grounded prose.
+
+Provider failures, invalid output shape, missing chapters, section depth, unsupported chart claims, evidence mismatch, invented natal timing, debug/schema leakage, and missing Identity evidence remain retry-worthy.
+
+The three-Ally cohort used each Ally's same saved Tropical, Whole Sign chart and Claude Sonnet 5:
+
+| Measure | Before | Plainspoken cohort |
+|---|---:|---:|
+| Average estimated grade | 10.4 | 5.8 |
+| Average words per sentence | 20.9 | 13.8 |
+| Total retries | 10 | 1 |
+| Total writer spend | $0.4088 | $0.2404 |
+| Total model time | 227 seconds | 135 seconds |
+
+Cheyenne, Brandi, and Felicia all preserved or increased report length and chart-reference density. The aggregate cost change also includes the earlier visible-output-budget correction for Cheyenne and Brandi, so it is not attributed to voice or retry narrowing alone. Felicia is the cleanest incremental control: one broad phrase retry became zero, while spend moved from $0.0838 to $0.0788.
+
+A follow-up Cheyenne control removed stock question openings across all nine chapter openings. Its two retained retries both showed valid `Sun in Scorpio` evidence in sentence three; the final three-sentence Identity rule accepts that exact case in the deterministic quality suite without weakening the requirement that the opening be grounded in the actual chart.
 
 ## Recovered Report Comparison
 
