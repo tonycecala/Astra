@@ -543,6 +543,7 @@ export const ui = {
     debugLatency: "Latency",
     debugV1Document: "V1 document",
     reportCardDateLabel: "Generated",
+    reportCardBornLabel: "Born",
     reportActionsLabel: "Report actions",
     reportSavedLabel: "Saved in Library",
     reportShare: "Share",

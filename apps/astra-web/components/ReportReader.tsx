@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import { buildAstrologyChartSnapshot, buildAstrologyReportSectionEvidence } from "@astra/astrology";
 import type { AstrologyReportRequest, AstrologyReportResult } from "@astra/contracts";
 import { ui } from "../lib/i18n";
-import { reportDisplayTitle } from "../lib/report-display";
+import { reportDisplayTitle, reportFamilyLabel } from "../lib/report-display";
 import { ReportChartPlate } from "./ReportChartPlate";
 import { ReportFeedbackForm } from "./ReportFeedbackForm";
 import { ReportMarkdown } from "./ReportMarkdown";
@@ -216,14 +216,7 @@ export function reportSubjectContext(request?: AstrologyReportRequest | null) {
 }
 
 export function reportTypeLabel(reportType?: string) {
-  if (reportType === "identity") return ui.library.reportTypeIdentity;
-  if (reportType === "core") return ui.library.reportTypeCore;
-  if (reportType === "deep") return ui.library.reportTypeDeep;
-  if (reportType === "progressed") return ui.library.reportTypeProgressed;
-  if (reportType === "synastry") return ui.library.reportTypeSynastry;
-  if (reportType === "core_self") return ui.library.reportTypeCoreSelf;
-  if (reportType === "chart_interpretation") return ui.library.reportTypeChartInterpretation;
-  return ui.library.reportTypeFallback;
+  return reportFamilyLabel(reportType);
 }
 
 export function formatReportDate(value: string) {

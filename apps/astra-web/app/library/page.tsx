@@ -3,17 +3,17 @@ import { Search } from "lucide-react";
 
 import type { Artifact } from "@astra/contracts";
 import { PageHeader } from "../../components/PageHeader";
-import { ReportReader, formatReportDate, reportSubjectContext, reportTypeLabel } from "../../components/ReportReader";
+import { ReportReader, formatReportDate, reportSubjectContext } from "../../components/ReportReader";
 import { astrologyReportShares, db, getUserAstrologyReportResult, getUserAstrologyReportRequest, listUserArtifacts, listUserAstrologyReportRequests, listUserAstrologyReportResults } from "@astra/db";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
-import { reportDisplayTitle } from "../../lib/report-display";
+import { reportCardMetadata, reportDisplayName, reportDisplayTitle, reportFamilyLabel } from "../../lib/report-display";
 import { and, eq } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
 type LibraryArtifact = Artifact & {
-  birthLine?: string;
+  cardMetadata?: string;
   requestId?: string;
   reportType?: string;
   subjectName?: string;
@@ -164,7 +164,7 @@ function ArtifactCard({ artifact }: { artifact: LibraryArtifact }) {
           <h2>{reportCardName(artifact)}</h2>
           <span className="library-report-type-pill">{reportCardType(artifact)}</span>
         </div>
-        <p className="library-report-subject">{artifact.birthLine ?? `${ui.library.reportCardDateLabel} ${formatReportDate(artifact.createdAt)}`}</p>
+        <p className="library-report-subject">{artifact.cardMetadata ?? `${ui.library.reportCardDateLabel} ${formatReportDate(artifact.createdAt)}`}</p>
       </Link>
     );
   }
@@ -223,23 +223,11 @@ function canonicalReportType(reportType?: string) {
 }
 
 function reportCardName(artifact: LibraryArtifact) {
-  return artifact.title.split(/\s+[—-]\s+/)[0]?.trim() || artifact.subjectName || artifact.title;
+  return artifact.subjectName?.trim() || artifact.title.split(/\s+[—-]\s+/)[0]?.trim() || artifact.title;
 }
 
 function reportCardType(artifact: LibraryArtifact) {
-  if (artifact.reportType === "synastry") return reportTypeLabel(artifact.reportType);
-  const suffix = artifact.title.split(/\s+[—-]\s+/).slice(1).join(" — ").trim();
-  return suffix || reportTypeLabel(artifact.reportType);
-}
-
-function reportBirthLine(request?: { birthData?: { date?: string; time?: string; location?: string; birthTimeKnown?: boolean } }) {
-  const birthData = request?.birthData;
-  if (!birthData?.date) return undefined;
-  return [
-    birthData.date,
-    birthData.birthTimeKnown === false ? ui.self.birthMomentUnknownTimeShort : birthData.time,
-    birthData.location
-  ].filter(Boolean).join(" · ");
+  return reportFamilyLabel(artifact.reportType);
 }
 
 function artifactMatchesFilter(artifact: LibraryArtifact, filter: LibraryReportFilter) {
@@ -307,10 +295,10 @@ async function getUserLibraryArtifacts(userId: string) {
         kind: "report" as const,
         summary: result.summary ?? ui.library.completedReportSummary,
         createdAt: result.createdAt,
-        birthLine: reportBirthLine(request),
+        cardMetadata: reportCardMetadata(request, result.createdAt),
         requestId: result.requestId,
         reportType: request?.reportType,
-        subjectName: subject.name,
+        subjectName: reportDisplayName(request),
         subjectType: subject.type,
         status: result.status,
         isShared: sharedRequestIds.has(result.requestId)
