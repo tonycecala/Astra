@@ -148,8 +148,30 @@ images.set("settings", await capture(chartSettings));
 images.set("report", await capture(reportChoices));
 const zodiacRowBox = await chartSettings.getByRole("radiogroup", { name: "Zodiac" }).boundingBox();
 const housesRowBox = await chartSettings.getByRole("radiogroup", { name: "Houses" }).boundingBox();
-if (!zodiacRowBox || !housesRowBox || housesRowBox.y - (zodiacRowBox.y + zodiacRowBox.height) > 8) {
-  throw new Error("Chart settings rows are not using compact single spacing.");
+const settingsRowDistance =
+  zodiacRowBox && housesRowBox
+    ? housesRowBox.y + housesRowBox.height / 2 - (zodiacRowBox.y + zodiacRowBox.height / 2)
+    : Number.POSITIVE_INFINITY;
+if (settingsRowDistance > 22) {
+  const settingsMetrics = await chartSettings.evaluate((fieldset) =>
+    [...fieldset.querySelectorAll<HTMLElement>('[role="radiogroup"]')].map((group) => {
+      const row = group.parentElement!;
+      const rowStyle = getComputedStyle(row);
+      const option = group.querySelector<HTMLElement>("label")!;
+      const input = group.querySelector<HTMLElement>("input")!;
+      return {
+        groupHeight: group.getBoundingClientRect().height,
+        inputHeight: input.getBoundingClientRect().height,
+        inputMinHeight: getComputedStyle(input).minHeight,
+        optionHeight: option.getBoundingClientRect().height,
+        optionMinHeight: getComputedStyle(option).minHeight,
+        rowGap: rowStyle.gap,
+        rowHeight: row.getBoundingClientRect().height,
+        rowMinHeight: rowStyle.minHeight
+      };
+    })
+  );
+  throw new Error(`Chart settings rows are not using compact single spacing: ${settingsRowDistance}px ${JSON.stringify(settingsMetrics)}.`);
 }
 
 await panel.getByRole("button", { name: "Order Report", exact: true }).click();
