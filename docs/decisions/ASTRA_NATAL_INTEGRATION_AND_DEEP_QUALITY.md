@@ -49,7 +49,7 @@ Generation metadata records the thesis and every chapter's attempts, tokens, est
 
 ## Visible Output Budget
 
-OpenRouter models can spend completion tokens on extended reasoning as well as customer-visible prose. Deep Report generation therefore sends `reasoning.effort: none` for its OpenRouter writer calls. The governing thesis and section signal cards already perform the planning split; the model call's job is to turn that resolved context into a bounded chapter. The 1,400-token chapter allowance is reserved for visible prose rather than shared with an implicit reasoning budget.
+OpenRouter models can spend completion tokens on extended reasoning as well as customer-visible prose. Deep Report generation therefore requests the lowest reasoning effort each production model supports. Claude Sonnet 5 uses `reasoning.effort: none`; Gemini 3.5 Flash requires reasoning and uses `reasoning.effort: minimal`. The governing thesis and section signal cards already perform the planning split; the model call's job is to turn that resolved context into a bounded chapter. The 1,400-token chapter allowance is reserved for visible prose rather than shared with an unnecessary reasoning budget.
 
 Generation metadata records the requested reasoning effort, provider-reported reasoning tokens, and finish reason. This makes a future provider or model-default change observable instead of inferring truncation from word counts after the fact.
 
@@ -121,6 +121,26 @@ The Brandi and Felicia production control used their unchanged Tropical, Whole S
 | Writer spend | $0.0816 | $0.0835 |
 
 This presentation follows `05-progressive-disclosure.md`: readable prose comes first, with deterministic Chart Evidence available as the next layer. No analytics event was added because paragraph formatting does not represent a user action.
+
+## Comparative Writer Bakeoff And Heading Ownership
+
+A two-Ally production bakeoff compared Claude Sonnet 5 and Gemini 3.5 Flash using the same immutable input snapshot for each person. Sonnet remains the premium default: it connected more chart signals into a coherent psychological mechanism and used denser chart evidence without becoming harder to read. Gemini was faster, cheaper, and more immediately practical, but repeated its governing thesis more often and leaned more heavily on generic coaching language.
+
+| Measure | Claude Sonnet 5 | Gemini 3.5 Flash |
+|---|---:|---:|
+| Reports | 2 | 2 |
+| Average writer spend | $0.0820 | $0.0551 |
+| Total wall-clock time | 87.5 seconds | 46.2 seconds |
+| Average estimated grade | 7.9 | 8.8 |
+| Chart references per 1,000 words | 28.4 | 21.5 |
+| Multi-signal sentences | 60 | 51 |
+| Practical sentences | 70 | 88 |
+
+Gemini's four retries were false positives: each rejected draft had valid prose but omitted the requested Markdown chapter heading. Astra already owns chapter identity and order, so asking the writer to reproduce the heading created cost without protecting meaning. The chapter contract now requests body-only prose and supplies the heading deterministically. A model-provided heading remains validated when present, so a wrong or multi-chapter response still fails.
+
+The comparison runner is guarded by an explicit `--generate` flag, can resume only reports that match the subject, model, intent, and prompt version, and keeps the blind review, model key, telemetry, and private records under ignored `.astra-exports` storage.
+
+The cohort also exposed imported birth records whose place name and time zone were present while latitude and longitude remained placeholder zeroes. Writer comparisons remain valid because each model received the same snapshot, but Ascendant and house interpretation from those snapshots is not astrologically trustworthy. Full house-based reporting must require resolved coordinates; a genuinely location-independent path should omit Ascendant and house claims rather than silently calculate them from a placeholder.
 
 ## Recovered Report Comparison
 

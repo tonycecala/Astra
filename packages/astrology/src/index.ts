@@ -101,6 +101,10 @@ export const reportModelProfileModels: Record<ReportModelProfile, string[]> = {
   ]
 };
 
+const deepReportReasoningEffortByModel = new Map<string, "none" | "minimal">([
+  ["google/gemini-3.5-flash", "minimal"]
+]);
+
 export type AstrologyReportGenerationConfig = {
   ephemerisEngine?: string;
   reportWriter?: string;
@@ -1810,7 +1814,15 @@ function providerRetryIssue(error: unknown): ReportGenerationRetryIssue {
   if (/timeout|timed out|abort/i.test(message) || (error instanceof Error && error.name === "TimeoutError")) {
     return retryIssue("provider_timeout", "Model provider request timed out.");
   }
-  return retryIssue("provider_error", "Model provider request failed before Astra received a valid chapter.");
+  const detail = message.replace(/\s+/g, " ").trim().slice(0, 240);
+  return retryIssue(
+    "provider_error",
+    `Model provider request failed before Astra received a valid chapter.${detail ? ` Provider detail: ${detail}` : ""}`
+  );
+}
+
+function deepReportReasoningEffortForModel(model: string) {
+  return deepReportReasoningEffortByModel.get(model) ?? "none";
 }
 
 function retryFailure(
@@ -1863,8 +1875,8 @@ function buildDeepSectionPrompt(input: {
   const sunPlacement = chartSignature.points.find((point) => point.body === "Sun");
   return [
     "You are writing one chapter of a premium Astra Deep Report from structured notes.",
-    "Write only this chapter as plain Markdown. Do not write any other chapter, report title, evidence block, metadata, JSON, or planning commentary.",
-    `Required heading: ## ${card.title}`,
+    "Write only this chapter's body as plain Markdown. Astra supplies the chapter heading. Do not write any heading, other chapter, report title, evidence block, metadata, JSON, or planning commentary.",
+    `Chapter: ${card.title}.`,
     `Target length: ${depth?.target ?? "275-400"} words. Hard minimum: ${depth?.minimum ?? 275}. Hard maximum: ${depth?.maximum ?? 435}.`,
     `Subject: ${request.subjectName}`,
     `Zodiac: ${chartSignature.zodiacMode}. Houses: ${chartSignature.houseSystem}.`,
@@ -1908,15 +1920,13 @@ function validateDeepSection(input: {
   card: ReportSectionSignalCard;
 }) {
   const errors = validateRawModelText(input.text).map((message) => retryIssue("forbidden_fragment", message));
-  let sections: AstrologyReportSection[] = [];
+  let section: AstrologyReportSection;
   try {
-    sections = markdownSectionsFromText(input.text, input.request);
+    section = deepSectionFromText(input.text, input.request, input.card.title);
   } catch (error) {
     return [...errors, retryIssue("invalid_markdown", error instanceof Error ? error.message : "Chapter did not include valid Markdown prose.")];
   }
-  if (sections.length !== 1) errors.push(retryIssue("chapter_count", `Expected one chapter, found ${sections.length}.`));
-  const section = sections[0];
-  if (!section || section.title !== input.card.title) {
+  if (section.title !== input.card.title) {
     errors.push(retryIssue("heading_mismatch", `Required heading is ## ${input.card.title}.`));
     return errors;
   }
@@ -1947,6 +1957,26 @@ function validateDeepSection(input: {
     errors.push(retryIssue("natal_timing", "Natal chapter must not imply current timing without dated evidence."));
   }
   return errors;
+}
+
+function deepSectionFromText(text: string, request: AstrologyReportRequest, title: string): AstrologyReportSection {
+  if (/^##\s+/m.test(text)) {
+    const sections = markdownSectionsFromText(text, request);
+    if (sections.length !== 1) throw new Error(`Expected one chapter, found ${sections.length}.`);
+    return sections[0]!;
+  }
+  const body = text
+    .replace(/^#\s+.+$/gm, "")
+    .replace(/\*\*Chart Evidence\*\*[\s\S]*$/i, "")
+    .replace(/^[-*]\s+/gm, "")
+    .trim();
+  if (!body) throw new Error("Model draft did not include chapter prose.");
+  return {
+    id: sectionIdFromTitle(request.id, title, 0),
+    title,
+    body,
+    emphasis: "supporting"
+  };
 }
 
 async function generateValidatedDeepThesis(request: AstrologyReportRequest, cards: ReportSectionSignalCard[], writer: PromptModelWriter) {
@@ -2010,7 +2040,7 @@ async function generateValidatedDeepSection(input: {
     latencyMs += response.latencyMs;
     const errors = validateDeepSection({ ...input, text: response.text });
     if (!errors.length) {
-      const section = markdownSectionsFromText(response.text, input.request)[0]!;
+      const section = deepSectionFromText(response.text, input.request, input.card.title);
       return { section, attemptCount: attempt, usage, finishReason: response.finishReason, latencyMs, failures };
     }
     failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage, response.finishReason, response.text));
@@ -2559,7 +2589,7 @@ async function writeOpenRouterModelText(
         }
       ],
       max_tokens: maxOutputTokens,
-      ...(request.reportType === "deep" ? { reasoning: { effort: "none" } } : {}),
+      ...(request.reportType === "deep" ? { reasoning: { effort: deepReportReasoningEffortForModel(config.reportModel) } } : {}),
       temperature: 0.3
     })
   });
@@ -2726,7 +2756,7 @@ async function buildDebugModelReportResult(
         model: config.reportModel,
         modelProfile: config.reportModelProfile,
         ...(request.reportType === "deep" && config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
-          ? { reasoningEffort: "none" as const }
+          ? { reasoningEffort: deepReportReasoningEffortForModel(config.reportModel) }
           : {}),
         promptVersion: ASTRA_REPORT_PROMPT_VERSION,
         attemptCount: error.generation.attemptCount,
@@ -2749,7 +2779,7 @@ async function buildDebugModelReportResult(
       model: config.reportModel,
       modelProfile: config.reportModelProfile,
       ...(request.reportType === "deep" && config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
-        ? { reasoningEffort: "none" as const }
+        ? { reasoningEffort: deepReportReasoningEffortForModel(config.reportModel) }
         : {}),
       promptVersion: ASTRA_REPORT_PROMPT_VERSION,
       attemptCount: generation.attemptCount,

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 
 import {
   ASTRA_EPHEMERIS_ENGINE_ENV,
+  ASTRA_REPORT_MODEL_ENV,
   ASTRA_REPORT_MODEL_PROFILE_ENV,
   ASTRA_REPORT_WRITER_ENV,
   DEBUG_MODEL_REPORT_WRITER,
@@ -58,7 +59,7 @@ function prose(title: string, words: number, timingFailure = false, openingOverr
 }
 
 function sectionTitleFromPrompt(prompt: string) {
-  return prompt.match(/Required heading: ## (.+)/)?.[1]?.trim();
+  return prompt.match(/Chapter: (.+?)\./)?.[1]?.trim();
 }
 
 function sectionWordTarget(title: string) {
@@ -97,7 +98,7 @@ function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTranspor
       ? options.usefulLongThesis
         ? "Her chapters orbit a single unresolved question: what she trusts more, the self that forms in contact with others' recognition or the self that persists when no one is watching. Each domain tests whether her responsiveness to signal, emotional, relational, or professional, is discernment or dilution, and whether her strengths, instincts, and ambitions remain hers once proven, or dissolve into whatever the moment rewards. The work is not choosing autonomy over connection but learning to stay legible to herself while taking in what the world demands."
         : "A private intelligence seeks public usefulness without sacrificing discernment, while courage and imagination repeatedly test whether desire can become disciplined action. The report should show how sensitivity, range, and visible initiative become trustworthy when they are given structure, proportion, honest relationship, and practical form."
-      : `## ${title}\n\n${prose(title, words, options.timingFailure && title === "Integration", openingOverride)}`;
+      : prose(title, words, options.timingFailure && title === "Integration", openingOverride);
     const choices = title === "Work" && options.retryWorkTransport && count === 1 ? [] : [{ finish_reason: "stop", message: { content } }];
     return new Response(JSON.stringify({ choices, usage: { prompt_tokens: 1, completion_tokens: 1, completion_tokens_details: { reasoning_tokens: 0 }, total_tokens: 2, cost: 0 } }), {
       status: 200,
@@ -134,7 +135,7 @@ assert.equal(emotionsMetadata?.failures?.[0]?.inputTokens, 1);
 assert.equal(emotionsMetadata?.failures?.[0]?.reasoningTokens, 0);
 assert.equal(emotionsMetadata?.failures?.[0]?.finishReason, "stop");
 assert.ok((emotionsMetadata?.failures?.[0]?.latencyMs ?? -1) >= 0);
-assert.match(emotionsMetadata?.failures?.[0]?.rejectedText ?? "", /^## Emotions/);
+assert.match(emotionsMetadata?.failures?.[0]?.rejectedText ?? "", /^Emotions asks/);
 assert.equal("text" in (emotionsMetadata?.failures?.[0] ?? {}), false);
 const workMetadata = completed.generationMetadata?.sections?.find((section) => section.title === "Work");
 assert.equal(workMetadata?.failures?.length, 1);
@@ -150,6 +151,7 @@ assert.match(provider.prompts.get("Emotions")?.[1] ?? "", /must be at least 300 
 assert.doesNotMatch(provider.prompts.get("Work")?.[1] ?? "", /## Emotions/);
 assert.match(provider.prompts.get("Integration")?.[0] ?? "", /not a forecast/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /VOICE MODE: PLAINSPOKEN/);
+assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Astra supplies the chapter heading/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /6th to 8th grade reading level/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /warm and lived-in/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /rather than quote or announce/);
@@ -159,6 +161,15 @@ assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Begin with a direct s
 assert.match(completed.sections.find((section) => section.title === "Relationships")?.body ?? "", /The person you choose/);
 assert.ok(provider.requestBodies.length > 0);
 for (const body of provider.requestBodies) assert.deepEqual(body.reasoning, { effort: "none" });
+
+const geminiProvider = sectionedProvider();
+const geminiCompleted = await buildAstrologyReportResultAsync(request, {
+  env: { ...env, [ASTRA_REPORT_MODEL_ENV]: "google/gemini-3.5-flash" },
+  fetchImpl: geminiProvider.fetchImpl
+});
+assert.equal(geminiCompleted.status, "completed");
+assert.equal(geminiCompleted.generationMetadata?.reasoningEffort, "minimal");
+for (const body of geminiProvider.requestBodies) assert.deepEqual(body.reasoning, { effort: "minimal" });
 
 const timingProvider = sectionedProvider({ timingFailure: true });
 const falseTiming = await buildAstrologyReportResultAsync(request, { env, fetchImpl: timingProvider.fetchImpl });

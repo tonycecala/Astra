@@ -53,6 +53,7 @@
     "stripe:fulfill-latest": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/fulfill-latest-stripe-checkout.mts",
     "report:bakeoff": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/run-report-v2-model-profile-bakeoff.mts",
     "report:quality-bakeoff": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/run-report-model-quality-bakeoff.mts",
+    "report:ally-deep-bakeoff": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/run-ally-deep-model-bakeoff.mts",
     "report:compare-deep": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/create-and-compare-deep-report.mts",
     "report:audit-deep-cohort": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/audit-deep-report-cohort.mts",
     "overview:light": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/create-light-mode-overview.mts",
