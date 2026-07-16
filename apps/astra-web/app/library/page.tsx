@@ -7,6 +7,7 @@ import { ReportReader, formatReportDate, reportSubjectContext, reportTypeLabel }
 import { astrologyReportShares, db, getUserAstrologyReportResult, getUserAstrologyReportRequest, listUserArtifacts, listUserAstrologyReportRequests, listUserAstrologyReportResults } from "@astra/db";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
+import { reportDisplayTitle } from "../../lib/report-display";
 import { and, eq } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
@@ -302,7 +303,7 @@ async function getUserLibraryArtifacts(userId: string) {
       return {
         id: `report:${result.requestId}`,
         userId: result.userId,
-        title: result.publicSignal?.headline ?? ui.library.selectedReportFallbackTitle,
+        title: reportDisplayTitle(request, result.publicSignal?.headline),
         kind: "report" as const,
         summary: result.summary ?? ui.library.completedReportSummary,
         createdAt: result.createdAt,

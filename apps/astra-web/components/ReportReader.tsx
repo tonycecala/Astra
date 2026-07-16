@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { buildAstrologyChartSnapshot, buildAstrologyReportSectionEvidence } from "@astra/astrology";
 import type { AstrologyReportRequest, AstrologyReportResult } from "@astra/contracts";
 import { ui } from "../lib/i18n";
+import { reportDisplayTitle } from "../lib/report-display";
 import { ReportChartPlate } from "./ReportChartPlate";
 import { ReportFeedbackForm } from "./ReportFeedbackForm";
 import { ReportMarkdown } from "./ReportMarkdown";
@@ -25,7 +26,7 @@ export function ReportReader({
   shared?: boolean;
 }) {
   const subject = reportSubjectContext(request);
-  const title = report.publicSignal?.headline ?? ui.library.selectedReportFallbackTitle;
+  const title = reportDisplayTitle(request, report.publicSignal?.headline);
   const evidenceByTitle = buildReportEvidenceByTitle(request, report);
   const reportMarkdown = reportMarkdownFrom(report, request, title, subject.name, evidenceByTitle);
   const sectionMarkdown = reportSectionsMarkdownFrom(report, evidenceByTitle);

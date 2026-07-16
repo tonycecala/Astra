@@ -40,6 +40,7 @@
     "test:report-basis-contracts": "node --import tsx scripts/smoke-report-basis-contracts.mts",
     "test:report-settings-quality": "node --import tsx scripts/smoke-report-settings-quality.mts",
     "test:report-model-strategy": "node --import tsx scripts/smoke-report-model-strategy.mts",
+    "test:report-display-title": "node --import tsx scripts/smoke-report-display-title.mts",
     "test:report-families": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/smoke-report-families.mts",
     "test:tony-deep-sonnet": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/smoke-tony-deep-sonnet.mts",
     "test:stripe-checkout": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/smoke-stripe-checkout.mts",
