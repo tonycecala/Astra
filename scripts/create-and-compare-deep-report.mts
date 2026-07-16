@@ -208,10 +208,10 @@ function buildComparison(input: {
   const thesisGeneration = recordFrom(newGeneration.thesis);
   const generationRows = [
     ...(Object.keys(thesisGeneration).length
-      ? [`| Governing thesis | ${numberFrom(thesisGeneration.attemptCount).toFixed(0)} | ${money(numberFrom(thesisGeneration.estimatedSpend))} | ${seconds(numberFrom(thesisGeneration.latencyMs))} |`]
+      ? [`| Governing thesis | ${numberFrom(thesisGeneration.attemptCount).toFixed(0)} | ${retryReasons(thesisGeneration)} | ${money(numberFrom(thesisGeneration.estimatedSpend))} | ${seconds(numberFrom(thesisGeneration.latencyMs))} |`]
       : []),
     ...arrayFrom(newGeneration.sections).map((section) =>
-    `| ${textFrom(section.title)} | ${numberFrom(section.attemptCount).toFixed(0)} | ${money(numberFrom(section.estimatedSpend))} | ${seconds(numberFrom(section.latencyMs))} |`
+    `| ${textFrom(section.title)} | ${numberFrom(section.attemptCount).toFixed(0)} | ${retryReasons(section)} | ${money(numberFrom(section.estimatedSpend))} | ${seconds(numberFrom(section.latencyMs))} |`
     )
   ].join("\n");
   const sectionRows = newSections.map((section) => {
@@ -262,7 +262,7 @@ function buildComparison(input: {
       `### ${change.title}\n\nThis section is ${Math.abs(change.delta).toLocaleString()} words ${change.delta >= 0 ? "longer" : "shorter"}. The new version opens:\n\n> ${opening(change.body)}\n`
     ).join("\n") +
     `\n## Section-by-section view\n\n| Section | Recovered words | Sectioned words | Length change | Shared sentences |\n|---|---:|---:|---:|---:|\n${sectionRows}\n\n` +
-    (generationRows ? `## Section generation\n\nIndividual chapter times overlap because Astra writes up to three chapters at once. Retries apply only to the part that failed validation.\n\n| Part | Attempts | Writer cost | Model time |\n|---|---:|---:|---:|\n${generationRows}\n\n` : "") +
+    (generationRows ? `## Section generation\n\nIndividual chapter times overlap because Astra writes up to three chapters at once. Retries apply only to the part that failed validation.\n\n| Part | Attempts | Retained retry reasons | Writer cost | Model time |\n|---|---:|---|---:|---:|\n${generationRows}\n\n` : "") +
     `## How to read this\n\nA low shared-sentence percentage does not mean the astrology changed. It means Sonnet 5 synthesized the same chart evidence in its own language. The most useful test is whether the new report feels more specific, psychologically usable, and cumulative as it moves from Identity through Integration, rather than merely being longer.\n\n` +
     `## Provenance\n\n- Previous report ID: \`${textFrom(input.prior.request.id)}\`\n- New report ID: \`${textFrom(input.next.request.id)}\`\n- Subject: Tony Cecala\n- Birth data: unchanged saved Self chart\n- Zodiac: ${label(input.chartSettings.zodiacMode)}\n- Houses: ${label(input.chartSettings.houseSystem)}\n- Previous model: ${oldModel}\n- New model: ${newModel}\n`;
 }
@@ -324,12 +324,18 @@ function opening(body: string) {
 }
 
 function wordCount(value: string) { return value.split(/\s+/).filter(Boolean).length; }
+function retryReasons(part: JsonObject) {
+  const reasons = arrayFrom(part.failures).flatMap((failure) =>
+    arrayFrom(failure.issues).map((issue) => `${label(textFrom(issue.code))} (attempt ${numberFrom(failure.attempt).toFixed(0)})`)
+  );
+  return reasons.length ? reasons.join("; ") : "None";
+}
 function signed(value: number) { return value > 0 ? `+${value}` : String(value); }
 function numberFrom(value: unknown) { return typeof value === "number" && Number.isFinite(value) ? value : 0; }
 function money(value: number) { return `$${value.toFixed(4)}`; }
 function signedMoney(value: number) { return `${value >= 0 ? "+" : "-"}$${Math.abs(value).toFixed(4)}`; }
 function seconds(value: number) { return `${Math.round(value / 1000)} seconds`; }
-function label(value: string) { return value.split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" "); }
+function label(value: string) { return value.split(/[-_]/).map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" "); }
 function formatDate(value: string) { return new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone: "America/Chicago" }).format(new Date(value)); }
 function clean(value: string | undefined) { return value?.trim().replace(/^['\"]|['\"]$/g, "") || ""; }
 function textFrom(value: unknown) { return typeof value === "string" ? value.trim() : ""; }

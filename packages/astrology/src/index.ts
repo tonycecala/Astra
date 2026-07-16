@@ -7,6 +7,9 @@ import {
   type ChartSettings,
   type RecordAstrologyReportResult,
   type ReportBasisType,
+  type ReportGenerationRetryFailure,
+  type ReportGenerationRetryIssue,
+  type ReportGenerationRetryReasonCode,
   astrologyReportRequestSchema,
   birthPlaceSearchQuerySchema,
   birthPlaceSearchResponseSchema,
@@ -250,11 +253,38 @@ type ValidatedWriterPart = {
   attemptCount: number;
   usage: ModelUsage;
   latencyMs: number;
+  failures: ReportGenerationRetryFailure[];
 };
 
 type DeepSectionGeneration = ValidatedWriterPart & {
   section: AstrologyReportSection;
 };
+
+type DeepSectionPartMetadata = ValidatedWriterPart & {
+  title: string;
+};
+
+type SectionedDeepFailureGeneration = {
+  attemptCount: number;
+  usage: ModelUsage;
+  latencyMs: number;
+  thesis: ValidatedWriterPart;
+  sections: DeepSectionPartMetadata[];
+};
+
+class DeepPartGenerationError extends Error {
+  constructor(message: string, readonly title: string, readonly generation: ValidatedWriterPart) {
+    super(message);
+    this.name = "DeepPartGenerationError";
+  }
+}
+
+class SectionedDeepReportGenerationError extends Error {
+  constructor(message: string, readonly generation: SectionedDeepFailureGeneration) {
+    super(message);
+    this.name = "SectionedDeepReportGenerationError";
+  }
+}
 
 type HoroscopeCtor = {
   new (input: {
@@ -736,7 +766,11 @@ function buildReportModelProviderUnavailableResult(
   });
 }
 
-function buildReportModelCallFailedResult(input: AstrologyReportRequest, message: string): RecordAstrologyReportResult {
+function buildReportModelCallFailedResult(
+  input: AstrologyReportRequest,
+  message: string,
+  generationMetadata?: NonNullable<RecordAstrologyReportResult["generationMetadata"]>
+): RecordAstrologyReportResult {
   const request = astrologyReportRequestSchema.parse(input);
 
   return recordAstrologyReportResultSchema.parse({
@@ -746,6 +780,7 @@ function buildReportModelCallFailedResult(input: AstrologyReportRequest, message
     engineVersion: ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION,
     status: "failed",
     reportBasis: request.reportBasis,
+    generationMetadata,
     error: `${DEBUG_MODEL_REPORT_WRITER} failed before a report draft was accepted: ${message}`,
     sections: [],
     provenance: [
@@ -1722,13 +1757,58 @@ function normalizeDeepThesis(text: string) {
 function validateDeepThesis(text: string) {
   const thesis = normalizeDeepThesis(text);
   const words = wordCount(thesis);
-  const errors: string[] = [];
-  if (words < 35 || words > 75) errors.push(`Governing thesis must be 35-75 words; found ${words}.`);
-  if (/^\s*[\[{]/.test(text) || /^#+\s/m.test(text) || /^[-*]\s/m.test(text)) errors.push("Governing thesis must be one plain prose paragraph.");
+  const errors: ReportGenerationRetryIssue[] = [];
+  if (words < 35 || words > 75) errors.push(retryIssue("thesis_length", `Governing thesis must be 35-75 words; found ${words}.`));
+  if (/^\s*[\[{]/.test(text) || /^#+\s/m.test(text) || /^[-*]\s/m.test(text)) {
+    errors.push(retryIssue("thesis_format", "Governing thesis must be one plain prose paragraph."));
+  }
   if (new RegExp(`\\b(${reportClaimBodyNames.join("|")}|${zodiacSignNames.join("|")}|astrology|chart)\\b`, "i").test(thesis)) {
-    errors.push("Governing thesis must stay at the human-pattern level without astrology terms.");
+    errors.push(retryIssue("thesis_astrology", "Governing thesis must stay at the human-pattern level without astrology terms."));
   }
   return errors;
+}
+
+function retryIssue(code: ReportGenerationRetryReasonCode, message: string): ReportGenerationRetryIssue {
+  return { code, message };
+}
+
+function providerRetryIssue(error: unknown): ReportGenerationRetryIssue {
+  const message = error instanceof Error ? error.message : "Model provider request failed.";
+  if (/did not include (?:text )?output|did not include output text/i.test(message)) {
+    return retryIssue("provider_no_text", "Model provider response did not include usable text.");
+  }
+  if (/timeout|timed out|abort/i.test(message) || (error instanceof Error && error.name === "TimeoutError")) {
+    return retryIssue("provider_timeout", "Model provider request timed out.");
+  }
+  return retryIssue("provider_error", "Model provider request failed before Astra received a valid chapter.");
+}
+
+function retryFailure(
+  attempt: number,
+  issues: ReportGenerationRetryIssue[],
+  latencyMs: number,
+  usage: ModelUsage = {}
+): ReportGenerationRetryFailure {
+  return { attempt, issues, ...usage, latencyMs };
+}
+
+function partGenerationMetadata(part: ValidatedWriterPart) {
+  return {
+    attemptCount: part.attemptCount,
+    ...part.usage,
+    latencyMs: part.latencyMs,
+    failures: part.failures
+  };
+}
+
+function sectionPartMetadata(part: DeepSectionGeneration): DeepSectionPartMetadata {
+  return {
+    title: part.section.title,
+    attemptCount: part.attemptCount,
+    usage: part.usage,
+    latencyMs: part.latencyMs,
+    failures: part.failures
+  };
 }
 
 function buildDeepSectionPrompt(input: {
@@ -1777,37 +1857,41 @@ function validateDeepSection(input: {
   chartSignature: ChartSignature;
   card: ReportSectionSignalCard;
 }) {
-  const errors = validateRawModelText(input.text);
+  const errors = validateRawModelText(input.text).map((message) => retryIssue("forbidden_fragment", message));
   let sections: AstrologyReportSection[] = [];
   try {
     sections = markdownSectionsFromText(input.text, input.request);
   } catch (error) {
-    return [...errors, error instanceof Error ? error.message : "Chapter did not include valid Markdown prose."];
+    return [...errors, retryIssue("invalid_markdown", error instanceof Error ? error.message : "Chapter did not include valid Markdown prose.")];
   }
-  if (sections.length !== 1) errors.push(`Expected one chapter, found ${sections.length}.`);
+  if (sections.length !== 1) errors.push(retryIssue("chapter_count", `Expected one chapter, found ${sections.length}.`));
   const section = sections[0];
   if (!section || section.title !== input.card.title) {
-    errors.push(`Required heading is ## ${input.card.title}.`);
+    errors.push(retryIssue("heading_mismatch", `Required heading is ## ${input.card.title}.`));
     return errors;
   }
   const depth = deepSectionDepth[input.card.title];
   const words = wordCount(section.body);
-  if (depth && words < depth.minimum) errors.push(`${input.card.title} must be at least ${depth.minimum} words; found ${words}.`);
-  if (depth && words > depth.maximum) errors.push(`${input.card.title} must be at most ${depth.maximum} words; found ${words}.`);
+  if (depth && words < depth.minimum) errors.push(retryIssue("below_minimum", `${input.card.title} must be at least ${depth.minimum} words; found ${words}.`));
+  if (depth && words > depth.maximum) errors.push(retryIssue("above_maximum", `${input.card.title} must be at most ${depth.maximum} words; found ${words}.`));
   const visibleText = `${section.title}\n${section.body}`;
   for (const fragment of forbiddenReportFragments) {
-    if (visibleText.toLowerCase().includes(fragment.toLowerCase())) errors.push(`Forbidden public fragment found: ${fragment}`);
+    if (visibleText.toLowerCase().includes(fragment.toLowerCase())) {
+      errors.push(retryIssue("forbidden_fragment", `Forbidden public fragment found: ${fragment}`));
+    }
   }
-  errors.push(...validateUnsupportedSectionClaims({ sections: [section] } as ReportDraft, [input.card], input.chartSignature));
+  errors.push(...validateUnsupportedSectionClaims({ sections: [section] } as ReportDraft, [input.card], input.chartSignature).map((message) =>
+    retryIssue(message.startsWith("Missing visible chart evidence") ? "evidence_mismatch" : "unsupported_claim", message)
+  ));
   if (input.card.title === "Identity") {
     const sun = input.chartSignature.points.find((point) => point.body === "Sun");
     const firstTwoSentences = section.body.split(/(?<=[.!?])\s+/).slice(0, 2).join(" ");
     if (sun && !new RegExp(`\\b(${sun.sign}\\s+Sun|Sun\\s+in\\s+${sun.sign})\\b`, "i").test(firstTwoSentences)) {
-      errors.push(`Identity opening must mention ${sun.sign} Sun or Sun in ${sun.sign} in the first 1-2 sentences.`);
+      errors.push(retryIssue("identity_opening", `Identity opening must mention ${sun.sign} Sun or Sun in ${sun.sign} in the first 1-2 sentences.`));
     }
   }
   if (reportBasisFor(input.request).type === "natal" && /\b(currently active|currently activated|unusually active|pressing closer than usual|this (?:current )?season)\b/i.test(section.body)) {
-    errors.push("Natal chapter must not imply current timing without dated evidence.");
+    errors.push(retryIssue("natal_timing", "Natal chapter must not imply current timing without dated evidence."));
   }
   return errors;
 }
@@ -1816,22 +1900,33 @@ async function generateValidatedDeepThesis(request: AstrologyReportRequest, card
   let previousErrors: string[] = [];
   let usage: ModelUsage = {};
   let latencyMs = 0;
+  const failures: ReportGenerationRetryFailure[] = [];
   for (let attempt = 1; attempt <= 3; attempt += 1) {
     const prompt = [buildDeepThesisPrompt(request, cards), ...previousErrors.map((error) => `Previous error: ${error}`)].join("\n");
     let response: ModelWriterResponse;
+    const attemptStartedAt = Date.now();
     try {
       response = await writer(prompt, 180);
     } catch (error) {
-      previousErrors = [error instanceof Error ? error.message : "Model provider did not return thesis text."];
+      const failureLatencyMs = Date.now() - attemptStartedAt;
+      const issues = [providerRetryIssue(error)];
+      failures.push(retryFailure(attempt, issues, failureLatencyMs));
+      latencyMs += failureLatencyMs;
+      previousErrors = issues.map((issue) => issue.message);
       continue;
     }
     usage = mergeModelUsage(usage, response.usage);
     latencyMs += response.latencyMs;
     const errors = validateDeepThesis(response.text);
-    if (!errors.length) return { thesis: normalizeDeepThesis(response.text), attemptCount: attempt, usage, latencyMs };
-    previousErrors = errors;
+    if (!errors.length) return { thesis: normalizeDeepThesis(response.text), attemptCount: attempt, usage, latencyMs, failures };
+    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage));
+    previousErrors = errors.map((error) => error.message);
   }
-  throw new Error(`Governing thesis failed validation after retries: ${previousErrors.join("; ")}`);
+  throw new DeepPartGenerationError(
+    `Governing thesis failed validation after retries: ${previousErrors.join("; ")}`,
+    "Governing thesis",
+    { attemptCount: 3, usage, latencyMs, failures }
+  );
 }
 
 async function generateValidatedDeepSection(input: {
@@ -1844,12 +1939,18 @@ async function generateValidatedDeepSection(input: {
   let previousErrors: string[] = [];
   let usage: ModelUsage = {};
   let latencyMs = 0;
+  const failures: ReportGenerationRetryFailure[] = [];
   for (let attempt = 1; attempt <= 3; attempt += 1) {
     let response: ModelWriterResponse;
+    const attemptStartedAt = Date.now();
     try {
       response = await input.writer(buildDeepSectionPrompt({ ...input, previousErrors }), 1400);
     } catch (error) {
-      previousErrors = [error instanceof Error ? error.message : `${input.card.title} provider call returned no text.`];
+      const failureLatencyMs = Date.now() - attemptStartedAt;
+      const issues = [providerRetryIssue(error)];
+      failures.push(retryFailure(attempt, issues, failureLatencyMs));
+      latencyMs += failureLatencyMs;
+      previousErrors = issues.map((issue) => issue.message);
       continue;
     }
     usage = mergeModelUsage(usage, response.usage);
@@ -1857,21 +1958,30 @@ async function generateValidatedDeepSection(input: {
     const errors = validateDeepSection({ ...input, text: response.text });
     if (!errors.length) {
       const section = markdownSectionsFromText(response.text, input.request)[0]!;
-      return { section, attemptCount: attempt, usage, latencyMs };
+      return { section, attemptCount: attempt, usage, latencyMs, failures };
     }
-    previousErrors = errors;
+    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage));
+    previousErrors = errors.map((error) => error.message);
   }
-  throw new Error(`${input.card.title} failed validation after retries: ${previousErrors.join("; ")}`);
+  throw new DeepPartGenerationError(
+    `${input.card.title} failed validation after retries: ${previousErrors.join("; ")}`,
+    input.card.title,
+    { attemptCount: 3, usage, latencyMs, failures }
+  );
 }
 
-async function mapWithConcurrency<T, R>(items: T[], concurrency: number, worker: (item: T, index: number) => Promise<R>) {
-  const results = new Array<R>(items.length);
+async function mapWithConcurrencySettled<T, R>(items: T[], concurrency: number, worker: (item: T, index: number) => Promise<R>) {
+  const results = new Array<PromiseSettledResult<R>>(items.length);
   let nextIndex = 0;
   async function runWorker() {
     while (nextIndex < items.length) {
       const index = nextIndex;
       nextIndex += 1;
-      results[index] = await worker(items[index]!, index);
+      try {
+        results[index] = { status: "fulfilled", value: await worker(items[index]!, index) };
+      } catch (reason) {
+        results[index] = { status: "rejected", reason };
+      }
     }
   }
   await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, () => runWorker()));
@@ -1882,8 +1992,20 @@ async function generateSectionedDeepDraft(input: ReportWriterInput, writer: Prom
   const startedAt = Date.now();
   const headings = reportHeadingsFor(input.request);
   const cards = buildReportSectionSignalCardsForRequest(input.request, headings);
-  const thesis = await generateValidatedDeepThesis(input.request, cards, writer);
-  const generatedSections = await mapWithConcurrency(cards, 3, async (card, index) => {
+  let thesis: Awaited<ReturnType<typeof generateValidatedDeepThesis>>;
+  try {
+    thesis = await generateValidatedDeepThesis(input.request, cards, writer);
+  } catch (error) {
+    if (!(error instanceof DeepPartGenerationError)) throw error;
+    throw new SectionedDeepReportGenerationError(error.message, {
+      attemptCount: error.generation.attemptCount,
+      usage: error.generation.usage,
+      latencyMs: Date.now() - startedAt,
+      thesis: error.generation,
+      sections: []
+    });
+  }
+  const settledSections = await mapWithConcurrencySettled(cards, 3, async (card, index) => {
     const generated = await generateValidatedDeepSection({ ...input, card, thesis: thesis.thesis, writer });
     return {
       ...generated,
@@ -1894,6 +2016,28 @@ async function generateSectionedDeepDraft(input: ReportWriterInput, writer: Prom
       } satisfies AstrologyReportSection
     };
   });
+  const unexpectedFailure = settledSections.find((result) => result.status === "rejected" && !(result.reason instanceof DeepPartGenerationError));
+  if (unexpectedFailure?.status === "rejected") throw unexpectedFailure.reason;
+  const sectionParts = settledSections.map((result) => {
+    if (result.status === "fulfilled") return sectionPartMetadata(result.value);
+    const failure = result.reason as DeepPartGenerationError;
+    return { title: failure.title, ...failure.generation };
+  });
+  const failedSections = settledSections.filter((result): result is PromiseRejectedResult => result.status === "rejected");
+  if (failedSections.length) {
+    const allParts = [thesis, ...sectionParts];
+    throw new SectionedDeepReportGenerationError(
+      failedSections.map((result) => (result.reason as DeepPartGenerationError).message).join("; "),
+      {
+        attemptCount: allParts.reduce((total, part) => total + part.attemptCount, 0),
+        usage: allParts.reduce((total, part) => mergeModelUsage(total, part.usage), {} as ModelUsage),
+        latencyMs: Date.now() - startedAt,
+        thesis,
+        sections: sectionParts
+      }
+    );
+  }
+  const generatedSections = settledSections.map((result) => (result as PromiseFulfilledResult<DeepSectionGeneration>).value);
   const baseline = writeDeterministicCoreReport(input);
   const identity = generatedSections.find((generated) => generated.section.title === "Identity")?.section.body ?? "";
   const draft: ReportDraft = {
@@ -2504,6 +2648,21 @@ async function buildDebugModelReportResult(
       writerSummary = `${OPENAI_REPORT_MODEL_PROVIDER}/${config.reportModel}`;
     }
   } catch (error) {
+    if (error instanceof SectionedDeepReportGenerationError) {
+      return buildReportModelCallFailedResult(request, error.message, {
+        writer: DEBUG_MODEL_REPORT_WRITER,
+        provider: config.reportModelProvider,
+        model: config.reportModel,
+        modelProfile: config.reportModelProfile,
+        promptVersion: ASTRA_REPORT_PROMPT_VERSION,
+        attemptCount: error.generation.attemptCount,
+        ...error.generation.usage,
+        latencyMs: error.generation.latencyMs,
+        orchestration: "sectioned-v1",
+        thesis: partGenerationMetadata(error.generation.thesis),
+        sections: error.generation.sections.map((section) => ({ title: section.title, ...partGenerationMetadata(section) }))
+      });
+    }
     return buildReportModelCallFailedResult(request, error instanceof Error ? error.message : "Unknown model writer error.");
   }
   const result = buildLocalChartRoutineResult(request, draft);
@@ -2522,16 +2681,10 @@ async function buildDebugModelReportResult(
       ...(sectionedGeneration
         ? {
             orchestration: "sectioned-v1" as const,
-            thesis: {
-              attemptCount: sectionedGeneration.thesis.attemptCount,
-              ...sectionedGeneration.thesis.usage,
-              latencyMs: sectionedGeneration.thesis.latencyMs
-            },
+            thesis: partGenerationMetadata(sectionedGeneration.thesis),
             sections: sectionedGeneration.sections.map((section) => ({
               title: section.section.title,
-              attemptCount: section.attemptCount,
-              ...section.usage,
-              latencyMs: section.latencyMs
+              ...partGenerationMetadata(section)
             }))
           }
         : { orchestration: "monolithic" as const })

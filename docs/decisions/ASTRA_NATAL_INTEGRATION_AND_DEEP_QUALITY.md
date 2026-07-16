@@ -43,7 +43,7 @@ Deep Reports use `sectioned-v1` orchestration:
 
 The model never owns section order, evidence rendering, report provenance, or public metadata. The thesis is an ephemeral writing compass and is not customer-facing report content.
 
-Generation metadata records the thesis and every chapter's attempts, tokens, estimated spend, and model latency. Aggregate latency is wall-clock time; chapter latencies overlap because concurrency is intentional.
+Generation metadata records the thesis and every chapter's attempts, tokens, estimated spend, and model latency. Every rejected attempt also retains structured failure codes, human-readable reasons, and its available token/spend/latency data. Rejected prose is not persisted. Aggregate latency is wall-clock time; chapter latencies overlap because concurrency is intentional.
 
 ## Recovered Report Comparison
 

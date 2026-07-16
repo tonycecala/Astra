@@ -583,6 +583,50 @@ export const astrologyReportPublicSignalSchema = z.object({
   provenanceSummary: z.string().min(1)
 });
 
+export const reportGenerationRetryReasonCodeSchema = z.enum([
+  "provider_error",
+  "provider_timeout",
+  "provider_no_text",
+  "thesis_length",
+  "thesis_format",
+  "thesis_astrology",
+  "invalid_markdown",
+  "chapter_count",
+  "heading_mismatch",
+  "below_minimum",
+  "above_maximum",
+  "forbidden_fragment",
+  "unsupported_claim",
+  "evidence_mismatch",
+  "identity_opening",
+  "natal_timing"
+]);
+
+export const reportGenerationRetryIssueSchema = z.object({
+  code: reportGenerationRetryReasonCodeSchema,
+  message: z.string().min(1)
+});
+
+export const reportGenerationRetryFailureSchema = z.object({
+  attempt: z.number().int().positive(),
+  issues: z.array(reportGenerationRetryIssueSchema).min(1),
+  inputTokens: z.number().int().nonnegative().optional(),
+  outputTokens: z.number().int().nonnegative().optional(),
+  totalTokens: z.number().int().nonnegative().optional(),
+  estimatedSpend: z.number().nonnegative().optional(),
+  latencyMs: z.number().int().nonnegative()
+});
+
+const reportGenerationPartMetadataSchema = z.object({
+  attemptCount: z.number().int().positive(),
+  inputTokens: z.number().int().nonnegative().optional(),
+  outputTokens: z.number().int().nonnegative().optional(),
+  totalTokens: z.number().int().nonnegative().optional(),
+  estimatedSpend: z.number().nonnegative().optional(),
+  latencyMs: z.number().int().nonnegative(),
+  failures: z.array(reportGenerationRetryFailureSchema).optional()
+});
+
 export const reportGenerationMetadataSchema = z.object({
   writer: z.string().min(1),
   provider: z.string().min(1).optional(),
@@ -596,23 +640,8 @@ export const reportGenerationMetadataSchema = z.object({
   estimatedSpend: z.number().nonnegative().optional(),
   latencyMs: z.number().int().nonnegative().optional(),
   orchestration: z.enum(["monolithic", "sectioned-v1"]).optional(),
-  thesis: z.object({
-    attemptCount: z.number().int().positive(),
-    inputTokens: z.number().int().nonnegative().optional(),
-    outputTokens: z.number().int().nonnegative().optional(),
-    totalTokens: z.number().int().nonnegative().optional(),
-    estimatedSpend: z.number().nonnegative().optional(),
-    latencyMs: z.number().int().nonnegative()
-  }).optional(),
-  sections: z.array(z.object({
-    title: z.string().min(1),
-    attemptCount: z.number().int().positive(),
-    inputTokens: z.number().int().nonnegative().optional(),
-    outputTokens: z.number().int().nonnegative().optional(),
-    totalTokens: z.number().int().nonnegative().optional(),
-    estimatedSpend: z.number().nonnegative().optional(),
-    latencyMs: z.number().int().nonnegative()
-  })).optional()
+  thesis: reportGenerationPartMetadataSchema.optional(),
+  sections: z.array(reportGenerationPartMetadataSchema.extend({ title: z.string().min(1) })).optional()
 });
 
 export const astrologyReportRequestSchema = z.object({
@@ -891,6 +920,9 @@ export type ReportBoundary = z.infer<typeof reportBoundarySchema>;
 export type AstrologyReportSection = z.infer<typeof astrologyReportSectionSchema>;
 export type AstrologyReportProvenance = z.infer<typeof astrologyReportProvenanceSchema>;
 export type AstrologyReportPublicSignal = z.infer<typeof astrologyReportPublicSignalSchema>;
+export type ReportGenerationRetryReasonCode = z.infer<typeof reportGenerationRetryReasonCodeSchema>;
+export type ReportGenerationRetryIssue = z.infer<typeof reportGenerationRetryIssueSchema>;
+export type ReportGenerationRetryFailure = z.infer<typeof reportGenerationRetryFailureSchema>;
 export type AstrologyReportRequest = z.infer<typeof astrologyReportRequestSchema>;
 export type CreateAstrologyReportRequest = z.infer<typeof createAstrologyReportRequestSchema>;
 export type AstrologyReportResult = z.infer<typeof astrologyReportResultSchema>;
