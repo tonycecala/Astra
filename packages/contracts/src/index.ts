@@ -633,8 +633,8 @@ const reportReadabilityMetricSchema = z.object({
 
 const reportReadabilityMetadataSchema = z.object({
   algorithm: z.literal("flesch-kincaid-en-us-v1"),
-  targetGradeMin: z.literal(7),
-  targetGradeMax: z.literal(8),
+  targetGradeMin: z.number().int().min(1).max(12),
+  targetGradeMax: z.number().int().min(1).max(12),
   overall: reportReadabilityMetricSchema,
   sections: z.array(reportReadabilityMetricSchema.extend({ title: z.string().min(1) }))
 });

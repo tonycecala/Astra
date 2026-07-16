@@ -51,7 +51,7 @@ export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
-export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-plainspoken-v3";
+export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-plainspoken-v4";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
 
@@ -1872,12 +1872,13 @@ function buildDeepSectionPrompt(input: {
     "Use the thesis as a quiet through-line, not as a sentence to repeat.",
     `This chapter must answer, rather than quote or announce, this distinct governing question: ${card.tensions.join("; ")}.`,
     "VOICE MODE: PLAINSPOKEN",
-    "Target a 7th to 8th grade reading level without dumbing down the insight.",
+    "Target roughly a 6th to 8th grade reading level without dumbing down the insight.",
     "Use short sentences, everyday words, direct statements, and observable behavior.",
     "Say what happens, what it costs, and what can change. If a simpler sentence works, use it.",
     "Sound like a wise, experienced person speaking plainly: warm and lived-in, never academic, clinical, ornate, or stylized.",
     "Mix short and medium sentences. Keep adult psychological nuance; plain does not mean choppy or childish.",
-    "Open with an observable behavior, a clear claim, or a chart factor. Do not announce the chapter's question or begin with stock setup such as 'Here's the question.'",
+    "Write 2 or 3 paragraphs. Give each paragraph one coherent move; do not deliver the chapter as one wall of text.",
+    "Begin with a direct second-person statement using You or Your. Do not begin with a question or stock setup such as 'Here's the question,' 'Here is the question,' or 'This chapter asks.'",
     "Use words such as actually, real, really, and here's sparingly; do not turn them into a repeated voice tic.",
     "Use needed astrology terms accurately, then explain their human meaning in ordinary language.",
     "Speak directly to the reader using you and your.",

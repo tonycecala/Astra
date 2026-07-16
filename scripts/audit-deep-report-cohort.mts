@@ -1,7 +1,11 @@
 import { chmod, mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
-import { measureReportReadability } from "@astra/astrology";
+import {
+  ASTRA_PLAINSPOKEN_READING_GRADE_MAX,
+  ASTRA_PLAINSPOKEN_READING_GRADE_MIN,
+  measureReportReadability
+} from "@astra/astrology";
 import { closeDatabaseConnection, db, exportPortableUserData } from "@astra/db";
 
 type JsonObject = Record<string, unknown>;
@@ -185,7 +189,7 @@ function buildAudit(baseline: ReportPair[], generated: ReportPair[]) {
 
   return `# Deep Report Plainspoken Cohort Audit\n\n` +
     `Generated ${new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeStyle: "short", timeZone: "America/Chicago" }).format(new Date())}. The same saved Ally charts, Tropical zodiac, Whole Sign houses, and Claude Sonnet 5 production profile were used before and after.\n\n` +
-    `## Short answer\n\nThe Plainspoken target is grades 7-8. Flesch-Kincaid is an estimate and an evaluation signal, not a retry gate. This avoids buying another chapter merely because a formula dislikes an astrology term.\n\n` +
+    `## Short answer\n\nThe Plainspoken target is grades ${ASTRA_PLAINSPOKEN_READING_GRADE_MIN}-${ASTRA_PLAINSPOKEN_READING_GRADE_MAX}. Flesch-Kincaid is an estimate and an evaluation signal, not a retry gate. This avoids buying another chapter merely because a formula dislikes an astrology term.\n\n` +
     `## Voice and economics\n\n| Ally | Grade before | Grade after | Words/sentence before | Words/sentence after | Retries before | Retries after | Spend before | Spend after |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|\n${rows}\n\n` +
     `- Average grade: ${average(comparisons.map((item) => item.before.grade)).toFixed(1)} -> ${average(comparisons.map((item) => item.after.grade)).toFixed(1)}\n` +
     `- Total retries: ${beforeTotals.retries} -> ${afterTotals.retries}\n` +

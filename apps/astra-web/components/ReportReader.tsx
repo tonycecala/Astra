@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { buildAstrologyChartSnapshot, buildAstrologyReportSectionEvidence } from "@astra/astrology";
 import type { AstrologyReportRequest, AstrologyReportResult } from "@astra/contracts";
 import { ui } from "../lib/i18n";
+import { formatReportParagraphs } from "../lib/report-paragraphs";
 import { reportDisplayTitle, reportFamilyLabel } from "../lib/report-display";
 import { ReportChartPlate } from "./ReportChartPlate";
 import { ReportFeedbackForm } from "./ReportFeedbackForm";
@@ -240,10 +241,8 @@ const legacyCustomerCopyPatterns = [
 ];
 
 function customerFacingReportBody(body: string) {
-  return legacyCustomerCopyPatterns
-    .reduce((cleaned, pattern) => cleaned.replace(pattern, ""), body)
-    .replace(/\s{2,}/g, " ")
-    .trim();
+  const cleaned = legacyCustomerCopyPatterns.reduce((value, pattern) => value.replace(pattern, ""), body);
+  return formatReportParagraphs(cleaned);
 }
 
 function reportMarkdownFrom(

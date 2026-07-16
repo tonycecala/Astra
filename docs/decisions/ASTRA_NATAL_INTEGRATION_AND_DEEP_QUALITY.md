@@ -72,7 +72,7 @@ All nine chapters kept their existing depth floors on the first attempt. The one
 
 The recovered Astria Plainspoken contract is now explicit in every Deep chapter prompt:
 
-- Target a 7th-8th grade reading level without reducing the insight.
+- Target roughly a 6th-8th grade reading level without reducing the insight. Grade 6 is acceptable when the voice remains adult, specific, and psychologically useful.
 - Use everyday words, direct statements, observable behavior, and short-to-medium sentences.
 - Say what happens, what it costs, and what can change.
 - Sound warm, experienced, and lived-in without academic, clinical, ornate, or stylized dialect.
@@ -103,6 +103,24 @@ The three-Ally cohort used each Ally's same saved Tropical, Whole Sign chart and
 Cheyenne, Brandi, and Felicia all preserved or increased report length and chart-reference density. The aggregate cost change also includes the earlier visible-output-budget correction for Cheyenne and Brandi, so it is not attributed to voice or retry narrowing alone. Felicia is the cleanest incremental control: one broad phrase retry became zero, while spend moved from $0.0838 to $0.0788.
 
 A follow-up Cheyenne control removed stock question openings across all nine chapter openings. Its two retained retries both showed valid `Sun in Scorpio` evidence in sentence three; the final three-sentence Identity rule accepts that exact case in the deterministic quality suite without weakening the requirement that the opening be grounded in the actual chart.
+
+## Direct Openings And Paragraph Shape
+
+Deep chapters should begin with a direct second-person statement using `You` or `Your`, not with an announced question such as `Here's the question...`. This is a voice preference, not a retry gate. The chapter prompt also asks for two or three purposeful paragraphs.
+
+Library previously collapsed all repeated whitespace while removing legacy boilerplate. That erased authored blank lines and rendered every chapter as one wall of text. The renderer now preserves the exact word order while presenting each chapter as at most three balanced paragraphs. Existing reports improve without changing stored historical content; new reports usually arrive with three authored paragraphs already.
+
+The Brandi and Felicia production control used their unchanged Tropical, Whole Sign charts and Claude Sonnet 5:
+
+| Measure | Brandi | Felicia |
+|---|---:|---:|
+| Direct `You` or `Your` openings | 9 of 9 | 9 of 9 |
+| Authored paragraphs per chapter | 3 | 3 |
+| Estimated grade | 7.4 | 7.4 |
+| Retries | 0 | 0 |
+| Writer spend | $0.0816 | $0.0835 |
+
+This presentation follows `05-progressive-disclosure.md`: readable prose comes first, with deterministic Chart Evidence available as the next layer. No analytics event was added because paragraph formatting does not represent a user action.
 
 ## Recovered Report Comparison
 
