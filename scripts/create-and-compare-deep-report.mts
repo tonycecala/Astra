@@ -15,15 +15,25 @@ const outputPath = resolve(
   option("--output") || `.astra-exports/comparisons/${new Date().toISOString().slice(0, 10)}-deep-report-sonnet-comparison.md`
 );
 const generationApproved = process.argv.includes("--generate");
+const existingRequestId = clean(option("--request-id"));
 let cookieHeader = "";
 
 try {
-  if (!generationApproved) {
-    throw new Error("This command creates a billable production-model report. Re-run with --generate to approve generation.");
+  if (!generationApproved && !existingRequestId) {
+    throw new Error("Use --generate to create a billable report or --request-id <id> to compare an existing report.");
   }
-  if (!internalToken) throw new Error("ASTRA_INTERNAL_API_TOKEN is required for production-model report generation.");
+  if (generationApproved && !internalToken) throw new Error("ASTRA_INTERNAL_API_TOKEN is required for production-model report generation.");
   const before = await exportPortableUserData(db, { email, sourceLabel: "deep-report-comparison-before" });
-  const prior = latestCompletedDeepReport(before.data.reportRequests, before.data.reportResults);
+  const existing = existingRequestId
+    ? completedDeepReportById(before.data.reportRequests, before.data.reportResults, existingRequestId)
+    : null;
+  if (existingRequestId && !existing) throw new Error(`Completed Deep Report ${existingRequestId} was not found for ${email}.`);
+  const prior = latestCompletedDeepReport(
+    before.data.reportRequests,
+    before.data.reportResults,
+    existingRequestId || undefined,
+    existing ? textFrom(existing.result.createdAt) : undefined
+  );
   if (!prior) throw new Error(`No completed Deep Report exists for ${email}.`);
 
   await signIn();
@@ -43,39 +53,44 @@ try {
     houseSystem: textFrom(priorSettings.houseSystem) || textFrom(contextSettings.houseSystem) || "whole-sign"
   };
 
-  const created = await requestJson(`${appBaseUrl}/api/reports`, {
-    method: "POST",
-    body: JSON.stringify({
-      chartRequestId: selfChart.id,
-      reportType: "deep",
-      reportBasis: { type: "natal", chartSettings },
-      question: "Create a new Deep Report using the saved Self chart and current production writer.",
-      intent: "deep-report-sonnet-comparison"
-    })
-  });
-  const requestId = textFrom(recordFrom(created.request).id);
-  if (!requestId) throw new Error("Astra did not return a new Deep Report request id.");
+  let requestId = existingRequestId;
+  let nextRequest = existing?.request;
+  let nextResult = existing?.result;
+  if (generationApproved) {
+    const created = await requestJson(`${appBaseUrl}/api/reports`, {
+      method: "POST",
+      body: JSON.stringify({
+        chartRequestId: selfChart.id,
+        reportType: "deep",
+        reportBasis: { type: "natal", chartSettings },
+        question: "Create a new Deep Report using the saved Self chart and current production writer.",
+        intent: "deep-report-sonnet-comparison"
+      })
+    });
+    requestId = textFrom(recordFrom(created.request).id);
+    if (!requestId) throw new Error("Astra did not return a new Deep Report request id.");
 
-  const generated = await requestJson(`${appBaseUrl}/api/admin/replay-report`, {
-    method: "POST",
-    headers: { "x-astra-internal-token": internalToken },
-    body: JSON.stringify({
-      requestId,
-      reportWriter: "debug-model-writer",
-      modelProfile: "production"
-    })
-  });
-  const result = recordFrom(generated.result);
-  if (result.status !== "completed") throw new Error("The new Deep Report did not complete.");
-  const generationMetadata = recordFrom(result.generationMetadata);
-  if (generationMetadata.model !== "anthropic/claude-sonnet-5") {
-    throw new Error(`Expected Sonnet 5 provenance but received ${textFrom(generationMetadata.model) || "no model"}.`);
+    const generated = await requestJson(`${appBaseUrl}/api/admin/replay-report`, {
+      method: "POST",
+      headers: { "x-astra-internal-token": internalToken },
+      body: JSON.stringify({
+        requestId,
+        reportWriter: "debug-model-writer",
+        modelProfile: "production"
+      })
+    });
+    const result = recordFrom(generated.result);
+    if (result.status !== "completed") throw new Error("The new Deep Report did not complete.");
+    const generationMetadata = recordFrom(result.generationMetadata);
+    if (generationMetadata.model !== "anthropic/claude-sonnet-5") {
+      throw new Error(`Expected Sonnet 5 provenance but received ${textFrom(generationMetadata.model) || "no model"}.`);
+    }
+
+    const after = await exportPortableUserData(db, { email, sourceLabel: "deep-report-comparison-after" });
+    nextRequest = after.data.reportRequests.find((request) => request.id === requestId);
+    nextResult = after.data.reportResults.find((candidate) => candidate.requestId === requestId);
   }
-
-  const after = await exportPortableUserData(db, { email, sourceLabel: "deep-report-comparison-after" });
-  const nextRequest = after.data.reportRequests.find((request) => request.id === requestId);
-  const nextResult = after.data.reportResults.find((candidate) => candidate.requestId === requestId);
-  if (!nextRequest || !nextResult) throw new Error("The generated report could not be read back from Astra.");
+  if (!requestId || !nextRequest || !nextResult) throw new Error("The comparison report could not be read back from Astra.");
 
   const markdown = buildComparison({
     prior,
@@ -149,13 +164,23 @@ async function readOtpFromMailpit() {
   throw new Error(`No sign-in code was found for ${email}.`);
 }
 
-function latestCompletedDeepReport(requests: JsonObject[], results: JsonObject[]) {
+function completedDeepReports(requests: JsonObject[], results: JsonObject[]) {
   const requestById = new Map(requests.map((request) => [textFrom(request.id), request]));
   return results
     .map((result) => ({ request: requestById.get(textFrom(result.requestId)), result }))
     .filter((pair): pair is { request: JsonObject; result: JsonObject } =>
       Boolean(pair.request?.reportType === "deep" && pair.result.status === "completed" && pair.request.subjectName === "Tony Cecala")
-    )
+    );
+}
+
+function completedDeepReportById(requests: JsonObject[], results: JsonObject[], requestId: string) {
+  return completedDeepReports(requests, results).find((pair) => textFrom(pair.request.id) === requestId);
+}
+
+function latestCompletedDeepReport(requests: JsonObject[], results: JsonObject[], excludeRequestId?: string, beforeCreatedAt?: string) {
+  return completedDeepReports(requests, results)
+    .filter((pair) => textFrom(pair.request.id) !== excludeRequestId)
+    .filter((pair) => !beforeCreatedAt || textFrom(pair.result.createdAt).localeCompare(beforeCreatedAt) < 0)
     .sort((a, b) => textFrom(b.result.createdAt).localeCompare(textFrom(a.result.createdAt)))[0];
 }
 
@@ -173,8 +198,22 @@ function buildComparison(input: {
   const newModel = modelFrom(input.next.result);
   const overlap = documentOverlap(oldSections, newSections);
   const newGeneration = recordFrom(input.next.result.generationMetadata);
+  const oldGeneration = recordFrom(input.prior.result.generationMetadata);
   const estimatedSpend = typeof newGeneration.estimatedSpend === "number" ? newGeneration.estimatedSpend : null;
+  const oldSpend = typeof oldGeneration.estimatedSpend === "number" ? oldGeneration.estimatedSpend : null;
   const latencyMs = typeof newGeneration.latencyMs === "number" ? newGeneration.latencyMs : null;
+  const oldLatencyMs = typeof oldGeneration.latencyMs === "number" ? oldGeneration.latencyMs : null;
+  const oldQuality = qualityMetrics(oldSections);
+  const newQuality = qualityMetrics(newSections);
+  const thesisGeneration = recordFrom(newGeneration.thesis);
+  const generationRows = [
+    ...(Object.keys(thesisGeneration).length
+      ? [`| Governing thesis | ${numberFrom(thesisGeneration.attemptCount).toFixed(0)} | ${money(numberFrom(thesisGeneration.estimatedSpend))} | ${seconds(numberFrom(thesisGeneration.latencyMs))} |`]
+      : []),
+    ...arrayFrom(newGeneration.sections).map((section) =>
+    `| ${textFrom(section.title)} | ${numberFrom(section.attemptCount).toFixed(0)} | ${money(numberFrom(section.estimatedSpend))} | ${seconds(numberFrom(section.latencyMs))} |`
+    )
+  ].join("\n");
   const sectionRows = newSections.map((section) => {
     const previous = oldSections.find((candidate) => candidate.title === section.title);
     const previousWords = previous ? wordCount(previous.body) : 0;
@@ -197,28 +236,65 @@ function buildComparison(input: {
       ? "The new report keeps the same astrological foundation but develops it with meaningfully different language and emphasis."
       : "The new report follows the previous report closely; its main difference is refinement rather than a new interpretive pass.";
 
-  return `# Tony's Deep Report: Previous vs. Sonnet 5\n\n` +
+  const spendChange = oldSpend !== null && estimatedSpend !== null ? estimatedSpend - oldSpend : null;
+  const latencyChange = oldLatencyMs !== null && latencyMs !== null ? latencyMs - oldLatencyMs : null;
+
+  return `# Tony's Deep Report: Recovered vs. Sectioned\n\n` +
     `Generated ${formatDate(textFrom(input.next.result.createdAt))}\n\n` +
     `## The short answer\n\n${verdict} The previous report used **${oldModel}**; the new report used **${newModel}**. Both read the same saved birth chart with **${label(input.chartSettings.zodiacMode)} zodiac** and **${label(input.chartSettings.houseSystem)} houses**. This is a real product comparison, but not a laboratory model-only test: the older report also came through Astra's earlier writing pipeline.\n\n` +
     `## At a glance\n\n` +
-    `- Previous report: ${oldWords.toLocaleString()} words, created ${formatDate(textFrom(input.prior.result.createdAt))}\n` +
-    `- New report: ${newWords.toLocaleString()} words, created ${formatDate(textFrom(input.next.result.createdAt))}\n` +
+    `- Recovered report: ${oldWords.toLocaleString()} words, created ${formatDate(textFrom(input.prior.result.createdAt))}\n` +
+    `- Sectioned report: ${newWords.toLocaleString()} words, created ${formatDate(textFrom(input.next.result.createdAt))}\n` +
     `- Length change: ${signed(Math.round(((newWords - oldWords) / oldWords) * 100))}%\n` +
     `- Sentence-level overlap: ${overlap}%\n` +
-    (estimatedSpend === null ? "" : `- Estimated Sonnet writer cost: $${estimatedSpend.toFixed(4)}\n`) +
-    (latencyMs === null ? "" : `- Generation time: ${Math.round(latencyMs / 1000)} seconds\n`) +
+    (oldSpend === null ? "" : `- Recovered writer cost: ${money(oldSpend)}\n`) +
+    (estimatedSpend === null ? "" : `- Sectioned writer cost: ${money(estimatedSpend)}${spendChange === null || !oldSpend ? "" : ` (${signedMoney(spendChange)}, ${signed(Math.round((spendChange / oldSpend) * 100))}%)`}\n`) +
+    (oldLatencyMs === null ? "" : `- Recovered generation time: ${seconds(oldLatencyMs)}\n`) +
+    (latencyMs === null ? "" : `- Sectioned generation time: ${seconds(latencyMs)}${latencyChange === null ? "" : ` (${signed(Math.round(latencyChange / 1000))} seconds)`}\n`) +
     `- [Open the new report in Astra](${input.reportUrl})\n\n` +
+    `## Quality signals\n\nThese are consistency checks, not a substitute for reading the report. Higher distinctness and specificity are better; lower repetition is better.\n\n` +
+    `| Measure | Recovered | Sectioned |\n|---|---:|---:|\n` +
+    `| Chapter distinctness | ${oldQuality.distinctness}% | ${newQuality.distinctness}% |\n` +
+    `| Repeated sentences | ${oldQuality.repeatedSentenceRate}% | ${newQuality.repeatedSentenceRate}% |\n` +
+    `| Chart references per 1,000 words | ${oldQuality.specificityPerThousandWords} | ${newQuality.specificityPerThousandWords} |\n` +
+    `| Practical sentences | ${oldQuality.practicalSentences} | ${newQuality.practicalSentences} |\n\n` +
     `## What changed most\n\n` + largestChanges.map((change) =>
       `### ${change.title}\n\nThis section is ${Math.abs(change.delta).toLocaleString()} words ${change.delta >= 0 ? "longer" : "shorter"}. The new version opens:\n\n> ${opening(change.body)}\n`
     ).join("\n") +
-    `\n## Section-by-section view\n\n| Section | Previous words | Sonnet 5 words | Length change | Shared sentences |\n|---|---:|---:|---:|---:|\n${sectionRows}\n\n` +
+    `\n## Section-by-section view\n\n| Section | Recovered words | Sectioned words | Length change | Shared sentences |\n|---|---:|---:|---:|---:|\n${sectionRows}\n\n` +
+    (generationRows ? `## Section generation\n\nIndividual chapter times overlap because Astra writes up to three chapters at once. Retries apply only to the part that failed validation.\n\n| Part | Attempts | Writer cost | Model time |\n|---|---:|---:|---:|\n${generationRows}\n\n` : "") +
     `## How to read this\n\nA low shared-sentence percentage does not mean the astrology changed. It means Sonnet 5 synthesized the same chart evidence in its own language. The most useful test is whether the new report feels more specific, psychologically usable, and cumulative as it moves from Identity through Integration, rather than merely being longer.\n\n` +
     `## Provenance\n\n- Previous report ID: \`${textFrom(input.prior.request.id)}\`\n- New report ID: \`${textFrom(input.next.request.id)}\`\n- Subject: Tony Cecala\n- Birth data: unchanged saved Self chart\n- Zodiac: ${label(input.chartSettings.zodiacMode)}\n- Houses: ${label(input.chartSettings.houseSystem)}\n- Previous model: ${oldModel}\n- New model: ${newModel}\n`;
 }
 
 function sectionsFrom(value: unknown): ReportSection[] {
-  return arrayFrom(value).map((section) => ({ title: textFrom(section.title), body: textFrom(section.body) })).filter((section) => section.title && section.body);
+  return arrayFrom(value).map((section) => ({
+    title: textFrom(section.title) === "Right Now" ? "Integration" : textFrom(section.title),
+    body: textFrom(section.body)
+  })).filter((section) => section.title && section.body);
 }
+
+function qualityMetrics(sections: ReportSection[]) {
+  const sets = sections.map((section) => contentSet(section.body));
+  const similarities: number[] = [];
+  for (let left = 0; left < sets.length; left += 1) {
+    for (let right = left + 1; right < sets.length; right += 1) similarities.push(jaccard(sets[left]!, sets[right]!));
+  }
+  const allSentences = sections.flatMap((section) => sentences(section.body));
+  const specificity = (sections.map((section) => section.body).join(" ").match(/\b(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Ascendant|Rising|Midheaven|Aries|Taurus|Gemini|Cancer|Leo|Virgo|Libra|Scorpio|Sagittarius|Capricorn|Aquarius|Pisces|\d+(?:st|nd|rd|th) house|conjunct|square|trine|sextile|opposition)\b/gi) ?? []).length;
+  const practicalSentences = sections.flatMap((section) => section.body.split(/(?<=[.!?])\s+/))
+    .filter((sentence) => /\b(?:practice|try|choose|notice|name|let|ask|write|pause|make|protect|test|build)\b/i.test(sentence)).length;
+  const averageSimilarity = similarities.length ? similarities.reduce((total, value) => total + value, 0) / similarities.length : 0;
+  return {
+    distinctness: Number(((1 - averageSimilarity) * 100).toFixed(1)),
+    repeatedSentenceRate: allSentences.length ? Number((((allSentences.length - new Set(allSentences).size) / allSentences.length) * 100).toFixed(1)) : 0,
+    specificityPerThousandWords: Number(((specificity / Math.max(1, sections.reduce((total, section) => total + wordCount(section.body), 0))) * 1000).toFixed(1)),
+    practicalSentences
+  };
+}
+
+function contentSet(value: string) { return new Set(value.toLowerCase().match(/[a-z]{4,}/g) ?? []); }
+function jaccard(left: Set<string>, right: Set<string>) { const union = new Set([...left, ...right]); return union.size ? [...left].filter((word) => right.has(word)).length / union.size : 0; }
 
 function sentenceOverlap(oldBody: string, newBody: string) {
   const oldSentences = new Set(sentences(oldBody));
@@ -249,6 +325,10 @@ function opening(body: string) {
 
 function wordCount(value: string) { return value.split(/\s+/).filter(Boolean).length; }
 function signed(value: number) { return value > 0 ? `+${value}` : String(value); }
+function numberFrom(value: unknown) { return typeof value === "number" && Number.isFinite(value) ? value : 0; }
+function money(value: number) { return `$${value.toFixed(4)}`; }
+function signedMoney(value: number) { return `${value >= 0 ? "+" : "-"}$${Math.abs(value).toFixed(4)}`; }
+function seconds(value: number) { return `${Math.round(value / 1000)} seconds`; }
 function label(value: string) { return value.split("-").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" "); }
 function formatDate(value: string) { return new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone: "America/Chicago" }).format(new Date(value)); }
 function clean(value: string | undefined) { return value?.trim().replace(/^['\"]|['\"]$/g, "") || ""; }

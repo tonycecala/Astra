@@ -72,7 +72,8 @@ assert.deepEqual(result.generationMetadata, {
   outputTokens: 600,
   totalTokens: 1800,
   estimatedSpend: 0.042,
-  latencyMs: result.generationMetadata?.latencyMs
+  latencyMs: result.generationMetadata?.latencyMs,
+  orchestration: "monolithic"
 });
 assert.ok((result.generationMetadata?.latencyMs ?? -1) >= 0);
 assert.deepEqual(reportModelProfileModels.production, ["anthropic/claude-sonnet-5", "google/gemini-3.5-flash"]);

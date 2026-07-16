@@ -56,39 +56,69 @@ function prose(title: string, words: number, timingFailure = false) {
   return parts.join(" ");
 }
 
-function markdown(depth: "complete" | "shallow", timingFailure = false) {
-  return headings.map((title) => {
-    const words = depth === "shallow" ? (title === "Identity" ? 400 : 140) : title === "Identity" ? 400 : title === "Integration" ? 240 : 310;
-    return `## ${title}\n\n${prose(title, words, timingFailure && title === "Integration")}`;
-  }).join("\n\n");
+function sectionTitleFromPrompt(prompt: string) {
+  return prompt.match(/Required heading: ## (.+)/)?.[1]?.trim();
 }
 
-function responseFor(content: string, capture?: (prompt: string) => void) {
-  return async (_url: string | URL | Request, init?: RequestInit) => {
+function sectionWordTarget(title: string) {
+  if (title === "Identity") return 400;
+  if (title === "Integration") return 240;
+  return 310;
+}
+
+function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTransport?: boolean; timingFailure?: boolean } = {}) {
+  const calls = new Map<string, number>();
+  const prompts = new Map<string, string[]>();
+  let active = 0;
+  let maxActive = 0;
+  const fetchImpl = async (_url: string | URL | Request, init?: RequestInit) => {
     const body = JSON.parse(String(init?.body)) as { messages?: Array<{ content?: string }> };
-    capture?.(body.messages?.map((message) => message.content ?? "").join("\n") ?? "");
-    return new Response(JSON.stringify({ choices: [{ message: { content } }], usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2, cost: 0 } }), {
+    const prompt = body.messages?.map((message) => message.content ?? "").join("\n") ?? "";
+    const title = sectionTitleFromPrompt(prompt) ?? "Thesis";
+    const count = (calls.get(title) ?? 0) + 1;
+    calls.set(title, count);
+    prompts.set(title, [...(prompts.get(title) ?? []), prompt]);
+    active += 1;
+    maxActive = Math.max(maxActive, active);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    active -= 1;
+    const words = title === "Emotions" && options.retryEmotions && count === 1 ? 120 : sectionWordTarget(title);
+    const content = title === "Thesis"
+      ? "A private intelligence seeks public usefulness without sacrificing discernment, while courage and imagination repeatedly test whether desire can become disciplined action. The report should show how sensitivity, range, and visible initiative become trustworthy when they are given structure, proportion, honest relationship, and practical form."
+      : `## ${title}\n\n${prose(title, words, options.timingFailure && title === "Integration")}`;
+    const choices = title === "Work" && options.retryWorkTransport && count === 1 ? [] : [{ message: { content } }];
+    return new Response(JSON.stringify({ choices, usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2, cost: 0 } }), {
       status: 200,
       headers: { "content-type": "application/json" }
     });
   };
+  return { fetchImpl, calls, prompts, maxActive: () => maxActive };
 }
 
-let prompt = "";
+const provider = sectionedProvider({ retryEmotions: true, retryWorkTransport: true });
 const completed = await buildAstrologyReportResultAsync(request, {
   env,
-  fetchImpl: responseFor(markdown("complete"), (value) => { prompt = value; })
+  fetchImpl: provider.fetchImpl
 });
 assert.equal(completed.status, "completed");
-assert.match(prompt, /Emotions, Relationships, and Work should each be 300-425 words/);
-assert.match(prompt, /Integration must synthesize enduring natal patterns/);
+assert.equal(completed.generationMetadata?.orchestration, "sectioned-v1");
+assert.equal(completed.generationMetadata?.thesis?.attemptCount, 1);
+assert.equal(completed.generationMetadata?.sections?.length, 9);
+assert.equal(completed.generationMetadata?.sections?.find((section) => section.title === "Emotions")?.attemptCount, 2);
+assert.equal(provider.calls.get("Thesis"), 1);
+assert.equal(provider.calls.get("Emotions"), 2);
+assert.equal(provider.calls.get("Work"), 2);
+for (const title of headings.filter((heading) => heading !== "Emotions" && heading !== "Work")) assert.equal(provider.calls.get(title), 1);
+assert.equal(provider.maxActive(), 3);
+assert.match(provider.prompts.get("Emotions")?.[1] ?? "", /must be at least 300 words/);
+assert.doesNotMatch(provider.prompts.get("Work")?.[1] ?? "", /## Emotions/);
+assert.match(provider.prompts.get("Integration")?.[0] ?? "", /not a forecast/);
 
-const shallow = await buildAstrologyReportResultAsync(request, { env, fetchImpl: responseFor(markdown("shallow")) });
-assert.equal(shallow.status, "failed");
-assert.match(shallow.error ?? "", /Deep (?:Emotions|Report) should be at least/);
-
-const falseTiming = await buildAstrologyReportResultAsync(request, { env, fetchImpl: responseFor(markdown("complete", true)) });
+const timingProvider = sectionedProvider({ timingFailure: true });
+const falseTiming = await buildAstrologyReportResultAsync(request, { env, fetchImpl: timingProvider.fetchImpl });
 assert.equal(falseTiming.status, "failed");
-assert.match(falseTiming.error ?? "", /must not imply current timing/);
+assert.match(falseTiming.error ?? "", /must not imply current timing|must not imply current timing without dated evidence|must not imply current timing/);
+assert.equal(timingProvider.calls.get("Integration"), 3);
+for (const title of headings.filter((heading) => heading !== "Integration")) assert.equal(timingProvider.calls.get(title), 1);
 
-console.log("Deep Report depth and natal timing quality checks passed.");
+console.log("Sectioned Deep Report concurrency, retry, depth, metadata, and natal timing checks passed.");

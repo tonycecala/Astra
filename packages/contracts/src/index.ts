@@ -594,7 +594,25 @@ export const reportGenerationMetadataSchema = z.object({
   outputTokens: z.number().int().nonnegative().optional(),
   totalTokens: z.number().int().nonnegative().optional(),
   estimatedSpend: z.number().nonnegative().optional(),
-  latencyMs: z.number().int().nonnegative().optional()
+  latencyMs: z.number().int().nonnegative().optional(),
+  orchestration: z.enum(["monolithic", "sectioned-v1"]).optional(),
+  thesis: z.object({
+    attemptCount: z.number().int().positive(),
+    inputTokens: z.number().int().nonnegative().optional(),
+    outputTokens: z.number().int().nonnegative().optional(),
+    totalTokens: z.number().int().nonnegative().optional(),
+    estimatedSpend: z.number().nonnegative().optional(),
+    latencyMs: z.number().int().nonnegative()
+  }).optional(),
+  sections: z.array(z.object({
+    title: z.string().min(1),
+    attemptCount: z.number().int().positive(),
+    inputTokens: z.number().int().nonnegative().optional(),
+    outputTokens: z.number().int().nonnegative().optional(),
+    totalTokens: z.number().int().nonnegative().optional(),
+    estimatedSpend: z.number().nonnegative().optional(),
+    latencyMs: z.number().int().nonnegative()
+  })).optional()
 });
 
 export const astrologyReportRequestSchema = z.object({

@@ -246,6 +246,16 @@ type ModelWriterResponse = {
   latencyMs: number;
 };
 
+type ValidatedWriterPart = {
+  attemptCount: number;
+  usage: ModelUsage;
+  latencyMs: number;
+};
+
+type DeepSectionGeneration = ValidatedWriterPart & {
+  section: AstrologyReportSection;
+};
+
 type HoroscopeCtor = {
   new (input: {
     origin: OriginInstance;
@@ -1674,6 +1684,236 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
   ].join("\n");
 }
 
+type PromptModelWriter = (prompt: string, maxOutputTokens: number) => Promise<ModelWriterResponse>;
+
+const deepSectionDepth: Record<string, { minimum: number; target: string; maximum: number }> = {
+  Identity: { minimum: 350, target: "400-500", maximum: 540 },
+  Emotions: { minimum: 300, target: "300-425", maximum: 460 },
+  Relationships: { minimum: 300, target: "300-425", maximum: 460 },
+  Work: { minimum: 300, target: "300-425", maximum: 460 },
+  Drive: { minimum: 275, target: "275-400", maximum: 435 },
+  Gifts: { minimum: 275, target: "275-400", maximum: 435 },
+  "Blind Spots": { minimum: 275, target: "275-400", maximum: 435 },
+  Growth: { minimum: 275, target: "275-400", maximum: 435 },
+  Integration: { minimum: 225, target: "225-325", maximum: 360 }
+};
+
+function buildDeepThesisPrompt(request: AstrologyReportRequest, cards: ReportSectionSignalCard[]) {
+  return [
+    "You are planning one premium astrology report from structured section notes.",
+    "Return one private governing thesis of 35-75 words as plain prose, with no heading, bullets, JSON, or metadata.",
+    "This thesis is an internal writing compass, not customer-facing copy.",
+    "Name the central human tension that can organize all nine chapters without reducing them to one repeated lesson.",
+    "Do not mention planets, signs, houses, aspects, astrology, chart factors, or timing claims.",
+    `Subject: ${request.subjectName}`,
+    "Section planning notes:",
+    ...cards.map((card) => `- ${card.title}: capacities ${card.capacities.join(", ")}; risks ${card.risks.join(", ")}; tension ${card.tensions.join(", ")}; task ${card.developmentalTasks.join(", ")}.`)
+  ].join("\n");
+}
+
+function normalizeDeepThesis(text: string) {
+  return text
+    .replace(/^#+\s+.+$/gm, "")
+    .replace(/^[-*]\s+/gm, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function validateDeepThesis(text: string) {
+  const thesis = normalizeDeepThesis(text);
+  const words = wordCount(thesis);
+  const errors: string[] = [];
+  if (words < 35 || words > 75) errors.push(`Governing thesis must be 35-75 words; found ${words}.`);
+  if (/^\s*[\[{]/.test(text) || /^#+\s/m.test(text) || /^[-*]\s/m.test(text)) errors.push("Governing thesis must be one plain prose paragraph.");
+  if (new RegExp(`\\b(${reportClaimBodyNames.join("|")}|${zodiacSignNames.join("|")}|astrology|chart)\\b`, "i").test(thesis)) {
+    errors.push("Governing thesis must stay at the human-pattern level without astrology terms.");
+  }
+  return errors;
+}
+
+function buildDeepSectionPrompt(input: {
+  request: AstrologyReportRequest;
+  chartSignature: ChartSignature;
+  card: ReportSectionSignalCard;
+  thesis: string;
+  previousErrors: string[];
+}) {
+  const { request, chartSignature, card, thesis, previousErrors } = input;
+  const depth = deepSectionDepth[card.title];
+  const sunPlacement = chartSignature.points.find((point) => point.body === "Sun");
+  return [
+    "You are writing one chapter of a premium Astra Deep Report from structured notes.",
+    "Write only this chapter as plain Markdown. Do not write any other chapter, report title, evidence block, metadata, JSON, or planning commentary.",
+    `Required heading: ## ${card.title}`,
+    `Target length: ${depth?.target ?? "275-400"} words. Hard minimum: ${depth?.minimum ?? 275}. Hard maximum: ${depth?.maximum ?? 435}.`,
+    `Subject: ${request.subjectName}`,
+    `Zodiac: ${chartSignature.zodiacMode}. Houses: ${chartSignature.houseSystem}.`,
+    `Private governing thesis: ${thesis}`,
+    "Use the thesis as a quiet through-line, not as a sentence to repeat.",
+    `This chapter's distinct governing question must arise from: ${card.tensions.join("; ")}.`,
+    "Speak directly to the reader using you and your.",
+    "Translate chart factors into specific lived experience, psychological usefulness, and one practical next move.",
+    "Include the chapter's gift, cost, tension, and practice naturally without using those words as labels.",
+    "Use at least two selected signals when available, including a section-specific secondary signal.",
+    "Do not generalize this chapter into the whole report and do not repeat a generic warning or practice from another life domain.",
+    "Mention only chart factors present in this section card. Do not invent transits, progressions, current activation, or seasonal timing.",
+    "Avoid textbook astrology, stock spirituality, inflated certainty, and repeated evidence verbs.",
+    card.title === "Identity" && sunPlacement
+      ? `The first or second sentence must include "${sunPlacement.sign} Sun" or "Sun in ${sunPlacement.sign}" and integrate its house context.`
+      : "",
+    card.title === "Integration"
+      ? "Synthesize enduring natal patterns into one grounded way of working with the chart. This is not a forecast and must not claim that anything is newly or currently activated."
+      : "",
+    "Section signal card:",
+    sectionSignalCardBlock(card),
+    previousErrors.length ? "The previous version of this chapter failed. Rewrite only this chapter and correct every issue:" : "",
+    ...previousErrors.map((error) => `- ${error}`)
+  ].filter(Boolean).join("\n");
+}
+
+function validateDeepSection(input: {
+  text: string;
+  request: AstrologyReportRequest;
+  chartSignature: ChartSignature;
+  card: ReportSectionSignalCard;
+}) {
+  const errors = validateRawModelText(input.text);
+  let sections: AstrologyReportSection[] = [];
+  try {
+    sections = markdownSectionsFromText(input.text, input.request);
+  } catch (error) {
+    return [...errors, error instanceof Error ? error.message : "Chapter did not include valid Markdown prose."];
+  }
+  if (sections.length !== 1) errors.push(`Expected one chapter, found ${sections.length}.`);
+  const section = sections[0];
+  if (!section || section.title !== input.card.title) {
+    errors.push(`Required heading is ## ${input.card.title}.`);
+    return errors;
+  }
+  const depth = deepSectionDepth[input.card.title];
+  const words = wordCount(section.body);
+  if (depth && words < depth.minimum) errors.push(`${input.card.title} must be at least ${depth.minimum} words; found ${words}.`);
+  if (depth && words > depth.maximum) errors.push(`${input.card.title} must be at most ${depth.maximum} words; found ${words}.`);
+  const visibleText = `${section.title}\n${section.body}`;
+  for (const fragment of forbiddenReportFragments) {
+    if (visibleText.toLowerCase().includes(fragment.toLowerCase())) errors.push(`Forbidden public fragment found: ${fragment}`);
+  }
+  errors.push(...validateUnsupportedSectionClaims({ sections: [section] } as ReportDraft, [input.card], input.chartSignature));
+  if (input.card.title === "Identity") {
+    const sun = input.chartSignature.points.find((point) => point.body === "Sun");
+    const firstTwoSentences = section.body.split(/(?<=[.!?])\s+/).slice(0, 2).join(" ");
+    if (sun && !new RegExp(`\\b(${sun.sign}\\s+Sun|Sun\\s+in\\s+${sun.sign})\\b`, "i").test(firstTwoSentences)) {
+      errors.push(`Identity opening must mention ${sun.sign} Sun or Sun in ${sun.sign} in the first 1-2 sentences.`);
+    }
+  }
+  if (reportBasisFor(input.request).type === "natal" && /\b(currently active|currently activated|unusually active|pressing closer than usual|this (?:current )?season)\b/i.test(section.body)) {
+    errors.push("Natal chapter must not imply current timing without dated evidence.");
+  }
+  return errors;
+}
+
+async function generateValidatedDeepThesis(request: AstrologyReportRequest, cards: ReportSectionSignalCard[], writer: PromptModelWriter) {
+  let previousErrors: string[] = [];
+  let usage: ModelUsage = {};
+  let latencyMs = 0;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    const prompt = [buildDeepThesisPrompt(request, cards), ...previousErrors.map((error) => `Previous error: ${error}`)].join("\n");
+    let response: ModelWriterResponse;
+    try {
+      response = await writer(prompt, 180);
+    } catch (error) {
+      previousErrors = [error instanceof Error ? error.message : "Model provider did not return thesis text."];
+      continue;
+    }
+    usage = mergeModelUsage(usage, response.usage);
+    latencyMs += response.latencyMs;
+    const errors = validateDeepThesis(response.text);
+    if (!errors.length) return { thesis: normalizeDeepThesis(response.text), attemptCount: attempt, usage, latencyMs };
+    previousErrors = errors;
+  }
+  throw new Error(`Governing thesis failed validation after retries: ${previousErrors.join("; ")}`);
+}
+
+async function generateValidatedDeepSection(input: {
+  request: AstrologyReportRequest;
+  chartSignature: ChartSignature;
+  card: ReportSectionSignalCard;
+  thesis: string;
+  writer: PromptModelWriter;
+}): Promise<DeepSectionGeneration> {
+  let previousErrors: string[] = [];
+  let usage: ModelUsage = {};
+  let latencyMs = 0;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    let response: ModelWriterResponse;
+    try {
+      response = await input.writer(buildDeepSectionPrompt({ ...input, previousErrors }), 1400);
+    } catch (error) {
+      previousErrors = [error instanceof Error ? error.message : `${input.card.title} provider call returned no text.`];
+      continue;
+    }
+    usage = mergeModelUsage(usage, response.usage);
+    latencyMs += response.latencyMs;
+    const errors = validateDeepSection({ ...input, text: response.text });
+    if (!errors.length) {
+      const section = markdownSectionsFromText(response.text, input.request)[0]!;
+      return { section, attemptCount: attempt, usage, latencyMs };
+    }
+    previousErrors = errors;
+  }
+  throw new Error(`${input.card.title} failed validation after retries: ${previousErrors.join("; ")}`);
+}
+
+async function mapWithConcurrency<T, R>(items: T[], concurrency: number, worker: (item: T, index: number) => Promise<R>) {
+  const results = new Array<R>(items.length);
+  let nextIndex = 0;
+  async function runWorker() {
+    while (nextIndex < items.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+      results[index] = await worker(items[index]!, index);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, () => runWorker()));
+  return results;
+}
+
+async function generateSectionedDeepDraft(input: ReportWriterInput, writer: PromptModelWriter) {
+  const startedAt = Date.now();
+  const headings = reportHeadingsFor(input.request);
+  const cards = buildReportSectionSignalCardsForRequest(input.request, headings);
+  const thesis = await generateValidatedDeepThesis(input.request, cards, writer);
+  const generatedSections = await mapWithConcurrency(cards, 3, async (card, index) => {
+    const generated = await generateValidatedDeepSection({ ...input, card, thesis: thesis.thesis, writer });
+    return {
+      ...generated,
+      section: {
+        ...generated.section,
+        id: sectionIdFromTitle(input.request.id, card.title, index),
+        emphasis: index === 0 ? "primary" : card.title === "Integration" ? "practice" : "supporting"
+      } satisfies AstrologyReportSection
+    };
+  });
+  const baseline = writeDeterministicCoreReport(input);
+  const identity = generatedSections.find((generated) => generated.section.title === "Identity")?.section.body ?? "";
+  const draft: ReportDraft = {
+    summary: summaryFromMarkdown(identity, baseline.summary ?? `${input.request.subjectName}'s Deep Report.`),
+    sections: generatedSections.map((generated) => generated.section),
+    publicSignal: baseline.publicSignal
+  };
+  const finalErrors = validateModelDraft(input.request, draft, input.chartSignature);
+  if (finalErrors.length) throw new Error(`Assembled Deep Report failed validation: ${finalErrors.join("; ")}`);
+  const usage = [thesis, ...generatedSections].reduce((total, part) => mergeModelUsage(total, part.usage), {} as ModelUsage);
+  return {
+    draft,
+    attemptCount: thesis.attemptCount + generatedSections.reduce((total, part) => total + part.attemptCount, 0),
+    usage,
+    latencyMs: Date.now() - startedAt,
+    thesis,
+    sections: generatedSections
+  };
+}
+
 function reportHeadingsFor(request: AstrologyReportRequest) {
   if (request.reportType === "identity") return [...personIdentityReportHeadings];
   if (request.reportType === "deep") return [...personDeepReportHeadings];
@@ -2017,18 +2257,34 @@ async function writeOpenAIDebugModelReportText(
   fetchImpl: typeof fetch,
   previousErrors: string[] = []
 ): Promise<ModelWriterResponse> {
+  return writeOpenAIModelText(
+    buildDebugModelPrompt(input.request, input.chartSignature, previousErrors),
+    input.request,
+    maxModelOutputTokensFor(input.request),
+    config,
+    fetchImpl
+  );
+}
+
+async function writeOpenAIModelText(
+  prompt: string,
+  request: AstrologyReportRequest,
+  maxOutputTokens: number,
+  config: Required<Pick<AstrologyReportGenerationConfig, "reportModel" | "openaiApiKey">>,
+  fetchImpl: typeof fetch
+): Promise<ModelWriterResponse> {
   const startedAt = Date.now();
   const response = await fetchImpl("https://api.openai.com/v1/responses", {
     method: "POST",
-    signal: AbortSignal.timeout(reportModelTimeoutMsFor(input.request)),
+    signal: AbortSignal.timeout(reportModelTimeoutMsFor(request)),
     headers: {
       authorization: `Bearer ${config.openaiApiKey}`,
       "content-type": "application/json"
     },
     body: JSON.stringify({
       model: config.reportModel,
-      input: buildDebugModelPrompt(input.request, input.chartSignature, previousErrors),
-      max_output_tokens: maxModelOutputTokensFor(input.request)
+      input: prompt,
+      max_output_tokens: maxOutputTokens
     })
   });
 
@@ -2054,12 +2310,28 @@ async function writeOpenRouterDebugModelReportText(
   fetchImpl: typeof fetch,
   previousErrors: string[] = []
 ): Promise<ModelWriterResponse> {
+  return writeOpenRouterModelText(
+    buildDebugModelPrompt(input.request, input.chartSignature, previousErrors),
+    input.request,
+    maxModelOutputTokensFor(input.request),
+    config,
+    fetchImpl
+  );
+}
+
+async function writeOpenRouterModelText(
+  prompt: string,
+  request: AstrologyReportRequest,
+  maxOutputTokens: number,
+  config: Required<Pick<AstrologyReportGenerationConfig, "reportModel" | "openRouterApiKey" | "openRouterBaseUrl">>,
+  fetchImpl: typeof fetch
+): Promise<ModelWriterResponse> {
   const baseUrl = config.openRouterBaseUrl.replace(/\/+$/, "");
   const endpoint = baseUrl.endsWith("/chat/completions") ? baseUrl : `${baseUrl}/chat/completions`;
   const startedAt = Date.now();
   const response = await fetchImpl(endpoint, {
     method: "POST",
-    signal: AbortSignal.timeout(reportModelTimeoutMsFor(input.request)),
+    signal: AbortSignal.timeout(reportModelTimeoutMsFor(request)),
     headers: {
       authorization: `Bearer ${config.openRouterApiKey}`,
       "content-type": "application/json",
@@ -2071,10 +2343,10 @@ async function writeOpenRouterDebugModelReportText(
       messages: [
         {
           role: "user",
-          content: buildDebugModelPrompt(input.request, input.chartSignature, previousErrors)
+          content: prompt
         }
       ],
-      max_tokens: maxModelOutputTokensFor(input.request),
+      max_tokens: maxOutputTokens,
       temperature: 0.3
     })
   });
@@ -2178,7 +2450,8 @@ async function buildDebugModelReportResult(
   const chartSignature = buildChartSignature(request);
   let draft: ReportDraft;
   let writerSummary: string;
-  let generation: Awaited<ReturnType<typeof parseValidatedModelDraft>>;
+  let generation: Awaited<ReturnType<typeof parseValidatedModelDraft>> | Awaited<ReturnType<typeof generateSectionedDeepDraft>>;
+  let sectionedGeneration: Awaited<ReturnType<typeof generateSectionedDeepDraft>> | null = null;
   try {
     if (config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER) {
       if (!config.openRouterApiKey || !config.openRouterBaseUrl) {
@@ -2192,20 +2465,19 @@ async function buildDebugModelReportResult(
       const openRouterApiKey = config.openRouterApiKey;
       const openRouterBaseUrl = config.openRouterBaseUrl;
       const writerInput = { request, chartSignature };
-      generation = await parseValidatedModelDraft(
-        writerInput,
-        (previousErrors) =>
-          writeOpenRouterDebugModelReportText(
+      const modelConfig = { reportModel, openRouterApiKey, openRouterBaseUrl };
+      if (request.reportType === "deep") {
+        sectionedGeneration = await generateSectionedDeepDraft(
+          writerInput,
+          (prompt, maxOutputTokens) => writeOpenRouterModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
+        );
+        generation = sectionedGeneration;
+      } else {
+        generation = await parseValidatedModelDraft(
             writerInput,
-            {
-              reportModel,
-              openRouterApiKey,
-              openRouterBaseUrl
-            },
-            fetchImpl,
-            previousErrors
-          )
-      );
+            (previousErrors) => writeOpenRouterDebugModelReportText(writerInput, modelConfig, fetchImpl, previousErrors)
+          );
+      }
       draft = generation.draft;
       writerSummary = `${OPENROUTER_REPORT_MODEL_PROVIDER}/${config.reportModel}`;
     } else {
@@ -2215,16 +2487,19 @@ async function buildDebugModelReportResult(
       const reportModel = config.reportModel;
       const openaiApiKey = config.openaiApiKey;
       const writerInput = { request, chartSignature };
-      generation = await parseValidatedModelDraft(
-        writerInput,
-        (previousErrors) =>
-          writeOpenAIDebugModelReportText(
+      const modelConfig = { reportModel, openaiApiKey };
+      if (request.reportType === "deep") {
+        sectionedGeneration = await generateSectionedDeepDraft(
+          writerInput,
+          (prompt, maxOutputTokens) => writeOpenAIModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
+        );
+        generation = sectionedGeneration;
+      } else {
+        generation = await parseValidatedModelDraft(
             writerInput,
-            { reportModel, openaiApiKey },
-            fetchImpl,
-            previousErrors
-          )
-      );
+            (previousErrors) => writeOpenAIDebugModelReportText(writerInput, modelConfig, fetchImpl, previousErrors)
+          );
+      }
       draft = generation.draft;
       writerSummary = `${OPENAI_REPORT_MODEL_PROVIDER}/${config.reportModel}`;
     }
@@ -2243,7 +2518,23 @@ async function buildDebugModelReportResult(
       promptVersion: ASTRA_REPORT_PROMPT_VERSION,
       attemptCount: generation.attemptCount,
       ...generation.usage,
-      latencyMs: generation.latencyMs
+      latencyMs: generation.latencyMs,
+      ...(sectionedGeneration
+        ? {
+            orchestration: "sectioned-v1" as const,
+            thesis: {
+              attemptCount: sectionedGeneration.thesis.attemptCount,
+              ...sectionedGeneration.thesis.usage,
+              latencyMs: sectionedGeneration.thesis.latencyMs
+            },
+            sections: sectionedGeneration.sections.map((section) => ({
+              title: section.section.title,
+              attemptCount: section.attemptCount,
+              ...section.usage,
+              latencyMs: section.latencyMs
+            }))
+          }
+        : { orchestration: "monolithic" as const })
     },
     provenance: [
       ...result.provenance.filter((entry) => entry.id !== `${request.id}:writer`),
