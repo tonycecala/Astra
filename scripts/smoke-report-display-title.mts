@@ -1,5 +1,11 @@
 import type { AstrologyReportRequest } from "@astra/contracts";
-import { reportCardMetadata, reportDisplayName, reportDisplayTitle, reportFamilyLabel } from "../apps/astra-web/lib/report-display";
+import {
+  reportCardMetadata,
+  reportDisplayName,
+  reportDisplayTitle,
+  reportFamilyLabel,
+  resolveLegacySynastryPartnerBirthDate
+} from "../apps/astra-web/lib/report-display";
 
 const synastryRequest = {
   reportType: "synastry",
@@ -50,6 +56,7 @@ if (reportDisplayName(synastryRequest) !== "Tony Cecala + Brandi McCulley") {
 const legacySynastryRequest = {
   reportType: "synastry",
   subjectName: "Tony Cecala + Cheyenne Autumn",
+  birthData: { date: "1961-05-23" },
   context: {
     subject: {
       displayName: "Tony Cecala",
@@ -59,6 +66,27 @@ const legacySynastryRequest = {
 } as unknown as AstrologyReportRequest;
 if (reportDisplayTitle(legacySynastryRequest, "Tony Cecala — Synastry Report") !== "Tony Cecala + Cheyenne Autumn — Synastry Report") {
   throw new Error("Imported Synastry reports must recover both names from legacy subject context.");
+}
+
+const legacyPartnerBirthDate = resolveLegacySynastryPartnerBirthDate(legacySynastryRequest, [
+  {
+    id: "v1-chart:legacy-partner",
+    userId: "portable-user",
+    subjectName: "Cheyenne Autumn",
+    birthData: { date: "1989-11-03" },
+    context: { subject: { subjectId: "legacy-partner", subjectType: "ally", displayName: "Cheyenne Autumn" } },
+    source: "import",
+    status: "completed",
+    createdAt: "2026-07-16T18:00:00.000Z",
+    updatedAt: "2026-07-16T18:00:00.000Z"
+  }
+]);
+if (legacyPartnerBirthDate !== "1989-11-03") {
+  throw new Error("Imported Synastry reports must resolve the partner birth date from the owned chart.");
+}
+const legacySynastryMetadata = reportCardMetadata(legacySynastryRequest, "2026-07-16T18:00:00.000Z", legacyPartnerBirthDate);
+if (legacySynastryMetadata !== "Generated Jul 16, 2026 · Born May 23, 1961 + Nov 3, 1989") {
+  throw new Error(`Imported Synastry metadata must include both birth dates; received: ${legacySynastryMetadata}`);
 }
 
 const synastryMetadata = reportCardMetadata(synastryRequest, "2026-07-16T18:00:00.000Z");

@@ -4,10 +4,16 @@ import { Search } from "lucide-react";
 import type { Artifact } from "@astra/contracts";
 import { PageHeader } from "../../components/PageHeader";
 import { ReportReader, formatReportDate, reportSubjectContext } from "../../components/ReportReader";
-import { astrologyReportShares, db, getUserAstrologyReportResult, getUserAstrologyReportRequest, listUserArtifacts, listUserAstrologyReportRequests, listUserAstrologyReportResults } from "@astra/db";
+import { astrologyReportShares, db, getUserAstrologyReportResult, getUserAstrologyReportRequest, listUserArtifacts, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests } from "@astra/db";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
-import { reportCardMetadata, reportDisplayName, reportDisplayTitle, reportFamilyLabel } from "../../lib/report-display";
+import {
+  reportCardMetadata,
+  reportDisplayName,
+  reportDisplayTitle,
+  reportFamilyLabel,
+  resolveLegacySynastryPartnerBirthDate
+} from "../../lib/report-display";
 import { and, eq } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
@@ -271,8 +277,9 @@ function reportRequestIdFromArtifactId(id: string) {
 }
 
 async function getUserLibraryArtifacts(userId: string) {
-  const [artifacts, reportRequests, reportResults, reportShares] = await Promise.all([
+  const [artifacts, chartRequests, reportRequests, reportResults, reportShares] = await Promise.all([
     listUserArtifacts(db, userId),
+    listUserChartMakerRequests(db, userId),
     listUserAstrologyReportRequests(db, userId),
     listUserAstrologyReportResults(db, userId),
     db
@@ -295,7 +302,7 @@ async function getUserLibraryArtifacts(userId: string) {
         kind: "report" as const,
         summary: result.summary ?? ui.library.completedReportSummary,
         createdAt: result.createdAt,
-        cardMetadata: reportCardMetadata(request, result.createdAt),
+        cardMetadata: reportCardMetadata(request, result.createdAt, resolveLegacySynastryPartnerBirthDate(request, chartRequests)),
         requestId: result.requestId,
         reportType: request?.reportType,
         subjectName: reportDisplayName(request),

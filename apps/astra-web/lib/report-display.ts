@@ -1,4 +1,4 @@
-import type { AstrologyReportRequest } from "@astra/contracts";
+import type { AstrologyReportRequest, ChartMakerRequest } from "@astra/contracts";
 import { ui } from "./i18n";
 
 export function reportFamilyLabel(reportType?: string) {
@@ -37,7 +37,11 @@ export function reportDisplayTitle(request: AstrologyReportRequest | null | unde
   return generatedTitle?.trim() || ui.library.selectedReportFallbackTitle;
 }
 
-export function reportCardMetadata(request: AstrologyReportRequest | null | undefined, createdAt: string) {
+export function reportCardMetadata(
+  request: AstrologyReportRequest | null | undefined,
+  createdAt: string,
+  legacyPartnerBirthDate?: string
+) {
   const details = [`${ui.library.reportCardDateLabel} ${formatDate(createdAt)}`];
   const basis = request?.reportBasis;
 
@@ -45,11 +49,45 @@ export function reportCardMetadata(request: AstrologyReportRequest | null | unde
     details.push(`${ui.library.reportChartAsOf} ${formatDate(basis.asOfDate)}`);
   } else if (basis?.type === "synastry" && basis.partner) {
     details.push(`${ui.library.reportCardBornLabel} ${formatDate(basis.primary.birthData.date)} + ${formatDate(basis.partner.birthData.date)}`);
+  } else if (request?.reportType === "synastry" && request.birthData.date && legacyPartnerBirthDate) {
+    details.push(`${ui.library.reportCardBornLabel} ${formatDate(request.birthData.date)} + ${formatDate(legacyPartnerBirthDate)}`);
   } else if (request?.birthData.date) {
     details.push(`${ui.library.reportCardBornLabel} ${formatDate(request.birthData.date)}`);
   }
 
   return details.join(" · ");
+}
+
+export function resolveLegacySynastryPartnerBirthDate(
+  request: AstrologyReportRequest | null | undefined,
+  chartRequests: ChartMakerRequest[]
+) {
+  if (request?.reportType !== "synastry" || request.reportBasis?.type === "synastry") return undefined;
+
+  const subject = recordFrom(request.context?.subject);
+  const v1 = recordFrom(request.context?.v1);
+  const relationship = recordFrom(v1.chartSnapshot);
+  const relationshipDetails = recordFrom(relationship.relationship);
+  const partnerSubjectId =
+    textFrom(subject.partnerSubjectId) ||
+    textFrom(relationshipDetails.partnerSubjectId) ||
+    textFrom(subject.partnerAllyId).replace(/^v1-ally:/, "");
+  const partnerName = textFrom(subject.partnerDisplayName) || textFrom(relationshipDetails.partnerName);
+
+  const partnerChart = chartRequests.find((chart) => {
+    const chartSubject = recordFrom(chart.context?.subject);
+    const chartV1 = recordFrom(chart.context?.v1);
+    const chartSubjectIds = [
+      textFrom(chartSubject.subjectId),
+      textFrom(chartSubject.allyId).replace(/^v1-ally:/, ""),
+      textFrom(chartV1.v1SubjectId),
+      chart.id.replace(/^v1-chart:/, "")
+    ].filter(Boolean);
+    if (partnerSubjectId && chartSubjectIds.includes(partnerSubjectId)) return true;
+    return Boolean(partnerName && chart.subjectName.trim() === partnerName);
+  });
+
+  return partnerChart?.birthData.date;
 }
 
 function formatDate(value: string) {
