@@ -17,23 +17,25 @@ const email = (option("--email") || "astramaster@tony.io").trim().toLowerCase();
 const subjects = csvOption("--subjects", "Rachel Ijames,Michelle Gruben");
 const models = csvOption("--models", "anthropic/claude-sonnet-5,google/gemini-3.5-flash");
 const outputDir = resolve(
-  option("--output") || `.astra-exports/comparisons/${new Date().toISOString().slice(0, 10)}-ally-deep-model-bakeoff`
+  option("--output") || `.astra-exports/comparisons/${new Date().toISOString().slice(0, 10)}-deep-model-bakeoff`
 );
 const generationApproved = process.argv.includes("--generate");
 const resumeCompleted = process.argv.includes("--resume");
-const reasoningOffCandidates = new Set(["moonshotai/kimi-k2.5", "z-ai/glm-4.7-flash"]);
+const chartSource = sourceOption("--source", "ally");
+const reportIntent = `${chartSource}-deep-model-bakeoff`;
+const reasoningOffCandidates = new Set(["google/gemini-2.5-flash-lite", "moonshotai/kimi-k2.5", "z-ai/glm-4.7-flash"]);
 let cookieHeader = "";
 
 if (process.argv.includes("--help")) {
-  console.log("Run private Ally Deep Reports with explicit models and write a blind comparison bundle.");
-  console.log("Required: --generate. Optional: --resume, --email, --subjects, --models, --output.");
+  console.log("Run private Self or Ally Deep Reports with explicit models and write a blind comparison bundle.");
+  console.log("Required: --generate. Optional: --source self|ally, --resume, --email, --subjects, --models, --output.");
   process.exit(0);
 }
 
 try {
   if (!generationApproved) throw new Error("Use --generate to approve the production-model Deep Report calls.");
   if (!internalToken) throw new Error("ASTRA_INTERNAL_API_TOKEN is required for production-model report generation.");
-  if (subjects.length < 1) throw new Error("Provide at least one Ally subject.");
+  if (subjects.length < 1) throw new Error("Provide at least one report subject.");
   if (models.length < 2) throw new Error("Provide at least two models for a bakeoff.");
   const supportedBakeoffModels = new Set([...reportModelProfileModels.production, ...reportModelProfileModels.premium_bakeoff]);
   const unsupported = models.filter((model) => !supportedBakeoffModels.has(model));
@@ -109,10 +111,9 @@ try {
 
 function sourceChartFor(bundle: PortableBundle, subjectName: string) {
   const chart = [...bundle.data.chartRequests]
-    .filter((candidate) => candidate.subjectName === subjectName && candidate.status === "completed")
+    .filter((candidate) => candidate.subjectName === subjectName && candidate.status === "completed" && candidate.source === chartSource)
     .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))[0];
-  if (!chart) throw new Error(`No completed saved chart was found for ${subjectName}.`);
-  if (chart.source !== "ally") throw new Error(`${subjectName} is not saved as an Ally chart.`);
+  if (!chart) throw new Error(`No completed saved ${chartSource === "self" ? "Self" : "Ally"} chart was found for ${subjectName}.`);
   const settings = recordFrom(recordFrom(chart.context).chartSettings);
   const zodiacMode = textFrom(settings.zodiacMode) || "tropical";
   const houseSystem = textFrom(settings.houseSystem) || "whole-sign";
@@ -137,8 +138,8 @@ async function createReportRequest(source: ReturnType<typeof sourceChartFor>) {
           houseSystem: source.houseSystem
         }
       },
-      question: "Create a Deep Report from this saved Ally chart using the current Plainspoken writer.",
-      intent: "ally-deep-model-bakeoff"
+      question: `Create a Deep Report from this saved ${chartSource === "self" ? "Self" : "Ally"} chart using the current Plainspoken writer.`,
+      intent: reportIntent
     })
   });
   const requestId = textFrom(recordFrom(created.request).id);
@@ -160,7 +161,7 @@ function bakeoffRecord(bundle: PortableBundle, generated: { subject: string; mod
 function latestBakeoffRequest(bundle: PortableBundle, subject: string, model: string) {
   const resultsByRequest = new Map(bundle.data.reportResults.map((result) => [result.requestId, result]));
   return [...bundle.data.reportRequests]
-    .filter((request) => request.subjectName === subject && request.reportType === "deep" && request.intent === "ally-deep-model-bakeoff")
+    .filter((request) => request.subjectName === subject && request.reportType === "deep" && request.intent === reportIntent)
     .sort((left, right) => right.createdAt.localeCompare(left.createdAt))
     .map((request) => {
       const result = resultsByRequest.get(request.id);
@@ -257,7 +258,7 @@ function blindReview(records: Array<ReturnType<typeof bakeoffRecord> & { alias: 
       return `## Model ${record.alias}${failed}\n\n[Open in Library](${appBaseUrl}/library?reportId=${record.requestId})\n\n${sections}`;
     }).join("\n\n---\n\n");
   }).join("\n\n---\n\n");
-  return `# Astra Ally Deep Report Blind Review\n\nModels are hidden until the prose review is complete. Compare specificity, synthesis across signals, psychological usefulness, warmth, repetition, and whether each chapter earns its length.${coordinateNotice}\n\n${groups}\n`;
+  return `# Astra ${chartSource === "self" ? "Self" : "Ally"} Deep Report Blind Review\n\nModels are hidden until the prose review is complete. Compare specificity, synthesis across signals, psychological usefulness, warmth, repetition, and whether each chapter earns its length.${coordinateNotice}\n\n${groups}\n`;
 }
 
 function retainedProse(records: Array<ReturnType<typeof bakeoffRecord> & { alias: string; metrics: ReturnType<typeof reportMetrics> }>) {
@@ -397,6 +398,12 @@ async function readOtpFromMailpit() {
 
 function csvOption(name: string, fallback: string) {
   return (option(name) || fallback).split(",").map((value) => value.trim()).filter(Boolean);
+}
+
+function sourceOption(name: string, fallback: "self" | "ally") {
+  const value = (option(name) || fallback).toLowerCase();
+  if (value !== "self" && value !== "ally") throw new Error(`${name} must be self or ally.`);
+  return value;
 }
 
 function option(name: string) {

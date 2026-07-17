@@ -96,6 +96,7 @@ export const reportModelProfileModels: Record<ReportModelProfile, string[]> = {
     "anthropic/claude-sonnet-5",
     "openai/gpt-5.6-terra",
     "google/gemini-3.5-flash",
+    "google/gemini-2.5-flash-lite",
     "moonshotai/kimi-k2.5",
     "z-ai/glm-4.7-flash",
     "anthropic/claude-opus-4.8",
@@ -106,6 +107,7 @@ export const reportModelProfileModels: Record<ReportModelProfile, string[]> = {
 
 const deepReportReasoningEffortByModel = new Map<string, "none" | "minimal">([
   ["google/gemini-3.5-flash", "minimal"],
+  ["google/gemini-2.5-flash-lite", "none"],
   ["moonshotai/kimi-k2.5", "none"],
   ["z-ai/glm-4.7-flash", "none"]
 ]);
