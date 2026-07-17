@@ -156,8 +156,9 @@ assert.match(provider.prompts.get("Identity")?.[0] ?? "", /6th to 8th grade read
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /warm and lived-in/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /rather than quote or announce/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /plain does not mean choppy or childish/);
-assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Write 2 or 3 paragraphs/);
-assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Begin with a direct second-person statement using You or Your/);
+assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Write each chapter in 2 or 3 paragraphs/);
+assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Open each section with a direct second-person statement using You or Your/);
+assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Vary the sentence shape across sections/);
 assert.match(completed.sections.find((section) => section.title === "Relationships")?.body ?? "", /The person you choose/);
 assert.ok(provider.requestBodies.length > 0);
 for (const body of provider.requestBodies) assert.deepEqual(body.reasoning, { effort: "none" });

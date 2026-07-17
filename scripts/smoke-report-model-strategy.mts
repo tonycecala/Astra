@@ -46,6 +46,7 @@ const request = astrologyReportRequestSchema.parse({
 process.env[ASTRA_EPHEMERIS_ENGINE_ENV] = LOCAL_CHART_ROUTINE_ENGINE;
 const baseline = buildAstrologyReportResult(request);
 const modelText = baseline.sections.map((section) => `## ${section.title}\n\n${section.body}`).join("\n\n");
+let identityPrompt = "";
 const result = await buildAstrologyReportResultAsync(request, {
   env: {
     [ASTRA_EPHEMERIS_ENGINE_ENV]: LOCAL_CHART_ROUTINE_ENGINE,
@@ -55,10 +56,14 @@ const result = await buildAstrologyReportResultAsync(request, {
     [ASTRA_REPORT_MODEL_ENV]: reportModelProfileModels.production[0],
     ASTRA_OPENROUTER_API_KEY: "test-key"
   },
-  fetchImpl: async () => new Response(JSON.stringify({
-    choices: [{ message: { content: `${modelText}\nturn_off_thought` } }],
-    usage: { prompt_tokens: 1200, completion_tokens: 600, total_tokens: 1800, cost: 0.042 }
-  }), { status: 200, headers: { "content-type": "application/json" } })
+  fetchImpl: async (_url, init) => {
+    const body = JSON.parse(String(init?.body)) as { messages?: Array<{ content?: string }> };
+    identityPrompt = body.messages?.[0]?.content ?? "";
+    return new Response(JSON.stringify({
+      choices: [{ message: { content: `${modelText}\nturn_off_thought` } }],
+      usage: { prompt_tokens: 1200, completion_tokens: 600, total_tokens: 1800, cost: 0.042 }
+    }), { status: 200, headers: { "content-type": "application/json" } });
+  }
 });
 
 assert.equal(result.status, "completed");
@@ -78,6 +83,10 @@ assert.deepEqual(result.generationMetadata, {
 });
 assert.ok((result.generationMetadata?.latencyMs ?? -1) >= 0);
 assert.ok(!result.sections.some((section) => section.body.includes("turn_off_thought")));
+assert.match(identityPrompt, /VOICE MODE: PLAINSPOKEN/);
+assert.match(identityPrompt, /6th to 8th grade reading level/);
+assert.match(identityPrompt, /Write each section in 2 or 3 paragraphs/);
+assert.match(identityPrompt, /Vary the sentence shape across sections/);
 
 let welcomePrompt = "";
 const welcomeResult = await buildAstrologyReportResultAsync(
@@ -104,7 +113,11 @@ const welcomeResult = await buildAstrologyReportResultAsync(
 );
 assert.equal(welcomeResult.status, "completed");
 assert.match(welcomePrompt, /Welcome Report rules:/);
-assert.match(welcomePrompt, /Write exactly three short paragraphs/);
+assert.match(welcomePrompt, /VOICE MODE: PLAINSPOKEN/);
+assert.match(welcomePrompt, /6th to 8th grade reading level/);
+assert.match(welcomePrompt, /warm and lived-in/);
+assert.match(welcomePrompt, /Identity section in exactly 3 short paragraphs/);
+assert.match(welcomePrompt, /Vary the sentence shape across sections/);
 
 const truncatedResult = await buildAstrologyReportResultAsync(request, {
     env: {

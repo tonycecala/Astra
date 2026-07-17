@@ -52,7 +52,7 @@ export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
-export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-plainspoken-v4";
+export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-plainspoken-v5";
 export const GEMINI_INTRO_IDENTITY_REPORT_MODEL = "google/gemini-3.5-flash";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
@@ -1704,6 +1704,25 @@ function parseModelDraft(text: string, request: AstrologyReportRequest, chartSig
   };
 }
 
+const astraPlainspokenVoiceContract = [
+  "VOICE MODE: PLAINSPOKEN",
+  "Target roughly a 6th to 8th grade reading level without dumbing down the insight.",
+  "Use short sentences, everyday words, direct statements, and observable behavior.",
+  "Say what happens, what it costs, and what can change. If a simpler sentence works, use it.",
+  "Sound like a wise, experienced person speaking plainly: warm and lived-in, never academic, clinical, ornate, or stylized.",
+  "Mix short and medium sentences. Keep adult psychological nuance; plain does not mean choppy or childish.",
+  "Open each section with a direct second-person statement using You or Your. Vary the sentence shape across sections. Do not begin with a question or stock setup such as 'Here's the question,' 'Here is the question,' or 'This section asks.'",
+  "Use words such as actually, real, really, and here's sparingly; do not turn them into a repeated voice tic.",
+  "Use needed astrology terms accurately, then explain their human meaning in ordinary language."
+];
+
+function plainspokenParagraphRule(request: AstrologyReportRequest, unit: "section" | "chapter") {
+  if (isWelcomeReportRequest(request)) {
+    return "Write the Identity section in exactly 3 short paragraphs. Give each paragraph one coherent move; do not deliver it as one wall of text.";
+  }
+  return `Write each ${unit} in 2 or 3 paragraphs. Give each paragraph one coherent move; do not deliver it as one wall of text.`;
+}
+
 function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: ChartSignature, previousErrors: string[] = []) {
   const basis = reportBasisFor(request);
   const headings = reportHeadingsFor(request);
@@ -1742,7 +1761,6 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     isWelcomeReportRequest(request)
       ? [
           "Welcome Report rules:",
-          "- Write exactly three short paragraphs for Identity.",
           "- Aim for 250-350 words total.",
           "- Open with a clear, warm orientation to the reader's central pattern.",
           "- End with one grounded next move."
@@ -1789,15 +1807,14 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     sunPlacement ? `For this chart, the required Sun opening phrase is either "${sunPlacement.sign} Sun" or "Sun in ${sunPlacement.sign}". Use one of those exact phrases in the first or second sentence of Identity.` : "",
     "",
     "Astra Voice Contract:",
+    ...astraPlainspokenVoiceContract,
+    plainspokenParagraphRule(request, "section"),
     "Write as if the reader paid for a psychologically intelligent interpretive document, not a horoscope column.",
-    "- Speak directly to the reader using you and your.",
-    "- Translate astrological factors into lived human experience.",
     "- Prefer concrete psychological claims over abstract astrological description.",
     "- Use astrological terms sparingly, but do not hide the chart logic.",
     "- Build a clean bridge from chart factor to human pattern to practical growth edge.",
     "- Include at least one memorable psychological hook.",
     "- Include at least one practical sentence the reader can apply this week.",
-    "- Keep the tone calm, intelligent, specific, and human.",
     '- Avoid generic phrases such as "you are a natural communicator," "this aspect gifts you," "you may struggle," or "this placement indicates" unless rewritten into more specific language.',
     "- Do not mention any planet, sign, house, aspect, decan, progression, or timing factor unless it is present in the supplied chart evidence or allowed interpretation inputs.",
     "- Do not include provider, model, prompt version, cached status, debug labels, or generation metadata in the customer-facing report.",
@@ -1975,16 +1992,8 @@ function buildDeepSectionPrompt(input: {
     `Private governing thesis: ${thesis}`,
     "Use the thesis as a quiet through-line, not as a sentence to repeat.",
     `This chapter must answer, rather than quote or announce, this distinct governing question: ${card.tensions.join("; ")}.`,
-    "VOICE MODE: PLAINSPOKEN",
-    "Target roughly a 6th to 8th grade reading level without dumbing down the insight.",
-    "Use short sentences, everyday words, direct statements, and observable behavior.",
-    "Say what happens, what it costs, and what can change. If a simpler sentence works, use it.",
-    "Sound like a wise, experienced person speaking plainly: warm and lived-in, never academic, clinical, ornate, or stylized.",
-    "Mix short and medium sentences. Keep adult psychological nuance; plain does not mean choppy or childish.",
-    "Write 2 or 3 paragraphs. Give each paragraph one coherent move; do not deliver the chapter as one wall of text.",
-    "Begin with a direct second-person statement using You or Your. Do not begin with a question or stock setup such as 'Here's the question,' 'Here is the question,' or 'This chapter asks.'",
-    "Use words such as actually, real, really, and here's sparingly; do not turn them into a repeated voice tic.",
-    "Use needed astrology terms accurately, then explain their human meaning in ordinary language.",
+    ...astraPlainspokenVoiceContract,
+    plainspokenParagraphRule(request, "chapter"),
     "Speak directly to the reader using you and your.",
     "Translate chart factors into specific lived experience, psychological usefulness, and one practical next move.",
     "Include the chapter's gift, cost, tension, and practice naturally without using those words as labels.",
