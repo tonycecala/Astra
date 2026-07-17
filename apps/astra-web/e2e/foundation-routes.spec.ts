@@ -81,7 +81,7 @@ async function signInWithOtp(page: Page, input: { email: string; name: string })
 
   await page.getByLabel("Code").fill(await readOtpFromMailpit(input.email));
   await page.getByRole("button", { name: "Verify code" }).click();
-  await expect(page.getByRole("heading", { name: input.email })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: input.email })).toBeVisible();
 }
 
 async function chooseUnknownBirthMoment(page: Page, input: { year: string; month: string; dayLabel: string }) {
@@ -409,7 +409,7 @@ test.describe("clean-start routes", () => {
     await expect(page).toHaveURL(/\/self(?:[?#]|$)/);
 
     await expect(page.getByRole("heading", { level: 1, name: email })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Request Report" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Your free Welcome Report" })).toBeVisible();
     await expect(page.getByLabel("Alpha onboarding guidance")).toHaveCount(0);
     await expect(page.getByLabel("Chart generation flow")).toHaveCount(0);
 
@@ -423,7 +423,7 @@ test.describe("clean-start routes", () => {
     await chooseUnknownBirthMoment(page, { year: "1961", month: "May", dayLabel: "May 23, 1961" });
     await page.getByRole("button", { exact: true, name: "Next" }).click();
     await expect(page.getByText("Step 3 of 3: Report")).toBeVisible();
-    const createChartButton = page.getByRole("button", { name: "Create My Chart", exact: true });
+    const createChartButton = page.getByRole("button", { name: "Create Free Welcome Report", exact: true });
     await expect(createChartButton).toBeVisible();
     await expect(page.getByRole("dialog", { name: "Confirm Report" })).toHaveCount(0);
     await expect(page.getByRole("radio", { name: /Identity Report/ })).toHaveCount(0);

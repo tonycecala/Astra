@@ -557,7 +557,7 @@ export function BirthOnboardingPanel({
     setIsConfirmingReport(false);
     setIsSubmitting(true);
     setIsSubmissionComplete(false);
-    setMessage(ui.self.chartRequestWorking);
+    setMessage(isFirstSelfChart ? ui.self.chartRequestCreatingWelcome : ui.self.chartRequestWorking);
 
     try {
       const ally = !existingChartRequest && isAlly ? await createAllyRecord() : undefined;
@@ -667,9 +667,8 @@ export function BirthOnboardingPanel({
   return (
     <section className={styles.panel} aria-label={panelCopy.chartRequestPanelLabel}>
       <article className="card">
-        {!isAlly && !isExistingChartOrderMode ? <div className="eyebrow">{panelCopy.chartRequestEyebrow}</div> : null}
-        <h2>{isAlly ? ui.allies.wizard.chartRequestExistingTitle : panelCopy.chartRequestTitle}</h2>
-        {!isAlly && !isExistingChartOrderMode ? <p>{panelCopy.chartRequestIntro}</p> : null}
+        <h2>{isAlly ? ui.allies.wizard.chartRequestExistingTitle : isFirstSelfChart ? ui.self.chartRequestWelcomeTitle : panelCopy.chartRequestTitle}</h2>
+        {!isAlly && !isExistingChartOrderMode ? <p>{isFirstSelfChart ? ui.self.chartRequestWelcomeIntro : panelCopy.chartRequestIntro}</p> : null}
 
         {!isSingleStepFlow ? (
           <div
@@ -743,7 +742,9 @@ export function BirthOnboardingPanel({
             {canSubmit ? (
               <button className="button" type="submit" disabled={isSubmitting || Boolean(activeStepError)}>
                 {isSubmitting ? <Send aria-hidden="true" size={18} /> : null}
-                {isSubmitting ? ui.self.chartRequestWorking : isFirstSelfChart ? ui.self.chartRequestCreateFirstChart : ui.self.chartRequestSubmit}
+                {isSubmitting
+                  ? isFirstSelfChart ? ui.self.chartRequestCreatingWelcome : ui.self.chartRequestWorking
+                  : isFirstSelfChart ? ui.self.chartRequestCreateFirstChart : ui.self.chartRequestSubmit}
               </button>
             ) : isWizardComplete ? (
               <div className={styles.completionActions}>
