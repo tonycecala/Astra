@@ -23,7 +23,7 @@ const generationApproved = process.argv.includes("--generate");
 const resumeCompleted = process.argv.includes("--resume");
 const chartSource = sourceOption("--source", "ally");
 const reportIntent = `${chartSource}-deep-model-bakeoff`;
-const reasoningOffCandidates = new Set(["google/gemini-2.5-flash-lite", "moonshotai/kimi-k2.5", "z-ai/glm-4.7-flash"]);
+const reasoningOffCandidates = new Set(["google/gemini-2.5-flash-lite", "moonshotai/kimi-k2.5"]);
 let cookieHeader = "";
 
 if (process.argv.includes("--help")) {

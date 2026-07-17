@@ -103,9 +103,8 @@ assert.ok(reportModelProfileModels.premium_bakeoff.includes("openai/gpt-5.6-sol"
 assert.ok(reportModelProfileModels.premium_bakeoff.includes("anthropic/claude-opus-4.8"));
 assert.ok(reportModelProfileModels.premium_bakeoff.includes("google/gemini-2.5-flash-lite"));
 assert.ok(reportModelProfileModels.premium_bakeoff.includes("moonshotai/kimi-k2.5"));
-assert.ok(reportModelProfileModels.premium_bakeoff.includes("z-ai/glm-4.7-flash"));
 assert.ok(!reportModelProfileModels.production.includes("moonshotai/kimi-k2.5"));
-assert.ok(!reportModelProfileModels.production.includes("z-ai/glm-4.7-flash"));
 assert.ok(!reportModelProfileModels.production.includes("google/gemini-2.5-flash-lite"));
+assert.ok(!reportModelProfileModels.premium_bakeoff.includes("z-ai/glm-4.7-flash"));
 
 console.log("July 2026 report model strategy smoke checks passed.");

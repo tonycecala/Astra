@@ -171,7 +171,7 @@ assert.equal(geminiCompleted.status, "completed");
 assert.equal(geminiCompleted.generationMetadata?.reasoningEffort, "minimal");
 for (const body of geminiProvider.requestBodies) assert.deepEqual(body.reasoning, { effort: "minimal" });
 
-for (const model of ["google/gemini-2.5-flash-lite", "moonshotai/kimi-k2.5", "z-ai/glm-4.7-flash"]) {
+for (const model of ["google/gemini-2.5-flash-lite", "moonshotai/kimi-k2.5"]) {
   const bakeoffProvider = sectionedProvider();
   const bakeoffCompleted = await buildAstrologyReportResultAsync(request, {
     env: { ...env, [ASTRA_REPORT_MODEL_ENV]: model },
