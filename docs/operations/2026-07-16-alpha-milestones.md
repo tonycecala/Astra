@@ -1,9 +1,10 @@
 ---
 title: 2026-07-16 Astra Alpha Milestones
-status: active
+status: completed
 type: release-ledger
 project: Astra Clean Start
 created: 2026-07-17
+completed: 2026-07-17
 audience: Tony, release stewards, and future implementation agents
 ---
 
@@ -69,3 +70,17 @@ Before promotion, prove the deployed `alpha` path with one focused user journey:
 7. Phone navigation across Journey, Allies, Self, Library, and Gifts.
 
 Promotion is complete only when the updated `alpha` deployment is Ready, `alpha.astraportrait.com` resolves to it, and the same core route smoke is clean in the deployed environment.
+
+## 2026-07-17 Acceptance Evidence
+
+The focused live-alpha pass completed before promotion with a fresh beta account:
+
+- Logged-out Journey rendered four public Composer cards and exposed no private Self data.
+- Email OTP sign-in established a real Alpha session for `tonycecala+testingname@gmail.com`.
+- The first paid Identity Report order reduced the new account balance from the one-time 30-Star beta grant to 29 Stars.
+- A Self chart with a known birth time and selected Chicago coordinates produced a completed paid Identity Report.
+- The private Library reader rendered its Identity Report provenance, including Natal basis, Tropical Zodiac, and Whole Sign Houses.
+- An Ally, known-time-and-place Ally chart, and paid Ally Identity Report order succeeded, leaving 28 Stars.
+- All five bottom-navigation routes rendered at 390 by 844 without horizontal overflow.
+
+The introductory free first-Self Identity Report was not invoked or promoted. It remains an independent pilot.

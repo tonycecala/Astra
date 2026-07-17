@@ -106,6 +106,10 @@ Use the same alpha database URL and the same fresh internal token as `astra-alph
 npm run check:composer-alpha-env
 ```
 
+## Preview Builds
+
+Preview deployments are useful for build review, but they are not the alpha runtime environment. Astra's Preview scope needs its own generated `BETTER_AUTH_SECRET`; without it, Next.js fails while collecting the `/_not-found` route. Do not copy the alpha production database or email-delivery credentials into Preview merely to make an interactive preview work. Production alpha remains the acceptance surface.
+
 ## First Admin
 
 Tony signs in once through the live alpha. Then promote only that exact email against the alpha database:
