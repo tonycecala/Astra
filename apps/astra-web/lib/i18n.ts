@@ -327,6 +327,7 @@ export const ui = {
     onboardingReviewMissing: "Missing",
     reportConfirmTitle: "Confirm Report",
     reportConfirmSelected: "Report",
+    reportConfirmOffer: "Offer",
     reportConfirmBasis: "Based on",
     reportConfirmCost: "Cost",
     reportConfirmBalance: "Current balance",
@@ -355,6 +356,8 @@ export const ui = {
       synastry: "Synastry charts"
     },
     reportOptionMeta: (stars: number, basis: string) => `${stars} ${stars === 1 ? "Star" : "Stars"} · ${basis}`,
+    kimiIntroDeepOffer: "Try a Kimi Introductory Deep Report",
+    kimiIntroDeepOfferDescription: "Complimentary during the alpha. It uses Kimi K2.5 and does not spend Stars.",
     progressedAsOfLabel: "As of",
     onboardingProgressedTimeRequired: "Add a known birth time before ordering a Progressed Report.",
     onboardingProgressedDateRequired: "Choose a valid as-of date for the Progressed Report.",

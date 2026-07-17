@@ -656,7 +656,11 @@ export const reportGenerationRetryReasonCodeSchema = z.enum([
   "unsupported_claim",
   "evidence_mismatch",
   "identity_opening",
-  "natal_timing"
+  "natal_timing",
+  "unsupported_childhood_claim",
+  "unsupported_motive_claim",
+  "unsupported_fixed_behavior_claim",
+  "unsupported_relationship_claim"
 ]);
 
 export const reportGenerationRetryIssueSchema = z.object({
@@ -752,6 +756,7 @@ export const astrologyReportRequestSchema = z.object({
 export const createAstrologyReportRequestSchema = z.object({
   chartRequestId: idSchema,
   reportType: orderableAstrologyReportTypeSchema.default("identity"),
+  kimiIntro: z.boolean().optional(),
   reportBasis: reportChartBasisInputSchema,
   question: z.string().min(1).optional(),
   intent: z.string().min(1).optional(),

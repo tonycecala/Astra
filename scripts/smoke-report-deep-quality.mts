@@ -6,6 +6,7 @@ import {
   ASTRA_REPORT_MODEL_PROFILE_ENV,
   ASTRA_REPORT_WRITER_ENV,
   DEBUG_MODEL_REPORT_WRITER,
+  KIMI_INTRO_DEEP_REPORT_MODEL,
   LOCAL_CHART_ROUTINE_ENGINE,
   buildAstrologyReportResultAsync,
   measureReportReadability
@@ -68,7 +69,7 @@ function sectionWordTarget(title: string) {
   return 310;
 }
 
-function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTransport?: boolean; timingFailure?: boolean; thirdPersonFailure?: boolean; usefulLongThesis?: boolean; identityThirdSentence?: boolean } = {}) {
+function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTransport?: boolean; timingFailure?: boolean; thirdPersonFailure?: boolean; certaintyFailure?: "childhood" | "motive" | "fixed" | "relationship"; usefulLongThesis?: boolean; identityThirdSentence?: boolean } = {}) {
   const calls = new Map<string, number>();
   const prompts = new Map<string, string[]>();
   const requestBodies: Array<Record<string, unknown>> = [];
@@ -87,13 +88,21 @@ function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTranspor
     await new Promise((resolve) => setTimeout(resolve, 5));
     active -= 1;
     const words = title === "Emotions" && options.retryEmotions && count === 1 ? 120 : sectionWordTarget(title);
+    const relationshipOpening = options.certaintyFailure && count === 1
+      ? {
+          childhood: "As a child, you learned that closeness has to be earned.",
+          motive: "You secretly want other people to need you.",
+          fixed: "You always pull away when someone gets close.",
+          relationship: "The person you choose will always need more from you."
+        }[options.certaintyFailure]
+      : options.thirdPersonFailure && count === 1
+        ? "This person tends to hide what matters until distance does the speaking."
+        : "The person you choose matters, but so does what you are willing to say plainly.";
     const openingOverride = title === "Identity" && options.identityThirdSentence
       ? "You already know yourself pretty well. That is not the hard part. Your Gemini Sun gives the identity chapter a clear center."
       : title === "Relationships"
-      ? options.thirdPersonFailure && count === 1
-        ? "This person tends to hide what matters until distance does the speaking."
-        : "The person you choose matters, but so does what you are willing to say plainly."
-      : undefined;
+        ? relationshipOpening
+        : undefined;
     const content = title === "Thesis"
       ? options.usefulLongThesis
         ? "Her chapters orbit a single unresolved question: what she trusts more, the self that forms in contact with others' recognition or the self that persists when no one is watching. Each domain tests whether her responsiveness to signal, emotional, relational, or professional, is discernment or dilution, and whether her strengths, instincts, and ambitions remain hers once proven, or dissolve into whatever the moment rewards. The work is not choosing autonomy over connection but learning to stay legible to herself while taking in what the world demands."
@@ -180,6 +189,31 @@ for (const model of ["google/gemini-2.5-flash-lite", "moonshotai/kimi-k2.5"]) {
   assert.equal(bakeoffCompleted.status, "completed");
   assert.equal(bakeoffCompleted.generationMetadata?.reasoningEffort, "none");
   for (const body of bakeoffProvider.requestBodies) assert.deepEqual(body.reasoning, { effort: "none" });
+}
+
+const kimiIntroProvider = sectionedProvider();
+const kimiIntroCompleted = await buildAstrologyReportResultAsync(
+  { ...request, id: "51111111-1111-4111-8111-111111111112", context: { modelPilot: "kimi-intro-deep" } },
+  { env, fetchImpl: kimiIntroProvider.fetchImpl }
+);
+assert.equal(kimiIntroCompleted.status, "completed");
+assert.equal(kimiIntroCompleted.generationMetadata?.model, KIMI_INTRO_DEEP_REPORT_MODEL);
+for (const body of kimiIntroProvider.requestBodies) assert.deepEqual(body.reasoning, { effort: "none" });
+
+for (const [certaintyFailure, retryCode] of [
+  ["childhood", "unsupported_childhood_claim"],
+  ["motive", "unsupported_motive_claim"],
+  ["fixed", "unsupported_fixed_behavior_claim"],
+  ["relationship", "unsupported_relationship_claim"]
+] as const) {
+  const certaintyProvider = sectionedProvider({ certaintyFailure });
+  const certaintyCorrected = await buildAstrologyReportResultAsync(request, { env, fetchImpl: certaintyProvider.fetchImpl });
+  assert.equal(certaintyCorrected.status, "completed");
+  const certaintySection = certaintyCorrected.generationMetadata?.sections?.find((section) => section.title === "Relationships");
+  assert.equal(certaintySection?.attemptCount, 2);
+  assert.equal(certaintySection?.failures?.[0]?.issues[0]?.code, retryCode);
+  assert.match(certaintySection?.failures?.[0]?.rejectedText ?? "", /child|secretly|always/i);
+  assert.match(certaintyProvider.prompts.get("Relationships")?.[1] ?? "", /chart-supported fact/);
 }
 
 const timingProvider = sectionedProvider({ timingFailure: true });

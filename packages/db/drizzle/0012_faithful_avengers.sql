@@ -1,0 +1,2 @@
+ALTER TABLE "astrology_report_requests" ADD COLUMN "offer_code" text;--> statement-breakpoint
+CREATE UNIQUE INDEX "astrology_report_requests_offer_user_idx" ON "astrology_report_requests" USING btree ("user_id","offer_code") WHERE "astrology_report_requests"."offer_code" is not null;

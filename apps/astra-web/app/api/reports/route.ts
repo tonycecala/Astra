@@ -106,6 +106,10 @@ export async function POST(request: Request) {
 
   const primary = sourceSnapshot(primaryChart, profile.userId);
   let partner: ReportChartSourceSnapshot | undefined;
+  const kimiIntro = parsed.data.kimiIntro === true;
+  if (kimiIntro && (parsed.data.reportType !== "deep" || primaryChart.source !== "self")) {
+    return invalidBasis("The Kimi introduction is available for a natal Self Deep Report.");
+  }
 
   if (parsed.data.reportBasis.type === "progressed") {
     if (primary.birthData.birthTimeKnown === false || !primary.birthData.time) {
@@ -142,6 +146,7 @@ export async function POST(request: Request) {
   const context = {
     ...(primaryChart.context ?? {}),
     chartSettings: reportBasis.chartSettings,
+    ...(kimiIntro ? { modelPilot: "kimi-intro-deep" } : {}),
     ...(partner
       ? {
           synastryPartner: {
@@ -166,14 +171,14 @@ export async function POST(request: Request) {
       intent: parsed.data.intent,
       context,
       source: primaryChart.source,
-      costCredits: product.costStars,
+      costCredits: kimiIntro ? 0 : product.costStars,
       reportBasis,
       bypassCreditDebit: profile.role === "admin"
     });
     return NextResponse.json({ request: purchased.request, balanceAfter: purchased.balanceAfter }, { status: 201 });
   } catch (error) {
     if (error instanceof Error && error.message === "insufficient_credits") {
-      return insufficientStars(product.costStars);
+      return insufficientStars(kimiIntro ? 0 : product.costStars);
     }
     throw error;
   }

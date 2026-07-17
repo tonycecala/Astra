@@ -82,7 +82,7 @@ async function signInWithOtp(page: Page, input: { email: string; name: string })
 
   await page.getByLabel("Code").fill(await readOtpFromMailpit(input.email));
   await page.getByRole("button", { name: "Verify code" }).click();
-  await expect(page.getByRole("heading", { name: input.name })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: input.name })).toBeVisible();
 }
 
 async function chooseUnknownBirthMoment(page: Page, input: { year: string; month: string; dayLabel: string }) {
@@ -439,11 +439,20 @@ test.describe("clean-start routes", () => {
       throw new Error(`Chart settings must appear first and stay compact. Settings=${JSON.stringify(settingsBox)} Identity=${JSON.stringify(identityBox)}`);
     }
     await expect(page.getByRole("radio", { name: "Tropical" })).toBeChecked();
-    await expect(page.getByRole("radio", { name: "Whole Sign" })).toBeChecked();
+    await expect(chartSettings).toContainText("Signs & aspects only");
     await page.getByRole("radio", { name: "Sidereal" }).check();
-    await page.getByRole("radio", { name: "Placidus" }).check();
     await expect(page.getByRole("radio", { name: "Sidereal" })).toBeChecked();
-    await expect(page.getByRole("radio", { name: "Placidus" })).toBeChecked();
+    const kimiIntro = page.getByLabel("Try a Kimi Introductory Deep Report");
+    await expect(kimiIntro).toBeVisible();
+    await kimiIntro.check();
+    await expect(page.getByRole("radio", { name: /Deep Report/ })).toBeChecked();
+    await queueButton.focus();
+    await page.keyboard.press("Enter");
+    const introductoryConfirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
+    await expect(introductoryConfirmDialog).toContainText("Try a Kimi Introductory Deep Report");
+    await expect(introductoryConfirmDialog).toContainText("0 Stars");
+    await introductoryConfirmDialog.getByRole("button", { name: "Cancel" }).click();
+    await page.getByRole("radio", { name: /Identity Report/ }).check();
     await expect(page.getByLabel("Review report order")).toHaveCount(0);
     await queueButton.focus();
     await page.keyboard.press("Enter");
@@ -453,7 +462,7 @@ test.describe("clean-start routes", () => {
     await expect(confirmDialog).toContainText("Based on");
     await expect(confirmDialog).toContainText("Natal chart");
     await expect(confirmDialog).toContainText("Sidereal");
-    await expect(confirmDialog).toContainText("Placidus");
+    await expect(confirmDialog).toContainText("Signs & aspects only");
     await expect(confirmDialog).toContainText("Cost");
     await expect(confirmDialog).toContainText("1 Star");
     await expect(confirmDialog).toContainText("Current balance");

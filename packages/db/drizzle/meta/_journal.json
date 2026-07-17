@@ -85,6 +85,20 @@
       "when": 1784211973365,
       "tag": "0011_minor_sharon_ventura",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1784251692776,
+      "tag": "0012_faithful_avengers",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1784252371072,
+      "tag": "0013_milky_bloodstrike",
+      "breakpoints": true
     }
   ]
 }

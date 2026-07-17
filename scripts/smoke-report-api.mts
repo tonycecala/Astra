@@ -273,6 +273,42 @@ await expectAuthedStatus(`${appBaseUrl}/api/reports`, 400, {
   })
 });
 
+const introductoryBalance = await getCreditBalance(db, smokeProfile.userId);
+const introductoryDeep = await requestJson(`${appBaseUrl}/api/reports`, {
+  method: "POST",
+  body: JSON.stringify({
+    chartRequestId: primaryChartId,
+    reportType: "deep",
+    kimiIntro: true,
+    reportBasis: {
+      type: "natal",
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    }
+  })
+});
+const introductoryRequest = astrologyReportRequestSchema.parse(introductoryDeep.request);
+if (introductoryRequest.costCredits !== 0) {
+  throw new Error("Kimi introductory Deep Report must have a zero-Star cost.");
+}
+if (introductoryRequest.context?.modelPilot !== "kimi-intro-deep") {
+  throw new Error("Kimi introductory Deep Report must route through the Kimi model pilot.");
+}
+if (await getCreditBalance(db, smokeProfile.userId) !== introductoryBalance) {
+  throw new Error("The complimentary Kimi introductory Deep Report must not debit Stars.");
+}
+await expectAuthedStatus(`${appBaseUrl}/api/reports`, 400, {
+  method: "POST",
+  body: JSON.stringify({
+    chartRequestId: primaryChartId,
+    reportType: "core",
+    kimiIntro: true,
+    reportBasis: {
+      type: "natal",
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    }
+  })
+});
+
 const created = await requestJson(`${appBaseUrl}/api/reports`, {
   method: "POST",
   body: JSON.stringify({

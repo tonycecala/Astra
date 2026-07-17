@@ -53,6 +53,7 @@ export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
 export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-plainspoken-v4";
+export const KIMI_INTRO_DEEP_REPORT_MODEL = "moonshotai/kimi-k2.5";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
 
@@ -645,6 +646,24 @@ export function resolveAstrologyReportGenerationConfig(
     openaiApiKey: env[ASTRA_OPENAI_API_KEY_ENV]?.trim() || undefined,
     openRouterApiKey: env[ASTRA_OPENROUTER_API_KEY_ENV]?.trim() || env.OPENROUTER_API_KEY?.trim() || undefined,
     openRouterBaseUrl: env[ASTRA_OPENROUTER_BASE_URL_ENV]?.trim() || env.OPENROUTER_BASE_URL?.trim() || OPENROUTER_DEFAULT_BASE_URL
+  };
+}
+
+function resolveAstrologyReportGenerationConfigForRequest(
+  request: AstrologyReportRequest,
+  env: Record<string, string | undefined> = process.env
+) {
+  const config = resolveAstrologyReportGenerationConfig(env);
+  const modelPilot = request.context && typeof request.context === "object" && !Array.isArray(request.context)
+    ? request.context.modelPilot
+    : undefined;
+  if (request.reportType !== "deep" || modelPilot !== "kimi-intro-deep") return config;
+
+  return {
+    ...config,
+    reportWriter: DEBUG_MODEL_REPORT_WRITER,
+    reportModelProvider: OPENROUTER_REPORT_MODEL_PROVIDER,
+    reportModel: KIMI_INTRO_DEEP_REPORT_MODEL
   };
 }
 
@@ -1946,6 +1965,7 @@ function buildDeepSectionPrompt(input: {
     "Use needed astrology terms accurately, then explain their human meaning in ordinary language.",
     "Speak directly to the reader using you and your.",
     "Translate chart factors into specific lived experience, psychological usefulness, and one practical next move.",
+    "Do not invent childhood history, hidden motives, fixed behavior, or certain relationship outcomes. Use the chart to describe patterns and choices, not facts Astra cannot know.",
     "Include the chapter's gift, cost, tension, and practice naturally without using those words as labels.",
     "Use at least two selected signals when available, including a section-specific secondary signal.",
     "Do not generalize this chapter into the whole report and do not repeat a generic warning or practice from another life domain.",
@@ -1994,6 +2014,7 @@ function validateDeepSection(input: {
   if (thirdPersonSubjectLabelPattern.test(visibleText)) {
     errors.push(retryIssue("third_person_subject", "Third-person subject label found; address the report subject as you or your."));
   }
+  errors.push(...validateUnsupportedCertaintyLanguage(section.body));
   errors.push(...validateUnsupportedSectionClaims({ sections: [section] } as ReportDraft, [input.card], input.chartSignature).map((message) =>
     retryIssue(message.startsWith("Missing visible chart evidence") ? "evidence_mismatch" : "unsupported_claim", message)
   ));
@@ -2007,6 +2028,31 @@ function validateDeepSection(input: {
   if (reportBasisFor(input.request).type === "natal" && /\b(currently active|currently activated|unusually active|pressing closer than usual|this (?:current )?season)\b/i.test(section.body)) {
     errors.push(retryIssue("natal_timing", "Natal chapter must not imply current timing without dated evidence."));
   }
+  return errors;
+}
+
+function validateUnsupportedCertaintyLanguage(body: string) {
+  const errors: ReportGenerationRetryIssue[] = [];
+  const sentences = body.split(/(?<=[.!?])\s+/).map((sentence) => sentence.trim()).filter(Boolean);
+
+  for (const sentence of sentences) {
+    if (/\b(?:as a child|in childhood|your childhood|growing up|when you were (?:a )?(?:child|young))\b/i.test(sentence)) {
+      errors.push(retryIssue("unsupported_childhood_claim", "Do not present childhood history as a chart-supported fact."));
+      continue;
+    }
+    if (/\byou\s+(?:secretly\s+)?(?:want|desire|seek|are trying to)\b/i.test(sentence)) {
+      errors.push(retryIssue("unsupported_motive_claim", "Do not present an unverified motive as a chart-supported fact."));
+      continue;
+    }
+    if (/\byou\s+(?:always|never|will always|will never|cannot|can't)\b/i.test(sentence)) {
+      errors.push(retryIssue("unsupported_fixed_behavior_claim", "Do not present fixed behavior as a chart-supported fact."));
+      continue;
+    }
+    if (/\b(?:your (?:partner|relationships?)|the person you choose)\s+(?:will|always|never|cannot|can't)\b/i.test(sentence)) {
+      errors.push(retryIssue("unsupported_relationship_claim", "Do not present a certain relationship outcome as a chart-supported fact."));
+    }
+  }
+
   return errors;
 }
 
@@ -2884,7 +2930,7 @@ export async function buildAstrologyReportResultAsync(
   options: AstrologyReportGenerationOptions = {}
 ): Promise<RecordAstrologyReportResult> {
   const request = astrologyReportRequestSchema.parse(input);
-  const config = resolveAstrologyReportGenerationConfig(options.env);
+  const config = resolveAstrologyReportGenerationConfigForRequest(request, options.env);
   const fetchImpl = options.fetchImpl ?? fetch;
   if (config.ephemerisEngine === LOCAL_CHART_ROUTINE_ENGINE) {
     if (config.reportWriter === DEBUG_MODEL_REPORT_WRITER) {

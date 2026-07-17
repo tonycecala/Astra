@@ -103,6 +103,7 @@ type FormState = {
   reportType: ReportType;
   zodiacMode: ZodiacMode;
   houseSystem: HouseSystemMode;
+  useKimiIntro: boolean;
   synastryPartnerChartRequestId: string;
   progressedAsOfDate: string;
   date: string;
@@ -134,6 +135,7 @@ const defaultForm = (displayName: string, birthData?: ChartBirthData, chartReque
   reportType: "identity",
   zodiacMode: "tropical",
   houseSystem: "whole-sign",
+  useKimiIntro: false,
   synastryPartnerChartRequestId: "",
   progressedAsOfDate: localDateOnly(),
   date: chartRequest?.birthData.date ?? birthData?.date ?? "",
@@ -321,7 +323,7 @@ export function BirthOnboardingPanel({
   const panelCopy = isAlly ? ui.allies.wizard : ui.self;
   const isWizardComplete = isSubmissionComplete;
   const canSubmit = activeStep === "report" && !isWizardComplete;
-  const selectedReportCost = reportTypeCost(form.reportType);
+  const selectedReportCost = form.useKimiIntro ? 0 : reportTypeCost(form.reportType);
   const balanceAfterReport = starBalance - selectedReportCost;
   const canAffordSelectedReport = isAdmin || balanceAfterReport >= 0;
   const existingChartRequest = selectedExistingChartRequestId
@@ -346,6 +348,7 @@ export function BirthOnboardingPanel({
     () => [
       [ui.self.onboardingReviewName, form.subjectName || ui.self.onboardingReviewMissing],
       [ui.self.onboardingReviewReportType, reportTypeLabel(form.reportType)],
+      ...(form.useKimiIntro ? ([[ui.self.reportConfirmOffer, ui.self.kimiIntroDeepOffer]] as const) : []),
       [ui.self.reportConfirmBasis, reportBasisLabel(form.reportType)],
       [ui.self.zodiacModeLabel, ui.self.zodiacModes[form.zodiacMode]],
       [ui.self.houseSystemLabel, hasHouseCalculation ? ui.self.houseSystems[form.houseSystem] : ui.self.houseSystemUnavailable],
@@ -394,7 +397,19 @@ export function BirthOnboardingPanel({
     setForm((current) => ({
       ...current,
       reportType,
+      useKimiIntro: false,
       synastryPartnerChartRequestId: reportType === "synastry" ? current.synastryPartnerChartRequestId : ""
+    }));
+    setIsConfirmingReport(false);
+    setMessage("");
+  }
+
+  function selectKimiIntro(useKimiIntro: boolean) {
+    setForm((current) => ({
+      ...current,
+      useKimiIntro,
+      reportType: useKimiIntro ? "deep" : current.reportType,
+      synastryPartnerChartRequestId: useKimiIntro ? "" : current.synastryPartnerChartRequestId
     }));
     setIsConfirmingReport(false);
     setMessage("");
@@ -620,6 +635,7 @@ export function BirthOnboardingPanel({
         body: JSON.stringify({
           chartRequestId: chartRequest.id,
           reportType: form.reportType,
+          ...(form.useKimiIntro ? { kimiIntro: true } : {}),
           reportBasis
         })
       });
@@ -877,6 +893,19 @@ export function BirthOnboardingPanel({
                   </div>
                 </div>
               </fieldset>
+              {!isAlly ? (
+                <label className={styles.kimiIntro}>
+                  <input
+                    checked={form.useKimiIntro}
+                    onChange={(event) => selectKimiIntro(event.target.checked)}
+                    type="checkbox"
+                  />
+                  <span>
+                    <strong>{ui.self.kimiIntroDeepOffer}</strong>
+                    <small>{ui.self.kimiIntroDeepOfferDescription}</small>
+                  </span>
+                </label>
+              ) : null}
               <fieldset className={styles.optionGroup} aria-label={ui.self.onboardingReportTypeLabel}>
                 {availableReportTypes.map((reportType) => (
                   <label className={styles.option} key={reportType}>
