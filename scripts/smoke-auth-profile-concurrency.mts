@@ -33,6 +33,38 @@ try {
     throw new Error(`Expected one profile after parallel initialization; found ${rows.length}.`);
   }
 
+  const legacyUserId = `qa-auth-legacy-profile-${crypto.randomUUID()}`;
+  const legacyEmail = `${legacyUserId}@example.invalid`;
+  await db.insert(user).values({
+    id: legacyUserId,
+    name: "Legacy Profile QA",
+    email: legacyEmail,
+    emailVerified: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  });
+  await db.insert(appUserProfiles).values({
+    id: `${legacyUserId}:legacy-profile`,
+    userId: legacyUserId,
+    email: legacyEmail,
+    displayName: "Legacy Profile QA",
+    role: "customer",
+    onboardingStatus: "pending",
+    starBalance: 0,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  });
+
+  const legacyProfile = await upsertAuthUserProfile(db, {
+    userId: legacyUserId,
+    email: legacyEmail,
+    displayName: "Updated Legacy Profile QA"
+  });
+  if (legacyProfile.id !== `${legacyUserId}:legacy-profile` || legacyProfile.displayName !== "Updated Legacy Profile QA") {
+    throw new Error("Profile initialization must update an existing user profile even when its id is not deterministic.");
+  }
+  await db.delete(user).where(eq(user.id, legacyUserId));
+
   console.log("Auth profile concurrency smoke passed.");
 } finally {
   await db.delete(user).where(eq(user.id, userId));

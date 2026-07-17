@@ -1230,9 +1230,9 @@ export async function upsertAuthUserProfile(database: AstraDb, input: AuthUserPr
       updatedAt: now
     })
     .onConflictDoUpdate({
-      // The profile id is deterministic, so parallel first-page loads collide
-      // on the primary key before Postgres can consider the user-id index.
-      target: appUserProfiles.id,
+      // A profile can predate the deterministic id convention. Resolve every
+      // first-load race on the durable one-profile-per-user boundary instead.
+      target: appUserProfiles.userId,
       set: {
         email: input.email,
         displayName: input.displayName,
