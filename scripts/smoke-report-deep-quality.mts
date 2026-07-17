@@ -6,7 +6,7 @@ import {
   ASTRA_REPORT_MODEL_PROFILE_ENV,
   ASTRA_REPORT_WRITER_ENV,
   DEBUG_MODEL_REPORT_WRITER,
-  KIMI_INTRO_DEEP_REPORT_MODEL,
+  KIMI_INTRO_IDENTITY_REPORT_MODEL,
   LOCAL_CHART_ROUTINE_ENGINE,
   buildAstrologyReportResultAsync,
   measureReportReadability
@@ -117,6 +117,22 @@ function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTranspor
   return { fetchImpl, calls, prompts, requestBodies, maxActive: () => maxActive };
 }
 
+function identityProvider() {
+  const requestBodies: Array<Record<string, unknown>> = [];
+  const fetchImpl = async (_url: string | URL | Request, init?: RequestInit) => {
+    const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    requestBodies.push(body);
+    return new Response(JSON.stringify({
+      choices: [{ finish_reason: "stop", message: { content: `# Astra Report\n\n## Identity\n${prose("Identity", 220)}` } }],
+      usage: { prompt_tokens: 1, completion_tokens: 1, completion_tokens_details: { reasoning_tokens: 0 }, total_tokens: 2, cost: 0 }
+    }), {
+      status: 200,
+      headers: { "content-type": "application/json" }
+    });
+  };
+  return { fetchImpl, requestBodies };
+}
+
 const provider = sectionedProvider({ retryEmotions: true, retryWorkTransport: true });
 const completed = await buildAstrologyReportResultAsync(request, {
   env,
@@ -191,14 +207,14 @@ for (const model of ["google/gemini-2.5-flash-lite", "moonshotai/kimi-k2.5"]) {
   for (const body of bakeoffProvider.requestBodies) assert.deepEqual(body.reasoning, { effort: "none" });
 }
 
-const kimiIntroProvider = sectionedProvider();
+const kimiIntroProvider = identityProvider();
 const kimiIntroCompleted = await buildAstrologyReportResultAsync(
-  { ...request, id: "51111111-1111-4111-8111-111111111112", context: { modelPilot: "kimi-intro-deep" } },
+  { ...request, id: "51111111-1111-4111-8111-111111111112", reportType: "identity", costCredits: 0, context: { modelPilot: "kimi-intro-identity" } },
   { env, fetchImpl: kimiIntroProvider.fetchImpl }
 );
 assert.equal(kimiIntroCompleted.status, "completed");
-assert.equal(kimiIntroCompleted.generationMetadata?.model, KIMI_INTRO_DEEP_REPORT_MODEL);
-for (const body of kimiIntroProvider.requestBodies) assert.deepEqual(body.reasoning, { effort: "none" });
+assert.equal(kimiIntroCompleted.generationMetadata?.model, KIMI_INTRO_IDENTITY_REPORT_MODEL);
+for (const body of kimiIntroProvider.requestBodies) assert.equal("reasoning" in body, false);
 
 for (const [certaintyFailure, retryCode] of [
   ["childhood", "unsupported_childhood_claim"],

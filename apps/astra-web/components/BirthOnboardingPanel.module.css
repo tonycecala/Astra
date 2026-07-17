@@ -447,12 +447,14 @@
   padding: 2px 10px 3px;
 }
 
-.kimiIntro {
+label.kimiIntro {
   display: flex;
-  align-items: flex-start;
+  grid-template-columns: none;
+  align-items: center;
   gap: 10px;
-  padding: 8px 2px;
+  padding: 4px 2px;
   color: var(--ink);
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -466,18 +468,11 @@
 }
 
 .kimiIntro span {
-  display: grid;
-  gap: 2px;
+  display: block;
 }
 
 .kimiIntro strong {
   font-size: 0.86rem;
-}
-
-.kimiIntro small {
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.3;
 }
 
 .settingsRow {

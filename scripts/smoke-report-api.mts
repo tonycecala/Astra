@@ -245,7 +245,7 @@ if (!publicChartId) throw new Error("Report API smoke did not create the public 
 await expectAuthedStatus(`${appBaseUrl}/api/reports`, 400, {
   method: "POST",
   body: JSON.stringify({
-    reportType: "deep",
+    reportType: "identity",
     chartRequestId: primaryChartId
   })
 });
@@ -278,7 +278,7 @@ const introductoryDeep = await requestJson(`${appBaseUrl}/api/reports`, {
   method: "POST",
   body: JSON.stringify({
     chartRequestId: primaryChartId,
-    reportType: "deep",
+    reportType: "identity",
     kimiIntro: true,
     reportBasis: {
       type: "natal",
@@ -288,13 +288,13 @@ const introductoryDeep = await requestJson(`${appBaseUrl}/api/reports`, {
 });
 const introductoryRequest = astrologyReportRequestSchema.parse(introductoryDeep.request);
 if (introductoryRequest.costCredits !== 0) {
-  throw new Error("Kimi introductory Deep Report must have a zero-Star cost.");
+  throw new Error("The free introductory Identity Report must have a zero-Star cost.");
 }
-if (introductoryRequest.context?.modelPilot !== "kimi-intro-deep") {
-  throw new Error("Kimi introductory Deep Report must route through the Kimi model pilot.");
+if (introductoryRequest.context?.modelPilot !== "kimi-intro-identity") {
+  throw new Error("The free introductory Identity Report must route through the model pilot.");
 }
 if (await getCreditBalance(db, smokeProfile.userId) !== introductoryBalance) {
-  throw new Error("The complimentary Kimi introductory Deep Report must not debit Stars.");
+  throw new Error("The free introductory Identity Report must not debit Stars.");
 }
 await expectAuthedStatus(`${appBaseUrl}/api/reports`, 400, {
   method: "POST",

@@ -408,7 +408,7 @@ export function BirthOnboardingPanel({
     setForm((current) => ({
       ...current,
       useKimiIntro,
-      reportType: useKimiIntro ? "deep" : current.reportType,
+      reportType: useKimiIntro ? "identity" : current.reportType,
       synastryPartnerChartRequestId: useKimiIntro ? "" : current.synastryPartnerChartRequestId
     }));
     setIsConfirmingReport(false);
@@ -902,7 +902,6 @@ export function BirthOnboardingPanel({
                   />
                   <span>
                     <strong>{ui.self.kimiIntroDeepOffer}</strong>
-                    <small>{ui.self.kimiIntroDeepOfferDescription}</small>
                   </span>
                 </label>
               ) : null}

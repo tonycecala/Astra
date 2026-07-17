@@ -356,8 +356,7 @@ export const ui = {
       synastry: "Synastry charts"
     },
     reportOptionMeta: (stars: number, basis: string) => `${stars} ${stars === 1 ? "Star" : "Stars"} · ${basis}`,
-    kimiIntroDeepOffer: "Get a Free Introductory Deep Report",
-    kimiIntroDeepOfferDescription: "A complimentary Deep Report to begin. No Stars required.",
+    kimiIntroDeepOffer: "Free Introductory Identity Report",
     progressedAsOfLabel: "As of",
     onboardingProgressedTimeRequired: "Add a known birth time before ordering a Progressed Report.",
     onboardingProgressedDateRequired: "Choose a valid as-of date for the Progressed Report.",

@@ -107,8 +107,8 @@ export async function POST(request: Request) {
   const primary = sourceSnapshot(primaryChart, profile.userId);
   let partner: ReportChartSourceSnapshot | undefined;
   const kimiIntro = parsed.data.kimiIntro === true;
-  if (kimiIntro && (parsed.data.reportType !== "deep" || primaryChart.source !== "self")) {
-    return invalidBasis("The free introduction is available for a natal Self Deep Report.");
+  if (kimiIntro && (parsed.data.reportType !== "identity" || primaryChart.source !== "self")) {
+    return invalidBasis("The free introduction is available for a natal Self Identity Report.");
   }
 
   if (parsed.data.reportBasis.type === "progressed") {
@@ -146,7 +146,7 @@ export async function POST(request: Request) {
   const context = {
     ...(primaryChart.context ?? {}),
     chartSettings: reportBasis.chartSettings,
-    ...(kimiIntro ? { modelPilot: "kimi-intro-deep" } : {}),
+    ...(kimiIntro ? { modelPilot: "kimi-intro-identity" } : {}),
     ...(partner
       ? {
           synastryPartner: {

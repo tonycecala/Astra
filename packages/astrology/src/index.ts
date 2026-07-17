@@ -53,7 +53,7 @@ export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
 export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-plainspoken-v4";
-export const KIMI_INTRO_DEEP_REPORT_MODEL = "moonshotai/kimi-k2.5";
+export const KIMI_INTRO_IDENTITY_REPORT_MODEL = "moonshotai/kimi-k2.5";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
 
@@ -657,13 +657,13 @@ function resolveAstrologyReportGenerationConfigForRequest(
   const modelPilot = request.context && typeof request.context === "object" && !Array.isArray(request.context)
     ? request.context.modelPilot
     : undefined;
-  if (request.reportType !== "deep" || modelPilot !== "kimi-intro-deep") return config;
+  if (request.reportType !== "identity" || modelPilot !== "kimi-intro-identity") return config;
 
   return {
     ...config,
     reportWriter: DEBUG_MODEL_REPORT_WRITER,
     reportModelProvider: OPENROUTER_REPORT_MODEL_PROVIDER,
-    reportModel: KIMI_INTRO_DEEP_REPORT_MODEL
+    reportModel: KIMI_INTRO_IDENTITY_REPORT_MODEL
   };
 }
 
