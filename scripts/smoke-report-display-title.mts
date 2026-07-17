@@ -38,6 +38,15 @@ if (natalTitle !== "Unknown subject — Identity Report") {
   throw new Error(`A report without subject data must use the translated fallback; received: ${natalTitle}`);
 }
 
+const welcomeRequest = {
+  reportType: "identity",
+  subjectName: "Tony Cecala",
+  context: { subject: { displayName: "Tony Cecala" }, modelPilot: "gemini-intro-identity" }
+} as unknown as AstrologyReportRequest;
+if (reportDisplayTitle(welcomeRequest) !== "Tony Cecala — Welcome Report" || reportFamilyLabel("identity", welcomeRequest) !== "Welcome Report") {
+  throw new Error("The free first-Self report must display as Welcome Report without changing paid Identity Report labels.");
+}
+
 const familyCases = [
   ["identity", "Identity Report"],
   ["core", "Core Report"],

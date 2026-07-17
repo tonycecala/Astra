@@ -752,6 +752,7 @@ export const astrologyReportRequestSchema = z.object({
 export const createAstrologyReportRequestSchema = z.object({
   chartRequestId: idSchema,
   reportType: orderableAstrologyReportTypeSchema.default("identity"),
+  introIdentity: z.boolean().optional(),
   reportBasis: reportChartBasisInputSchema,
   question: z.string().min(1).optional(),
   intent: z.string().min(1).optional(),

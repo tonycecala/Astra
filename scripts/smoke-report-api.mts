@@ -199,6 +199,35 @@ const primaryChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
 const primaryChartId = String((primaryChart.request as JsonObject | undefined)?.id ?? "");
 if (!primaryChartId) throw new Error("Report API smoke did not create the primary chart.");
 
+const welcomeCreated = await requestJson(`${appBaseUrl}/api/reports`, {
+  method: "POST",
+  body: JSON.stringify({
+    chartRequestId: primaryChartId,
+    reportType: "identity",
+    introIdentity: true,
+    reportBasis: {
+      type: "natal",
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    }
+  })
+});
+const welcomeRequest = astrologyReportRequestSchema.parse(welcomeCreated.request);
+if (welcomeRequest.costCredits !== 0 || welcomeRequest.context?.modelPilot !== "gemini-intro-identity") {
+  throw new Error("First Self chart must create one zero-Star Gemini Welcome Report.");
+}
+await expectAuthedStatus(`${appBaseUrl}/api/reports`, 400, {
+  method: "POST",
+  body: JSON.stringify({
+    chartRequestId: primaryChartId,
+    reportType: "identity",
+    introIdentity: true,
+    reportBasis: {
+      type: "natal",
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    }
+  })
+});
+
 const noPlaceChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
   method: "POST",
   body: JSON.stringify({

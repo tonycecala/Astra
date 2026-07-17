@@ -6,9 +6,9 @@ import { astrologyReportResults, chartResults, db, listUserAstrologyReportReques
 import { and, eq } from "drizzle-orm";
 import { FullChartWheel } from "../../components/FullChartWheel";
 import { PageHeader } from "../../components/PageHeader";
-import { reportTypeLabel } from "../../components/ReportReader";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
+import { reportFamilyLabel } from "../../lib/report-display";
 
 export const dynamic = "force-dynamic";
 
@@ -190,7 +190,7 @@ function SelectedChartPanel({ item }: { item: ChartListItem }) {
         </div>
         <div>
           <dt>{ui.charts.latestPortrait}</dt>
-          <dd>{item.report ? reportTypeLabel(item.report.reportType) : ui.charts.noPortraitYet}</dd>
+          <dd>{item.report ? reportFamilyLabel(item.report.reportType, item.report) : ui.charts.noPortraitYet}</dd>
         </div>
       </dl>
     </section>
