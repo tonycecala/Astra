@@ -57,6 +57,13 @@ export const GEMINI_INTRO_IDENTITY_REPORT_MODEL = "google/gemini-3.5-flash";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
 
+function isWelcomeReportRequest(request: AstrologyReportRequest) {
+  const context = request.context && typeof request.context === "object" && !Array.isArray(request.context)
+    ? request.context
+    : undefined;
+  return request.reportType === "identity" && context?.modelPilot === "gemini-intro-identity";
+}
+
 type ZodiacMode = ChartSettings["zodiacMode"];
 type HouseSystemMode = ChartSettings["houseSystem"];
 
@@ -411,7 +418,8 @@ const forbiddenReportFragments = [
   "Primary strain:",
   "Developmental task:",
   "Language domain:",
-  "Priority note:"
+  "Priority note:",
+  "turn_off_thought"
 ];
 const thirdPersonSubjectVerbs = [
   "is", "isn't", "was", "wasn't", "has", "hasn't", "had", "does", "doesn't", "did",
@@ -1603,11 +1611,11 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
 }
 
 function extractOpenAIText(response: OpenAIResponse) {
-  if (typeof response.output_text === "string" && response.output_text.trim()) return response.output_text.trim();
+  if (typeof response.output_text === "string" && response.output_text.trim()) return cleanProviderControlText(response.output_text);
 
   for (const item of response.output ?? []) {
     for (const content of item.content ?? []) {
-      if (typeof content.text === "string" && content.text.trim()) return content.text.trim();
+      if (typeof content.text === "string" && content.text.trim()) return cleanProviderControlText(content.text);
     }
   }
 
@@ -1617,10 +1625,16 @@ function extractOpenAIText(response: OpenAIResponse) {
 function extractOpenAICompatibleChatText(response: OpenAICompatibleChatResponse) {
   for (const choice of response.choices ?? []) {
     const content = choice.message?.content;
-    if (typeof content === "string" && content.trim()) return content.trim();
+    if (typeof content === "string" && content.trim()) return cleanProviderControlText(content);
   }
 
   throw new Error("OpenAI-compatible chat response did not include text output.");
+}
+
+function cleanProviderControlText(text: string) {
+  return text
+    .replace(/\s*turn_off_thought\s*$/i, "")
+    .trim();
 }
 
 function sectionIdFromTitle(requestId: string, title: string, index: number) {
@@ -1725,7 +1739,15 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     "",
     `Write a complete plain Markdown Astra report for ${request.subjectName}.`,
     `Selected report depth: ${request.reportType}.`,
-    request.reportType === "deep"
+    isWelcomeReportRequest(request)
+      ? [
+          "Welcome Report rules:",
+          "- Write exactly three short paragraphs for Identity.",
+          "- Aim for 250-350 words total.",
+          "- Open with a clear, warm orientation to the reader's central pattern.",
+          "- End with one grounded next move."
+        ].join("\n")
+      : request.reportType === "deep"
       ? [
           "Deep Report depth rules:",
           "- Identity should be 400-500 words.",
@@ -2555,7 +2577,11 @@ async function parseValidatedModelDraft(input: ReportWriterInput, writer: (previ
     usage = mergeModelUsage(usage, response.usage);
     latencyMs += response.latencyMs;
     const draft = parseModelDraft(response.text, input.request, input.chartSignature);
-    const errors = [...validateRawModelText(response.text), ...validateModelDraft(input.request, draft, input.chartSignature)];
+    const errors = [
+      ...(response.finishReason === "length" ? ["Writer response reached its output limit; return a complete report within the requested scope."] : []),
+      ...validateRawModelText(response.text),
+      ...validateModelDraft(input.request, draft, input.chartSignature)
+    ];
     if (!errors.length) return { draft, attemptCount: attempt + 1, usage, latencyMs };
     previousErrors = errors;
   }

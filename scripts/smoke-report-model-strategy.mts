@@ -56,7 +56,7 @@ const result = await buildAstrologyReportResultAsync(request, {
     ASTRA_OPENROUTER_API_KEY: "test-key"
   },
   fetchImpl: async () => new Response(JSON.stringify({
-    choices: [{ message: { content: modelText } }],
+    choices: [{ message: { content: `${modelText}\nturn_off_thought` } }],
     usage: { prompt_tokens: 1200, completion_tokens: 600, total_tokens: 1800, cost: 0.042 }
   }), { status: 200, headers: { "content-type": "application/json" } })
 });
@@ -77,6 +77,51 @@ assert.deepEqual(result.generationMetadata, {
   orchestration: "monolithic"
 });
 assert.ok((result.generationMetadata?.latencyMs ?? -1) >= 0);
+assert.ok(!result.sections.some((section) => section.body.includes("turn_off_thought")));
+
+let welcomePrompt = "";
+const welcomeResult = await buildAstrologyReportResultAsync(
+  { ...request, context: { modelPilot: "gemini-intro-identity" } },
+  {
+    env: {
+      [ASTRA_EPHEMERIS_ENGINE_ENV]: LOCAL_CHART_ROUTINE_ENGINE,
+      [ASTRA_REPORT_WRITER_ENV]: DEBUG_MODEL_REPORT_WRITER,
+      [ASTRA_REPORT_MODEL_PROVIDER_ENV]: OPENROUTER_REPORT_MODEL_PROVIDER,
+      [ASTRA_REPORT_MODEL_PROFILE_ENV]: "production",
+      [ASTRA_REPORT_MODEL_ENV]: reportModelProfileModels.production[0],
+      ASTRA_OPENROUTER_API_KEY: "test-key"
+    },
+    fetchImpl: async (_url, init) => {
+      const body = JSON.parse(String(init?.body)) as { model?: string; messages?: Array<{ content?: string }> };
+      welcomePrompt = body.messages?.[0]?.content ?? "";
+      assert.equal(body.model, "google/gemini-3.5-flash");
+      return new Response(JSON.stringify({
+        choices: [{ message: { content: modelText }, finish_reason: "stop" }],
+        usage: { prompt_tokens: 1200, completion_tokens: 600, total_tokens: 1800, cost: 0.042 }
+      }), { status: 200, headers: { "content-type": "application/json" } });
+    }
+  }
+);
+assert.equal(welcomeResult.status, "completed");
+assert.match(welcomePrompt, /Welcome Report rules:/);
+assert.match(welcomePrompt, /Write exactly three short paragraphs/);
+
+const truncatedResult = await buildAstrologyReportResultAsync(request, {
+    env: {
+      [ASTRA_EPHEMERIS_ENGINE_ENV]: LOCAL_CHART_ROUTINE_ENGINE,
+      [ASTRA_REPORT_WRITER_ENV]: DEBUG_MODEL_REPORT_WRITER,
+      [ASTRA_REPORT_MODEL_PROVIDER_ENV]: OPENROUTER_REPORT_MODEL_PROVIDER,
+      [ASTRA_REPORT_MODEL_PROFILE_ENV]: "production",
+      [ASTRA_REPORT_MODEL_ENV]: reportModelProfileModels.production[0],
+      ASTRA_OPENROUTER_API_KEY: "test-key"
+    },
+    fetchImpl: async () => new Response(JSON.stringify({
+      choices: [{ message: { content: modelText }, finish_reason: "length" }],
+      usage: { prompt_tokens: 1200, completion_tokens: 600, total_tokens: 1800, cost: 0.042 }
+    }), { status: 200, headers: { "content-type": "application/json" } })
+  });
+assert.equal(truncatedResult.status, "failed");
+assert.match(truncatedResult.error ?? "", /Writer response reached its output limit/);
 assert.deepEqual(reportModelProfileModels.production, ["anthropic/claude-sonnet-5", "google/gemini-3.5-flash"]);
 assert.deepEqual(
   resolveAstrologyReportGenerationConfig({
