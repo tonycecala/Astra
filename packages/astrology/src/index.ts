@@ -52,7 +52,7 @@ export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
-export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-plainspoken-v5";
+export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-plainspoken-v6";
 export const GEMINI_INTRO_IDENTITY_REPORT_MODEL = "google/gemini-3.5-flash";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
@@ -112,7 +112,7 @@ export const reportModelProfileModels: Record<ReportModelProfile, string[]> = {
   ]
 };
 
-const deepReportReasoningEffortByModel = new Map<string, "none" | "minimal">([
+const reportReasoningEffortByModel = new Map<string, "none" | "minimal">([
   ["google/gemini-3.5-flash", "minimal"],
   ["google/gemini-2.5-flash-lite", "none"],
   ["moonshotai/kimi-k2.5", "none"]
@@ -325,6 +325,13 @@ class SectionedDeepReportGenerationError extends Error {
   constructor(message: string, readonly generation: SectionedDeepFailureGeneration) {
     super(message);
     this.name = "SectionedDeepReportGenerationError";
+  }
+}
+
+class MonolithicReportGenerationError extends Error {
+  constructor(message: string, readonly generation: ValidatedWriterPart) {
+    super(message);
+    this.name = "MonolithicReportGenerationError";
   }
 }
 
@@ -1708,6 +1715,7 @@ const astraPlainspokenVoiceContract = [
   "VOICE MODE: PLAINSPOKEN",
   "Target roughly a 6th to 8th grade reading level without dumbing down the insight.",
   "Use short sentences, everyday words, direct statements, and observable behavior.",
+  "Keep most sentences under 20 words. Break apart stacked clauses when one sentence is carrying several ideas.",
   "Say what happens, what it costs, and what can change. If a simpler sentence works, use it.",
   "Sound like a wise, experienced person speaking plainly: warm and lived-in, never academic, clinical, ornate, or stylized.",
   "Mix short and medium sentences. Keep adult psychological nuance; plain does not mean choppy or childish.",
@@ -1716,11 +1724,103 @@ const astraPlainspokenVoiceContract = [
   "Use needed astrology terms accurately, then explain their human meaning in ordinary language."
 ];
 
+const astraInterpretiveContract = [
+  "Write as if the reader paid for a psychologically intelligent interpretation, not a horoscope column.",
+  "Translate chart factors into specific lived experience and observable patterns.",
+  "Prefer concrete psychological claims over abstract astrological description.",
+  "Build each section from chart factor to human pattern to its relevant tension or cost, then offer one section-specific useful response.",
+  "Include the relevant gift naturally, but do not force gift, cost, tension, and practice into a repeated checklist.",
+  "End with a useful resolution that belongs to this section. It may be a practical next move, a clear recognition, or a concise way to hold the tension.",
+  "Avoid textbook astrology, stock spirituality, inflated certainty, generic coaching, and repeated evidence verbs.",
+  "When a signal appears in multiple sections, interpret a different consequence in each life domain instead of repeating its thesis or advice."
+];
+
+const astraEvidenceContract = [
+  "Treat the selected section signal cards as the complete factual boundary for the prose.",
+  "Mention only placements, houses, aspects, chart themes, and timing activations present in the relevant section card.",
+  "Do not invent, infer, or import additional astrology facts, even when they would be plausible.",
+  "Do not include provider, model, prompt version, cached status, debug labels, or generation metadata in customer-facing prose."
+];
+
+type SectionDepthRule = { target: string; minimum: number; maximum: number };
+
+const paidReportSectionDepth: Partial<Record<AstrologyReportRequest["reportType"], Record<string, SectionDepthRule>>> = {
+  identity: {
+    Identity: { target: "350-450", minimum: 325, maximum: 500 }
+  },
+  core: {
+    Identity: { target: "350-425", minimum: 325, maximum: 475 },
+    Relationships: { target: "225-300", minimum: 200, maximum: 340 },
+    Work: { target: "225-300", minimum: 200, maximum: 340 },
+    Integration: { target: "175-225", minimum: 150, maximum: 260 }
+  },
+  core_self: {
+    Identity: { target: "350-425", minimum: 325, maximum: 475 },
+    Relationships: { target: "225-300", minimum: 200, maximum: 340 },
+    Work: { target: "225-300", minimum: 200, maximum: 340 },
+    Integration: { target: "175-225", minimum: 150, maximum: 260 }
+  },
+  chart_interpretation: {
+    Identity: { target: "350-425", minimum: 325, maximum: 475 },
+    Relationships: { target: "225-300", minimum: 200, maximum: 340 },
+    Work: { target: "225-300", minimum: 200, maximum: 340 },
+    Integration: { target: "175-225", minimum: 150, maximum: 260 }
+  },
+  progressed: {
+    "Current Chapter": { target: "225-300", minimum: 200, maximum: 340 },
+    "Progressed Sun": { target: "200-275", minimum: 175, maximum: 315 },
+    "Progressed Moon": { target: "200-275", minimum: 175, maximum: 315 },
+    Integration: { target: "150-225", minimum: 140, maximum: 260 }
+  },
+  synastry: {
+    Attraction: { target: "200-275", minimum: 175, maximum: 315 },
+    Friction: { target: "200-275", minimum: 175, maximum: 315 },
+    Communication: { target: "200-275", minimum: 175, maximum: 315 },
+    Stability: { target: "200-275", minimum: 175, maximum: 315 }
+  }
+};
+
 function plainspokenParagraphRule(request: AstrologyReportRequest, unit: "section" | "chapter") {
   if (isWelcomeReportRequest(request)) {
     return "Write the Identity section in exactly 3 short paragraphs. Give each paragraph one coherent move; do not deliver it as one wall of text.";
   }
   return `Write each ${unit} in 2 or 3 paragraphs. Give each paragraph one coherent move; do not deliver it as one wall of text.`;
+}
+
+function familyDepthRules(request: AstrologyReportRequest) {
+  if (isWelcomeReportRequest(request)) {
+    return [
+      "Welcome Report depth rules:",
+      "- Write 250-350 words total.",
+      "- Open with a clear, warm orientation to the reader's central pattern.",
+      "- End with one grounded next move."
+    ].join("\n");
+  }
+  if (request.reportType === "deep") {
+    return [
+      "Deep Report depth rules:",
+      "- Identity should be 400-500 words.",
+      "- Do not undershoot the Identity minimum; 350 words is a hard floor.",
+      "- Emotions, Relationships, and Work should each be 300-425 words.",
+      "- Drive, Gifts, Blind Spots, and Growth should each be 275-400 words.",
+      "- Integration should be 225-325 words.",
+      "- The complete Deep Report should be at least 2,625 words across its nine chapters.",
+      "- Identity must feel expanded beyond an Identity Report.",
+      "- Include fuller synthesis, chart ruler when relevant, and major identity aspects from the Identity card.",
+      "- Give each section its own governing question and section-specific secondary signal.",
+      "- Identity must not carry the report alone. The remaining eight sections must sustain premium interpretive depth."
+    ].join("\n");
+  }
+  const rules = paidReportSectionDepth[request.reportType];
+  if (!rules) return "Keep the report complete, specific, and readable for the selected report type.";
+  const family = request.reportType === "identity" ? "Identity" : request.reportType === "progressed" ? "Progressed" : request.reportType === "synastry" ? "Synastry" : "Core";
+  return [
+    `${family} Report depth rules:`,
+    ...Object.entries(rules).map(([section, depth]) => `- ${section}: target ${depth.target} words; remain between ${depth.minimum} and ${depth.maximum} words.`),
+    request.reportType === "core" || request.reportType === "core_self" || request.reportType === "chart_interpretation"
+      ? "- Core earns its value through four distinct chapters, not by turning Identity into a second report."
+      : ""
+  ].filter(Boolean).join("\n");
 }
 
 function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: ChartSignature, previousErrors: string[] = []) {
@@ -1741,55 +1841,17 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
       : basis.type === "synastry"
         ? `This is a two-chart synastry report${basis.partner ? ` comparing ${basis.primary.subjectName} with ${basis.partner.subjectName}` : ""}. Interpret cross-chart contacts, not either person as a standalone natal profile.`
         : "This is a natal person report.",
-    "Use direct second person: you and your.",
-    "Do not use third-person labels for the subject.",
-    "Do not write about the subject as a case file. Address the reader directly even when the subject name is synthetic.",
     "Do not repeat note labels as public labels.",
     "Do not say capacity, risk, developmental task, language domain, primary strain, or priority note in public prose.",
-    "Do not invent chart facts.",
     chartSignature.calculationMode === "signs-aspects-only"
       ? "This is a signs-and-aspects-only chart. Do not mention houses, Rising, Ascendant, Midheaven, angles, or house-system effects."
       : "Treat Zodiac and Houses as calculation inputs: the prose must reflect the resulting signs, house placements, and evidence, not merely name the selected settings.",
-    "Do not mention any placement, sign, house, aspect, or timing factor not listed in the section card.",
-    "Do not use old stock phrases.",
-    "Keep second-person grammar clean: write you want, you understand, you adapt, and you believe; never write you wants, you understands, you adapts, or you believes.",
     "Do not write JSON.",
     "Write plain Markdown only.",
     "",
     `Write a complete plain Markdown Astra report for ${request.subjectName}.`,
     `Selected report depth: ${request.reportType}.`,
-    isWelcomeReportRequest(request)
-      ? [
-          "Welcome Report rules:",
-          "- Aim for 250-350 words total.",
-          "- Open with a clear, warm orientation to the reader's central pattern.",
-          "- End with one grounded next move."
-        ].join("\n")
-      : request.reportType === "deep"
-      ? [
-          "Deep Report depth rules:",
-          "- Identity should be 400-500 words.",
-          "- Do not undershoot the Identity minimum; 350 words is a hard floor.",
-          "- Emotions, Relationships, and Work should each be 300-425 words.",
-          "- Drive, Gifts, Blind Spots, and Growth should each be 275-400 words.",
-          "- Integration should be 225-325 words.",
-          "- The complete Deep Report should be at least 2,625 words across its nine chapters.",
-          "- Identity must feel expanded beyond an Identity Report.",
-          "- Include fuller synthesis, chart ruler when relevant, and major identity aspects from the Identity card.",
-          "- Every section must include a complete growth or practice sentence.",
-          "- Give each section its own governing question and section-specific secondary signal.",
-          "- When a signal repeats, do not repeat its thesis, warning, or practice; interpret a different consequence of that signal in the section's life domain.",
-          "- Identity must not carry the report alone. The remaining eight sections must sustain premium interpretive depth."
-        ].join("\n")
-      : request.reportType === "core" || request.reportType === "core_self" || request.reportType === "chart_interpretation"
-        ? [
-            "Core Report depth rules:",
-            "- Identity should be 550-700 words when it is the paid Core Report lead section.",
-            "- Identity must feel expanded beyond an Identity Report.",
-            "- Include fuller synthesis, chart ruler when relevant, and major identity aspects from the Identity card.",
-            "- You may include a complete growth or practice sentence."
-          ].join("\n")
-      : "Keep the report complete, specific, and readable for the selected report type.",
+    familyDepthRules(request),
     "",
     "Required structure:",
     `# Astra Report - ${request.subjectName}`,
@@ -1809,25 +1871,13 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     "Astra Voice Contract:",
     ...astraPlainspokenVoiceContract,
     plainspokenParagraphRule(request, "section"),
-    "Write as if the reader paid for a psychologically intelligent interpretive document, not a horoscope column.",
-    "- Prefer concrete psychological claims over abstract astrological description.",
-    "- Use astrological terms sparingly, but do not hide the chart logic.",
-    "- Build a clean bridge from chart factor to human pattern to practical growth edge.",
-    "- Include at least one memorable psychological hook.",
-    "- Include at least one practical sentence the reader can apply this week.",
+    ...astraInterpretiveContract,
     '- Avoid generic phrases such as "you are a natural communicator," "this aspect gifts you," "you may struggle," or "this placement indicates" unless rewritten into more specific language.',
-    "- Do not mention any planet, sign, house, aspect, decan, progression, or timing factor unless it is present in the supplied chart evidence or allowed interpretation inputs.",
-    "- Do not include provider, model, prompt version, cached status, debug labels, or generation metadata in the customer-facing report.",
+    "Speak directly to the reader using you and your. Never describe the report subject as a case or third-person label.",
+    "Keep second-person grammar clean: write you want, you understand, you adapt, and you believe; never write you wants, you understands, you adapts, or you believes.",
     "",
-    "Only mention placements, houses, aspects, chart themes, and timing activations that are present in the selected section signals.",
-    "Do not introduce new astrology facts. If a chart factor is not listed in the section card, do not mention it.",
+    ...astraEvidenceContract,
     "Make the sections feel like chapters of one chart, not isolated mini-readings. Each section should deepen or complicate the governing thesis.",
-    "Translate every major chart symbol into lived experience: what someone may feel, notice, repeat, avoid, practice, protect, overdo, or learn to make explicit.",
-    "In every major section, include the gift, the cost, and the practice implied by the section signals. Do this in natural prose; do not use gift/cost/practice as labels.",
-    "End each section's prose with a clear useful sentence: a practical next move, a psychologically resonant recognition, or a concise way to hold the section's tension.",
-    "Avoid textbook phrasing. Prefer concrete human sentences over symbolic inventory.",
-    "Avoid repeated evidence verbs such as grounds, links, indicates, highlights, and suggests.",
-    "When the same signal appears in multiple sections, interpret it through that section's function instead of repeating the same sentence.",
     "Identity opening rule: begin Identity from the Sun placement unless the Identity card has no Sun signal. The first or second sentence must include the exact phrase '[Sign] Sun' or 'Sun in [Sign]' using the Sun sign from the Identity card. Include Sun house or house-system nuance when present, then integrate Mercury/Sun relationship, chart ruler or Ascendant, and dominant identity aspects or themes. Do not make the Sun generic or treat it as standalone Sun-sign astrology.",
     basis.type === "natal"
       ? "Integration must synthesize enduring natal patterns into a practical way of working with the chart. It is not a forecast and must not claim a transit, progression, season, or unusual current activation."
@@ -1927,8 +1977,8 @@ function providerRetryIssue(error: unknown): ReportGenerationRetryIssue {
   );
 }
 
-function deepReportReasoningEffortForModel(model: string) {
-  return deepReportReasoningEffortByModel.get(model) ?? "none";
+function reportReasoningEffortForModel(model: string) {
+  return reportReasoningEffortByModel.get(model) ?? "none";
 }
 
 function retryFailure(
@@ -1994,13 +2044,11 @@ function buildDeepSectionPrompt(input: {
     `This chapter must answer, rather than quote or announce, this distinct governing question: ${card.tensions.join("; ")}.`,
     ...astraPlainspokenVoiceContract,
     plainspokenParagraphRule(request, "chapter"),
-    "Speak directly to the reader using you and your.",
-    "Translate chart factors into specific lived experience, psychological usefulness, and one practical next move.",
-    "Include the chapter's gift, cost, tension, and practice naturally without using those words as labels.",
+    ...astraInterpretiveContract,
+    ...astraEvidenceContract,
     "Use at least two selected signals when available, including a section-specific secondary signal.",
     "Do not generalize this chapter into the whole report and do not repeat a generic warning or practice from another life domain.",
-    "Mention only chart factors present in this section card. Do not invent transits, progressions, current activation, or seasonal timing.",
-    "Avoid textbook astrology, stock spirituality, inflated certainty, and repeated evidence verbs.",
+    "Do not invent transits, progressions, current activation, or seasonal timing.",
     card.title === "Identity" && sunPlacement
       ? `The first three sentences must include "${sunPlacement.sign} Sun" or "Sun in ${sunPlacement.sign}"${chartSignature.calculationMode === "signs-aspects-only" ? "." : " and integrate its house context."}`
       : "",
@@ -2277,10 +2325,17 @@ function validateModelDraft(request: AstrologyReportRequest, draft: ReportDraft,
     errors.push(`Expected ${requiredHeadings.length} report sections, found ${draft.sections?.length ?? 0}.`);
   }
 
-  if ((request.reportType === "core" || request.reportType === "core_self" || request.reportType === "deep") && sectionTitles.has("identity")) {
-    const identityWords = sectionWordCounts.find((section) => section.title.trim().toLowerCase() === "identity")?.words ?? 0;
-    if (identityWords > 0 && identityWords < 350) {
-      errors.push(`${request.reportType === "deep" ? "Deep" : "Core"} Identity should be at least 350 words; found ${identityWords}.`);
+  const paidDepthRules = isWelcomeReportRequest(request) ? undefined : paidReportSectionDepth[request.reportType];
+  if (paidDepthRules) {
+    for (const section of sectionWordCounts) {
+      const depth = paidDepthRules[section.title];
+      if (!depth) continue;
+      if (section.words < depth.minimum) {
+        errors.push(`${section.title} must be at least ${depth.minimum} words for the ${request.reportType} report; found ${section.words}.`);
+      }
+      if (section.words > depth.maximum) {
+        errors.push(`${section.title} must be at most ${depth.maximum} words for the ${request.reportType} report; found ${section.words}.`);
+      }
     }
   }
 
@@ -2581,6 +2636,7 @@ async function parseValidatedModelDraft(input: ReportWriterInput, writer: (previ
   let previousErrors: string[] = [];
   let usage: ModelUsage = {};
   let latencyMs = 0;
+  const failures: ReportGenerationRetryFailure[] = [];
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const response = await writer(previousErrors);
     usage = mergeModelUsage(usage, response.usage);
@@ -2591,11 +2647,36 @@ async function parseValidatedModelDraft(input: ReportWriterInput, writer: (previ
       ...validateRawModelText(response.text),
       ...validateModelDraft(input.request, draft, input.chartSignature)
     ];
-    if (!errors.length) return { draft, attemptCount: attempt + 1, usage, latencyMs };
+    if (!errors.length) return { draft, attemptCount: attempt + 1, usage, latencyMs, failures };
+    failures.push(retryFailure(
+      attempt + 1,
+      errors.map(monolithicRetryIssue),
+      response.latencyMs,
+      response.usage,
+      response.finishReason,
+      response.text
+    ));
     previousErrors = errors;
   }
 
-  throw new Error(`Model draft failed validation after retries: ${previousErrors.join("; ")}`);
+  throw new MonolithicReportGenerationError(`Model draft failed validation after retries: ${previousErrors.join("; ")}`, {
+    attemptCount: failures.length,
+    usage,
+    latencyMs,
+    failures
+  });
+}
+
+function monolithicRetryIssue(message: string): ReportGenerationRetryIssue {
+  if (/output limit|at most/i.test(message)) return retryIssue("above_maximum", message);
+  if (/at least/i.test(message)) return retryIssue("below_minimum", message);
+  if (/Missing required heading|Expected \d+ report sections/i.test(message)) return retryIssue("chapter_count", message);
+  if (/Third-person subject/i.test(message)) return retryIssue("third_person_subject", message);
+  if (/Unsupported astrology claim/i.test(message)) return retryIssue("unsupported_claim", message);
+  if (/Missing visible chart evidence/i.test(message)) return retryIssue("evidence_mismatch", message);
+  if (/Natal reports must not imply current timing/i.test(message)) return retryIssue("natal_timing", message);
+  if (/Forbidden public fragment/i.test(message)) return retryIssue("forbidden_fragment", message);
+  return retryIssue("invalid_markdown", message);
 }
 
 async function writeOpenAIDebugModelReportText(
@@ -2694,7 +2775,7 @@ async function writeOpenRouterModelText(
         }
       ],
       max_tokens: maxOutputTokens,
-      ...(request.reportType === "deep" ? { reasoning: { effort: deepReportReasoningEffortForModel(config.reportModel) } } : {}),
+      reasoning: { effort: reportReasoningEffortForModel(config.reportModel) },
       temperature: 0.3
     })
   });
@@ -2862,8 +2943,8 @@ async function buildDebugModelReportResult(
         provider: config.reportModelProvider,
         model: config.reportModel,
         modelProfile: config.reportModelProfile,
-        ...(request.reportType === "deep" && config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
-          ? { reasoningEffort: deepReportReasoningEffortForModel(config.reportModel) }
+        ...(config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
+          ? { reasoningEffort: reportReasoningEffortForModel(config.reportModel) }
           : {}),
         promptVersion: ASTRA_REPORT_PROMPT_VERSION,
         attemptCount: error.generation.attemptCount,
@@ -2878,6 +2959,23 @@ async function buildDebugModelReportResult(
         }))
       });
     }
+    if (error instanceof MonolithicReportGenerationError) {
+      return buildReportModelCallFailedResult(request, error.message, {
+        writer: DEBUG_MODEL_REPORT_WRITER,
+        provider: config.reportModelProvider,
+        model: config.reportModel,
+        modelProfile: config.reportModelProfile,
+        ...(config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
+          ? { reasoningEffort: reportReasoningEffortForModel(config.reportModel) }
+          : {}),
+        promptVersion: ASTRA_REPORT_PROMPT_VERSION,
+        attemptCount: error.generation.attemptCount,
+        ...error.generation.usage,
+        latencyMs: error.generation.latencyMs,
+        orchestration: "monolithic",
+        failures: error.generation.failures
+      });
+    }
     return buildReportModelCallFailedResult(request, error instanceof Error ? error.message : "Unknown model writer error.");
   }
   const result = buildLocalChartRoutineResult(request, draft);
@@ -2889,8 +2987,8 @@ async function buildDebugModelReportResult(
       provider: config.reportModelProvider,
       model: config.reportModel,
       modelProfile: config.reportModelProfile,
-      ...(request.reportType === "deep" && config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
-        ? { reasoningEffort: deepReportReasoningEffortForModel(config.reportModel) }
+      ...(config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
+        ? { reasoningEffort: reportReasoningEffortForModel(config.reportModel) }
         : {}),
       promptVersion: ASTRA_REPORT_PROMPT_VERSION,
       attemptCount: generation.attemptCount,
@@ -2906,7 +3004,10 @@ async function buildDebugModelReportResult(
             })),
             readability: reportReadabilityMetadata(draft.sections)
           }
-        : { orchestration: "monolithic" as const })
+        : {
+            orchestration: "monolithic" as const,
+            ...("failures" in generation && generation.failures.length ? { failures: generation.failures } : {})
+          })
     },
     provenance: [
       ...result.provenance.filter((entry) => entry.id !== `${request.id}:writer`),

@@ -723,6 +723,7 @@ export const reportGenerationMetadataSchema = z.object({
   reasoningEffort: z.enum(["none", "minimal", "low", "medium", "high", "xhigh", "max"]).optional(),
   latencyMs: z.number().int().nonnegative().optional(),
   orchestration: z.enum(["monolithic", "sectioned-v1"]).optional(),
+  failures: z.array(reportGenerationRetryFailureSchema).optional(),
   thesis: reportGenerationPartMetadataSchema.optional(),
   sections: z.array(reportGenerationPartMetadataSchema.extend({ title: z.string().min(1) })).optional(),
   readability: reportReadabilityMetadataSchema.optional()

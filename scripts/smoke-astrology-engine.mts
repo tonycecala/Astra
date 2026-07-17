@@ -344,15 +344,15 @@ const successfulModelFetch: typeof fetch = async (url, init) => {
         "",
         "## Relationships",
         "",
-        "The model draft names relationship material only from the selected chart signals. It keeps the private section grounded in Venus, Mars, and the report notes instead of trying to rewrite the deterministic public signal.",
+        Array.from({ length: 7 }, () => "The model draft names relationship material only from the selected chart signals. It keeps the private section grounded in Venus, Mars, and the report notes instead of trying to rewrite the deterministic public signal.").join(" "),
         "",
         "## Work",
         "",
-        "The model draft stays inside the chart evidence supplied by the section cards. It treats work as an expression of the same Gemini/Virgo/Cancer pattern and does not invent a new public headline.",
+        Array.from({ length: 7 }, () => "The model draft stays inside the chart evidence supplied by the section cards. It treats work as an expression of the same Gemini/Virgo/Cancer pattern and does not invent a new public headline.").join(" "),
         "",
         "## Integration",
         "",
-        "Right now, the model draft adds a private reflection prompt while public signal publishing stays deterministic. It gives the reader one practical sentence without changing the stored public signal summary."
+        Array.from({ length: 6 }, () => "The model draft adds a private reflection prompt while public signal publishing stays deterministic. It gives the reader one practical sentence without changing the stored public signal summary.").join(" ")
       ].join("\n")
     }),
     { status: 200, headers: { "content-type": "application/json" } }

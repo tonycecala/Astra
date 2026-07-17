@@ -16,7 +16,7 @@ The production profile selects Sonnet 5 by default. Gemini 3.5 Flash is the appr
 
 All candidates received the same Tony birth-data fixture, Tropical zodiac, Whole Sign houses, calculated chart evidence, section contract, and prompt version (`astra-report-writer-2026-07`). Identity was tested across six candidates. Core and Deep were then tested across the three viable production candidates.
 
-The durable runner is `npm run report:quality-bakeoff`. It writes ignored raw results, a blind-reading document, and a model key under `output/report-model-bakeoff/`. Each model/report result records tokens, provider spend, latency, retries, word count, section distinctness, repeated-sentence rate, chart specificity, and practical language.
+The durable model runner is `npm run report:quality-bakeoff`. Prompt-contract changes use `npm run report:prompt-bakeoff` for the six-family private before/after set and `npm run report:prompt-compare` for the metric comparison. The runners write ignored private artifacts and record tokens, provider spend, latency, retries, word count, section distinctness, repeated-sentence rate, chart specificity, practical language, and retained prose.
 
 ## Observed Results
 
@@ -61,6 +61,8 @@ At the observed sample cost, writer spend remains small relative to Astra's 1/5/
 3. Time out an individual provider call after 90 seconds.
 4. Re-run this bakeoff on the same fixture before changing the production writer or prompt contract.
 5. Judge new candidates blind on psychological usefulness, specificity, freshness, section differentiation, and whether tier depth earns the price.
+6. Submit an explicit reasoning policy on every OpenRouter prose call. Use `none` for Sonnet and other prose-first writers; use `minimal` only where the provider requires it.
+7. Retain rejected monolithic and sectioned prose, validation reasons, provider usage, and latency in private telemetry.
 
 ## Pricing Sources Reviewed
 

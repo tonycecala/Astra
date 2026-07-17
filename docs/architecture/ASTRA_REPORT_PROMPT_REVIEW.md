@@ -2,7 +2,7 @@
 
 **Status:** review copy of the runtime prompt contract as of 2026-07-17
 **Source:** `packages/astrology/src/index.ts`
-**Current prompt version:** `astra-report-writer-2026-07-plainspoken-v5`
+**Current prompt version:** `astra-report-writer-2026-07-plainspoken-v6`
 
 This is a readable representation of what Astra sends to its report writer. It is deliberately free of private user data, API credentials, and generated report prose.
 
@@ -90,6 +90,7 @@ Astra Voice Contract:
 VOICE MODE: PLAINSPOKEN
 Target roughly a 6th to 8th grade reading level without dumbing down the insight.
 Use short sentences, everyday words, direct statements, and observable behavior.
+Keep most sentences under 20 words. Break apart stacked clauses when one sentence is carrying several ideas.
 Say what happens, what it costs, and what can change. If a simpler sentence works, use it.
 Sound like a wise, experienced person speaking plainly: warm and lived-in, never academic, clinical, ornate, or stylized.
 Mix short and medium sentences. Keep adult psychological nuance; plain does not mean choppy or childish.
@@ -98,25 +99,23 @@ Use words such as actually, real, really, and here's sparingly; do not turn them
 Use needed astrology terms accurately, then explain their human meaning in ordinary language.
 Write each section in 2 or 3 paragraphs. Give each paragraph one coherent move; do not deliver it as one wall of text.
 
-Write as if the reader paid for a psychologically intelligent interpretive document, not a horoscope column.
-- Prefer concrete psychological claims over abstract astrological description.
-- Use astrological terms sparingly, but do not hide the chart logic.
-- Build a clean bridge from chart factor to human pattern to practical growth edge.
-- Include at least one memorable psychological hook.
-- Include at least one practical sentence the reader can apply this week.
-- Avoid generic phrases such as "you are a natural communicator," "this aspect gifts you," "you may struggle," or "this placement indicates" unless rewritten into more specific language.
-- Do not mention any planet, sign, house, aspect, decan, progression, or timing factor unless it is present in the supplied chart evidence or allowed interpretation inputs.
-- Do not include provider, model, prompt version, cached status, debug labels, or generation metadata in the customer-facing report.
+Write as if the reader paid for a psychologically intelligent interpretation, not a horoscope column.
+Translate chart factors into specific lived experience and observable patterns.
+Prefer concrete psychological claims over abstract astrological description.
+Build each section from chart factor to human pattern to its relevant tension or cost, then offer one section-specific useful response.
+Include the relevant gift naturally, but do not force gift, cost, tension, and practice into a repeated checklist.
+End with a useful resolution that belongs to this section. It may be a practical next move, a clear recognition, or a concise way to hold the tension.
+Avoid textbook astrology, stock spirituality, inflated certainty, generic coaching, and repeated evidence verbs.
+When a signal appears in multiple sections, interpret a different consequence in each life domain instead of repeating its thesis or advice.
+Avoid generic phrases such as "you are a natural communicator," "this aspect gifts you," "you may struggle," or "this placement indicates" unless rewritten into more specific language.
+Speak directly to the reader using you and your. Never describe the report subject as a case or third-person label.
+Keep second-person grammar clean: write you want, you understand, you adapt, and you believe; never write you wants, you understands, you adapts, or you believes.
 
-Only mention placements, houses, aspects, chart themes, and timing activations that are present in the selected section signals.
-Do not introduce new astrology facts. If a chart factor is not listed in the section card, do not mention it.
+Treat the selected section signal cards as the complete factual boundary for the prose.
+Mention only placements, houses, aspects, chart themes, and timing activations present in the relevant section card.
+Do not invent, infer, or import additional astrology facts, even when they would be plausible.
+Do not include provider, model, prompt version, cached status, debug labels, or generation metadata in customer-facing prose.
 Make the sections feel like chapters of one chart, not isolated mini-readings. Each section should deepen or complicate the governing thesis.
-Translate every major chart symbol into lived experience: what someone may feel, notice, repeat, avoid, practice, protect, overdo, or learn to make explicit.
-In every major section, include the gift, the cost, and the practice implied by the section signals. Do this in natural prose; do not use gift/cost/practice as labels.
-End each section's prose with a clear useful sentence: a practical next move, a psychologically resonant recognition, or a concise way to hold the section's tension.
-Avoid textbook phrasing. Prefer concrete human sentences over symbolic inventory.
-Avoid repeated evidence verbs such as grounds, links, indicates, highlights, and suggests.
-When the same signal appears in multiple sections, interpret it through that section's function instead of repeating the same sentence.
 ```
 
 ### Basis and Calculation-Scope Insertions
@@ -149,8 +148,8 @@ For Progressed and Synastry reports, the model may use timing language only when
 ```text
 Selected report depth: identity.
 
-Welcome Report rules:
-- Aim for 250-350 words total.
+Welcome Report depth rules:
+- Write 250-350 words total.
 - Open with a clear, warm orientation to the reader's central pattern.
 - End with one grounded next move.
 
@@ -174,11 +173,13 @@ Gemini 3.5 Flash is selected only for this one-time offer when the production mo
 ```text
 Selected report depth: identity.
 
+Identity Report depth rules:
+- Identity: target 350-450 words; remain between 325 and 500 words.
+
 Required structure:
 # Astra Report - {SUBJECT}
 ## Identity
 
-Keep the report complete, specific, and readable for the selected report type.
 ```
 
 For both Welcome and Identity, if Sun evidence exists, Astra also requires:
@@ -194,10 +195,11 @@ For this chart, the required Sun opening phrase is either "{SIGN} Sun" or "Sun i
 
 ```text
 Core Report depth rules:
-- Identity should be 550-700 words when it is the paid Core Report lead section.
-- Identity must feel expanded beyond an Identity Report.
-- Include fuller synthesis, chart ruler when relevant, and major identity aspects from the Identity card.
-- You may include a complete growth or practice sentence.
+- Identity: target 350-425 words; remain between 325 and 475 words.
+- Relationships: target 225-300 words; remain between 200 and 340 words.
+- Work: target 225-300 words; remain between 200 and 340 words.
+- Integration: target 175-225 words; remain between 150 and 260 words.
+- Core earns its value through four distinct chapters, not by turning Identity into a second report.
 
 Required structure:
 # Astra Report - {SUBJECT}
@@ -281,6 +283,12 @@ This is a secondary progressed report as of {AS_OF_DATE}. Interpret progressed p
 
 Selected report depth: progressed.
 
+Progressed Report depth rules:
+- Current Chapter: target 225-300 words; remain between 200 and 340 words.
+- Progressed Sun: target 200-275 words; remain between 175 and 315 words.
+- Progressed Moon: target 200-275 words; remain between 175 and 315 words.
+- Integration: target 150-225 words; remain between 140 and 260 words.
+
 Required structure:
 # Astra Report - {SUBJECT}
 ## Current Chapter
@@ -288,7 +296,6 @@ Required structure:
 ## Progressed Moon
 ## Integration
 
-Keep the report complete, specific, and readable for the selected report type.
 Use timing language only from the supplied dated evidence.
 ```
 
@@ -302,6 +309,12 @@ This is a two-chart synastry report comparing {PRIMARY_NAME} with {PARTNER_NAME}
 
 Selected report depth: synastry.
 
+Synastry Report depth rules:
+- Attraction: target 200-275 words; remain between 175 and 315 words.
+- Friction: target 200-275 words; remain between 175 and 315 words.
+- Communication: target 200-275 words; remain between 175 and 315 words.
+- Stability: target 200-275 words; remain between 175 and 315 words.
+
 Required structure:
 # Astra Report - {PRIMARY_NAME}
 ## Attraction
@@ -309,7 +322,6 @@ Required structure:
 ## Communication
 ## Stability
 
-Keep the report complete, specific, and readable for the selected report type.
 Use timing language only from the supplied dated evidence.
 ```
 
@@ -339,28 +351,30 @@ A provider result marked `length` is never accepted as a completed report. Astra
 
 For Deep Report, Astra retries the private thesis or only the failed chapter, up to three attempts per part. Rejected text and reasons are retained in private telemetry for quality evaluation; they are never included in customer-facing prose.
 
+For whole-report generation, Astra now retains every rejected draft, provider usage, latency, finish reason, and validation issue. Failed monolithic calls therefore remain auditable instead of losing their prose and economics.
+
+All OpenRouter report calls submit an explicit reasoning policy. Sonnet and the other prose writers use `none`; Gemini 3.5 Flash uses `minimal`. This protects the visible prose budget from hidden reasoning tokens and is especially important for the four-chapter Core response.
+
 ## High-Level Prompt Assessment
 
 The strongest part of the current system is its separation of concerns. Astra selects and validates chart evidence; the model organizes that evidence into a governing thesis and human prose. Deep Report's section-level generation also gives each life domain room to develop without making one failed chapter invalidate the rest.
 
 The shared plainspoken contract is now a product-wide voice standard rather than a Deep-only refinement. This addresses the clearest issue in recent reports: the astrology was often insightful, but the sentence structure could become clinically dense. A 6th-to-8th-grade target, ordinary language, short and medium sentences, and two or three paragraphs per section should make the work easier to absorb without making the psychology shallow.
 
-The remaining prompt debt is mostly repetition and uneven product sizing:
+Version 6 resolves the largest prompt debt found in recent report reading:
 
-1. Direct second person is required in the opening instructions, the voice contract, and some family-specific rules. The repetition is protective, but one canonical rule plus a narrow grammar guard should eventually be enough.
-2. Evidence fidelity is stated several ways: do not invent chart facts, mention only supplied factors, and do not introduce new astrology. These should become one authoritative evidence rule plus the calculation-scope exception.
-3. Practical usefulness is requested as a growth edge, a sentence for this week, gift/cost/practice, and a useful ending. Requiring all four in every section can make the prose feel templated. One section-specific practical resolution is the real product requirement.
-4. Paid Identity has no explicit size target, so its distinction from the shorter Welcome Report depends too heavily on model judgment.
-5. Core specifies only the Identity chapter's size. Progressed and Synastry specify no chapter sizes. This can produce uneven depth, density, latency, and cost even when the prose is good.
-6. Core's Identity target is longer than Deep's Identity target. That can be defensible because Deep spreads its value across nine chapters, but the product ladder should state that logic explicitly rather than leave it implicit in numbers.
-7. The exact Sun-opening rule provides strong chart grounding, but it can make openings sound mechanically similar. Keep the evidence requirement while allowing more sentence-level variation after the required phrase appears.
+1. Evidence fidelity now has one authoritative four-line contract instead of several overlapping warnings.
+2. Practical usefulness is one section-specific interpretive arc rather than a mandatory hook, weekly exercise, gift/cost/practice checklist, and prescribed ending all at once.
+3. Paid Identity, Core, Progressed, and Synastry now have explicit target and acceptance bands. Welcome and Deep retain their existing product-specific ranges.
+4. Core's value is defined as breadth across four distinct chapters. Its Identity chapter no longer consumes most of the output budget or pretends that Core is a second, longer Identity product.
+5. The Plainspoken contract now asks models to keep most sentences under 20 words and break apart stacked clauses. This directly addresses the dense Welcome and Progressed prose observed in controlled generation.
 
-The next prompt revision should consolidate duplicate evidence and practical-use rules, then define explicit length bands for Identity, Core, Progressed, and Synastry. It should not add more personality adjectives or more mandatory rhetorical devices; those tend to make models perform the prompt instead of speaking naturally.
+The exact Sun-opening rule remains a deliberate grounding constraint. It can make openings similar, but the gain in chart specificity currently outweighs that cost. The next question should be answered from retained before/after prose: whether the new ranges improve product distinction without making any family feel mechanically sized.
 
 ## Review Questions
 
 1. Should Welcome Report remain a single `Identity` chapter, or should its customer promise add a short orientation paragraph supplied by Astra rather than the model?
-2. Is the distinction between paid Identity and Core clear enough in the chapter depth rules, or should Identity receive an explicit target length?
-3. Should Progressed and Synastry have their own family-specific depth ranges instead of the current shared "complete, specific, and readable" instruction?
-4. Does the shared plainspoken contract preserve enough family distinction, or should any report family intentionally depart from it?
-5. Which rules are genuine product standards versus temporary retry defenses that should be simplified after telemetry proves they are no longer useful?
+2. Does the retained before/after prose show a clear experience ladder from Welcome to Identity to Core to Deep?
+3. Do Progressed and Synastry remain complete inside their new ranges, or did any section lose an important interpretive bridge?
+4. Does the shared plainspoken contract preserve enough family distinction, or should any family intentionally depart from it?
+5. Are the acceptance bands broad enough to prevent wasteful retries while still protecting each product promise?
