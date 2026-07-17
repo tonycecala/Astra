@@ -7,7 +7,7 @@ import {
   type ReportChartBasisSnapshot,
   type ReportChartSourceSnapshot
 } from "@astra/contracts";
-import { db, getUserChartMakerRequest, listUserAstrologyReportRequests, purchaseAstrologyReportRequest } from "@astra/db";
+import { db, getUserChartMakerRequest, listUserAstrologyReportRequests, listUserChartMakerRequests, purchaseAstrologyReportRequest } from "@astra/db";
 import { getAstraAuthContext } from "../../../lib/auth/profile";
 import { reportProductFor } from "../../../lib/reportCatalog";
 
@@ -107,8 +107,16 @@ export async function POST(request: Request) {
   const primary = sourceSnapshot(primaryChart, profile.userId);
   let partner: ReportChartSourceSnapshot | undefined;
   const kimiIntro = parsed.data.kimiIntro === true;
-  if (kimiIntro && (parsed.data.reportType !== "identity" || primaryChart.source !== "self")) {
-    return invalidBasis("The free introduction is available for a natal Self Identity Report.");
+  if (kimiIntro) {
+    const [ownedCharts, existingReports] = await Promise.all([
+      listUserChartMakerRequests(db, profile.userId),
+      listUserAstrologyReportRequests(db, profile.userId)
+    ]);
+    const selfChartCount = ownedCharts.filter((chart) => chart.source === "self").length;
+    const introAlreadyCreated = existingReports.some((report) => report.context?.modelPilot === "kimi-intro-identity");
+    if (parsed.data.reportType !== "identity" || primaryChart.source !== "self" || selfChartCount !== 1 || introAlreadyCreated) {
+      return invalidBasis("The free introduction is available only for a first natal Self chart.");
+    }
   }
 
   if (parsed.data.reportBasis.type === "progressed") {

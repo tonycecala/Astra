@@ -199,26 +199,6 @@ const primaryChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
 const primaryChartId = String((primaryChart.request as JsonObject | undefined)?.id ?? "");
 if (!primaryChartId) throw new Error("Report API smoke did not create the primary chart.");
 
-const noPlaceChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
-  method: "POST",
-  body: JSON.stringify({
-    subjectName: "No Place",
-    birthData: {
-      date: "1961-05-23",
-      time: "09:30",
-      timezone: "America/New_York",
-      birthTimeKnown: true
-    },
-    context: {
-      subject: { subjectType: "self", displayName: "No Place" },
-      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
-    },
-    source: "self"
-  })
-});
-const noPlaceChartId = String((noPlaceChart.request as JsonObject | undefined)?.id ?? "");
-if (!noPlaceChartId) throw new Error("Report API smoke did not create the location-independent chart.");
-
 const publicChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
   method: "POST",
   body: JSON.stringify({
@@ -308,6 +288,38 @@ await expectAuthedStatus(`${appBaseUrl}/api/reports`, 400, {
     }
   })
 });
+await expectAuthedStatus(`${appBaseUrl}/api/reports`, 400, {
+  method: "POST",
+  body: JSON.stringify({
+    chartRequestId: primaryChartId,
+    reportType: "identity",
+    kimiIntro: true,
+    reportBasis: {
+      type: "natal",
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    }
+  })
+});
+
+const noPlaceChart = await requestJson(`${appBaseUrl}/api/chart-requests`, {
+  method: "POST",
+  body: JSON.stringify({
+    subjectName: "No Place",
+    birthData: {
+      date: "1961-05-23",
+      time: "09:30",
+      timezone: "America/New_York",
+      birthTimeKnown: true
+    },
+    context: {
+      subject: { subjectType: "self", displayName: "No Place" },
+      chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+    },
+    source: "self"
+  })
+});
+const noPlaceChartId = String((noPlaceChart.request as JsonObject | undefined)?.id ?? "");
+if (!noPlaceChartId) throw new Error("Report API smoke did not create the location-independent chart.");
 
 const created = await requestJson(`${appBaseUrl}/api/reports`, {
   method: "POST",

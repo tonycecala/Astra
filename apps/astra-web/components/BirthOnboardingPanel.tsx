@@ -103,7 +103,6 @@ type FormState = {
   reportType: ReportType;
   zodiacMode: ZodiacMode;
   houseSystem: HouseSystemMode;
-  useKimiIntro: boolean;
   synastryPartnerChartRequestId: string;
   progressedAsOfDate: string;
   date: string;
@@ -135,7 +134,6 @@ const defaultForm = (displayName: string, birthData?: ChartBirthData, chartReque
   reportType: "identity",
   zodiacMode: "tropical",
   houseSystem: "whole-sign",
-  useKimiIntro: false,
   synastryPartnerChartRequestId: "",
   progressedAsOfDate: localDateOnly(),
   date: chartRequest?.birthData.date ?? birthData?.date ?? "",
@@ -323,13 +321,14 @@ export function BirthOnboardingPanel({
   const panelCopy = isAlly ? ui.allies.wizard : ui.self;
   const isWizardComplete = isSubmissionComplete;
   const canSubmit = activeStep === "report" && !isWizardComplete;
-  const selectedReportCost = form.useKimiIntro ? 0 : reportTypeCost(form.reportType);
-  const balanceAfterReport = starBalance - selectedReportCost;
-  const canAffordSelectedReport = isAdmin || balanceAfterReport >= 0;
   const existingChartRequest = selectedExistingChartRequestId
     ? requests.find((request) => request.id === selectedExistingChartRequestId)
     : undefined;
   const isUsingExistingChart = Boolean(existingChartRequest);
+  const isFirstSelfChart = !isAlly && !isUsingExistingChart && !requests.some((request) => request.source === "self");
+  const selectedReportCost = isFirstSelfChart ? 0 : reportTypeCost(form.reportType);
+  const balanceAfterReport = starBalance - selectedReportCost;
+  const canAffordSelectedReport = isAdmin || balanceAfterReport >= 0;
   const isExistingChartOrderMode = isAlly && isUsingExistingChart;
   const isExistingChartLocked = isExistingChartOrderMode;
   const visibleSteps: readonly Step[] = isExistingChartOrderMode ? ["report"] : isUsingExistingChart ? ["birth_details", "report"] : steps;
@@ -347,21 +346,20 @@ export function BirthOnboardingPanel({
   const reviewRows = useMemo(
     () => [
       [ui.self.onboardingReviewName, form.subjectName || ui.self.onboardingReviewMissing],
-      [ui.self.onboardingReviewReportType, reportTypeLabel(form.reportType)],
-      ...(form.useKimiIntro ? ([[ui.self.reportConfirmOffer, ui.self.kimiIntroDeepOffer]] as const) : []),
-      [ui.self.reportConfirmBasis, reportBasisLabel(form.reportType)],
+      [ui.self.onboardingReviewReportType, reportTypeLabel(isFirstSelfChart ? "identity" : form.reportType)],
+      [ui.self.reportConfirmBasis, reportBasisLabel(isFirstSelfChart ? "identity" : form.reportType)],
       [ui.self.zodiacModeLabel, ui.self.zodiacModes[form.zodiacMode]],
       [ui.self.houseSystemLabel, hasHouseCalculation ? ui.self.houseSystems[form.houseSystem] : ui.self.houseSystemUnavailable],
-      ...(form.reportType === "progressed"
+      ...(!isFirstSelfChart && form.reportType === "progressed"
         ? ([[ui.self.progressedAsOfLabel, form.progressedAsOfDate]] as const)
         : []),
-      ...(form.reportType === "synastry"
+      ...(!isFirstSelfChart && form.reportType === "synastry"
         ? ([[ui.self.onboardingReviewSynastryPartner, synastryPartner?.subjectName ?? ui.self.onboardingReviewMissing]] as const)
         : []),
       [ui.self.reportConfirmCost, ui.stars.reportCost(selectedReportCost)],
       [ui.self.reportConfirmBalance, ui.stars.balance(starBalance)]
     ],
-    [form, hasHouseCalculation, selectedReportCost, starBalance, synastryPartner]
+    [form, hasHouseCalculation, isFirstSelfChart, selectedReportCost, starBalance, synastryPartner]
   );
   const chartRequestsBySubjectId = useMemo(() => {
     const indexed = new Map<string, ChartMakerRequest>();
@@ -397,19 +395,7 @@ export function BirthOnboardingPanel({
     setForm((current) => ({
       ...current,
       reportType,
-      useKimiIntro: false,
       synastryPartnerChartRequestId: reportType === "synastry" ? current.synastryPartnerChartRequestId : ""
-    }));
-    setIsConfirmingReport(false);
-    setMessage("");
-  }
-
-  function selectKimiIntro(useKimiIntro: boolean) {
-    setForm((current) => ({
-      ...current,
-      useKimiIntro,
-      reportType: useKimiIntro ? "identity" : current.reportType,
-      synastryPartnerChartRequestId: useKimiIntro ? "" : current.synastryPartnerChartRequestId
     }));
     setIsConfirmingReport(false);
     setMessage("");
@@ -572,6 +558,11 @@ export function BirthOnboardingPanel({
       return;
     }
 
+    if (isFirstSelfChart) {
+      await submitConfirmedReport();
+      return;
+    }
+
     setIsConfirmingReport(true);
   }
 
@@ -624,7 +615,8 @@ export function BirthOnboardingPanel({
           body: JSON.stringify(chartBody)
         })).request;
       }
-      const basisType = reportProductFor(form.reportType).basis;
+      const reportType = isFirstSelfChart ? "identity" : form.reportType;
+      const basisType = reportProductFor(reportType).basis;
       const reportBasis = basisType === "progressed"
         ? { type: basisType, chartSettings, asOfDate: form.progressedAsOfDate }
         : basisType === "synastry"
@@ -634,8 +626,8 @@ export function BirthOnboardingPanel({
         method: "POST",
         body: JSON.stringify({
           chartRequestId: chartRequest.id,
-          reportType: form.reportType,
-          ...(form.useKimiIntro ? { kimiIntro: true } : {}),
+          reportType,
+          ...(isFirstSelfChart ? { kimiIntro: true } : {}),
           reportBasis
         })
       });
@@ -776,7 +768,7 @@ export function BirthOnboardingPanel({
             {canSubmit ? (
               <button className="button" type="submit" disabled={isSubmitting}>
                 {isSubmitting ? <Send aria-hidden="true" size={18} /> : null}
-                {isSubmitting ? ui.self.chartRequestWorking : ui.self.chartRequestSubmit}
+                {isSubmitting ? ui.self.chartRequestWorking : isFirstSelfChart ? ui.self.chartRequestCreateFirstChart : ui.self.chartRequestSubmit}
               </button>
             ) : isWizardComplete ? (
               <div className={styles.completionActions}>
@@ -893,19 +885,7 @@ export function BirthOnboardingPanel({
                   </div>
                 </div>
               </fieldset>
-              {!isAlly ? (
-                <label className={styles.kimiIntro}>
-                  <input
-                    checked={form.useKimiIntro}
-                    onChange={(event) => selectKimiIntro(event.target.checked)}
-                    type="checkbox"
-                  />
-                  <span>
-                    <strong>{ui.self.kimiIntroDeepOffer}</strong>
-                  </span>
-                </label>
-              ) : null}
-              <fieldset className={styles.optionGroup} aria-label={ui.self.onboardingReportTypeLabel}>
+              {!isFirstSelfChart ? <fieldset className={styles.optionGroup} aria-label={ui.self.onboardingReportTypeLabel}>
                 {availableReportTypes.map((reportType) => (
                   <label className={styles.option} key={reportType}>
                     <input
@@ -924,8 +904,8 @@ export function BirthOnboardingPanel({
                     </span>
                   </label>
                 ))}
-              </fieldset>
-              {form.reportType === "progressed" ? (
+              </fieldset> : null}
+              {!isFirstSelfChart && form.reportType === "progressed" ? (
                 <label>
                   <span>{ui.self.progressedAsOfLabel}</span>
                   <input
@@ -937,7 +917,7 @@ export function BirthOnboardingPanel({
                   />
                 </label>
               ) : null}
-              {form.reportType === "synastry" ? (
+              {!isFirstSelfChart && form.reportType === "synastry" ? (
                 <label>
                   <span>{ui.self.synastryPartnerLabel}</span>
                   <select
