@@ -108,7 +108,7 @@ export async function POST(request: Request) {
   let partner: ReportChartSourceSnapshot | undefined;
   const kimiIntro = parsed.data.kimiIntro === true;
   if (kimiIntro && (parsed.data.reportType !== "deep" || primaryChart.source !== "self")) {
-    return invalidBasis("The Kimi introduction is available for a natal Self Deep Report.");
+    return invalidBasis("The free introduction is available for a natal Self Deep Report.");
   }
 
   if (parsed.data.reportBasis.type === "progressed") {

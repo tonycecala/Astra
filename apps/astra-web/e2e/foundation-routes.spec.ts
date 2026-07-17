@@ -442,14 +442,14 @@ test.describe("clean-start routes", () => {
     await expect(chartSettings).toContainText("Signs & aspects only");
     await page.getByRole("radio", { name: "Sidereal" }).check();
     await expect(page.getByRole("radio", { name: "Sidereal" })).toBeChecked();
-    const kimiIntro = page.getByLabel("Try a Kimi Introductory Deep Report");
+    const kimiIntro = page.getByLabel("Get a Free Introductory Deep Report");
     await expect(kimiIntro).toBeVisible();
     await kimiIntro.check();
     await expect(page.getByRole("radio", { name: /Deep Report/ })).toBeChecked();
     await queueButton.focus();
     await page.keyboard.press("Enter");
     const introductoryConfirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
-    await expect(introductoryConfirmDialog).toContainText("Try a Kimi Introductory Deep Report");
+    await expect(introductoryConfirmDialog).toContainText("Get a Free Introductory Deep Report");
     await expect(introductoryConfirmDialog).toContainText("0 Stars");
     await introductoryConfirmDialog.getByRole("button", { name: "Cancel" }).click();
     await page.getByRole("radio", { name: /Identity Report/ }).check();
