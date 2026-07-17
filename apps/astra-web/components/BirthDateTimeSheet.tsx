@@ -135,6 +135,10 @@ export function BirthDateTimeSheet({
     });
   }
 
+  const validationError = validate(draft);
+  const dateError = !draft.date || !isValidDateOnly(draft.date) || isFutureDateOnly(draft.date) ? validationError : "";
+  const timeError = draft.birthTimeKnown && (!draft.time || !isValidTimeOnly(draft.time)) ? validationError : "";
+  const timezoneError = !draft.timezone ? validationError : "";
   const consequence = draft.birthTimeKnown
     ? draft.date && draft.time && draft.timezone
       ? ui.self.birthMomentKnownConsequence(formatReadableDateOnly(draft.date), formatDisplayTime(draft.time), displayTimezone(draft.timezone))
@@ -149,12 +153,12 @@ export function BirthDateTimeSheet({
             <X aria-hidden="true" size={16} />
           </button>
           <h2 id="birth-moment-sheet-title">{title}</h2>
-          <button className={styles.primaryAction} disabled={disabled} onClick={save} type="button">
+          <button className={styles.primaryAction} disabled={disabled || Boolean(validationError)} onClick={save} type="button">
             {ctaLabel}
           </button>
         </header>
 
-        <div className={styles.calendarCard}>
+        <div className={styles.calendarCard} data-invalid={Boolean(dateError)}>
           <div className={styles.monthHeader}>
             <button aria-label={ui.self.birthMomentPreviousMonth} className={styles.iconButton} onClick={() => moveMonth(-1)} type="button">
               <ChevronLeft aria-hidden="true" size={18} />
@@ -224,27 +228,30 @@ export function BirthDateTimeSheet({
         </div>
 
         <div className={styles.controlsCard}>
-          <label className={styles.controlRow}>
+          <label className={styles.controlRow} data-invalid={Boolean(timeError)}>
             <span>
               <Clock3 aria-hidden="true" size={17} />
               {ui.self.birthMomentTime}
             </span>
             <input
               aria-label={ui.self.birthMomentTime}
+              aria-invalid={Boolean(timeError)}
               className={styles.timeInput}
               disabled={disabled || !draft.birthTimeKnown}
               onChange={(event) => updateDraft({ time: event.target.value })}
               type="time"
               value={draft.time ?? ""}
             />
+            {timeError ? <small className={styles.fieldError}>{timeError}</small> : null}
           </label>
-          <label className={styles.controlRow}>
+          <label className={styles.controlRow} data-invalid={Boolean(timezoneError)}>
             <span>
               <Globe2 aria-hidden="true" size={17} />
               {ui.self.birthMomentTimezone}
             </span>
             <select
               aria-label={ui.self.birthMomentTimezone}
+              aria-invalid={Boolean(timezoneError)}
               disabled={disabled}
               onChange={(event) => updateDraft({ timezone: event.target.value })}
               value={draft.timezone}
@@ -256,6 +263,7 @@ export function BirthDateTimeSheet({
                 </option>
               ))}
             </select>
+            {timezoneError ? <small className={styles.fieldError}>{timezoneError}</small> : null}
           </label>
           <label className={styles.unknownRow}>
             <input
@@ -275,6 +283,7 @@ export function BirthDateTimeSheet({
         </div>
 
         {consequence ? <p className={styles.helperText}>{consequence}</p> : null}
+        {dateError ? <p className={styles.errorText} aria-live="polite">{dateError}</p> : null}
         {message ? <p className={styles.errorText} aria-live="polite">{message}</p> : null}
       </section>
     </div>,

@@ -89,8 +89,15 @@ async function chooseKnownBirthMomentWithoutPlace(page: Page) {
   if (await unknownTimeCheckbox.isChecked()) {
     await unknownTimeCheckbox.click();
   }
-  await dialog.getByLabel("Time", { exact: true }).fill("09:30");
-  await dialog.getByRole("button", { name: "Continue" }).first().click();
+  const timeInput = dialog.getByLabel("Time", { exact: true });
+  const continueButton = dialog.getByRole("button", { name: "Continue" }).first();
+  await expect(timeInput).toHaveAttribute("aria-invalid", "true");
+  await expect(dialog.getByText("Enter birth time, or turn on Birth time unknown.")).toBeVisible();
+  await expect(continueButton).toBeDisabled();
+  await timeInput.fill("09:30");
+  await expect(timeInput).toHaveAttribute("aria-invalid", "false");
+  await expect(continueButton).toBeEnabled();
+  await continueButton.click();
   await expect(dialog).toHaveCount(0);
 }
 

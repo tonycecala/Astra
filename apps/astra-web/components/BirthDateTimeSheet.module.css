@@ -78,6 +78,11 @@
   background: var(--panel);
 }
 
+.calendarCard[data-invalid="true"],
+.controlRow[data-invalid="true"] {
+  border-color: color-mix(in srgb, var(--rose) 76%, var(--line));
+}
+
 .controlRow,
 .unknownRow {
   display: grid;
@@ -86,6 +91,10 @@
   gap: 12px;
   min-height: 52px;
   padding: 11px 14px;
+}
+
+.controlRow[data-invalid="true"] {
+  grid-template-rows: auto auto;
 }
 
 .controlRow + .controlRow,
@@ -247,6 +256,21 @@
   font: inherit;
   font-size: 0.88rem;
   font-weight: 700;
+}
+
+.timeInput[aria-invalid="true"],
+.controlRow select[aria-invalid="true"] {
+  border-color: var(--rose);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rose) 50%, transparent);
+}
+
+.fieldError {
+  grid-column: 2;
+  margin: -4px 0 0;
+  color: var(--rose);
+  font-size: 0.74rem;
+  font-weight: 650;
+  line-height: 1.25;
 }
 
 .timeInput {

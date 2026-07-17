@@ -1216,7 +1216,7 @@ export async function createComposerDecision(
 export async function upsertAuthUserProfile(database: AstraDb, input: AuthUserProfileInput) {
   const now = new Date();
 
-  const [profile] = await database
+  const [insertedProfile] = await database
     .insert(appUserProfiles)
     .values({
       id: `${input.userId}:profile`,
@@ -1229,17 +1229,27 @@ export async function upsertAuthUserProfile(database: AstraDb, input: AuthUserPr
       createdAt: now,
       updatedAt: now
     })
-    .onConflictDoUpdate({
-      // A profile can predate the deterministic id convention. Resolve every
-      // first-load race on the durable one-profile-per-user boundary instead.
-      target: appUserProfiles.userId,
-      set: {
-        email: input.email,
-        displayName: input.displayName,
-        updatedAt: now
-      }
-    })
+    // Both the deterministic primary key and userId are unique. Let Postgres
+    // absorb a concurrent first page load on either boundary before updating
+    // the durable one-profile-per-user record below.
+    .onConflictDoNothing()
     .returning();
+
+  if (insertedProfile) return insertedProfile;
+
+  const [profile] = await database
+    .update(appUserProfiles)
+    .set({
+      email: input.email,
+      displayName: input.displayName,
+      updatedAt: now
+    })
+    .where(eq(appUserProfiles.userId, input.userId))
+    .returning();
+
+  if (!profile) {
+    throw new Error("Profile initialization did not resolve a saved user profile.");
+  }
 
   return profile;
 }

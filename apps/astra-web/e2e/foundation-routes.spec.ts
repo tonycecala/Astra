@@ -550,12 +550,16 @@ test.describe("clean-start routes", () => {
     await expect(selfEditPanel.getByText("Step 1 of 2: Birth details")).toBeVisible();
     await expect(selfEditPanel.getByText("These saved birth details are locked")).toHaveCount(0);
     await expect(selfEditPanel.getByLabel("Edit birth details")).toBeEnabled();
-    await expect(selfEditPanel.getByLabel("Search birth place")).toBeEditable();
-    await expect(selfEditPanel.getByLabel("Birth location (optional)")).toBeEditable();
+    await expect(selfEditPanel.getByLabel("Edit birth location")).toBeEnabled();
+    await expect(selfEditPanel.getByLabel("Search birth place")).toHaveCount(0);
     await selfEditPanel.getByLabel("Edit birth details").click();
     const existingSelfBirthDialog = page.getByRole("dialog", { name: "Birth Details" });
     await expect(existingSelfBirthDialog.getByLabel("Time", { exact: true })).toBeEnabled();
     await existingSelfBirthDialog.getByRole("button", { name: "Close birth date and time editor" }).click();
+    await selfEditPanel.getByLabel("Edit birth location").click();
+    const existingSelfLocationDialog = page.getByRole("dialog", { name: "Birth Location" });
+    await expect(existingSelfLocationDialog.getByLabel("Search birth place")).toBeEditable();
+    await existingSelfLocationDialog.getByRole("button", { name: "Close birth location editor" }).click();
     await selfEditPanel.getByRole("button", { exact: true, name: "Next" }).click();
     await expect(selfEditPanel.getByText("Step 2 of 2: Report")).toBeVisible();
 

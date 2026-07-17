@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { type CSSProperties, FormEvent, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, BookOpenText, Check, Search, Send } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpenText, Check, Send } from "lucide-react";
 import {
   chartCalculationModeForBirthData,
   type Ally,
   AstrologyReportRequest,
   AstrologyReportResult,
-  BirthPlaceSearchResult,
   ChartBirthData,
   ChartMakerRequest,
   OrderableAstrologyReportType
@@ -17,6 +16,7 @@ import { displayTimezone } from "../lib/display";
 import { ui } from "../lib/i18n";
 import { REPORT_PRODUCT_ORDER, reportProductFor } from "../lib/reportCatalog";
 import { BirthDateTimeSheet } from "./BirthDateTimeSheet";
+import { BirthLocationSheet, type BirthLocationValue } from "./BirthLocationSheet";
 import {
   type BirthDateTimeValue,
   defaultBrowserTimezone,
@@ -298,15 +298,11 @@ export function BirthOnboardingPanel({
   const [reportRequests, setReportRequests] = useState(initialReportRequests);
   const [, setReportResults] = useState(initialReportResults);
   const [message, setMessage] = useState("");
-  const [placeQuery, setPlaceQuery] = useState("");
-  const [placeResults, setPlaceResults] = useState<BirthPlaceSearchResult[]>([]);
-  const [placeMessage, setPlaceMessage] = useState("");
-  const [isSearchingPlaces, setIsSearchingPlaces] = useState(false);
-  const [hasSelectedPlace, setHasSelectedPlace] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmissionComplete, setIsSubmissionComplete] = useState(false);
   const [isConfirmingReport, setIsConfirmingReport] = useState(false);
   const [isBirthMomentSheetOpen, setIsBirthMomentSheetOpen] = useState(false);
+  const [isBirthLocationSheetOpen, setIsBirthLocationSheetOpen] = useState(false);
 
   const isAlly = subjectType === "ally";
   const isAdmin = role === "admin";
@@ -393,6 +389,19 @@ export function BirthOnboardingPanel({
     setMessage("");
   }
 
+  function applyBirthLocation(nextValue: BirthLocationValue) {
+    setForm((current) => ({
+      ...current,
+      location: nextValue.location,
+      timezone: nextValue.timezone || current.timezone,
+      latitude: nextValue.latitude,
+      longitude: nextValue.longitude
+    }));
+    setIsBirthLocationSheetOpen(false);
+    setIsConfirmingReport(false);
+    setMessage("");
+  }
+
   function selectReportType(reportType: ReportType) {
     setForm((current) => ({
       ...current,
@@ -401,49 +410,6 @@ export function BirthOnboardingPanel({
     }));
     setIsConfirmingReport(false);
     setMessage("");
-  }
-
-  function selectPlace(place: BirthPlaceSearchResult) {
-    setForm((current) => ({
-      ...current,
-      location: place.label,
-      timezone: place.timezone,
-      latitude: place.latitude,
-      longitude: place.longitude
-    }));
-    setHasSelectedPlace(true);
-    setPlaceResults([]);
-    setPlaceMessage(ui.self.placeSearchSelected(place.label));
-  }
-
-  async function searchPlaces() {
-    const query = placeQuery.trim();
-    if (query.length < 2) {
-      setPlaceMessage(ui.self.placeSearchQueryRequired);
-      return;
-    }
-
-    setIsSearchingPlaces(true);
-    setPlaceMessage(ui.self.placeSearchWorking);
-
-    try {
-      const response = await fetch(`/api/places/search?q=${encodeURIComponent(query)}&limit=5`);
-      const payload = (await response.json()) as { results?: BirthPlaceSearchResult[]; error?: string; message?: string };
-      if (!response.ok) {
-        setPlaceResults([]);
-        setPlaceMessage(payload.message || payload.error || ui.self.placeSearchError);
-        return;
-      }
-
-      const results = payload.results ?? [];
-      setPlaceResults(results);
-      setPlaceMessage(results.length ? ui.self.placeSearchResultCount(results.length) : ui.self.placeSearchEmpty);
-    } catch {
-      setPlaceResults([]);
-      setPlaceMessage(ui.self.placeSearchError);
-    } finally {
-      setIsSearchingPlaces(false);
-    }
   }
 
   function stepError(step: Step) {
@@ -652,12 +618,9 @@ export function BirthOnboardingPanel({
     setIsSubmissionComplete(false);
     setActiveStep("subject");
     setMessage("");
-    setPlaceResults([]);
-    setPlaceMessage("");
-    setPlaceQuery("");
-    setHasSelectedPlace(false);
     setIsConfirmingReport(false);
     setIsBirthMomentSheetOpen(false);
+    setIsBirthLocationSheetOpen(false);
     setSelectedExistingChartRequestId("");
     setForm(defaultForm(displayName, initialBirthData));
   }
@@ -953,63 +916,19 @@ export function BirthOnboardingPanel({
                 </span>
                 <span>{isExistingChartLocked ? ui.self.birthMomentLocked : ui.self.birthMomentEditAction}</span>
               </button>
-              <div className={styles.placeSearch}>
-                <label>
-                  <span>{ui.self.placeSearchLabel}</span>
-                  <input
-                    value={placeQuery}
-                    onChange={(event) => {
-                      setHasSelectedPlace(false);
-                      setPlaceQuery(event.target.value);
-                    }}
-                    disabled={isExistingChartLocked}
-                    readOnly={isExistingChartLocked}
-                    placeholder={ui.self.placeSearchPlaceholder}
-                  />
-                </label>
-                <button className="button secondary" disabled={isSearchingPlaces || isExistingChartLocked} onClick={searchPlaces} type="button">
-                  <Search aria-hidden="true" size={18} />
-                  {isSearchingPlaces ? ui.self.placeSearchWorking : ui.self.placeSearchSubmit}
-                </button>
-              </div>
-              {placeMessage ? <p className="form-status" aria-live="polite">{placeMessage}</p> : null}
-              {placeResults.length > 0 && !hasSelectedPlace ? (
-                <ul className={styles.placeResults} aria-label={ui.self.placeSearchResultsLabel}>
-                  {placeResults.map((place) => (
-                    <li key={place.id}>
-                      <button onClick={() => selectPlace(place)} type="button">
-                        <strong>{place.label}</strong>
-                        <span>{displayTimezone(place.timezone)}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-              {hasSelectedPlace && form.location && form.timezone ? (
-                <p className="form-status" aria-live="polite">
-                  {ui.self.placeSearchSelected(form.location)} ({displayTimezone(form.timezone)})
-                </p>
-              ) : null}
-              <label>
-                <span>{ui.self.chartLocationLabel}</span>
-                <input
-                  value={form.location}
-                  onChange={(event) => {
-                    setHasSelectedPlace(false);
-                    setForm((current) => ({
-                      ...current,
-                      location: event.target.value,
-                      latitude: undefined,
-                      longitude: undefined
-                    }));
-                    setIsConfirmingReport(false);
-                    setMessage("");
-                  }}
-                  disabled={isExistingChartLocked}
-                  readOnly={isExistingChartLocked}
-                />
-              </label>
-              <p className="form-status">{ui.self.birthDetailsOptionalHint}</p>
+              <button
+                aria-label={ui.self.birthLocationOpen}
+                className={styles.birthMomentButton}
+                disabled={isExistingChartLocked}
+                onClick={() => setIsBirthLocationSheetOpen(true)}
+                type="button"
+              >
+                <span>
+                  <strong>{ui.self.birthLocationEdit}</strong>
+                  <em>{form.location || ui.self.birthLocationNotSelected}</em>
+                </span>
+                <span>{isExistingChartLocked ? ui.self.birthMomentLocked : ui.self.birthMomentEditAction}</span>
+              </button>
             </>
           ) : null}
 
@@ -1024,6 +943,21 @@ export function BirthOnboardingPanel({
             open={isBirthMomentSheetOpen}
             timezoneOptions={timeZones}
             value={birthMomentValueFor(form)}
+          />
+        ) : null}
+        {isBirthLocationSheetOpen ? (
+          <BirthLocationSheet
+            ctaLabel={isExistingChartLocked ? ui.self.birthMomentSave : ui.self.birthMomentContinue}
+            disabled={isExistingChartLocked}
+            onClose={() => setIsBirthLocationSheetOpen(false)}
+            onSave={applyBirthLocation}
+            open={isBirthLocationSheetOpen}
+            value={{
+              location: form.location,
+              timezone: form.timezone,
+              latitude: form.latitude,
+              longitude: form.longitude
+            }}
           />
         ) : null}
         {isConfirmingReport ? (

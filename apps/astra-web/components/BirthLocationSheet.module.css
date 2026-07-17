@@ -1,0 +1,237 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: grid;
+  place-items: end center;
+  padding: 18px;
+  background: color-mix(in srgb, var(--paper) 78%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.sheet {
+  display: grid;
+  width: min(430px, 100%);
+  max-height: min(92vh, 680px);
+  gap: 12px;
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--gold) 24%, var(--line));
+  border-radius: 24px;
+  padding: 10px 10px 14px;
+  background: var(--soft);
+  box-shadow: 0 24px 80px color-mix(in srgb, var(--ink) 20%, transparent);
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+}
+
+.header h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.96rem;
+  font-weight: 760;
+  text-align: center;
+}
+
+.iconButton,
+.primaryAction,
+.clearButton,
+.searchButton,
+.results button {
+  font: inherit;
+}
+
+.iconButton {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel) 84%, var(--soft));
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.primaryAction {
+  min-height: 36px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 13px;
+  background: var(--gold);
+  color: #171412;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.currentPlace,
+.searchControl,
+.results button {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+}
+
+.currentPlace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 10px;
+  padding: 12px 14px;
+}
+
+.currentPlace > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 760;
+  text-transform: uppercase;
+}
+
+.currentPlace svg {
+  color: var(--gold);
+}
+
+.currentPlace strong,
+.currentPlace em {
+  grid-column: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.currentPlace strong {
+  color: var(--ink);
+  font-size: 0.96rem;
+}
+
+.currentPlace em {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-style: normal;
+}
+
+.clearButton {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: center;
+  min-height: 32px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 10px;
+  background: color-mix(in srgb, var(--panel) 84%, var(--soft));
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.searchControl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  padding: 10px;
+}
+
+.searchControl label {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.searchControl label > span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 760;
+}
+
+.searchControl input {
+  min-width: 0;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 11px;
+  background: var(--soft);
+  color: var(--ink);
+  font: inherit;
+}
+
+.searchButton {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 12px;
+  background: var(--soft);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.results {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.results button {
+  display: grid;
+  width: 100%;
+  gap: 4px;
+  padding: 10px 12px;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.results span,
+.status,
+.hint {
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.status,
+.hint {
+  margin: 0 4px;
+}
+
+.iconButton:focus-visible,
+.primaryAction:focus-visible,
+.clearButton:focus-visible,
+.searchButton:focus-visible,
+.searchControl input:focus-visible,
+.results button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--gold) 72%, var(--ink));
+  outline-offset: 2px;
+}
+
+@media (min-width: 760px) {
+  .backdrop {
+    place-items: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .backdrop {
+    padding: 8px;
+  }
+
+  .sheet {
+    width: 100%;
+    max-height: calc(100dvh - 16px);
+    border-radius: 22px;
+  }
+}
