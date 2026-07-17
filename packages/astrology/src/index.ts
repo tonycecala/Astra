@@ -76,7 +76,7 @@ export const reportModelProfileLabels: Record<ReportModelProfile, string> = {
   debug: "Quick Draft",
   debug_alt: "Standard Draft",
   production: "Polished Report",
-  premium_bakeoff: "Best-of-Three"
+  premium_bakeoff: "Model Bakeoff"
 };
 
 export const reportModelProfilePurposes: Record<ReportModelProfile, string> = {
@@ -96,6 +96,8 @@ export const reportModelProfileModels: Record<ReportModelProfile, string[]> = {
     "anthropic/claude-sonnet-5",
     "openai/gpt-5.6-terra",
     "google/gemini-3.5-flash",
+    "moonshotai/kimi-k2.5",
+    "z-ai/glm-4.7-flash",
     "anthropic/claude-opus-4.8",
     "openai/gpt-5.6-sol",
     "anthropic/claude-fable-5"
@@ -103,7 +105,9 @@ export const reportModelProfileModels: Record<ReportModelProfile, string[]> = {
 };
 
 const deepReportReasoningEffortByModel = new Map<string, "none" | "minimal">([
-  ["google/gemini-3.5-flash", "minimal"]
+  ["google/gemini-3.5-flash", "minimal"],
+  ["moonshotai/kimi-k2.5", "none"],
+  ["z-ai/glm-4.7-flash", "none"]
 ]);
 
 export type AstrologyReportGenerationConfig = {
@@ -291,6 +295,7 @@ type DeepSectionGeneration = ValidatedWriterPart & {
 
 type DeepSectionPartMetadata = ValidatedWriterPart & {
   title: string;
+  acceptedText?: string;
 };
 
 type SectionedDeepFailureGeneration = {
@@ -1899,6 +1904,7 @@ function partGenerationMetadata(part: ValidatedWriterPart) {
 function sectionPartMetadata(part: DeepSectionGeneration): DeepSectionPartMetadata {
   return {
     title: part.section.title,
+    acceptedText: part.section.body,
     attemptCount: part.attemptCount,
     usage: part.usage,
     latencyMs: part.latencyMs,
@@ -2811,7 +2817,11 @@ async function buildDebugModelReportResult(
         latencyMs: error.generation.latencyMs,
         orchestration: "sectioned-v1",
         thesis: partGenerationMetadata(error.generation.thesis),
-        sections: error.generation.sections.map((section) => ({ title: section.title, ...partGenerationMetadata(section) }))
+        sections: error.generation.sections.map((section) => ({
+          title: section.title,
+          ...partGenerationMetadata(section),
+          ...(section.acceptedText ? { acceptedText: section.acceptedText } : {})
+        }))
       });
     }
     return buildReportModelCallFailedResult(request, error instanceof Error ? error.message : "Unknown model writer error.");

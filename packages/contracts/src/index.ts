@@ -704,6 +704,7 @@ const reportGenerationPartMetadataSchema = z.object({
   estimatedSpend: z.number().nonnegative().optional(),
   finishReason: z.string().min(1).optional(),
   latencyMs: z.number().int().nonnegative(),
+  acceptedText: z.string().min(1).optional(),
   failures: z.array(reportGenerationRetryFailureSchema).optional()
 });
 

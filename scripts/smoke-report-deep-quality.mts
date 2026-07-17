@@ -171,9 +171,21 @@ assert.equal(geminiCompleted.status, "completed");
 assert.equal(geminiCompleted.generationMetadata?.reasoningEffort, "minimal");
 for (const body of geminiProvider.requestBodies) assert.deepEqual(body.reasoning, { effort: "minimal" });
 
+for (const model of ["moonshotai/kimi-k2.5", "z-ai/glm-4.7-flash"]) {
+  const bakeoffProvider = sectionedProvider();
+  const bakeoffCompleted = await buildAstrologyReportResultAsync(request, {
+    env: { ...env, [ASTRA_REPORT_MODEL_ENV]: model },
+    fetchImpl: bakeoffProvider.fetchImpl
+  });
+  assert.equal(bakeoffCompleted.status, "completed");
+  assert.equal(bakeoffCompleted.generationMetadata?.reasoningEffort, "none");
+  for (const body of bakeoffProvider.requestBodies) assert.deepEqual(body.reasoning, { effort: "none" });
+}
+
 const timingProvider = sectionedProvider({ timingFailure: true });
 const falseTiming = await buildAstrologyReportResultAsync(request, { env, fetchImpl: timingProvider.fetchImpl });
 assert.equal(falseTiming.status, "failed");
+assert.ok(falseTiming.generationMetadata?.sections?.some((section) => section.acceptedText?.length));
 assert.match(falseTiming.error ?? "", /must not imply current timing|must not imply current timing without dated evidence|must not imply current timing/);
 assert.equal(falseTiming.generationMetadata?.orchestration, "sectioned-v1");
 assert.equal(falseTiming.generationMetadata?.attemptCount, 12);
