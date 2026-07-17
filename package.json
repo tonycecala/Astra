@@ -28,6 +28,7 @@
     "test:auth-profile-concurrency": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/smoke-auth-profile-concurrency.mts",
     "test:email-config": "node --import tsx scripts/smoke-email-config.mts",
     "check:alpha-env": "node --import tsx scripts/check-alpha-deployment-env.mts",
+    "alpha:verify-report-continuity": "node --import tsx scripts/verify-alpha-report-continuity.mts",
     "check:composer-alpha-env": "node --import tsx scripts/check-composer-alpha-env.mts",
     "alpha:promote-admin": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/promote-alpha-admin.mts",
     "data:export-user": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/export-user-data.mts",

@@ -57,6 +57,20 @@ ASTRA_DATABASE_URL='postgresql://...' npm run db:migrate
 
 Composer's public sample is repository-backed, so the private alpha database begins empty. Every signed-in alpha user receives the configured one-time beta Stars grant.
 
+### Report Continuity Proof
+
+Before and after any production redeploy, verify one completed private report against the same isolated alpha database. This fingerprints the saved report content and immutable report-basis snapshot without printing prose to the terminal. Add `--export-markdown` only when a private local review copy is needed; the export is written with owner-only permissions.
+
+```bash
+ASTRA_ALPHA_CONTINUITY_CONFIRM=alpha.astraportrait.com \
+ASTRA_DATABASE_URL='postgresql://...' \
+npm run alpha:verify-report-continuity -- \
+  --request-id '<completed-report-request-id>' \
+  --export-markdown .astra-exports/alpha-reviews/<report>.md
+```
+
+The pre- and post-deploy fingerprints must match. Do not rely on a local `vercel env run` invocation as database evidence unless its injected environment has been independently verified; use the approved alpha secret source in the operator shell and never print the URL.
+
 ## Branch-Scoped Variables
 
 Set these on `astra-alpha` for Production. The project tracks only Git branch `alpha`:
