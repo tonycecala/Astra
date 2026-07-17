@@ -37,6 +37,20 @@
   gap: 12px;
 }
 
+.subjectFields input[aria-invalid="true"] {
+  border-color: var(--rose);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rose) 50%, transparent);
+}
+
+.subjectFieldError {
+  display: block;
+  margin-top: 5px;
+  color: var(--rose);
+  font-size: 0.8rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
 .alphaGuide {
   display: none;
   gap: 4px;

@@ -108,13 +108,12 @@ await context.addInitScript(() => window.localStorage.setItem("astra:theme:v1", 
 const page = await context.newPage();
 
 await page.goto(`${appBaseUrl}/login?next=/self`, { waitUntil: "networkidle" });
-await page.getByRole("textbox", { name: "Name" }).fill(name);
 await page.getByRole("textbox", { name: "Email" }).fill(email);
 await page.getByRole("button", { name: "Send code" }).click();
 await page.getByRole("textbox", { name: "Code" }).fill(await readOtp());
 await page.getByRole("button", { name: "Verify code" }).click();
 await page.waitForURL(/\/self(?:[?#]|$)/);
-await page.getByRole("heading", { level: 1, name }).waitFor();
+await page.getByRole("heading", { level: 1, name: email }).waitFor();
 await grantFlowMapStars();
 await page.reload({ waitUntil: "networkidle" });
 
@@ -123,6 +122,7 @@ await panel.scrollIntoViewIfNeeded();
 const images = new Map<string, Buffer>();
 images.set("person", await capture(panel));
 
+await panel.getByLabel("Your name").fill(name);
 await panel.getByRole("button", { name: "Next", exact: true }).click();
 await panel.getByRole("button", { name: "Edit birth details" }).click();
 const birthDialog = page.getByRole("dialog", { name: "Birth Details" });
@@ -134,12 +134,15 @@ await birthDialog.getByLabel("Time Zone").selectOption("America/Chicago");
 images.set("moment", await capture(birthDialog));
 await birthDialog.getByRole("button", { name: "Continue" }).click();
 
-await panel.getByLabel("Search birth place").fill("Chicago");
-await panel.getByRole("button", { name: "Search", exact: true }).click();
-const chicagoResult = panel.getByRole("button", { name: /Chicago, IL, USA/ }).first();
+await panel.getByRole("button", { name: "Edit birth location" }).click();
+const locationDialog = page.getByRole("dialog", { name: "Birth Location" });
+await locationDialog.getByLabel("Search birth place").fill("Chicago");
+await locationDialog.getByRole("button", { name: "Search", exact: true }).click();
+const chicagoResult = locationDialog.getByRole("button", { name: /Chicago, IL, USA/ }).first();
 await chicagoResult.waitFor();
 await chicagoResult.click();
-images.set("place", await capture(panel));
+images.set("place", await capture(locationDialog));
+await locationDialog.getByRole("button", { name: "Continue", exact: true }).click();
 
 await panel.getByRole("button", { name: "Next", exact: true }).click();
 const chartSettings = panel.getByRole("group", { name: "Chart settings" });

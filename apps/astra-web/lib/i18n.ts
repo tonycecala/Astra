@@ -759,7 +759,6 @@ export const ui = {
     continueToSelf: "Continue to Self",
     openJourney: "Open Journey",
     loadingSession: "Checking session",
-    nameLabel: "Name",
     emailLabel: "Email",
     codeLabel: "Code",
     codeFlowEyebrow: "Email code",

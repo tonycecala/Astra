@@ -51,12 +51,11 @@ async function readOtpFromMailpit(email: string) {
 
 async function signInWithOtp(page: Page, input: { email: string; name: string }) {
   await page.goto("/login");
-  await page.getByLabel("Name").fill(input.name);
   await page.getByLabel("Email").fill(input.email);
   await page.getByRole("button", { name: "Send code" }).click();
   await page.getByLabel("Code").fill(await readOtpFromMailpit(input.email));
   await page.getByRole("button", { name: "Verify code" }).click();
-  await expect(page.locator(".self-profile-name")).toHaveText(input.name);
+  await expect(page.locator(".self-profile-name")).toHaveText(input.email);
 }
 
 async function chooseUnknownBirthMoment(page: Page) {
@@ -128,6 +127,7 @@ test.describe("birth date and time sheet", () => {
     await signInWithOtp(page, { email, name });
 
     await page.goto("/self#self-birth-onboarding");
+    await page.getByLabel("Your name").fill(name);
     await page.getByRole("button", { name: "Next", exact: true }).click();
     const selfDialog = await chooseUnknownBirthMoment(page);
     await mkdir("apps/astra-web/test-results/birth-date-time-sheet", { recursive: true });

@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { appUserProfiles, db, upsertAuthUserProfile, user } from "@astra/db";
+import { appUserProfiles, db, updateAuthUserProfileDisplayName, upsertAuthUserProfile, user } from "@astra/db";
 
 const userId = `qa-auth-race-${crypto.randomUUID()}`;
 const email = `${userId}@example.invalid`;
@@ -62,6 +62,15 @@ try {
   });
   if (legacyProfile.id !== `${legacyUserId}:legacy-profile` || legacyProfile.displayName !== "Updated Legacy Profile QA") {
     throw new Error("Profile initialization must update an existing user profile even when its id is not deterministic.");
+  }
+
+  const renamedProfile = await updateAuthUserProfileDisplayName(db, {
+    userId: legacyUserId,
+    displayName: "Named After First Chart QA"
+  });
+  const [renamedUser] = await db.select().from(user).where(eq(user.id, legacyUserId));
+  if (renamedProfile.displayName !== "Named After First Chart QA" || renamedUser?.name !== "Named After First Chart QA") {
+    throw new Error("Saving the first Self chart must persist the personal name for later sign-ins.");
   }
   await db.delete(user).where(eq(user.id, legacyUserId));
 

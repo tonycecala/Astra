@@ -91,6 +91,7 @@ type BirthOnboardingPanelProps = {
   initialAllies?: Ally[];
   initialBirthData?: ChartBirthData;
   initialChartRequestId?: string;
+  initialSubjectName?: string;
   initialStep?: Step;
   hideRecentRequestPanels?: boolean;
   hideSummaryRail?: boolean;
@@ -127,8 +128,13 @@ function localDateOnly() {
   return new Date(today.getTime() - offset).toISOString().slice(0, 10);
 }
 
-const defaultForm = (displayName: string, birthData?: ChartBirthData, chartRequest?: ChartMakerRequest): FormState => ({
-  subjectName: chartRequest?.subjectName ?? displayName,
+const defaultForm = (
+  displayName: string,
+  birthData?: ChartBirthData,
+  chartRequest?: ChartMakerRequest,
+  initialSubjectName?: string
+): FormState => ({
+  subjectName: chartRequest?.subjectName ?? initialSubjectName ?? displayName,
   relationship: typeof chartSubjectContext(chartRequest)?.relationship === "string" ? chartSubjectContext(chartRequest)?.relationship as string : "",
   note: typeof chartSubjectContext(chartRequest)?.note === "string" ? chartSubjectContext(chartRequest)?.note as string : "",
   reportType: "identity",
@@ -283,6 +289,7 @@ export function BirthOnboardingPanel({
   initialAllies = [],
   initialBirthData,
   initialChartRequestId,
+  initialSubjectName,
   initialStep,
   hideRecentRequestPanels = false,
   hideSummaryRail = false
@@ -290,7 +297,7 @@ export function BirthOnboardingPanel({
   const initialChartRequest = initialChartRequestId
     ? initialRequests.find((request) => request.id === initialChartRequestId)
     : undefined;
-  const [form, setForm] = useState<FormState>(() => defaultForm(displayName, initialBirthData, initialChartRequest));
+  const [form, setForm] = useState<FormState>(() => defaultForm(displayName, initialBirthData, initialChartRequest, initialSubjectName));
   const [allies, setAllies] = useState(initialAllies);
   const [activeStep, setActiveStep] = useState<Step>(() => (initialChartRequest ? initialStep ?? "report" : initialStep ?? "subject"));
   const [selectedExistingChartRequestId, setSelectedExistingChartRequestId] = useState(initialChartRequest?.id ?? "");
@@ -478,6 +485,10 @@ export function BirthOnboardingPanel({
     }
   }
 
+  const subjectNameError = activeStep === "subject" && !optional(form.subjectName) ? ui.self.onboardingSubjectRequired : "";
+  const relationshipError = activeStep === "subject" && isAlly && !optional(form.relationship) ? ui.allies.wizardRelationshipRequired : "";
+  const activeStepError = stepError(activeStep);
+
   async function requestJson<T>(url: string, init: RequestInit): Promise<T> {
     const response = await fetch(url, {
       ...init,
@@ -622,7 +633,7 @@ export function BirthOnboardingPanel({
     setIsBirthMomentSheetOpen(false);
     setIsBirthLocationSheetOpen(false);
     setSelectedExistingChartRequestId("");
-    setForm(defaultForm(displayName, initialBirthData));
+    setForm(defaultForm(displayName, initialBirthData, undefined, initialSubjectName));
   }
 
   function openReportArtifact(requestId: string) {
@@ -730,7 +741,7 @@ export function BirthOnboardingPanel({
               </button>
             ) : null}
             {canSubmit ? (
-              <button className="button" type="submit" disabled={isSubmitting}>
+              <button className="button" type="submit" disabled={isSubmitting || Boolean(activeStepError)}>
                 {isSubmitting ? <Send aria-hidden="true" size={18} /> : null}
                 {isSubmitting ? ui.self.chartRequestWorking : isFirstSelfChart ? ui.self.chartRequestCreateFirstChart : ui.self.chartRequestSubmit}
               </button>
@@ -747,6 +758,7 @@ export function BirthOnboardingPanel({
             ) : (
               <button
                 className="button"
+                disabled={Boolean(activeStepError)}
                 onClick={(event) => {
                   event.preventDefault();
                   goNext();
@@ -763,24 +775,28 @@ export function BirthOnboardingPanel({
               <label>
                 <span>{panelCopy.chartSubjectLabel}</span>
                 <input
+                  aria-invalid={Boolean(subjectNameError)}
                   disabled={isExistingChartLocked}
                   readOnly={isExistingChartLocked}
                   value={form.subjectName}
                   onChange={(event) => updateField("subjectName", event.target.value)}
                   required
                 />
+                {subjectNameError ? <small className={styles.subjectFieldError}>{subjectNameError}</small> : null}
               </label>
               {isAlly ? (
                 <>
                   <label>
                     <span>{ui.allies.wizardRelationshipLabel}</span>
                     <input
+                      aria-invalid={Boolean(relationshipError)}
                       disabled={isExistingChartLocked}
                       readOnly={isExistingChartLocked}
                       value={form.relationship}
                       onChange={(event) => updateField("relationship", event.target.value)}
                       required={!isExistingChartLocked}
                     />
+                    {relationshipError ? <small className={styles.subjectFieldError}>{relationshipError}</small> : null}
                   </label>
                   <label>
                     <span>{ui.allies.wizardNoteLabel}</span>

@@ -75,14 +75,13 @@ async function readOtpFromMailpit(email: string) {
 
 async function signInWithOtp(page: Page, input: { email: string; name: string }) {
   await page.goto("/login");
-  await page.getByLabel("Name").fill(input.name);
   await page.getByLabel("Email").fill(input.email);
   await page.getByRole("button", { name: "Send code" }).click();
   await expect(page.getByText("Check email for the sign-in code")).toBeVisible();
 
   await page.getByLabel("Code").fill(await readOtpFromMailpit(input.email));
   await page.getByRole("button", { name: "Verify code" }).click();
-  await expect(page.getByRole("heading", { name: input.name })).toBeVisible();
+  await expect(page.getByRole("heading", { name: input.email })).toBeVisible();
 }
 
 async function chooseUnknownBirthMoment(page: Page, input: { year: string; month: string; dayLabel: string }) {
@@ -381,7 +380,6 @@ test.describe("clean-start routes", () => {
     await page.goto("/login");
     await expect(page.locator(".loginShell")).toHaveCSS("background-color", "rgb(238, 232, 220)");
     await expect(page.locator(".loginCard")).toHaveCSS("background-color", "rgba(255, 255, 255, 0.88)");
-    await page.getByLabel("Name").fill("Theme Contrast Smoke");
     await page.getByLabel("Email").fill(`theme-contrast-${Date.now()}@example.com`);
     await page.getByRole("button", { name: "Send code" }).click();
     await expect(page.locator(".loginStatus-success")).toHaveCSS("color", "rgb(71, 107, 85)");
@@ -395,7 +393,7 @@ test.describe("clean-start routes", () => {
   test("login route exposes Better Auth controls", async ({ page }) => {
     await page.goto("/login");
     await expect(page.getByLabel("Authentication panel")).toBeVisible();
-    await expect(page.getByLabel("Name")).toBeVisible();
+    await expect(page.getByLabel("Name")).toHaveCount(0);
     await expect(page.getByLabel("Email")).toBeVisible();
     await expect(page.getByLabel("Code")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Send code" })).toBeVisible();
@@ -410,14 +408,15 @@ test.describe("clean-start routes", () => {
     await signInWithOtp(page, { email, name });
     await expect(page).toHaveURL(/\/self(?:[?#]|$)/);
 
-    await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: email })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Request Report" })).toBeVisible();
     await expect(page.getByLabel("Alpha onboarding guidance")).toHaveCount(0);
     await expect(page.getByLabel("Chart generation flow")).toHaveCount(0);
 
     await page.goto("/self#self-birth-onboarding");
     await expect(page.getByText("Step 1 of 3: Your name")).toBeVisible();
-    await expect(page.getByLabel("Your name")).toHaveValue(name);
+    await expect(page.getByLabel("Your name")).toHaveValue("");
+    await page.getByLabel("Your name").fill(name);
 
     await page.getByRole("button", { exact: true, name: "Next" }).click();
     await expect(page.getByText("Step 2 of 3: Birth details")).toBeVisible();
@@ -470,7 +469,7 @@ test.describe("clean-start routes", () => {
 
     await signInWithOtp(page, { email, name });
     await page.goto("/self");
-    await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: email })).toBeVisible();
     await makeProfileAdmin(email);
 
     await page.goto("/stars");

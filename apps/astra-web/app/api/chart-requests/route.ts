@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createChartMakerRequestSchema } from "@astra/contracts";
-import { createChartMakerRequest, db, listUserChartMakerRequests } from "@astra/db";
+import { createChartMakerRequest, db, listUserChartMakerRequests, updateAuthUserProfileDisplayName } from "@astra/db";
 import { getAstraAuthContext } from "../../../lib/auth/profile";
 
 function unauthorized() {
@@ -37,6 +37,13 @@ export async function POST(request: Request) {
     ...parsed.data,
     userId: profile.userId
   });
+
+  if (parsed.data.source === "self" && profile.displayName === profile.email) {
+    await updateAuthUserProfileDisplayName(db, {
+      userId: profile.userId,
+      displayName: parsed.data.subjectName
+    });
+  }
 
   return NextResponse.json({ request: chartRequest }, { status: 201 });
 }

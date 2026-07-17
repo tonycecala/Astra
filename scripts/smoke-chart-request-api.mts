@@ -131,7 +131,7 @@ await requestJson(`${authBaseUrl}/email-otp/send-verification-otp`, {
 
 await requestJson(`${authBaseUrl}/sign-in/email-otp`, {
   method: "POST",
-  body: JSON.stringify({ email, otp: await readOtpFromMailpit(), name })
+  body: JSON.stringify({ email, otp: await readOtpFromMailpit() })
 });
 
 await expectStatus(`${appBaseUrl}/api/chart-requests`, 400, {
@@ -176,6 +176,11 @@ if (!requestId) throw new Error("Chart request API did not return a request id."
 const userId = (created.request as JsonObject | undefined)?.userId;
 if (typeof userId !== "string" || !userId) throw new Error("Chart request API did not return a user id.");
 const chartMakerRequest = chartMakerRequestSchema.parse(created.request);
+
+const authenticatedSession = await requestJson(`${authBaseUrl}/get-session`);
+if ((authenticatedSession.user as JsonObject | undefined)?.name !== name) {
+  throw new Error("Saving the first Self chart did not persist the profile name for later sign-ins.");
+}
 
 const listed = await requestJson(`${appBaseUrl}/api/chart-requests`);
 const requests = Array.isArray(listed.requests) ? listed.requests : [];

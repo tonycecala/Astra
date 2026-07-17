@@ -1254,6 +1254,31 @@ export async function upsertAuthUserProfile(database: AstraDb, input: AuthUserPr
   return profile;
 }
 
+export async function updateAuthUserProfileDisplayName(
+  database: AstraDb,
+  input: { userId: string; displayName: string }
+) {
+  const displayName = input.displayName.trim();
+  if (!displayName) throw new Error("A profile display name is required.");
+
+  const now = new Date();
+  return database.transaction(async (tx) => {
+    await tx
+      .update(user)
+      .set({ name: displayName, updatedAt: now })
+      .where(eq(user.id, input.userId));
+
+    const [profile] = await tx
+      .update(appUserProfiles)
+      .set({ displayName, updatedAt: now })
+      .where(eq(appUserProfiles.userId, input.userId))
+      .returning();
+
+    if (!profile) throw new Error("Profile was not found for the supplied user.");
+    return profile;
+  });
+}
+
 export async function createAlly(database: AstraDb, input: CreateAllyInput): Promise<Ally> {
   const parsed = createAllySchema.parse(input);
   const now = new Date();

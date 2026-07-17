@@ -26,7 +26,6 @@ export function AuthPanel() {
   const searchParams = useSearchParams();
   const mounted = useSyncExternalStore(subscribeToClientReady, clientReady, serverNotReady);
   const [step, setStep] = useState<AuthStep>("email");
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
@@ -55,8 +54,7 @@ export function AuthPanel() {
 
     const response = await authClient.signIn.emailOtp({
       email,
-      otp: code,
-      name: name || email
+      otp: code
     });
 
     if (response.error) {
@@ -115,16 +113,6 @@ export function AuthPanel() {
         className="loginPanel"
         onSubmit={step === "email" ? sendCode : verifyCode}
       >
-        <label className="loginField">
-          <span>{ui.login.nameLabel}</span>
-          <input
-            id="login-name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            autoComplete="name"
-          />
-        </label>
-
         <label className="loginField">
           <span>{ui.login.emailLabel}</span>
           <input

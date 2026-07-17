@@ -12,7 +12,6 @@ const mailpitUrl = clean(process.env.MAILPIT_API_URL) || "http://localhost:8025"
 const internalToken = clean(process.env.ASTRA_INTERNAL_API_TOKEN);
 const runId = `composer_onboarding_mobile_${Date.now()}`;
 const email = `${runId}@example.com`;
-const name = "Mobile Composer QA";
 const now = new Date().toISOString();
 
 function clean(value: string | undefined) {
@@ -152,7 +151,6 @@ try {
   await assertNoOverflow(page, "Mobile signed-out Journey");
 
   await page.goto(`${appBaseUrl}/login`);
-  await page.getByLabel("Name").fill(name);
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Send code" }).click();
   await page.getByText("Check email for the sign-in code").waitFor();

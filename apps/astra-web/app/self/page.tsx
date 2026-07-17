@@ -274,6 +274,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
           initialReportResults={reportResults}
           initialBirthData={onboardingChart?.birthData}
           initialChartRequestId={onboardingChart?.id}
+          initialSubjectName={profile.displayName === profile.email ? "" : profile.displayName}
           initialStep={onboardingStepFromParam(params.start)}
           hideRecentRequestPanels
         />

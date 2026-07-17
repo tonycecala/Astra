@@ -7,7 +7,6 @@ type JsonObject = Record<string, unknown>;
 const appBaseUrl = clean(process.env.ASTRA_APP_SMOKE_BASE_URL) || "http://localhost:3011";
 const mailpitUrl = clean(process.env.MAILPIT_API_URL) || "http://localhost:8025";
 const email = clean(process.env.ASTRA_OVERVIEW_EMAIL) || `overview-${Date.now()}@example.com`;
-const name = clean(process.env.ASTRA_OVERVIEW_NAME) || "Astra Overview";
 const outputDir = join(process.cwd(), "output", "astra-light-mode-overview");
 
 const screens = [
@@ -72,13 +71,12 @@ const context = await browser.newContext({ viewport: { width: 390, height: 844 }
 await context.addInitScript(() => window.localStorage.setItem("astra:theme:v1", "light"));
 const page = await context.newPage();
 await page.goto(`${appBaseUrl}/login?next=/self`, { waitUntil: "networkidle" });
-await page.getByRole("textbox", { name: "Name" }).fill(name);
 await page.getByRole("textbox", { name: "Email" }).fill(email);
 await page.getByRole("button", { name: "Send code" }).click();
 await page.getByRole("textbox", { name: "Code" }).fill(await readOtp());
 await page.getByRole("button", { name: "Verify code" }).click();
 await page.waitForURL(/\/self(?:[?#]|$)/);
-await page.getByRole("heading", { name }).first().waitFor();
+await page.getByRole("heading", { name: email }).first().waitFor();
 const sessionResponse = await page.request.get(`${appBaseUrl}/api/auth/get-session`);
 const session = (await sessionResponse.json()) as JsonObject;
 if (!session.user) throw new Error("The overview browser did not retain its authenticated Astra session.");
