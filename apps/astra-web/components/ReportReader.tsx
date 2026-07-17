@@ -51,7 +51,7 @@ export function ReportReader({
       {actions ? (
         <ReportReaderActions
           markdown={reportMarkdown}
-          downloadName={`${subject.name} ${reportTypeLabel(request?.reportType)}`}
+          downloadName={`${subject.name} ${reportFamilyLabel(request?.reportType, request)}`}
           requestId={report.requestId}
           labels={{
             actionsLabel: ui.library.reportActionsLabel,
@@ -107,7 +107,7 @@ function ReportDebugDetails({ report, request }: { report: AstrologyReportResult
   const rows = [
     [ui.library.debugRequestId, report.requestId],
     [ui.library.debugStatus, report.status],
-    [ui.library.debugReportType, reportTypeLabel(request?.reportType)],
+    [ui.library.debugReportType, reportFamilyLabel(request?.reportType, request)],
     [ui.library.debugCost, String(request?.costCredits ?? 0)],
     [ui.library.debugEngine, report.engine],
     [ui.library.debugEngineVersion, report.engineVersion],
@@ -254,7 +254,7 @@ function reportMarkdownFrom(
 ) {
   const metadata = [
     `Subject: ${subjectName}`,
-    `Type: ${reportTypeLabel(request?.reportType)}`,
+    `Type: ${reportFamilyLabel(request?.reportType, request)}`,
     `Status: ${report.status}`,
     `Generated: ${formatReportDate(report.createdAt)}`
   ];

@@ -355,6 +355,7 @@ export const ui = {
       synastry: "Synastry charts"
     },
     reportOptionMeta: (stars: number, basis: string) => `${stars} ${stars === 1 ? "Star" : "Stars"} · ${basis}`,
+    chartRequestCreateFirstChart: "Create My Chart",
     progressedAsOfLabel: "As of",
     onboardingProgressedTimeRequired: "Add a known birth time before ordering a Progressed Report.",
     onboardingProgressedDateRequired: "Choose a valid as-of date for the Progressed Report.",
@@ -485,6 +486,7 @@ export const ui = {
     unknownSubject: "Unknown subject",
     reportTypeFallback: "Core Report",
     reportTypeIdentity: "Identity Report",
+    reportTypeWelcome: "Welcome Report",
     reportTypeCore: "Core Report",
     reportTypeDeep: "Deep Report",
     reportSectionIntegration: "Integration",

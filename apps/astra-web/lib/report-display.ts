@@ -1,7 +1,13 @@
 import type { AstrologyReportRequest, ChartMakerRequest } from "@astra/contracts";
 import { ui } from "./i18n";
 
-export function reportFamilyLabel(reportType?: string) {
+export function isWelcomeReport(request: AstrologyReportRequest | null | undefined) {
+  const context = recordFrom(request?.context);
+  return request?.reportType === "identity" && context.modelPilot === "gemini-intro-identity";
+}
+
+export function reportFamilyLabel(reportType?: string, request?: AstrologyReportRequest | null) {
+  if (isWelcomeReport(request)) return ui.library.reportTypeWelcome;
   if (reportType === "identity") return ui.library.reportTypeIdentity;
   if (reportType === "core" || reportType === "core_self") return ui.library.reportTypeCore;
   if (reportType === "deep") return ui.library.reportTypeDeep;
@@ -32,7 +38,7 @@ export function reportDisplayName(request: AstrologyReportRequest | null | undef
 }
 
 export function reportDisplayTitle(request: AstrologyReportRequest | null | undefined, generatedTitle?: string | null) {
-  if (request) return `${reportDisplayName(request)} — ${reportFamilyLabel(request.reportType)}`;
+  if (request) return `${reportDisplayName(request)} — ${reportFamilyLabel(request.reportType, request)}`;
 
   return generatedTitle?.trim() || ui.library.selectedReportFallbackTitle;
 }

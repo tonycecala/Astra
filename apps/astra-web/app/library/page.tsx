@@ -22,6 +22,7 @@ type LibraryArtifact = Artifact & {
   cardMetadata?: string;
   requestId?: string;
   reportType?: string;
+  isWelcome?: boolean;
   subjectName?: string;
   subjectType?: "self" | "ally";
   status?: string;
@@ -233,7 +234,7 @@ function reportCardName(artifact: LibraryArtifact) {
 }
 
 function reportCardType(artifact: LibraryArtifact) {
-  return reportFamilyLabel(artifact.reportType);
+  return artifact.isWelcome ? ui.library.reportTypeWelcome : reportFamilyLabel(artifact.reportType);
 }
 
 function artifactMatchesFilter(artifact: LibraryArtifact, filter: LibraryReportFilter) {
@@ -305,6 +306,7 @@ async function getUserLibraryArtifacts(userId: string) {
         cardMetadata: reportCardMetadata(request, result.createdAt, resolveLegacySynastryPartnerBirthDate(request, chartRequests)),
         requestId: result.requestId,
         reportType: request?.reportType,
+        isWelcome: request?.context?.modelPilot === "gemini-intro-identity",
         subjectName: reportDisplayName(request),
         subjectType: subject.type,
         status: result.status,

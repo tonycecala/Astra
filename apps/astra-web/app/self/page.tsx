@@ -9,6 +9,7 @@ import { SelfTabAvatar } from "../../components/SelfTabAvatar";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { displayTimezone } from "../../lib/display";
 import { ui } from "../../lib/i18n";
+import { reportFamilyLabel } from "../../lib/report-display";
 
 function normalizeRole(value: string | undefined) {
   const normalizedRole = (value ?? "self").trim().toLowerCase();
@@ -47,14 +48,6 @@ function formatTime(value: string) {
   const period = hour >= 12 ? "PM" : "AM";
   const displayHour = hour % 12 || 12;
   return `${displayHour}:${String(minute).padStart(2, "0")} ${period}`;
-}
-
-function reportTypeLabel(reportType: string) {
-  if (reportType === "identity") return ui.library.reportTypeIdentity;
-  if (reportType === "deep") return ui.library.reportTypeDeep;
-  if (reportType === "progressed") return ui.library.reportTypeProgressed;
-  if (reportType === "synastry") return ui.library.reportTypeSynastry;
-  return ui.library.reportTypeCore;
 }
 
 function formatBirthSummary(request?: ChartMakerRequest): BirthSummary | string {
@@ -249,7 +242,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
                     <div>
                       <strong>
                         {request.subjectName}
-                        <em className={birthOnboardingStyles.compactRecordPill}>{reportTypeLabel(request.reportType)}</em>
+                        <em className={birthOnboardingStyles.compactRecordPill}>{reportFamilyLabel(request.reportType, request)}</em>
                       </strong>
                     </div>
                     <span className="compact-list-report-actions">

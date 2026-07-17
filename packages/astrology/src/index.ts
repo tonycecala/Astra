@@ -53,6 +53,7 @@ export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
 export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-plainspoken-v4";
+export const GEMINI_INTRO_IDENTITY_REPORT_MODEL = "google/gemini-3.5-flash";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
 
@@ -645,6 +646,24 @@ export function resolveAstrologyReportGenerationConfig(
     openaiApiKey: env[ASTRA_OPENAI_API_KEY_ENV]?.trim() || undefined,
     openRouterApiKey: env[ASTRA_OPENROUTER_API_KEY_ENV]?.trim() || env.OPENROUTER_API_KEY?.trim() || undefined,
     openRouterBaseUrl: env[ASTRA_OPENROUTER_BASE_URL_ENV]?.trim() || env.OPENROUTER_BASE_URL?.trim() || OPENROUTER_DEFAULT_BASE_URL
+  };
+}
+
+export function resolveAstrologyReportGenerationConfigForRequest(
+  request: AstrologyReportRequest,
+  env: Record<string, string | undefined> = process.env
+) {
+  const config = resolveAstrologyReportGenerationConfig(env);
+  const modelPilot = request.context && typeof request.context === "object" && !Array.isArray(request.context)
+    ? request.context.modelPilot
+    : undefined;
+  if (request.reportType !== "identity" || modelPilot !== "gemini-intro-identity" || config.reportWriter !== DEBUG_MODEL_REPORT_WRITER) return config;
+
+  return {
+    ...config,
+    reportWriter: DEBUG_MODEL_REPORT_WRITER,
+    reportModelProvider: OPENROUTER_REPORT_MODEL_PROVIDER,
+    reportModel: GEMINI_INTRO_IDENTITY_REPORT_MODEL
   };
 }
 
@@ -2884,7 +2903,7 @@ export async function buildAstrologyReportResultAsync(
   options: AstrologyReportGenerationOptions = {}
 ): Promise<RecordAstrologyReportResult> {
   const request = astrologyReportRequestSchema.parse(input);
-  const config = resolveAstrologyReportGenerationConfig(options.env);
+  const config = resolveAstrologyReportGenerationConfigForRequest(request, options.env);
   const fetchImpl = options.fetchImpl ?? fetch;
   if (config.ephemerisEngine === LOCAL_CHART_ROUTINE_ENGINE) {
     if (config.reportWriter === DEBUG_MODEL_REPORT_WRITER) {

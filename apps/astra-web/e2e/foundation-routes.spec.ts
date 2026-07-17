@@ -401,7 +401,7 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("button", { name: "Send code" })).toBeVisible();
   });
 
-  test("signed-in self onboarding requires report cost confirmation", async ({ page }, testInfo) => {
+  test("first Self chart automatically creates a free Welcome Report", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "desktop", "The auth-backed onboarding journey is covered on desktop in this regression test.");
 
     const email = `self-onboarding-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
@@ -424,45 +424,22 @@ test.describe("clean-start routes", () => {
     await chooseUnknownBirthMoment(page, { year: "1961", month: "May", dayLabel: "May 23, 1961" });
     await page.getByRole("button", { exact: true, name: "Next" }).click();
     await expect(page.getByText("Step 3 of 3: Report")).toBeVisible();
-    const queueButton = page.getByRole("button", { name: "Order Report", exact: true });
-    await expect(queueButton).toBeVisible();
+    const createChartButton = page.getByRole("button", { name: "Create My Chart", exact: true });
+    await expect(createChartButton).toBeVisible();
     await expect(page.getByRole("dialog", { name: "Confirm Report" })).toHaveCount(0);
-    const identityReport = page.getByRole("radio", { name: /Identity Report/ });
-    await expect(identityReport).toBeChecked();
-    await expect(page.getByRole("radio", { name: /Core Report/ })).toBeVisible();
-    await expect(page.getByRole("radio", { name: /Deep Report/ })).toBeVisible();
+    await expect(page.getByRole("radio", { name: /Identity Report/ })).toHaveCount(0);
+    await expect(page.getByRole("radio", { name: /Core Report/ })).toHaveCount(0);
     const chartSettings = page.getByRole("group", { name: "Chart settings" });
     await expect(chartSettings).toBeVisible();
     const settingsBox = await chartSettings.boundingBox();
-    const identityBox = await identityReport.boundingBox();
-    if (!settingsBox || !identityBox || settingsBox.height > 170 || settingsBox.y >= identityBox.y) {
-      throw new Error(`Chart settings must appear first and stay compact. Settings=${JSON.stringify(settingsBox)} Identity=${JSON.stringify(identityBox)}`);
+    if (!settingsBox || settingsBox.height > 170) {
+      throw new Error(`Chart settings must stay compact. Settings=${JSON.stringify(settingsBox)}`);
     }
     await expect(page.getByRole("radio", { name: "Tropical" })).toBeChecked();
-    await expect(page.getByRole("radio", { name: "Whole Sign" })).toBeChecked();
     await page.getByRole("radio", { name: "Sidereal" }).check();
-    await page.getByRole("radio", { name: "Placidus" }).check();
     await expect(page.getByRole("radio", { name: "Sidereal" })).toBeChecked();
-    await expect(page.getByRole("radio", { name: "Placidus" })).toBeChecked();
-    await expect(page.getByLabel("Review report order")).toHaveCount(0);
-    await queueButton.focus();
-    await page.keyboard.press("Enter");
-    const confirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
-    await expect(confirmDialog).toBeVisible();
-    await expect(confirmDialog.getByLabel("Review report order")).toContainText("Identity Report");
-    await expect(confirmDialog).toContainText("Based on");
-    await expect(confirmDialog).toContainText("Natal chart");
-    await expect(confirmDialog).toContainText("Sidereal");
-    await expect(confirmDialog).toContainText("Placidus");
-    await expect(confirmDialog).toContainText("Cost");
-    await expect(confirmDialog).toContainText("1 Star");
-    await expect(confirmDialog).toContainText("Current balance");
-    await expect(confirmDialog.getByRole("button", { name: "Order Report" })).toBeVisible();
-    await confirmDialog.getByRole("button", { name: "Cancel" }).click();
-    await expect(confirmDialog).toHaveCount(0);
-    const onboarding = page.locator('section[aria-label="Birth data onboarding"]');
-    await expect(onboarding.getByLabel("Review report order")).toHaveCount(0);
-    await expect(onboarding.getByRole("button", { name: "Order Report", exact: true })).toBeVisible();
+    await createChartButton.click();
+    await expect(page.getByRole("heading", { name: `${name} — Welcome Report` })).toBeVisible({ timeout: 15_000 });
 
     const existingAllyChart = await createCompletedAllyChart(email, { name: "Existing Ally", relationship: "Friend" });
     await page.goto(`/allies?chart=${existingAllyChart.request.id}&start=birth_details#ally-birth-onboarding`);

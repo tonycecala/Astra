@@ -12,6 +12,7 @@ import {
   buildAstrologyReportResult,
   buildAstrologyReportResultAsync,
   resolveAstrologyReportGenerationConfig,
+  resolveAstrologyReportGenerationConfigForRequest,
   reportModelProfileModels
 } from "@astra/astrology";
 import { astrologyReportRequestSchema } from "@astra/contracts";
@@ -98,6 +99,28 @@ assert.equal(
     [ASTRA_REPORT_MODEL_ENV]: "google/gemini-3.5-flash"
   }).reportModel,
   "google/gemini-3.5-flash"
+);
+assert.equal(
+  resolveAstrologyReportGenerationConfigForRequest(
+    { ...request, context: { modelPilot: "gemini-intro-identity" } },
+    {
+      [ASTRA_REPORT_WRITER_ENV]: DEBUG_MODEL_REPORT_WRITER,
+      [ASTRA_REPORT_MODEL_PROVIDER_ENV]: OPENROUTER_REPORT_MODEL_PROVIDER,
+      [ASTRA_REPORT_MODEL_ENV]: "anthropic/claude-sonnet-5"
+    }
+  ).reportModel,
+  "google/gemini-3.5-flash"
+);
+assert.equal(
+  resolveAstrologyReportGenerationConfigForRequest(
+    request,
+    {
+      [ASTRA_REPORT_WRITER_ENV]: DEBUG_MODEL_REPORT_WRITER,
+      [ASTRA_REPORT_MODEL_PROVIDER_ENV]: OPENROUTER_REPORT_MODEL_PROVIDER,
+      [ASTRA_REPORT_MODEL_ENV]: "anthropic/claude-sonnet-5"
+    }
+  ).reportModel,
+  "anthropic/claude-sonnet-5"
 );
 assert.ok(reportModelProfileModels.premium_bakeoff.includes("openai/gpt-5.6-sol"));
 assert.ok(reportModelProfileModels.premium_bakeoff.includes("anthropic/claude-opus-4.8"));
