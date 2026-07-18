@@ -12,7 +12,7 @@ audience: Tony, release stewards, and future implementation agents
 
 ## Purpose
 
-This is the durable record of the product and release work completed on 2026-07-16. It distinguishes the deployed alpha baseline, the release-safe report improvements awaiting promotion, and the deliberately unmerged free-report pilot.
+This is the durable record of the product and release work completed through 2026-07-17. It records the deployed alpha baseline, report-quality promotion, Welcome Report onboarding, and prompt v6 release.
 
 ## Deployed Alpha Baseline
 
@@ -24,6 +24,7 @@ This is the durable record of the product and release work completed on 2026-07-
 - Fixed sign-in/profile initialization concurrency and signed-out Library privacy boundaries.
 - Completed Library scanning improvements: person/pair report naming, report-family labels, dates, historical Synastry partner names, and recovered partner birth-date metadata.
 - Added portable Self, Ally, chart, and report data bundles for repeatable alpha data moves.
+- Added the automatic zero-Star Welcome Report after the first valid Self chart, with explicit free-report onboarding language and Gemini 3.5 Flash routing.
 
 ## Chart and Report Integrity
 
@@ -41,21 +42,20 @@ This is the durable record of the product and release work completed on 2026-07-
 - Added report-quality, readability, repetition, latency, and cost evaluation routines; strengthened customer-facing Deep Report reader presentation.
 - Ran model exploration across Sonnet, Gemini, Kimi, and Flash Lite. GLM Flash was retired from future testing after failing the bar. Production routing remains Sonnet 5; Gemini remains a comparison/fallback tool, not automatic customer routing.
 
-## Release-Safe Promotion Set
+## Report Prompt v6
 
-The following current-branch commits are candidates for alpha promotion after the focused live acceptance pass:
+- Promoted `astra-report-writer-2026-07-plainspoken-v6` across Welcome, Identity, Core, Deep, Progressed, and Synastry.
+- Centralized one Plainspoken voice contract, one evidence boundary, and one interpretive-usefulness arc instead of repeating near-duplicate directions throughout each family prompt.
+- Added explicit word targets and hard acceptance bands for paid Identity, Core, Progressed, and Synastry while preserving the established Welcome and Deep ranges.
+- Defined Core as four distinct chapters rather than an oversized Identity chapter followed by thin supporting sections.
+- Applied explicit OpenRouter reasoning effort to every report call. Sonnet uses `none`; Gemini 3.5 Flash uses `minimal`.
+- Retained rejected monolithic prose and full retry economics, matching the existing private Deep telemetry standard.
+- Ran the same Tony chart through all six families before and after. v6 completed all six on the first attempt for $0.1744 in 137.4 seconds; v5 completed five, failed Core, cost $0.1885 excluding the failed Core spend, and took 200.3 seconds.
+- Fixed Core by protecting its visible-output budget from hidden reasoning. The v6 Core completed in one attempt at 1,076 words, grade 7.9, 31.6 seconds, and $0.0259.
 
-- `1db398c` through `b67de2a`: Deep Report comparison, quality contract, section generation, retry telemetry, readability, paragraph presentation, birth-place integrity, and bakeoff tooling.
+## Current Release Line
 
-These changes improve the deployed product without adding a new first-time acquisition promise.
-
-## Explicitly Excluded Pilot
-
-Do **not** merge these commits into `alpha` as part of the limited-release promotion:
-
-- `97cff99`, `f70389d`, `61af107`, `2f76ca3`, `3b36362`, `3cd45f6`
-
-They implement and document the experimental first Self-chart free Identity Report. The desired product rule is clear, but the full live-alpha first-user journey has not yet been proven. Its acceptance brief is [ASTRA_FIRST_SELF_INTRO_REPORT_VERIFICATION.md](../inbox-astra/ASTRA_FIRST_SELF_INTRO_REPORT_VERIFICATION.md).
+The Welcome Report onboarding and prompt v6 changes now belong on `alpha`. The free first-Self experience is no longer an excluded Identity pilot: it is a distinct customer-facing Welcome Report, costs zero Stars, and remains separate from the paid one-Star Identity Report.
 
 ## Promotion Gate
 
@@ -83,4 +83,4 @@ The focused live-alpha pass completed before promotion with a fresh beta account
 - An Ally, known-time-and-place Ally chart, and paid Ally Identity Report order succeeded, leaving 28 Stars.
 - All five bottom-navigation routes rendered at 390 by 844 without horizontal overflow.
 
-The introductory free first-Self Identity Report was not invoked or promoted. It remains an independent pilot.
+That acceptance run predated the final Welcome naming and automatic zero-Star offer. The former Identity pilot has since become the distinct Welcome Report on the current alpha release line. Prompt v6 deployment is operationally verified separately; Tony owns the fresh-user report-generation read-through.

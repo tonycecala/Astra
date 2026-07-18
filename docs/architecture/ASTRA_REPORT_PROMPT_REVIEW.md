@@ -1,6 +1,6 @@
 # Astra Report Prompt Review
 
-**Status:** review copy of the runtime prompt contract as of 2026-07-17
+**Status:** approved v6 runtime prompt contract as of 2026-07-17
 **Source:** `packages/astrology/src/index.ts`
 **Current prompt version:** `astra-report-writer-2026-07-plainspoken-v6`
 
@@ -46,18 +46,11 @@ Do not print that thesis as a separate heading. Let it quietly organize every se
 
 {BASIS INSTRUCTION}
 
-Use direct second person: you and your.
-Do not use third-person labels for the subject.
-Do not write about the subject as a case file. Address the reader directly even when the subject name is synthetic.
 Do not repeat note labels as public labels.
 Do not say capacity, risk, developmental task, language domain, primary strain, or priority note in public prose.
-Do not invent chart facts.
 
 {CALCULATION-SCOPE INSTRUCTION}
 
-Do not mention any placement, sign, house, aspect, or timing factor not listed in the section card.
-Do not use old stock phrases.
-Keep second-person grammar clean: write you want, you understand, you adapt, and you believe; never write you wants, you understands, you adapts, or you believes.
 Do not write JSON.
 Write plain Markdown only.
 
@@ -156,8 +149,6 @@ Welcome Report depth rules:
 Required structure:
 # Astra Report - {SUBJECT}
 ## Identity
-
-Keep the report complete, specific, and readable for the selected report type.
 ```
 
 For Welcome only, the shared paragraph rule is narrowed to exactly three short paragraphs rather than two or three.
@@ -245,13 +236,11 @@ This chapter must answer, rather than quote or announce, this distinct governing
 
 {SHARED PLAINSPOKEN VOICE CONTRACT}
 Write each chapter in 2 or 3 paragraphs. Give each paragraph one coherent move; do not deliver it as one wall of text.
-Speak directly to the reader using you and your.
-Translate chart factors into specific lived experience, psychological usefulness, and one practical next move.
-Include the chapter's gift, cost, tension, and practice naturally without using those words as labels.
+{SHARED INTERPRETIVE CONTRACT}
+{SHARED EVIDENCE CONTRACT}
 Use at least two selected signals when available, including a section-specific secondary signal.
 Do not generalize this chapter into the whole report and do not repeat a generic warning or practice from another life domain.
-Mention only chart factors present in this section card. Do not invent transits, progressions, current activation, or seasonal timing.
-Avoid textbook astrology, stock spirituality, inflated certainty, and repeated evidence verbs.
+Do not invent transits, progressions, current activation, or seasonal timing.
 {IDENTITY OR INTEGRATION SPECIAL RULE, WHEN APPLICABLE}
 Section signal card:
 {SECTION SIGNAL CARD}
@@ -369,12 +358,27 @@ Version 6 resolves the largest prompt debt found in recent report reading:
 4. Core's value is defined as breadth across four distinct chapters. Its Identity chapter no longer consumes most of the output budget or pretends that Core is a second, longer Identity product.
 5. The Plainspoken contract now asks models to keep most sentences under 20 words and break apart stacked clauses. This directly addresses the dense Welcome and Progressed prose observed in controlled generation.
 
-The exact Sun-opening rule remains a deliberate grounding constraint. It can make openings similar, but the gain in chart specificity currently outweighs that cost. The next question should be answered from retained before/after prose: whether the new ranges improve product distinction without making any family feel mechanically sized.
+The exact Sun-opening rule remains a deliberate grounding constraint. It can make openings similar, but the gain in chart specificity currently outweighs that cost.
 
-## Review Questions
+## Controlled v6 Acceptance
 
-1. Should Welcome Report remain a single `Identity` chapter, or should its customer promise add a short orientation paragraph supplied by Astra rather than the model?
-2. Does the retained before/after prose show a clear experience ladder from Welcome to Identity to Core to Deep?
-3. Do Progressed and Synastry remain complete inside their new ranges, or did any section lose an important interpretive bridge?
-4. Does the shared plainspoken contract preserve enough family distinction, or should any family intentionally depart from it?
-5. Are the acceptance bands broad enough to prevent wasteful retries while still protecting each product promise?
+The v5-to-v6 comparison used Tony's same immutable Tropical, Whole Sign chart across Welcome, Identity, Core, Deep, Progressed, and Synastry. Synastry used the same saved Brandi comparison chart in both runs. Raw prose and detailed telemetry remain private under ignored `.astra-exports` storage.
+
+| Family | v5 outcome | v6 outcome | v6 words | v6 grade | v6 latency | v6 spend |
+| --- | --- | --- | ---: | ---: | ---: | ---: |
+| Welcome | Completed | Completed first attempt | 260 | 9.6 | 4.8 sec | $0.0049 |
+| Identity | Completed | Completed first attempt | 363 | 6.0 | 10.7 sec | $0.0108 |
+| Core | Failed after retries | Completed first attempt | 1,076 | 7.9 | 31.6 sec | $0.0259 |
+| Deep | Completed | Completed first attempt | 3,138 | 6.3 | 38.4 sec | $0.0845 |
+| Progressed | Completed | Completed first attempt | 888 | 7.2 | 24.8 sec | $0.0234 |
+| Synastry | Completed | Completed first attempt | 961 | 6.3 | 27.2 sec | $0.0247 |
+
+The complete v6 set cost $0.1744 and took 137.4 seconds. The retained v5 set took 200.3 seconds and cost $0.1885 for only five completed reports; the failed Core provider spend was unavailable under the old failure path.
+
+The product ladder is now visible in both structure and size: Welcome 260 words, paid Identity 363, Core 1,076 across four chapters, and Deep 3,138 across nine chapters. Progressed and Synastry remained complete inside their new bands. Welcome is still the narrow voice watch item: its sentences are clear, but Gemini's vocabulary measured above the shared target at grade 9.6. Readability remains advisory rather than a retry gate.
+
+## Remaining Review Questions
+
+1. Does Welcome vocabulary remain too formal across a larger fresh-user sample, or was this one chart-specific?
+2. Does the shared voice preserve family distinction across charts beyond Tony's before any family-specific departure is added?
+3. Do the acceptance bands remain economical over a broader production cohort without clipping valuable interpretation?

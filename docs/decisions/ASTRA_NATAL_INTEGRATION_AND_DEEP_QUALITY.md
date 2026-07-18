@@ -49,7 +49,7 @@ Generation metadata records the thesis and every chapter's attempts, tokens, est
 
 ## Visible Output Budget
 
-OpenRouter models can spend completion tokens on extended reasoning as well as customer-visible prose. Deep Report generation therefore requests the lowest reasoning effort each production model supports. Claude Sonnet 5 uses `reasoning.effort: none`; Gemini 3.5 Flash requires reasoning and uses `reasoning.effort: minimal`. The governing thesis and section signal cards already perform the planning split; the model call's job is to turn that resolved context into a bounded chapter. The 1,400-token chapter allowance is reserved for visible prose rather than shared with an unnecessary reasoning budget.
+OpenRouter models can spend completion tokens on extended reasoning as well as customer-visible prose. Every report generation call therefore requests the lowest reasoning effort each production model supports. Claude Sonnet 5 uses `reasoning.effort: none`; Gemini 3.5 Flash requires reasoning and uses `reasoning.effort: minimal`. Astra already performs the planning split through report-level evidence selection, and Deep adds a governing thesis plus section signal cards. The model call's job is to turn resolved context into bounded prose, not spend the customer's visible-output budget planning again.
 
 Generation metadata records the requested reasoning effort, provider-reported reasoning tokens, and finish reason. This makes a future provider or model-default change observable instead of inferring truncation from word counts after the fact.
 
@@ -68,9 +68,17 @@ The controlled Felicia comparison used the same immutable Tropical, Whole Sign c
 
 All nine chapters kept their existing depth floors on the first attempt. The one remaining retry was the separate public-language rule for `the person`; the later audit below narrows that rule using retained production evidence.
 
+### Core Output-Budget Lesson
+
+The same reasoning rule now applies to monolithic Identity, Core, Progressed, and Synastry generation. This was not theoretical: a controlled v5 Core run failed after repeated output-limit and no-text responses even though the requested four-chapter depth was reasonable. Hidden reasoning had consumed part of the completion allowance before the customer-visible report was complete.
+
+With `reasoning.effort: none`, the same Sonnet route and Tony chart completed the v6 Core Report on its first attempt: 1,076 words, estimated grade 7.9, 31.6 seconds, and $0.0259. The fix was to reserve the existing budget for prose, not raise token ceilings, weaken quality floors, split Core into premature orchestration, or change models.
+
+Whole-report failures now retain each rejected draft, structured reason, provider usage, finish reason, and latency. A future output-budget regression can therefore be diagnosed from its actual prose and economics instead of inferred from a generic failure status.
+
 ## Plainspoken Voice And Retry Audit
 
-The recovered Astria Plainspoken contract is now explicit in every Deep chapter prompt:
+The recovered Astria Plainspoken contract is now shared by every report family. Deep applies the same contract independently to each chapter:
 
 - Target roughly a 6th-8th grade reading level without reducing the insight. Grade 6 is acceptable when the voice remains adult, specific, and psychologically useful.
 - Use everyday words, direct statements, observable behavior, and short-to-medium sentences.
