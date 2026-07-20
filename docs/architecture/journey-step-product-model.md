@@ -8,6 +8,8 @@ updated: "2026-07-20"
 
 Journey is the private, ordered place where Astra gives a signed-in user the next meaningful thing to notice or do. It renders one current `JourneyStep`, a compact ordered queue, and a saved-for-later list. Signed-out `/` is a public product illustration; signed-out `/journey` redirects to login.
 
+Journey continues to use Astra's current UI system and the shared `PublishedCard` surface. Astryx is not a Journey dependency or migration target. It may be evaluated later, in isolation, as a candidate for internal admin primitives only; that evaluation must not alter customer-facing Journey components or tokens.
+
 ## Contract and ordering
 
 `UserFeedItem` is the durable user-owned projection. No schema change is required. Available items are ordered by `rankScore` descending and `availableAt` ascending; the first is current and the remainder are Up next. Saved items are separate from the active queue.

@@ -857,6 +857,10 @@ textarea {
 .journey-current-step { min-width: 0; }
 .journey-current-card { min-height: 0; }
 .journey-step-subtitle { color: var(--muted); font-weight: 650; }
+.journey-provenance { margin-top: 16px; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: color-mix(in srgb, var(--panel) 86%, transparent); }
+.journey-provenance summary { color: var(--gold); cursor: pointer; font-weight: 750; }
+.journey-provenance p { margin: 10px 0 0; color: var(--muted); }
+.journey-notice { display: flex; align-items: center; gap: 12px; margin: 16px 0 0; color: var(--success); }
 .journey-step-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
 .journey-queue { padding: 20px; }
 .journey-queue-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
@@ -868,6 +872,7 @@ textarea {
 .journey-saved h3 { color: var(--gold); font-size: 1rem; }
 .journey-saved ul { display: grid; gap: 10px; padding: 0; list-style: none; }
 .journey-saved li { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.journey-empty .button { margin-top: 12px; }
 .public-journey-preview { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 24px; }
 .public-journey-preview h2 { color: var(--gold); }
 

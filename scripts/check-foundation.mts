@@ -344,7 +344,7 @@ if (!chartResultRoute.includes("hasValidInternalApiToken")) throw new Error("Cha
 if (!journeyRoute.includes("getAstraAuthContext") || !journeyRoute.includes("getJourneyViewModel")) {
   throw new Error("/journey must read through the authenticated private journey view model.");
 }
-if (!journeyModel.includes("listUserFeedItems") || !journeyModel.includes("public_fallback")) {
+if (!journeyModel.includes("listUserFeedItems") || !journeyModel.includes("getPublicJourneyPreview")) {
   throw new Error("Journey view model must split authenticated private feed reads from public fallback content.");
 }
 if (journeyModel.includes("private_projection_from_public_source") || journeyModel.includes("seedPrivateFeedFromPublicFallback")) {
