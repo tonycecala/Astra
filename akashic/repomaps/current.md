@@ -23,7 +23,7 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `989940`
+- Estimated token footprint: `990661`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
@@ -100,14 +100,14 @@ tsconfig.json
 - `apps/astra-web/components/BirthOnboardingPanel.tsx` - weight 487.22, ~11186 tokens, 105 symbols, in:2/out:5
 - `apps/astra-web/app/admin/page.tsx` - weight 481.22, ~11012 tokens, 100 symbols, in:0/out:2
 - `apps/composer-web/components/CardWorkspace.tsx` - weight 457.24, ~9273 tokens, 91 symbols, in:3/out:1
-- `apps/astra-web/e2e/foundation-routes.spec.ts` - weight 269.25, ~8157 tokens, 72 symbols, in:0/out:0
+- `apps/astra-web/e2e/foundation-routes.spec.ts` - weight 281.25, ~8243 tokens, 76 symbols, in:0/out:0
 - `apps/astra-web/components/ReportReader.tsx` - weight 268.32, ~3378 tokens, 50 symbols, in:2/out:7
 - `apps/astra-web/app/api/reports/route.ts` - weight 248.37, ~2020 tokens, 36 symbols, in:0/out:2
 - `apps/astra-web/app/library/page.tsx` - weight 234.33, ~3073 tokens, 43 symbols, in:0/out:4
 - `apps/astra-web/components/FullChartWheel.tsx` - weight 228.32, ~3362 tokens, 52 symbols, in:1/out:1
 - `apps/composer-web/app/api/cards/queue-draft/route.ts` - weight 227.38, ~679 tokens, 22 symbols, in:0/out:2
 - `apps/astra-web/app/allies/page.tsx` - weight 174.33, ~3196 tokens, 38 symbols, in:0/out:6
-- `apps/astra-web/components/ReportChartPlate.tsx` - weight 166.36, ~2131 tokens, 36 symbols, in:1/out:1
+- `apps/astra-web/components/BirthDateTimeSheet.tsx` - weight 172.33, ~3016 tokens, 33 symbols, in:1/out:2
 
 ## Critical Routes
 - `POST /api/admin/replay-report` in `apps/astra-web/app/api/admin/replay-report/route.ts:15`
@@ -154,7 +154,7 @@ tsconfig.json
 ## Pareto Profiles
 - `32000` tokens -> 1 files, 468 symbols, ~32095 estimated tokens.
 - `64000` tokens -> 4 files, 994 symbols, ~69915 estimated tokens.
-- `128000` tokens -> 16 files, 1692 symbols, ~132157 estimated tokens.
+- `128000` tokens -> 15 files, 1640 symbols, ~128353 estimated tokens.
 
 ## Data Model
 Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.

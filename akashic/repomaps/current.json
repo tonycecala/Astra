@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-07-20T14:43:16.393Z",
+  "generated_at": "2026-07-20T15:57:14.353Z",
   "root_name": "Astra",
   "files_indexed": 361,
-  "total_symbols": 4080,
-  "total_estimated_tokens": 989940,
+  "total_symbols": 4093,
+  "total_estimated_tokens": 990661,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -6957,9 +6957,9 @@
     {
       "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
       "lang": "typescript",
-      "size": 32637,
-      "lines": 624,
-      "estimated_tokens": 8157,
+      "size": 32979,
+      "lines": 629,
+      "estimated_tokens": 8243,
       "symbols": [
         {
           "name": "JsonObject",
@@ -7207,118 +7207,138 @@
           "type": "constant"
         },
         {
-          "name": "createChartButton",
-          "line": 418,
+          "name": "searchBox",
+          "line": 410,
           "type": "constant"
         },
         {
-          "name": "chartSettings",
+          "name": "currentSelection",
+          "line": 411,
+          "type": "constant"
+        },
+        {
+          "name": "searchBounds",
+          "line": 412,
+          "type": "constant"
+        },
+        {
+          "name": "selectionBounds",
+          "line": 413,
+          "type": "constant"
+        },
+        {
+          "name": "createChartButton",
           "line": 423,
           "type": "constant"
         },
         {
+          "name": "chartSettings",
+          "line": 428,
+          "type": "constant"
+        },
+        {
           "name": "settingsBox",
-          "line": 425,
+          "line": 430,
           "type": "constant"
         },
         {
           "name": "existingAllyChart",
-          "line": 435,
+          "line": 440,
           "type": "constant"
         },
         {
           "name": "existingOrderPanel",
-          "line": 437,
+          "line": 442,
           "type": "constant"
         },
         {
           "name": "email",
-          "line": 467,
+          "line": 472,
           "type": "constant"
         },
         {
           "name": "name",
-          "line": 468,
+          "line": 473,
           "type": "constant"
         },
         {
           "name": "starsDialog",
-          "line": 480,
+          "line": 485,
           "type": "constant"
         },
         {
           "name": "checkoutResponse",
-          "line": 490,
+          "line": 495,
           "type": "constant"
         },
         {
           "name": "checkout",
-          "line": 498,
+          "line": 503,
           "type": "constant"
         },
         {
           "name": "checkoutSessionId",
-          "line": 499,
+          "line": 504,
           "type": "constant"
         },
         {
           "name": "fulfilled",
-          "line": 502,
+          "line": 507,
           "type": "constant"
         },
         {
           "name": "adminConfirmDialog",
-          "line": 533,
+          "line": 538,
           "type": "constant"
         },
         {
           "name": "completedChart",
-          "line": 546,
+          "line": 551,
           "type": "constant"
         },
         {
           "name": "selfEditPanel",
-          "line": 548,
+          "line": 553,
           "type": "constant"
         },
         {
           "name": "existingSelfBirthDialog",
-          "line": 555,
+          "line": 560,
           "type": "constant"
         },
         {
           "name": "existingSelfLocationDialog",
-          "line": 559,
+          "line": 564,
           "type": "constant"
         },
         {
           "name": "completedReport",
-          "line": 565,
+          "line": 570,
           "type": "constant"
         },
         {
           "name": "selectedChart",
-          "line": 583,
+          "line": 588,
           "type": "constant"
         },
         {
           "name": "reportFilters",
-          "line": 593,
+          "line": 598,
           "type": "constant"
         },
         {
           "name": "reportFilterSelect",
-          "line": 595,
+          "line": 600,
           "type": "constant"
         },
         {
           "name": "reportChartPlate",
-          "line": 609,
+          "line": 614,
           "type": "constant"
         },
         {
           "name": "debugDetails",
-          "line": 616,
+          "line": 621,
           "type": "constant"
         }
       ],
@@ -7336,7 +7356,7 @@
       "headings": [],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 269.25,
+      "importance_weight": 281.25,
       "importance_bucket": "other"
     },
     {
@@ -8753,6 +8773,198 @@
       "importance_bucket": "other"
     },
     {
+      "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
+      "lang": "typescript",
+      "size": 12061,
+      "lines": 321,
+      "estimated_tokens": 3016,
+      "symbols": [
+        {
+          "name": "BirthDateTimeValue",
+          "line": 9,
+          "type": "type"
+        },
+        {
+          "name": "BirthDateTimeSheetProps",
+          "line": 22,
+          "type": "type"
+        },
+        {
+          "name": "dayLabels",
+          "line": 33,
+          "type": "constant"
+        },
+        {
+          "name": "monthOptions",
+          "line": 34,
+          "type": "constant"
+        },
+        {
+          "name": "selectedMonth",
+          "line": 39,
+          "type": "function"
+        },
+        {
+          "name": "parsed",
+          "line": 40,
+          "type": "constant"
+        },
+        {
+          "name": "dateValidationError",
+          "line": 47,
+          "type": "function"
+        },
+        {
+          "name": "timeValidationError",
+          "line": 54,
+          "type": "function"
+        },
+        {
+          "name": "timezoneValidationError",
+          "line": 60,
+          "type": "function"
+        },
+        {
+          "name": "validate",
+          "line": 65,
+          "type": "function"
+        },
+        {
+          "name": "BirthDateTimeSheet",
+          "line": 69,
+          "type": "component"
+        },
+        {
+          "name": "onKeyDown",
+          "line": 86,
+          "type": "function"
+        },
+        {
+          "name": "calendarDays",
+          "line": 94,
+          "type": "constant"
+        },
+        {
+          "name": "canGoNext",
+          "line": 104,
+          "type": "constant"
+        },
+        {
+          "name": "today",
+          "line": 105,
+          "type": "constant"
+        },
+        {
+          "name": "nextMonth",
+          "line": 106,
+          "type": "constant"
+        },
+        {
+          "name": "currentMonth",
+          "line": 107,
+          "type": "constant"
+        },
+        {
+          "name": "updateDraft",
+          "line": 113,
+          "type": "function"
+        },
+        {
+          "name": "selectDay",
+          "line": 118,
+          "type": "function"
+        },
+        {
+          "name": "showMonth",
+          "line": 123,
+          "type": "function"
+        },
+        {
+          "name": "selected",
+          "line": 126,
+          "type": "constant"
+        },
+        {
+          "name": "moveMonth",
+          "line": 133,
+          "type": "function"
+        },
+        {
+          "name": "next",
+          "line": 134,
+          "type": "constant"
+        },
+        {
+          "name": "setVisibleYear",
+          "line": 138,
+          "type": "function"
+        },
+        {
+          "name": "today",
+          "line": 140,
+          "type": "constant"
+        },
+        {
+          "name": "cappedYear",
+          "line": 141,
+          "type": "constant"
+        },
+        {
+          "name": "save",
+          "line": 145,
+          "type": "function"
+        },
+        {
+          "name": "error",
+          "line": 146,
+          "type": "constant"
+        },
+        {
+          "name": "validationError",
+          "line": 159,
+          "type": "constant"
+        },
+        {
+          "name": "dateError",
+          "line": 160,
+          "type": "constant"
+        },
+        {
+          "name": "timeError",
+          "line": 161,
+          "type": "constant"
+        },
+        {
+          "name": "timezoneError",
+          "line": 162,
+          "type": "constant"
+        },
+        {
+          "name": "consequence",
+          "line": 163,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "../lib/display",
+        "../lib/i18n",
+        "./BirthDateTimeSheet.module.css",
+        "lucide-react",
+        "react",
+        "react-dom"
+      ],
+      "exports": [
+        "BirthDateTimeSheet"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 1,
+      "dependency_out": 2,
+      "importance_weight": 172.33,
+      "importance_bucket": "other"
+    },
+    {
       "file": "apps/astra-web/components/ReportChartPlate.tsx",
       "lang": "typescript",
       "size": 8569,
@@ -9912,6 +10124,237 @@
       "importance_bucket": "other"
     },
     {
+      "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
+      "lang": "typescript",
+      "size": 12635,
+      "lines": 240,
+      "estimated_tokens": 3159,
+      "symbols": [
+        {
+          "name": "JsonObject",
+          "line": 4,
+          "type": "type"
+        },
+        {
+          "name": "findOtp",
+          "line": 6,
+          "type": "function"
+        },
+        {
+          "name": "otp",
+          "line": 10,
+          "type": "constant"
+        },
+        {
+          "name": "otp",
+          "line": 16,
+          "type": "constant"
+        },
+        {
+          "name": "readOtpFromMailpit",
+          "line": 23,
+          "type": "function"
+        },
+        {
+          "name": "mailpitUrl",
+          "line": 24,
+          "type": "constant"
+        },
+        {
+          "name": "deadline",
+          "line": 25,
+          "type": "constant"
+        },
+        {
+          "name": "searchUrl",
+          "line": 28,
+          "type": "constant"
+        },
+        {
+          "name": "searchResponse",
+          "line": 32,
+          "type": "constant"
+        },
+        {
+          "name": "search",
+          "line": 34,
+          "type": "constant"
+        },
+        {
+          "name": "messages",
+          "line": 35,
+          "type": "constant"
+        },
+        {
+          "name": "id",
+          "line": 38,
+          "type": "constant"
+        },
+        {
+          "name": "messageResponse",
+          "line": 40,
+          "type": "constant"
+        },
+        {
+          "name": "otp",
+          "line": 42,
+          "type": "constant"
+        },
+        {
+          "name": "signInWithOtp",
+          "line": 52,
+          "type": "function"
+        },
+        {
+          "name": "chooseUnknownBirthMoment",
+          "line": 61,
+          "type": "function"
+        },
+        {
+          "name": "dialog",
+          "line": 63,
+          "type": "constant"
+        },
+        {
+          "name": "checkboxBox",
+          "line": 73,
+          "type": "constant"
+        },
+        {
+          "name": "labelBox",
+          "line": 74,
+          "type": "constant"
+        },
+        {
+          "name": "continueButton",
+          "line": 77,
+          "type": "constant"
+        },
+        {
+          "name": "chooseKnownBirthMomentWithoutPlace",
+          "line": 91,
+          "type": "function"
+        },
+        {
+          "name": "dialog",
+          "line": 93,
+          "type": "constant"
+        },
+        {
+          "name": "unknownTimeCheckbox",
+          "line": 98,
+          "type": "constant"
+        },
+        {
+          "name": "timeInput",
+          "line": 102,
+          "type": "constant"
+        },
+        {
+          "name": "continueButton",
+          "line": 103,
+          "type": "constant"
+        },
+        {
+          "name": "name",
+          "line": 136,
+          "type": "constant"
+        },
+        {
+          "name": "email",
+          "line": 137,
+          "type": "constant"
+        },
+        {
+          "name": "selfDialog",
+          "line": 144,
+          "type": "constant"
+        },
+        {
+          "name": "locationDialog",
+          "line": 155,
+          "type": "constant"
+        },
+        {
+          "name": "locationSearch",
+          "line": 156,
+          "type": "constant"
+        },
+        {
+          "name": "currentLocation",
+          "line": 157,
+          "type": "constant"
+        },
+        {
+          "name": "locationSearchBounds",
+          "line": 158,
+          "type": "constant"
+        },
+        {
+          "name": "currentLocationBounds",
+          "line": 159,
+          "type": "constant"
+        },
+        {
+          "name": "hasHorizontalOverflow",
+          "line": 172,
+          "type": "constant"
+        },
+        {
+          "name": "allyDialog",
+          "line": 180,
+          "type": "constant"
+        },
+        {
+          "name": "allyConfirmDialog",
+          "line": 190,
+          "type": "constant"
+        },
+        {
+          "name": "savedBirthDetails",
+          "line": 204,
+          "type": "constant"
+        },
+        {
+          "name": "timedConfirmDialog",
+          "line": 211,
+          "type": "constant"
+        },
+        {
+          "name": "timedReportReview",
+          "line": 212,
+          "type": "constant"
+        },
+        {
+          "name": "darkDialog",
+          "line": 223,
+          "type": "constant"
+        },
+        {
+          "name": "darkDialogBackground",
+          "line": 229,
+          "type": "constant"
+        },
+        {
+          "name": "actionablePageErrors",
+          "line": 233,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "@playwright/test",
+        "node:fs/promises"
+      ],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 154.33,
+      "importance_bucket": "other"
+    },
+    {
       "file": "packages/db/src/user-data-portability.ts",
       "lang": "typescript",
       "size": 14191,
@@ -10444,217 +10887,6 @@
       "importance_bucket": "other"
     },
     {
-      "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-      "lang": "typescript",
-      "size": 11422,
-      "lines": 222,
-      "estimated_tokens": 2856,
-      "symbols": [
-        {
-          "name": "JsonObject",
-          "line": 4,
-          "type": "type"
-        },
-        {
-          "name": "findOtp",
-          "line": 6,
-          "type": "function"
-        },
-        {
-          "name": "otp",
-          "line": 10,
-          "type": "constant"
-        },
-        {
-          "name": "otp",
-          "line": 16,
-          "type": "constant"
-        },
-        {
-          "name": "readOtpFromMailpit",
-          "line": 23,
-          "type": "function"
-        },
-        {
-          "name": "mailpitUrl",
-          "line": 24,
-          "type": "constant"
-        },
-        {
-          "name": "deadline",
-          "line": 25,
-          "type": "constant"
-        },
-        {
-          "name": "searchUrl",
-          "line": 28,
-          "type": "constant"
-        },
-        {
-          "name": "searchResponse",
-          "line": 32,
-          "type": "constant"
-        },
-        {
-          "name": "search",
-          "line": 34,
-          "type": "constant"
-        },
-        {
-          "name": "messages",
-          "line": 35,
-          "type": "constant"
-        },
-        {
-          "name": "id",
-          "line": 38,
-          "type": "constant"
-        },
-        {
-          "name": "messageResponse",
-          "line": 40,
-          "type": "constant"
-        },
-        {
-          "name": "otp",
-          "line": 42,
-          "type": "constant"
-        },
-        {
-          "name": "signInWithOtp",
-          "line": 52,
-          "type": "function"
-        },
-        {
-          "name": "chooseUnknownBirthMoment",
-          "line": 61,
-          "type": "function"
-        },
-        {
-          "name": "dialog",
-          "line": 63,
-          "type": "constant"
-        },
-        {
-          "name": "checkboxBox",
-          "line": 73,
-          "type": "constant"
-        },
-        {
-          "name": "labelBox",
-          "line": 74,
-          "type": "constant"
-        },
-        {
-          "name": "chooseKnownBirthMomentWithoutPlace",
-          "line": 80,
-          "type": "function"
-        },
-        {
-          "name": "dialog",
-          "line": 82,
-          "type": "constant"
-        },
-        {
-          "name": "unknownTimeCheckbox",
-          "line": 87,
-          "type": "constant"
-        },
-        {
-          "name": "timeInput",
-          "line": 91,
-          "type": "constant"
-        },
-        {
-          "name": "continueButton",
-          "line": 92,
-          "type": "constant"
-        },
-        {
-          "name": "name",
-          "line": 125,
-          "type": "constant"
-        },
-        {
-          "name": "email",
-          "line": 126,
-          "type": "constant"
-        },
-        {
-          "name": "selfDialog",
-          "line": 132,
-          "type": "constant"
-        },
-        {
-          "name": "confirmDialog",
-          "line": 144,
-          "type": "constant"
-        },
-        {
-          "name": "reportReview",
-          "line": 145,
-          "type": "constant"
-        },
-        {
-          "name": "hasHorizontalOverflow",
-          "line": 154,
-          "type": "constant"
-        },
-        {
-          "name": "allyDialog",
-          "line": 162,
-          "type": "constant"
-        },
-        {
-          "name": "allyConfirmDialog",
-          "line": 172,
-          "type": "constant"
-        },
-        {
-          "name": "savedBirthDetails",
-          "line": 186,
-          "type": "constant"
-        },
-        {
-          "name": "timedConfirmDialog",
-          "line": 193,
-          "type": "constant"
-        },
-        {
-          "name": "timedReportReview",
-          "line": 194,
-          "type": "constant"
-        },
-        {
-          "name": "darkDialog",
-          "line": 205,
-          "type": "constant"
-        },
-        {
-          "name": "darkDialogBackground",
-          "line": 211,
-          "type": "constant"
-        },
-        {
-          "name": "actionablePageErrors",
-          "line": 215,
-          "type": "constant"
-        }
-      ],
-      "imports": [
-        "@playwright/test",
-        "node:fs/promises"
-      ],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 142.34,
-      "importance_bucket": "other"
-    },
-    {
       "file": "output/report-model-bakeoff/2026-07-16T14-44-44-812Z/blind-review.md",
       "lang": "markdown",
       "size": 71143,
@@ -10998,173 +11230,6 @@
       "dependency_out": 1,
       "importance_weight": 141.13,
       "importance_bucket": "app/api"
-    },
-    {
-      "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-      "lang": "typescript",
-      "size": 11095,
-      "lines": 293,
-      "estimated_tokens": 2774,
-      "symbols": [
-        {
-          "name": "BirthDateTimeValue",
-          "line": 9,
-          "type": "type"
-        },
-        {
-          "name": "BirthDateTimeSheetProps",
-          "line": 22,
-          "type": "type"
-        },
-        {
-          "name": "dayLabels",
-          "line": 33,
-          "type": "constant"
-        },
-        {
-          "name": "monthOptions",
-          "line": 34,
-          "type": "constant"
-        },
-        {
-          "name": "selectedMonth",
-          "line": 39,
-          "type": "function"
-        },
-        {
-          "name": "parsed",
-          "line": 40,
-          "type": "constant"
-        },
-        {
-          "name": "validate",
-          "line": 47,
-          "type": "function"
-        },
-        {
-          "name": "BirthDateTimeSheet",
-          "line": 56,
-          "type": "component"
-        },
-        {
-          "name": "onKeyDown",
-          "line": 73,
-          "type": "function"
-        },
-        {
-          "name": "calendarDays",
-          "line": 81,
-          "type": "constant"
-        },
-        {
-          "name": "canGoNext",
-          "line": 91,
-          "type": "constant"
-        },
-        {
-          "name": "today",
-          "line": 92,
-          "type": "constant"
-        },
-        {
-          "name": "nextMonth",
-          "line": 93,
-          "type": "constant"
-        },
-        {
-          "name": "currentMonth",
-          "line": 94,
-          "type": "constant"
-        },
-        {
-          "name": "updateDraft",
-          "line": 100,
-          "type": "function"
-        },
-        {
-          "name": "selectDay",
-          "line": 105,
-          "type": "function"
-        },
-        {
-          "name": "moveMonth",
-          "line": 110,
-          "type": "function"
-        },
-        {
-          "name": "next",
-          "line": 112,
-          "type": "constant"
-        },
-        {
-          "name": "setVisibleYear",
-          "line": 117,
-          "type": "function"
-        },
-        {
-          "name": "today",
-          "line": 119,
-          "type": "constant"
-        },
-        {
-          "name": "cappedYear",
-          "line": 120,
-          "type": "constant"
-        },
-        {
-          "name": "save",
-          "line": 124,
-          "type": "function"
-        },
-        {
-          "name": "error",
-          "line": 125,
-          "type": "constant"
-        },
-        {
-          "name": "validationError",
-          "line": 138,
-          "type": "constant"
-        },
-        {
-          "name": "dateError",
-          "line": 139,
-          "type": "constant"
-        },
-        {
-          "name": "timeError",
-          "line": 140,
-          "type": "constant"
-        },
-        {
-          "name": "timezoneError",
-          "line": 141,
-          "type": "constant"
-        },
-        {
-          "name": "consequence",
-          "line": 142,
-          "type": "constant"
-        }
-      ],
-      "imports": [
-        "../lib/display",
-        "../lib/i18n",
-        "./BirthDateTimeSheet.module.css",
-        "lucide-react",
-        "react",
-        "react-dom"
-      ],
-      "exports": [
-        "BirthDateTimeSheet"
-      ],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 1,
-      "dependency_out": 2,
-      "importance_weight": 137.34,
-      "importance_bucket": "other"
     },
     {
       "file": "apps/composer-web/app/api/cards/publish-plan/route.ts",
@@ -16661,9 +16726,9 @@
     {
       "file": "apps/astra-web/lib/i18n.ts",
       "lang": "typescript",
-      "size": 34810,
-      "lines": 798,
-      "estimated_tokens": 8701,
+      "size": 35118,
+      "lines": 800,
+      "estimated_tokens": 8778,
       "symbols": [
         {
           "name": "ui",
@@ -16686,9 +16751,9 @@
     {
       "file": "apps/astra-web/components/BirthLocationSheet.tsx",
       "lang": "typescript",
-      "size": 5839,
-      "lines": 171,
-      "estimated_tokens": 1460,
+      "size": 5889,
+      "lines": 170,
+      "estimated_tokens": 1473,
       "symbols": [
         {
           "name": "BirthLocationValue",
@@ -30768,7 +30833,7 @@
     "actionablePageErrors": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 215,
+        "line": 233,
         "type": "constant"
       }
     ],
@@ -30943,7 +31008,7 @@
     "adminConfirmDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 533,
+        "line": 538,
         "type": "constant"
       }
     ],
@@ -31242,14 +31307,14 @@
     "allyConfirmDialog": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 172,
+        "line": 190,
         "type": "constant"
       }
     ],
     "allyDialog": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 162,
+        "line": 180,
         "type": "constant"
       }
     ],
@@ -33804,7 +33869,7 @@
     "BirthDateTimeSheet": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 56,
+        "line": 69,
         "type": "component"
       }
     ],
@@ -34532,7 +34597,7 @@
     "calendarDays": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 81,
+        "line": 94,
         "type": "constant"
       }
     ],
@@ -34570,7 +34635,7 @@
     "canGoNext": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 91,
+        "line": 104,
         "type": "constant"
       }
     ],
@@ -34612,7 +34677,7 @@
     "cappedYear": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 120,
+        "line": 141,
         "type": "constant"
       }
     ],
@@ -35289,7 +35354,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 423,
+        "line": 428,
         "type": "constant"
       }
     ],
@@ -35461,14 +35526,14 @@
     "checkout": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 498,
+        "line": 503,
         "type": "constant"
       }
     ],
     "checkoutResponse": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 490,
+        "line": 495,
         "type": "constant"
       }
     ],
@@ -35480,7 +35545,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 499,
+        "line": 504,
         "type": "constant"
       }
     ],
@@ -35501,7 +35566,7 @@
     "chooseKnownBirthMomentWithoutPlace": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 80,
+        "line": 91,
         "type": "function"
       }
     ],
@@ -36132,14 +36197,14 @@
     "completedChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 546,
+        "line": 551,
         "type": "constant"
       }
     ],
     "completedReport": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 565,
+        "line": 570,
         "type": "constant"
       }
     ],
@@ -37170,17 +37235,10 @@
         "type": "constant"
       }
     ],
-    "confirmDialog": [
-      {
-        "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 144,
-        "type": "constant"
-      }
-    ],
     "consequence": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 142,
+        "line": 163,
         "type": "constant"
       }
     ],
@@ -37324,7 +37382,12 @@
     "continueButton": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 92,
+        "line": 77,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
+        "line": 103,
         "type": "constant"
       }
     ],
@@ -37894,7 +37957,7 @@
     "createChartButton": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 418,
+        "line": 423,
         "type": "constant"
       }
     ],
@@ -38328,6 +38391,20 @@
         "type": "constant"
       }
     ],
+    "currentLocation": [
+      {
+        "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
+        "line": 157,
+        "type": "constant"
+      }
+    ],
+    "currentLocationBounds": [
+      {
+        "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
+        "line": 159,
+        "type": "constant"
+      }
+    ],
     "currentModel": [
       {
         "file": "apps/astra-web/app/admin/page.tsx",
@@ -38338,7 +38415,7 @@
     "currentMonth": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 94,
+        "line": 107,
         "type": "constant"
       }
     ],
@@ -38353,6 +38430,13 @@
       {
         "file": "apps/astra-web/components/ReportMarkdown.tsx",
         "line": 45,
+        "type": "constant"
+      }
+    ],
+    "currentSelection": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 411,
         "type": "constant"
       }
     ],
@@ -38394,14 +38478,14 @@
     "darkDialog": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 205,
+        "line": 223,
         "type": "constant"
       }
     ],
     "darkDialogBackground": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 211,
+        "line": 229,
         "type": "constant"
       }
     ],
@@ -38513,7 +38597,7 @@
     "dateError": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 139,
+        "line": 160,
         "type": "constant"
       }
     ],
@@ -38535,6 +38619,13 @@
       {
         "file": "packages/chart-maker/src/index.ts",
         "line": 36,
+        "type": "function"
+      }
+    ],
+    "dateValidationError": [
+      {
+        "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
+        "line": 47,
         "type": "function"
       }
     ],
@@ -38605,7 +38696,7 @@
     "debugDetails": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 616,
+        "line": 621,
         "type": "constant"
       }
     ],
@@ -39088,7 +39179,7 @@
       },
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 82,
+        "line": 93,
         "type": "constant"
       },
       {
@@ -39384,7 +39475,7 @@
     "email": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 126,
+        "line": 137,
         "type": "constant"
       },
       {
@@ -39394,7 +39485,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 467,
+        "line": 472,
         "type": "constant"
       },
       {
@@ -39534,7 +39625,7 @@
     "error": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 125,
+        "line": 146,
         "type": "constant"
       }
     ],
@@ -39655,7 +39746,7 @@
     "existingAllyChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 435,
+        "line": 440,
         "type": "constant"
       }
     ],
@@ -39669,7 +39760,7 @@
     "existingOrderPanel": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 437,
+        "line": 442,
         "type": "constant"
       }
     ],
@@ -39683,14 +39774,14 @@
     "existingSelfBirthDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 555,
+        "line": 560,
         "type": "constant"
       }
     ],
     "existingSelfLocationDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 559,
+        "line": 564,
         "type": "constant"
       }
     ],
@@ -40518,7 +40609,7 @@
     "fulfilled": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 502,
+        "line": 507,
         "type": "constant"
       }
     ],
@@ -41277,7 +41368,7 @@
     "hasHorizontalOverflow": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 154,
+        "line": 172,
         "type": "constant"
       }
     ],
@@ -43239,8 +43330,27 @@
     ],
     "locationDialog": [
       {
+        "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
+        "line": 155,
+        "type": "constant"
+      },
+      {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
         "line": 409,
+        "type": "constant"
+      }
+    ],
+    "locationSearch": [
+      {
+        "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
+        "line": 156,
+        "type": "constant"
+      }
+    ],
+    "locationSearchBounds": [
+      {
+        "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
+        "line": 158,
         "type": "constant"
       }
     ],
@@ -44142,7 +44252,7 @@
     "moveMonth": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 110,
+        "line": 133,
         "type": "function"
       }
     ],
@@ -44156,7 +44266,7 @@
     "name": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 125,
+        "line": 136,
         "type": "constant"
       },
       {
@@ -44166,7 +44276,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 468,
+        "line": 473,
         "type": "constant"
       },
       {
@@ -44246,7 +44356,7 @@
       },
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 112,
+        "line": 134,
         "type": "constant"
       },
       {
@@ -44366,7 +44476,7 @@
     "nextMonth": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 93,
+        "line": 106,
         "type": "constant"
       }
     ],
@@ -45105,7 +45215,7 @@
     "onKeyDown": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 73,
+        "line": 86,
         "type": "function"
       },
       {
@@ -48814,7 +48924,7 @@
     "reportChartPlate": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 609,
+        "line": 614,
         "type": "constant"
       }
     ],
@@ -48929,14 +49039,14 @@
     "reportFilters": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 593,
+        "line": 598,
         "type": "constant"
       }
     ],
     "reportFilterSelect": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 595,
+        "line": 600,
         "type": "constant"
       }
     ],
@@ -49289,13 +49399,6 @@
         "file": "apps/astra-web/app/charts/page.tsx",
         "line": 28,
         "type": "type"
-      }
-    ],
-    "reportReview": [
-      {
-        "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 145,
-        "type": "constant"
       }
     ],
     "reports or library_reports equivalent": [
@@ -50682,7 +50785,7 @@
     "save": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 124,
+        "line": 145,
         "type": "function"
       }
     ],
@@ -50703,7 +50806,7 @@
     "savedBirthDetails": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 186,
+        "line": 204,
         "type": "constant"
       }
     ],
@@ -50825,6 +50928,20 @@
         "file": "packages/astrology/src/index.ts",
         "line": 753,
         "type": "function"
+      }
+    ],
+    "searchBounds": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 412,
+        "type": "constant"
+      }
+    ],
+    "searchBox": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 410,
+        "type": "constant"
       }
     ],
     "searchOpenMeteoBirthPlaces": [
@@ -51120,7 +51237,7 @@
     "selectDay": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 105,
+        "line": 118,
         "type": "function"
       }
     ],
@@ -51128,6 +51245,11 @@
       {
         "file": "apps/astra-web/app/charts/page.tsx",
         "line": 66,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
+        "line": 126,
         "type": "constant"
       },
       {
@@ -51188,7 +51310,7 @@
     "selectedChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 583,
+        "line": 588,
         "type": "constant"
       }
     ],
@@ -51337,6 +51459,13 @@
         "type": "constant"
       }
     ],
+    "selectionBounds": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 413,
+        "type": "constant"
+      }
+    ],
     "selectionDate": [
       {
         "file": "apps/astra-web/lib/composer-selection.ts",
@@ -51375,14 +51504,14 @@
     "selfDialog": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 132,
+        "line": 144,
         "type": "constant"
       }
     ],
     "selfEditPanel": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 548,
+        "line": 553,
         "type": "constant"
       }
     ],
@@ -51568,7 +51697,7 @@
     "settingsBox": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 425,
+        "line": 430,
         "type": "constant"
       }
     ],
@@ -51596,7 +51725,7 @@
     "setVisibleYear": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 117,
+        "line": 138,
         "type": "function"
       }
     ],
@@ -51689,6 +51818,13 @@
         "file": "apps/astra-web/app/library/page.tsx",
         "line": 86,
         "type": "constant"
+      }
+    ],
+    "showMonth": [
+      {
+        "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
+        "line": 123,
+        "type": "function"
       }
     ],
     "showMore": [
@@ -52144,7 +52280,7 @@
     "starsDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 480,
+        "line": 485,
         "type": "constant"
       }
     ],
@@ -53297,7 +53433,7 @@
     "timedConfirmDialog": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 193,
+        "line": 211,
         "type": "constant"
       }
     ],
@@ -53311,21 +53447,21 @@
     "timedReportReview": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 194,
+        "line": 212,
         "type": "constant"
       }
     ],
     "timeError": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 140,
+        "line": 161,
         "type": "constant"
       }
     ],
     "timeInput": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 91,
+        "line": 102,
         "type": "constant"
       }
     ],
@@ -53341,6 +53477,13 @@
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
         "line": 252,
         "type": "constant"
+      }
+    ],
+    "timeValidationError": [
+      {
+        "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
+        "line": 54,
+        "type": "function"
       }
     ],
     "timezone": [
@@ -53367,7 +53510,7 @@
     "timezoneError": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 141,
+        "line": 162,
         "type": "constant"
       }
     ],
@@ -53376,6 +53519,13 @@
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
         "line": 39,
         "type": "constant"
+      }
+    ],
+    "timezoneValidationError": [
+      {
+        "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
+        "line": 60,
+        "type": "function"
       }
     ],
     "title": [
@@ -53451,12 +53601,12 @@
       },
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 92,
+        "line": 105,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 119,
+        "line": 140,
         "type": "constant"
       },
       {
@@ -53713,7 +53863,7 @@
     "unknownTimeCheckbox": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "line": 87,
+        "line": 98,
         "type": "constant"
       }
     ],
@@ -53734,7 +53884,7 @@
     "updateDraft": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 100,
+        "line": 113,
         "type": "function"
       }
     ],
@@ -54269,7 +54419,7 @@
     "validate": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 47,
+        "line": 65,
         "type": "function"
       }
     ],
@@ -54371,7 +54521,7 @@
     "validationError": [
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "line": 138,
+        "line": 159,
         "type": "constant"
       }
     ],
@@ -55489,13 +55639,13 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "weight": 269.25,
+        "weight": 281.25,
         "bucket": "other",
-        "estimated_tokens": 8157,
-        "lines": 624,
-        "symbols": 72,
+        "estimated_tokens": 8243,
+        "lines": 629,
+        "symbols": 76,
         "symbol_type_counts": {
-          "constant": 61,
+          "constant": 65,
           "function": 10,
           "type": 1
         },
@@ -55608,6 +55758,23 @@
         "route_count": 0
       },
       {
+        "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
+        "weight": 172.33,
+        "bucket": "other",
+        "estimated_tokens": 3016,
+        "lines": 321,
+        "symbols": 33,
+        "symbol_type_counts": {
+          "component": 1,
+          "constant": 18,
+          "function": 12,
+          "type": 2
+        },
+        "dependency_in": 1,
+        "dependency_out": 2,
+        "route_count": 0
+      },
+      {
         "file": "apps/astra-web/components/ReportChartPlate.tsx",
         "weight": 166.36,
         "bucket": "other",
@@ -55687,6 +55854,22 @@
         "route_count": 0
       },
       {
+        "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
+        "weight": 154.33,
+        "bucket": "other",
+        "estimated_tokens": 3159,
+        "lines": 240,
+        "symbols": 42,
+        "symbol_type_counts": {
+          "constant": 36,
+          "function": 5,
+          "type": 1
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "packages/db/src/user-data-portability.ts",
         "weight": 147.32,
         "bucket": "other",
@@ -55734,22 +55917,6 @@
         "route_count": 0
       },
       {
-        "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-        "weight": 142.34,
-        "bucket": "other",
-        "estimated_tokens": 2856,
-        "lines": 222,
-        "symbols": 38,
-        "symbol_type_counts": {
-          "constant": 32,
-          "function": 5,
-          "type": 1
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
-        "route_count": 0
-      },
-      {
         "file": "output/report-model-bakeoff/2026-07-16T14-44-44-812Z/blind-review.md",
         "weight": 142.18,
         "bucket": "other",
@@ -55780,23 +55947,6 @@
         "dependency_in": 0,
         "dependency_out": 1,
         "route_count": 2
-      },
-      {
-        "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-        "weight": 137.34,
-        "bucket": "other",
-        "estimated_tokens": 2774,
-        "lines": 293,
-        "symbols": 28,
-        "symbol_type_counts": {
-          "component": 1,
-          "constant": 17,
-          "function": 8,
-          "type": 2
-        },
-        "dependency_in": 1,
-        "dependency_out": 2,
-        "route_count": 0
       },
       {
         "file": "apps/composer-web/app/api/cards/publish-plan/route.ts",
@@ -56669,8 +56819,8 @@
         "file": "apps/astra-web/lib/i18n.ts",
         "weight": 67.24,
         "bucket": "other",
-        "estimated_tokens": 8701,
-        "lines": 798,
+        "estimated_tokens": 8778,
+        "lines": 800,
         "symbols": 1,
         "symbol_type_counts": {
           "constant": 1
@@ -56683,8 +56833,8 @@
         "file": "apps/astra-web/components/BirthLocationSheet.tsx",
         "weight": 66.39,
         "bucket": "other",
-        "estimated_tokens": 1460,
-        "lines": 171,
+        "estimated_tokens": 1473,
+        "lines": 170,
         "symbols": 11,
         "symbol_type_counts": {
           "component": 1,
@@ -60665,9 +60815,9 @@
       {
         "name": "top-weighted",
         "budget_tokens": 128000,
-        "estimated_tokens": 132157,
-        "file_count": 16,
-        "symbol_count": 1692,
+        "estimated_tokens": 128353,
+        "file_count": 15,
+        "symbol_count": 1640,
         "files": [
           {
             "rank": 1,
@@ -60795,13 +60945,13 @@
           {
             "rank": 8,
             "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-            "weight": 269.25,
+            "weight": 281.25,
             "bucket": "other",
-            "estimated_tokens": 8157,
-            "lines": 624,
-            "symbols": 72,
+            "estimated_tokens": 8243,
+            "lines": 629,
+            "symbols": 76,
             "symbol_type_counts": {
-              "constant": 61,
+              "constant": 65,
               "function": 10,
               "type": 1
             },
@@ -60921,35 +61071,20 @@
           },
           {
             "rank": 15,
-            "file": "apps/astra-web/components/ReportChartPlate.tsx",
-            "weight": 166.36,
+            "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
+            "weight": 172.33,
             "bucket": "other",
-            "estimated_tokens": 2131,
-            "lines": 202,
-            "symbols": 36,
+            "estimated_tokens": 3016,
+            "lines": 321,
+            "symbols": 33,
             "symbol_type_counts": {
               "component": 1,
-              "constant": 25,
-              "function": 9,
-              "type": 1
+              "constant": 18,
+              "function": 12,
+              "type": 2
             },
             "dependency_in": 1,
-            "dependency_out": 1,
-            "route_count": 0
-          },
-          {
-            "rank": 16,
-            "file": "docs/inbox-astra/ASTRA_COMPOSER_PRIVATE_PERSONAL_FEED_DOCTRINE.md",
-            "weight": 163.29,
-            "bucket": "other",
-            "estimated_tokens": 4775,
-            "lines": 791,
-            "symbols": 53,
-            "symbol_type_counts": {
-              "heading": 53
-            },
-            "dependency_in": 0,
-            "dependency_out": 0,
+            "dependency_out": 2,
             "route_count": 0
           }
         ]
@@ -60957,8 +61092,8 @@
     ],
     "coverage": {
       "files": 361,
-      "symbols": 4080,
-      "total_estimated_tokens": 989940
+      "symbols": 4093,
+      "total_estimated_tokens": 990661
     }
   }
 }

@@ -47,6 +47,14 @@
   font: inherit;
 }
 
+.primaryAction:disabled {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--muted) 18%, var(--panel));
+  color: color-mix(in srgb, var(--muted) 72%, transparent);
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
 .iconButton {
   display: inline-grid;
   width: 36px;
@@ -80,7 +88,17 @@
 
 .calendarCard[data-invalid="true"],
 .controlRow[data-invalid="true"] {
-  border-color: color-mix(in srgb, var(--rose) 76%, var(--line));
+  border-color: var(--rose);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rose) 45%, transparent);
+}
+
+.controlRow[data-invalid="true"] > span,
+.controlRow[data-invalid="true"] svg {
+  color: var(--rose);
+}
+
+.calendarCard[data-invalid="true"] {
+  background: color-mix(in srgb, var(--rose) 5%, var(--panel));
 }
 
 .controlRow,
@@ -95,6 +113,7 @@
 
 .controlRow[data-invalid="true"] {
   grid-template-rows: auto auto;
+  background: color-mix(in srgb, var(--rose) 6%, transparent);
 }
 
 .controlRow + .controlRow,
@@ -264,6 +283,16 @@
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rose) 50%, transparent);
 }
 
+.timeInput::-webkit-datetime-edit {
+  color: var(--ink);
+}
+
+.timeInput[aria-invalid="true"],
+.timeInput[aria-invalid="true"]::-webkit-datetime-edit {
+  color: var(--rose);
+  -webkit-text-fill-color: var(--rose);
+}
+
 .fieldError {
   grid-column: 2;
   margin: -4px 0 0;
@@ -271,6 +300,21 @@
   font-size: 0.74rem;
   font-weight: 650;
   line-height: 1.25;
+}
+
+.calendarError {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 9px 4px 2px;
+  color: var(--rose);
+  font-size: 0.78rem;
+  font-weight: 760;
+  line-height: 1.3;
+}
+
+.calendarError svg {
+  flex: 0 0 auto;
 }
 
 .timeInput {
@@ -347,11 +391,19 @@
   }
 
   .controlRow {
-    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 8px;
   }
 
   .controlRow select,
   .timeInput {
+    width: 100%;
     max-width: 100%;
+  }
+
+  .fieldError {
+    grid-column: 1;
+    margin-top: 0;
   }
 }

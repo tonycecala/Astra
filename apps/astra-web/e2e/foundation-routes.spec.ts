@@ -407,7 +407,12 @@ test.describe("clean-start routes", () => {
     await chooseUnknownBirthMoment(page, { year: "1961", month: "May", dayLabel: "May 23, 1961" });
     await page.getByRole("button", { name: "Edit birth location" }).click();
     const locationDialog = page.getByRole("dialog", { name: "Birth Location" });
-    await locationDialog.getByLabel("Search birth place").fill("Cedar Rapids");
+    const searchBox = locationDialog.getByLabel("Search birth place");
+    const currentSelection = locationDialog.getByLabel("Current birth location selection");
+    const searchBounds = await searchBox.boundingBox();
+    const selectionBounds = await currentSelection.boundingBox();
+    expect(searchBounds?.y ?? Number.POSITIVE_INFINITY).toBeLessThan(selectionBounds?.y ?? 0);
+    await searchBox.fill("Cedar Rapids");
     await locationDialog.getByRole("button", { name: "Search", exact: true }).click();
     await locationDialog.getByRole("button", { name: /Cedar Rapids, Iowa, United States/ }).click();
     await expect(locationDialog.getByText("Cedar Rapids, Iowa, United States", { exact: true })).toBeVisible();

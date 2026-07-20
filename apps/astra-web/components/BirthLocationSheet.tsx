@@ -112,20 +112,6 @@ export function BirthLocationSheet({
           </button>
         </header>
 
-        <div className={styles.currentPlace}>
-          <span>
-            <MapPin aria-hidden="true" size={17} />
-            {ui.self.chartLocationLabel}
-          </span>
-          <strong>{draft.location || ui.self.birthLocationNotSelected}</strong>
-          {draft.location && draft.timezone ? <em>{displayTimezone(draft.timezone)}</em> : null}
-          {draft.location ? (
-            <button className={styles.clearButton} disabled={disabled} onClick={clearPlace} type="button">
-              {ui.self.birthLocationClear}
-            </button>
-          ) : null}
-        </div>
-
         <div className={styles.searchControl}>
           <label>
             <span>{ui.self.placeSearchLabel}</span>
@@ -162,6 +148,19 @@ export function BirthLocationSheet({
             ))}
           </ul>
         ) : null}
+        <div aria-label={ui.self.birthLocationCurrentSelection} className={styles.currentPlace}>
+          <span>
+            <MapPin aria-hidden="true" size={17} />
+            {ui.self.chartLocationLabel}
+          </span>
+          <strong>{draft.location || ui.self.birthLocationNotSelected}</strong>
+          {draft.location && draft.timezone ? <em>{displayTimezone(draft.timezone)}</em> : null}
+          {draft.location ? (
+            <button className={styles.clearButton} disabled={disabled} onClick={clearPlace} type="button">
+              {ui.self.birthLocationClear}
+            </button>
+          ) : null}
+        </div>
         <p className={styles.hint}>{ui.self.birthDetailsOptionalHint}</p>
       </section>
     </div>,

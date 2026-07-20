@@ -58,7 +58,7 @@ async function signInWithOtp(page: Page, input: { email: string; name: string })
   await expect(page.locator(".self-profile-name")).toHaveText(input.email);
 }
 
-async function chooseUnknownBirthMoment(page: Page) {
+async function chooseUnknownBirthMoment(page: Page, invalidScreenshotPath?: string) {
   await page.getByRole("button", { name: "Edit birth details" }).click();
   const dialog = page.getByRole("dialog", { name: "Birth Details" });
   await expect(dialog).toBeVisible();
@@ -74,6 +74,17 @@ async function chooseUnknownBirthMoment(page: Page) {
   const labelBox = await dialog.getByText("Birth time unknown", { exact: true }).boundingBox();
   expect(checkboxBox?.x ?? Number.POSITIVE_INFINITY).toBeLessThan(labelBox?.x ?? 0);
   await dialog.locator('input[type="checkbox"]').check();
+  const continueButton = dialog.getByRole("button", { name: "Continue" }).first();
+  await expect(continueButton).toBeEnabled();
+  await dialog.getByLabel("Birth month").selectOption({ label: "June" });
+  await expect(continueButton).toBeDisabled();
+  await expect(continueButton).toHaveCSS("cursor", "not-allowed");
+  await expect(dialog.getByText("Choose a day to complete your birth date.")).toBeVisible();
+  if (invalidScreenshotPath) {
+    await page.screenshot({ path: invalidScreenshotPath, fullPage: true });
+  }
+  await dialog.getByLabel("Birth month").selectOption({ label: "May" });
+  await dialog.getByRole("button", { name: "May 23, 1961" }).click();
   return dialog;
 }
 
@@ -91,7 +102,7 @@ async function chooseKnownBirthMomentWithoutPlace(page: Page) {
   const timeInput = dialog.getByLabel("Time", { exact: true });
   const continueButton = dialog.getByRole("button", { name: "Continue" }).first();
   await expect(timeInput).toHaveAttribute("aria-invalid", "true");
-  await expect(dialog.getByText("Enter birth time, or turn on Birth time unknown.")).toBeVisible();
+  await expect(dialog.getByText("Enter a complete birth time, including minutes, or turn on Birth time unknown.")).toBeVisible();
   await expect(continueButton).toBeDisabled();
   await timeInput.fill("09:30");
   await expect(timeInput).toHaveAttribute("aria-invalid", "false");
@@ -129,27 +140,34 @@ test.describe("birth date and time sheet", () => {
     await page.goto("/self#self-birth-onboarding");
     await page.getByLabel("Your name").fill(name);
     await page.getByRole("button", { name: "Next", exact: true }).click();
-    const selfDialog = await chooseUnknownBirthMoment(page);
     await mkdir("apps/astra-web/test-results/birth-date-time-sheet", { recursive: true });
+    const selfDialog = await chooseUnknownBirthMoment(
+      page,
+      `apps/astra-web/test-results/birth-date-time-sheet/${testInfo.project.name}-partial-date.png`
+    );
     await page.screenshot({
       path: `apps/astra-web/test-results/birth-date-time-sheet/${testInfo.project.name}-self-sheet.png`,
       fullPage: true
     });
     await selfDialog.getByRole("button", { name: "Continue" }).first().click();
     await expect(selfDialog).toHaveCount(0);
+    await page.getByRole("button", { name: "Edit birth location" }).click();
+    const locationDialog = page.getByRole("dialog", { name: "Birth Location" });
+    const locationSearch = locationDialog.getByLabel("Search birth place");
+    const currentLocation = locationDialog.getByLabel("Current birth location selection");
+    const locationSearchBounds = await locationSearch.boundingBox();
+    const currentLocationBounds = await currentLocation.boundingBox();
+    expect(locationSearchBounds?.y ?? Number.POSITIVE_INFINITY).toBeLessThan(currentLocationBounds?.y ?? 0);
+    await page.screenshot({
+      path: `apps/astra-web/test-results/birth-date-time-sheet/${testInfo.project.name}-location-search-first.png`,
+      fullPage: true
+    });
+    await locationDialog.getByRole("button", { name: "Close birth location editor" }).click();
+    await expect(locationDialog).toHaveCount(0);
     await page.getByRole("button", { name: "Next", exact: true }).click();
     await expect(page.getByText("Step 3 of 3: Report")).toBeVisible();
-    await page.getByRole("button", { name: "Order Report", exact: true }).focus();
-    await page.keyboard.press("Enter");
-    const confirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
-    const reportReview = confirmDialog.getByLabel("Review report order");
-    await expect(reportReview).toContainText("Identity Report");
-    await expect(reportReview).toContainText("Natal chart");
-    await expect(reportReview).toContainText("Tropical");
-    await expect(reportReview).toContainText("Whole Sign");
-    await expect(reportReview).not.toContainText("1961-05-23");
-    await expect(reportReview).not.toContainText("Birth time unknown");
-    await confirmDialog.getByRole("button", { name: "Cancel" }).click();
+    await page.getByRole("button", { name: "Create Free Welcome Report", exact: true }).click();
+    await expect(page.getByRole("heading", { name: `${name} — Welcome Report` })).toBeVisible({ timeout: 15_000 });
 
     const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     expect(hasHorizontalOverflow).toBe(false);
@@ -181,7 +199,7 @@ test.describe("birth date and time sheet", () => {
       await expect(allyConfirmDialog).toHaveCount(0);
 
       await page.goto("/self#self-birth-onboarding");
-      await page.getByRole("button", { name: "Next", exact: true }).click();
+      await page.getByRole("button", { name: "1 Birth details" }).click();
       await chooseKnownBirthMomentWithoutPlace(page);
       const savedBirthDetails = page.getByRole("button", { name: "Edit birth details" });
       await expect(savedBirthDetails).toContainText("May 23, 1961");
