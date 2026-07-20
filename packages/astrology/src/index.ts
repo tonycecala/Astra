@@ -578,6 +578,21 @@ export class BirthPlaceSearchUnavailableError extends Error {
   }
 }
 
+type BirthPlaceSearchFetch = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
+
+type OpenMeteoPlace = {
+  id?: unknown;
+  name?: unknown;
+  admin1?: unknown;
+  country?: unknown;
+  timezone?: unknown;
+  latitude?: unknown;
+  longitude?: unknown;
+};
+
+const OPEN_METEO_GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search";
+const PLACE_SEARCH_TIMEOUT_MS = 5_000;
+
 type LocalFixturePlace = {
   id: string;
   label: string;
@@ -626,6 +641,58 @@ const localFixturePlaces: LocalFixturePlace[] = [
 
 function normalizeSearch(value: string) {
   return value.trim().toLowerCase();
+}
+
+function nonEmptyString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+function openMeteoPlaceResult(value: OpenMeteoPlace) {
+  const id = typeof value.id === "number" || typeof value.id === "string" ? String(value.id) : "";
+  const name = nonEmptyString(value.name);
+  const admin1 = nonEmptyString(value.admin1);
+  const country = nonEmptyString(value.country);
+  const timezone = nonEmptyString(value.timezone);
+  const latitude = typeof value.latitude === "number" ? value.latitude : Number.NaN;
+  const longitude = typeof value.longitude === "number" ? value.longitude : Number.NaN;
+
+  if (!id || !name || !country || !timezone || !Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+
+  return {
+    id: `open-meteo:${id}`,
+    label: [name, admin1, country].filter((part, index, parts) => part && parts.indexOf(part) === index).join(", "),
+    timezone,
+    latitude,
+    longitude,
+    provider: "open-meteo"
+  };
+}
+
+async function searchOpenMeteoBirthPlaces(query: BirthPlaceSearchQuery, fetchImpl: BirthPlaceSearchFetch) {
+  const url = new URL(OPEN_METEO_GEOCODING_URL);
+  url.searchParams.set("name", query.query);
+  url.searchParams.set("count", String(query.limit));
+  url.searchParams.set("language", "en");
+  url.searchParams.set("format", "json");
+
+  try {
+    const response = await fetchImpl(url, {
+      headers: { accept: "application/json" },
+      signal: AbortSignal.timeout(PLACE_SEARCH_TIMEOUT_MS)
+    });
+    if (!response.ok) throw new Error(`provider returned ${response.status}`);
+
+    const payload = (await response.json()) as { results?: unknown };
+    const places = Array.isArray(payload.results) ? (payload.results as OpenMeteoPlace[]) : [];
+    return birthPlaceSearchResponseSchema.parse({
+      provider: "open-meteo",
+      results: places.map(openMeteoPlaceResult).filter((place) => place !== null)
+    });
+  } catch (error) {
+    throw new BirthPlaceSearchUnavailableError(
+      `Birth place search is temporarily unavailable${error instanceof Error && error.name === "TimeoutError" ? " (provider timeout)" : ""}.`
+    );
+  }
 }
 
 export function parseReportModelProfile(value: string | null | undefined): ReportModelProfile | undefined {
@@ -684,7 +751,8 @@ export function resolveAstrologyReportGenerationConfigForRequest(
 
 export async function searchBirthPlaces(
   input: BirthPlaceSearchQuery,
-  env: Record<string, string | undefined> = process.env
+  env: Record<string, string | undefined> = process.env,
+  fetchImpl: BirthPlaceSearchFetch = fetch
 ): Promise<BirthPlaceSearchResponse> {
   const query = birthPlaceSearchQuerySchema.parse(input);
   const provider = env[ASTRA_PLACE_SEARCH_PROVIDER_ENV]?.trim();
@@ -693,8 +761,12 @@ export async function searchBirthPlaces(
     throw new BirthPlaceSearchUnavailableError(`${ASTRA_PLACE_SEARCH_PROVIDER_ENV} is not configured.`);
   }
 
+  if (provider === "open-meteo") {
+    return searchOpenMeteoBirthPlaces(query, fetchImpl);
+  }
+
   if (provider !== "local-fixture") {
-    throw new BirthPlaceSearchUnavailableError(`Birth place provider "${provider}" is not wired yet.`);
+    throw new BirthPlaceSearchUnavailableError(`Birth place provider "${provider}" is not supported.`);
   }
 
   const normalized = normalizeSearch(query.query);

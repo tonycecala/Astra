@@ -2,7 +2,7 @@
 title: "Astra Journey Product Redesign Handoff"
 type: "codex-inbox"
 project: "Astra Clean Start"
-status: "ready-for-codex"
+status: "awaiting-owner-confirmation"
 priority: "P0"
 owner: "Next Journey thread"
 created: "2026-07-17"
@@ -20,9 +20,54 @@ tags:
   - i18n
   - browser-qa
   - alpha
+updated: "2026-07-20"
 ---
 
 # Astra Journey Product Redesign Handoff
+
+## 2026-07-20 Product Checkpoint
+
+### Audit evidence
+
+- Live signed-out `/journey` currently opens with “A living stream,” a first-private-run Composer message, six lanes, zero saved/reflected counters, and no cards. The page had no browser console errors; the failure is product coherence, not rendering health.
+- Source confirms four competing modes share one reader: private feed, public sample/fallback, query-selected Composer cards, and legacy seeded cards.
+- `StreamReader` exposes like, comment, save, reflect, audience, status, kind, and date language even though the interaction state is client-only and not durable.
+- Root `/` and `/journey` still duplicate framing and signed-out handling.
+- Browser assertions have drifted with the product: current tests expect twelve public cards while the active public contract returns four.
+
+### Recommended model for Tony's confirmation
+
+**Promise:** Journey is the private, ordered place where Astra gives you the next meaningful thing to notice or do.
+
+**Primary object:** one `JourneyStep`, presented as a current focus with an optional short ordered queue behind it. It is not a general feed, lane browser, or social surface.
+
+**First viewport:**
+
+- Phone: Journey promise, one current step, one honest primary action, and a quiet “Up next” count only when more steps exist.
+- Desktop/tablet: the same current step in the reading column, with a compact ordered queue beside it; no decorative card grid.
+
+**Keep:** open/continue, complete, dismiss, and save only when each action persists. Use provenance through progressive disclosure (“Why this now?”), never debug metadata.
+
+**Remove:** six lanes, like/comment controls, client-only counters, customer-facing audience/status/kind labels, and query-string course selection as a customer journey.
+
+**Empty state:** explain that Journey becomes useful after the first chart/report event, then offer one truthful next action to create or open that artifact. If Composer is delayed, show the user's completed Astra artifacts rather than a fake feed.
+
+**How events enter:** reports, Allies, achievements, gifts, and Composer lessons may create candidate steps through the existing private `UserFeedItem` projection. The ordered Journey view chooses the next relevant step; the originating artifact remains owned by Library, Self, Allies, or Gifts.
+
+**Surface boundaries:** Journey owns sequence and next action. Library owns durable artifacts. Self owns the user's chart/profile. Allies owns relationship records. Gifts owns granted value. Signed-out `/` owns public product illustration; signed-out `/journey` should redirect to that illustration or login instead of imitating a private Journey.
+
+### Implementation plan after approval
+
+1. Write a short product/architecture decision defining `JourneyStep`, ordering rules, persistent actions, and public/private boundaries; prove whether `UserFeedItem` can express it before considering schema work.
+2. Make `/journey` the single signed-in owner and `/` the single signed-out illustration; remove duplicated rendering and query-driven customer selection.
+3. Replace `StreamReader` with a focused current-step reader plus ordered queue. Remove lanes, social fiction, debug metadata, and client-only state.
+4. Implement only the approved durable mutations with user-scoped repository methods and authorization tests.
+5. Define logged-out, empty, loading, provider/database unavailable, one-step, multi-step, and completed/dismissed states in i18n.
+6. Update the analytics contract for step viewed/opened/completed/dismissed/saved events, or explicitly defer events that do not yet have durable behavior.
+7. Repair stale browser assertions around the four-card public illustration and current report CTA, then add User A/User B privacy coverage for Journey mutations.
+8. Verify `/`, `/journey`, navigation entry points, old query URLs, and adjacent tabs at phone/tablet/desktop; close this brief only after deployment evidence is recorded.
+
+**Owner gate:** Tony confirms this model before schema changes or replacement of the Journey page architecture.
 
 ## Thread Mission
 

@@ -63,6 +63,7 @@
     "overview:light": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/create-light-mode-overview.mts",
     "overview:chart-flow": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/create-chart-report-flow-map.mts",
     "test:place-search-api": "node --import tsx scripts/smoke-place-search-api.mts",
+    "test:place-search-provider": "node --import tsx scripts/test-place-search-provider.mts",
     "test:composer-stream": "node --import tsx scripts/smoke-composer-stream.mts",
     "test:composer-quarry": "node --import tsx scripts/smoke-composer-quarry.mts",
     "test:composer-course-ux": "node --import tsx scripts/smoke-composer-course-ux.mts",

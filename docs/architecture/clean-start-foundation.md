@@ -83,7 +83,7 @@ The current onboarding flow covers:
 6. Review: show the normalized payload before queuing requests.
 7. Confirmation: show queued chart and report lifecycle state.
 
-`/api/places/search` is the authenticated birth-place search edge. It accepts `q` and optional `limit`, returns typed place results with label, IANA timezone, latitude, longitude, and provider, and fails clearly with `PLACE_SEARCH_PROVIDER_UNAVAILABLE` when no provider is configured. Local smoke and Playwright coverage use the non-secret `ASTRA_PLACE_SEARCH_PROVIDER=local-fixture` provider so tests can prove place selection without introducing production credentials or hidden fallbacks.
+`/api/places/search` is the authenticated birth-place search edge. It accepts `q` and optional `limit`, returns typed place results with label, IANA timezone, latitude, longitude, and provider, and fails clearly with `PLACE_SEARCH_PROVIDER_UNAVAILABLE` when no provider is configured or the upstream provider is unavailable. Hosted alpha uses `ASTRA_PLACE_SEARCH_PROVIDER=open-meteo` for global city lookup. Local smoke and Playwright coverage retain the deterministic, non-secret `ASTRA_PLACE_SEARCH_PROVIDER=local-fixture` provider.
 
 Composer's first publishing target is `ComposerStreamArtifact`: a voice card plus a stream card and stream item whose IDs must match. Composer remains implementation-free in the foundation, but the publish contract is available before internals are built. Per `docs/architecture/composer-private-personal-feeds.md`, this contract must evolve toward private `UserFeedItem` projections; public/shared stream items are fallback/source-layer artifacts, not Astra's core journey.
 

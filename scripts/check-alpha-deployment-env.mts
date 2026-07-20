@@ -72,8 +72,8 @@ if (!clean("ASTRA_OPENROUTER_API_KEY") && !clean("OPENROUTER_API_KEY")) {
 const signupCredits = Number.parseInt(requireValue("ASTRA_BETA_SIGNUP_CREDITS"), 10);
 if (!Number.isInteger(signupCredits) || signupCredits <= 0) errors.push("ASTRA_BETA_SIGNUP_CREDITS must be a positive integer.");
 
-requireExact("ASTRA_PLACE_SEARCH_PROVIDER", "local-fixture");
-notes.push("Place search is fixture-only in this alpha; place remains optional and timezone is entered explicitly.");
+requireExact("ASTRA_PLACE_SEARCH_PROVIDER", "open-meteo");
+notes.push("Place search uses Open-Meteo's global geocoder; place remains optional if the provider is unavailable.");
 
 const composerUrl = requireValue("COMPOSER_APP_BASE_URL");
 if (composerUrl) {
