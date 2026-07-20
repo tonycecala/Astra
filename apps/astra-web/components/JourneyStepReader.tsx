@@ -1,6 +1,7 @@
 "use client";
 
 import type { JourneyFeedItemAction } from "@astra/contracts";
+import { PublishedCard } from "@astra/ui";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ui } from "../lib/i18n";
@@ -36,10 +37,22 @@ export function JourneyStepReader({ currentStep, queue, saved }: { currentStep?:
   return (
     <div className="journey-step-layout">
       <main className="journey-current-step" aria-label={ui.journey.currentStepLabel}>
-        <p className="eyebrow">{ui.journey.currentStep}</p>
-        <h2>{currentStep.card.title}</h2>
-        {currentStep.card.subtitle ? <p className="journey-step-subtitle">{currentStep.card.subtitle}</p> : null}
-        <p className="journey-step-body">{currentStep.card.body}</p>
+        <article className="journey-current-card stream-card astraPublishedCard">
+          <PublishedCard
+            bodyText={currentStep.card.body}
+            className="stream-card-open"
+            contentClassName="stream-card-content"
+            eyebrow={ui.journey.currentStep}
+            imageAlt={currentStep.card.imageUrl ? currentStep.card.title : ""}
+            imageFallback={ui.journey.lanes[currentStep.card.lane]}
+            imageUrl={currentStep.card.imageUrl}
+            mediaClassName="stream-card-media astraStreamArtFrame"
+            showLessLabel={ui.journey.showLess}
+            showMoreLabel={ui.journey.showMore}
+            subtitle={currentStep.card.subtitle}
+            title={currentStep.card.title}
+          />
+        </article>
         {error ? <p className="form-error" role="alert">{error}</p> : null}
         <div className="journey-step-actions" aria-label={ui.journey.stepActionsLabel}>
           <button className="button" disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "complete")} type="button">{ui.journey.completeStep}</button>

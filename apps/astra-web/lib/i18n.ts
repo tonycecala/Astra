@@ -44,6 +44,8 @@ export const ui = {
     intro: "Your private, ordered place for the next meaningful thing to notice or do.",
     publicTitle: "Astra meets you where you are",
     publicIntro: "A small public glimpse of the kinds of reflection Astra can bring into your private Journey.",
+    welcomeTitle: "Welcome to Astra",
+    welcomeIntro: "Begin your private Journey with your chart, Stars, and saved reports gathered in one place.",
     currentStep: "Current step",
     currentStepLabel: "Current Journey step",
     stepActionsLabel: "Journey step actions",

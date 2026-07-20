@@ -12,5 +12,18 @@ export default async function HomePage() {
   const { profile } = await getAstraAuthContext();
   if (profile) redirect("/journey");
   const cards = await getPublicJourneyPreview();
-  return <><PageHeader eyebrow={ui.journey.eyebrow} title={ui.journey.publicTitle}>{ui.journey.publicIntro}</PageHeader><section className="auth-gate-grid" aria-label={ui.login.pageKicker}><article className="card auth-gate-card"><div className="eyebrow">{ui.login.pageKicker}</div><h2>{ui.login.pageTitle}</h2><p>{ui.login.pageIntro}</p><AuthPanel /></article></section><PublicJourneyPreview cards={cards} /></>;
+  return (
+    <>
+      <PageHeader eyebrow={ui.journey.eyebrow} title={ui.journey.publicTitle}>{ui.journey.publicIntro}</PageHeader>
+      <section className="auth-gate-grid" aria-label={ui.login.pageKicker}>
+        <article className="card auth-gate-card">
+          <div className="eyebrow">{ui.login.pageKicker}</div>
+          <h2>{ui.journey.welcomeTitle}</h2>
+          <p>{ui.journey.welcomeIntro}</p>
+          <AuthPanel />
+        </article>
+      </section>
+      <PublicJourneyPreview cards={cards} />
+    </>
+  );
 }

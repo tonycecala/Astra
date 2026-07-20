@@ -308,7 +308,7 @@ test.describe("clean-start routes", () => {
 
   test("mobile layout has no document-level horizontal overflow", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/journey");
+    await page.goto("/");
     await expect(page.getByRole("navigation", { name: "Mobile navigation" })).toBeVisible();
     const hasOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(hasOverflow).toBe(false);
@@ -336,34 +336,20 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("heading", { name: testInfo.project.name === "mobile" ? "Self" : "Sign in to see your Astra" })).toBeVisible();
   });
 
-  test("reader filters lanes and opens card detail", async ({ page }) => {
-    await page.goto("/journey");
-    await expect(page.getByLabel("Journey state")).toContainText("A public sample, not your private Journey");
-    await expect(page.locator(".stream-card")).toHaveCount(12);
-    await page.getByRole("tab", { name: "Practice" }).click();
-    const ariesCard = page.locator(".stream-card-open").filter({ hasText: "Aries is ignition" });
-    await expect(ariesCard).toBeVisible();
-    await expect(page.locator(".stream-card-open").filter({ hasText: "Cleopatra: image" })).toHaveCount(0);
-    await ariesCard.click();
-    await expect(page.getByLabel("Card detail")).toContainText("Aries is ignition");
-  });
-
-  test("reader surfaces public fallback metadata", async ({ page }) => {
-    await page.goto("/journey");
-    await page.getByRole("tab", { name: "Myth and symbol" }).click();
-    await page.locator(".stream-card-open").filter({ hasText: "Cleopatra: image" }).click();
-    await expect(page.getByLabel("Card detail")).toContainText("Cleopatra: image, strategy, and survival");
-    await expect(page.getByLabel("Card metadata")).toContainText("Card");
-    await expect(page.getByLabel("Card metadata")).toContainText("Public fallback");
-    await expect(page.getByLabel("Card metadata")).toContainText("Published");
-  });
-
-  test("reader save and reflect actions update state", async ({ page }) => {
-    await page.goto("/journey");
-    await page.getByRole("button", { name: /^Save$/ }).first().click();
-    await expect(page.getByText("1 saved")).toBeVisible();
-    await page.getByRole("button", { name: /^Reflect$/ }).first().click();
-    await expect(page.getByText("1 reflected")).toBeVisible();
+  test("public Journey uses the established PublishedCard surface", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Welcome to Astra" })).toBeVisible();
+    const cards = page.getByLabel("Public Journey preview").locator("article.astraPublishedCard");
+    await expect(cards).toHaveCount(4);
+    const firstCard = cards.first();
+    await expect(firstCard.locator(".astraPublishedCardEyebrow")).toBeVisible();
+    await expect(firstCard.locator(".astraPublishedCardTitle")).toBeVisible();
+    await expect(firstCard.locator(".astraPublishedCardMedia")).toBeVisible();
+    await expect(firstCard.locator(".astraPublishedCardImage")).toHaveCount(1);
+    const showMore = firstCard.getByRole("button", { name: "Show more" });
+    await expect(showMore).toBeVisible();
+    await showMore.click();
+    await expect(firstCard.getByRole("button", { name: "Show less" })).toBeVisible();
   });
 
   test("theme toggle switches and persists the Astra theme", async ({ page }) => {

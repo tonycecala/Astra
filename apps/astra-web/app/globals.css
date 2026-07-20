@@ -840,7 +840,6 @@ textarea {
   align-items: start;
 }
 
-.journey-current-step,
 .journey-queue,
 .journey-empty {
   border: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
@@ -849,16 +848,15 @@ textarea {
   padding: clamp(20px, 4vw, 34px);
 }
 
-.journey-current-step h2,
 .journey-queue h2,
 .journey-empty h2 {
   margin: 0;
   color: var(--gold);
 }
 
-.journey-current-step .eyebrow { margin: 0 0 10px; }
+.journey-current-step { min-width: 0; }
+.journey-current-card { min-height: 0; }
 .journey-step-subtitle { color: var(--muted); font-weight: 650; }
-.journey-step-body { max-width: 68ch; font-size: 1.05rem; line-height: 1.65; white-space: pre-line; }
 .journey-step-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
 .journey-queue { padding: 20px; }
 .journey-queue-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
@@ -4386,7 +4384,7 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
   }
 
   .journey-step-layout { grid-template-columns: 1fr; }
-  .journey-current-step, .journey-queue, .journey-empty { border-radius: 8px; padding: 18px; }
+  .journey-queue, .journey-empty { border-radius: 8px; padding: 18px; }
   .journey-step-actions .button { flex: 1 1 100%; justify-content: center; }
 
   .reader-detail {

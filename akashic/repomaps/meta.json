@@ -125,6 +125,22 @@
       "route_count": 0
     },
     {
+      "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+      "weight": 269.25,
+      "bucket": "other",
+      "estimated_tokens": 8157,
+      "lines": 624,
+      "symbols": 72,
+      "symbol_type_counts": {
+        "constant": 61,
+        "function": 10,
+        "type": 1
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/astra-web/components/ReportReader.tsx",
       "weight": 268.32,
       "bucket": "other",
@@ -139,22 +155,6 @@
       },
       "dependency_in": 2,
       "dependency_out": 7,
-      "route_count": 0
-    },
-    {
-      "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-      "weight": 263.25,
-      "bucket": "other",
-      "estimated_tokens": 8356,
-      "lines": 638,
-      "symbols": 70,
-      "symbol_type_counts": {
-        "constant": 59,
-        "function": 10,
-        "type": 1
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -1306,8 +1306,8 @@
       "file": "apps/astra-web/lib/i18n.ts",
       "weight": 67.24,
       "bucket": "other",
-      "estimated_tokens": 8664,
-      "lines": 796,
+      "estimated_tokens": 8701,
+      "lines": 798,
       "symbols": 1,
       "symbol_type_counts": {
         "constant": 1
@@ -2515,10 +2515,10 @@
     },
     {
       "file": "apps/astra-web/components/JourneyStepReader.tsx",
-      "weight": 32.11,
+      "weight": 32.28,
       "bucket": "other",
-      "estimated_tokens": 816,
-      "lines": 58,
+      "estimated_tokens": 948,
+      "lines": 71,
       "symbols": 4,
       "symbol_type_counts": {
         "component": 1,
@@ -3013,6 +3013,21 @@
       "route_count": 0
     },
     {
+      "file": "apps/astra-web/app/page.tsx",
+      "weight": 25.62,
+      "bucket": "other",
+      "estimated_tokens": 283,
+      "lines": 30,
+      "symbols": 3,
+      "symbol_type_counts": {
+        "component": 1,
+        "constant": 2
+      },
+      "dependency_in": 0,
+      "dependency_out": 6,
+      "route_count": 0
+    },
+    {
       "file": "docs/architecture/stream-read-model-cache-boundary.md",
       "weight": 25.38,
       "bucket": "other",
@@ -3038,21 +3053,6 @@
       },
       "dependency_in": 0,
       "dependency_out": 0,
-      "route_count": 0
-    },
-    {
-      "file": "apps/astra-web/app/page.tsx",
-      "weight": 25.14,
-      "bucket": "other",
-      "estimated_tokens": 254,
-      "lines": 17,
-      "symbols": 3,
-      "symbol_type_counts": {
-        "component": 1,
-        "constant": 2
-      },
-      "dependency_in": 0,
-      "dependency_out": 6,
       "route_count": 0
     },
     {
@@ -3225,6 +3225,21 @@
       },
       "dependency_in": 0,
       "dependency_out": 4,
+      "route_count": 0
+    },
+    {
+      "file": "apps/astra-web/components/PublicJourneyPreview.tsx",
+      "weight": 20.67,
+      "bucket": "other",
+      "estimated_tokens": 289,
+      "lines": 32,
+      "symbols": 2,
+      "symbol_type_counts": {
+        "component": 1,
+        "constant": 1
+      },
+      "dependency_in": 1,
+      "dependency_out": 2,
       "route_count": 0
     },
     {
@@ -3762,20 +3777,6 @@
       },
       "dependency_in": 0,
       "dependency_out": 0,
-      "route_count": 0
-    },
-    {
-      "file": "apps/astra-web/components/PublicJourneyPreview.tsx",
-      "weight": 16.47,
-      "bucket": "other",
-      "estimated_tokens": 122,
-      "lines": 7,
-      "symbols": 1,
-      "symbol_type_counts": {
-        "component": 1
-      },
-      "dependency_in": 1,
-      "dependency_out": 2,
       "route_count": 0
     },
     {
@@ -5301,9 +5302,9 @@
     {
       "name": "top-weighted",
       "budget_tokens": 128000,
-      "estimated_tokens": 132356,
+      "estimated_tokens": 132157,
       "file_count": 16,
-      "symbol_count": 1690,
+      "symbol_count": 1692,
       "files": [
         {
           "rank": 1,
@@ -5430,6 +5431,23 @@
         },
         {
           "rank": 8,
+          "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+          "weight": 269.25,
+          "bucket": "other",
+          "estimated_tokens": 8157,
+          "lines": 624,
+          "symbols": 72,
+          "symbol_type_counts": {
+            "constant": 61,
+            "function": 10,
+            "type": 1
+          },
+          "dependency_in": 0,
+          "dependency_out": 0,
+          "route_count": 0
+        },
+        {
+          "rank": 9,
           "file": "apps/astra-web/components/ReportReader.tsx",
           "weight": 268.32,
           "bucket": "other",
@@ -5444,23 +5462,6 @@
           },
           "dependency_in": 2,
           "dependency_out": 7,
-          "route_count": 0
-        },
-        {
-          "rank": 9,
-          "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-          "weight": 263.25,
-          "bucket": "other",
-          "estimated_tokens": 8356,
-          "lines": 638,
-          "symbols": 70,
-          "symbol_type_counts": {
-            "constant": 59,
-            "function": 10,
-            "type": 1
-          },
-          "dependency_in": 0,
-          "dependency_out": 0,
           "route_count": 0
         },
         {
@@ -5593,7 +5594,7 @@
   ],
   "coverage": {
     "files": 361,
-    "symbols": 4077,
-    "total_estimated_tokens": 989774
+    "symbols": 4080,
+    "total_estimated_tokens": 989940
   }
 }
