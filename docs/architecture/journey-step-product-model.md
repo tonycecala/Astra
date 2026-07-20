@@ -23,9 +23,17 @@ Actions map to existing persistent states and timestamps:
 
 Every read and mutation is scoped by both `userId` and feed-item ID. Journey never exposes Composer decision traces, ranking scores, model details, or another user's projection.
 
+## Producer integration
+
+- Opening Journey for a profile whose onboarding status is still pending asks Composer to publish its deterministic private onboarding batch. Astra marks onboarding complete only after the full batch persists; a Composer outage leaves the profile pending so the next Journey visit retries without blocking auth, Self, Library, or report APIs.
+- Successful report generation immediately publishes the completed report's public signal as a deterministic user-owned `report_signal` item.
+- Opening Journey reconciles completed historical reports with public signals, so accounts created before automatic publishing receive their missing report items.
+- Repeated producer writes may refresh authored card content but must preserve the user's durable state and original availability. A retry cannot resurrect a completed, saved, or dismissed step.
+- Report-card continuity uses the private report request ID for `/library?reportId=...`; the public-signal ID is provenance, not an Astra route handle.
+
 ## Product states and pattern acceptance
 
-The rendered states are signed-out illustration, loading, private empty, one step, multiple ordered steps, saved steps, action failure, and database failure. The implementation follows `01-time-to-value.md` (one current focus), `05-progressive-disclosure.md` (queue secondary to the current step), `20-fail-safe.md` (disabled pending actions, retained data, retry), and `36-trust-building.md` (explicit private boundary and only durable actions). No forbidden or adversarial pattern is used.
+The rendered states are signed-out illustration, loading, private empty, one step, multiple ordered steps, saved steps, action failure, Composer delay with safe retry, and database failure. The implementation follows `01-time-to-value.md` (real onboarding value reaches Journey), `05-progressive-disclosure.md` (queue secondary to the current step), `20-fail-safe.md` (producer retries preserve user state), and `36-trust-building.md` (user-scoped projections and report provenance). No forbidden or adversarial pattern is used.
 
 Analytics are N/A in this iteration because Astra has no active client analytics transport. The durable database state remains the source of truth; no silent telemetry sink was invented.
 

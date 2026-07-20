@@ -1111,8 +1111,6 @@ export async function createUserFeedItem(database: AstraDb, input: CreateUserFee
         displayPayload: parsed.displayPayload,
         rankScore: Math.round(parsed.rankScore),
         reasonCode: parsed.reasonCode,
-        state: parsed.state,
-        availableAt,
         expiresAt: parsed.expiresAt ? toDate(parsed.expiresAt) : null,
         updatedAt: now
       }
@@ -1273,6 +1271,17 @@ export async function upsertAuthUserProfile(database: AstraDb, input: AuthUserPr
     throw new Error("Profile initialization did not resolve a saved user profile.");
   }
 
+  return profile;
+}
+
+export async function markAuthUserOnboardingComplete(database: AstraDb, userId: string) {
+  const [profile] = await database
+    .update(appUserProfiles)
+    .set({ onboardingStatus: "complete", updatedAt: new Date() })
+    .where(eq(appUserProfiles.userId, userId))
+    .returning();
+
+  if (!profile) throw new Error("Onboarding completion did not resolve a saved user profile.");
   return profile;
 }
 

@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-07-20T20:10:53.134Z",
+  "generated_at": "2026-07-20T22:43:13.108Z",
   "root_name": "Astra",
-  "files_indexed": 362,
-  "total_symbols": 4131,
-  "total_estimated_tokens": 994175,
+  "files_indexed": 363,
+  "total_symbols": 4160,
+  "total_estimated_tokens": 996590,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -2415,9 +2415,9 @@
     {
       "file": "packages/db/src/repositories.ts",
       "lang": "typescript",
-      "size": 76987,
-      "lines": 2344,
-      "estimated_tokens": 19247,
+      "size": 77340,
+      "lines": 2353,
+      "estimated_tokens": 19335,
       "symbols": [
         {
           "name": "Artifact",
@@ -2946,547 +2946,552 @@
         },
         {
           "name": "listUserFeedItems",
-          "line": 1125,
+          "line": 1123,
           "type": "function"
         },
         {
           "name": "parsed",
-          "line": 1129,
+          "line": 1127,
           "type": "constant"
         },
         {
           "name": "filters",
-          "line": 1130,
+          "line": 1128,
           "type": "constant"
         },
         {
           "name": "rows",
-          "line": 1133,
+          "line": 1131,
           "type": "constant"
         },
         {
           "name": "getUserFeedItemById",
-          "line": 1147,
+          "line": 1145,
           "type": "function"
         },
         {
           "name": "assertUserOwnsFeedItem",
-          "line": 1160,
+          "line": 1158,
           "type": "function"
         },
         {
           "name": "item",
-          "line": 1161,
+          "line": 1159,
           "type": "constant"
         },
         {
           "name": "updateUserFeedItemState",
-          "line": 1166,
+          "line": 1164,
           "type": "function"
         },
         {
           "name": "now",
-          "line": 1170,
+          "line": 1168,
           "type": "constant"
         },
         {
           "name": "state",
-          "line": 1171,
+          "line": 1169,
           "type": "constant"
         },
         {
           "name": "createComposerDecision",
-          "line": 1187,
+          "line": 1185,
           "type": "function"
         },
         {
           "name": "parsed",
-          "line": 1191,
+          "line": 1189,
           "type": "constant"
         },
         {
           "name": "now",
-          "line": 1192,
+          "line": 1190,
           "type": "constant"
         },
         {
           "name": "upsertAuthUserProfile",
-          "line": 1238,
+          "line": 1236,
           "type": "function"
         },
         {
           "name": "now",
-          "line": 1239,
+          "line": 1237,
           "type": "constant"
         },
         {
+          "name": "markAuthUserOnboardingComplete",
+          "line": 1277,
+          "type": "function"
+        },
+        {
           "name": "updateAuthUserProfileDisplayName",
-          "line": 1279,
+          "line": 1288,
           "type": "function"
         },
         {
           "name": "displayName",
-          "line": 1283,
+          "line": 1292,
           "type": "constant"
         },
         {
           "name": "now",
-          "line": 1286,
+          "line": 1295,
           "type": "constant"
         },
         {
           "name": "createAlly",
-          "line": 1304,
+          "line": 1313,
           "type": "function"
         },
         {
           "name": "parsed",
-          "line": 1305,
+          "line": 1314,
           "type": "constant"
         },
         {
           "name": "now",
-          "line": 1306,
+          "line": 1315,
           "type": "constant"
         },
         {
           "name": "listUserAllies",
-          "line": 1324,
+          "line": 1333,
           "type": "function"
         },
         {
           "name": "rows",
-          "line": 1325,
+          "line": 1334,
           "type": "constant"
         },
         {
           "name": "deleteUserAlly",
-          "line": 1334,
-          "type": "function"
-        },
-        {
-          "name": "deleted",
-          "line": 1335,
-          "type": "constant"
-        },
-        {
-          "name": "createChartMakerRequest",
           "line": 1343,
           "type": "function"
         },
         {
+          "name": "deleted",
+          "line": 1344,
+          "type": "constant"
+        },
+        {
+          "name": "createChartMakerRequest",
+          "line": 1352,
+          "type": "function"
+        },
+        {
           "name": "birthData",
-          "line": 1347,
+          "line": 1356,
           "type": "constant"
         },
         {
           "name": "now",
-          "line": 1348,
+          "line": 1357,
           "type": "constant"
         },
         {
           "name": "listUserChartMakerRequests",
-          "line": 1369,
+          "line": 1378,
           "type": "function"
         },
         {
           "name": "rows",
-          "line": 1370,
+          "line": 1379,
           "type": "constant"
         },
         {
           "name": "getUserChartMakerRequest",
-          "line": 1379,
+          "line": 1388,
           "type": "function"
         },
         {
           "name": "updateUserChartMakerBirthData",
-          "line": 1395,
+          "line": 1404,
           "type": "function"
         },
         {
           "name": "birthData",
-          "line": 1403,
+          "line": 1412,
           "type": "constant"
         },
         {
           "name": "recordChartMakerResult",
-          "line": 1417,
+          "line": 1426,
           "type": "function"
         },
         {
           "name": "now",
-          "line": 1421,
+          "line": 1430,
           "type": "constant"
         },
         {
           "name": "createAstrologyReportRequest",
-          "line": 1468,
+          "line": 1477,
           "type": "function"
         },
         {
           "name": "birthData",
-          "line": 1472,
+          "line": 1481,
           "type": "constant"
         },
         {
           "name": "reportBasis",
-          "line": 1473,
+          "line": 1482,
           "type": "constant"
         },
         {
           "name": "now",
-          "line": 1474,
+          "line": 1483,
           "type": "constant"
         },
         {
           "name": "purchaseAstrologyReportRequest",
-          "line": 1501,
+          "line": 1510,
           "type": "function"
         },
         {
           "name": "birthData",
-          "line": 1505,
+          "line": 1514,
           "type": "constant"
         },
         {
           "name": "reportBasis",
-          "line": 1506,
+          "line": 1515,
           "type": "constant"
         },
         {
           "name": "now",
-          "line": 1507,
+          "line": 1516,
           "type": "constant"
         },
         {
           "name": "balance",
-          "line": 1518,
+          "line": 1527,
           "type": "constant"
         },
         {
           "name": "getCreditBalance",
-          "line": 1570,
-          "type": "function"
-        },
-        {
-          "name": "mirrorCreditBalanceToProfile",
           "line": 1579,
           "type": "function"
         },
         {
+          "name": "mirrorCreditBalanceToProfile",
+          "line": 1588,
+          "type": "function"
+        },
+        {
           "name": "balance",
-          "line": 1580,
+          "line": 1589,
           "type": "constant"
         },
         {
           "name": "ensureBetaSignupCredits",
-          "line": 1585,
+          "line": 1594,
           "type": "function"
         },
         {
           "name": "amount",
-          "line": 1586,
+          "line": 1595,
           "type": "constant"
         },
         {
           "name": "adminAdjustCredits",
-          "line": 1605,
+          "line": 1614,
           "type": "function"
         },
         {
           "name": "targetEmail",
-          "line": 1609,
+          "line": 1618,
           "type": "constant"
         },
         {
           "name": "amount",
-          "line": 1610,
+          "line": 1619,
           "type": "constant"
         },
         {
           "name": "signedAmount",
-          "line": 1616,
+          "line": 1625,
           "type": "constant"
         },
         {
           "name": "balance",
-          "line": 1635,
+          "line": 1644,
           "type": "constant"
         },
         {
           "name": "adminUpdateUserRole",
-          "line": 1639,
+          "line": 1648,
           "type": "function"
         },
         {
           "name": "targetEmail",
-          "line": 1640,
+          "line": 1649,
           "type": "constant"
         },
         {
           "name": "role",
-          "line": 1641,
+          "line": 1650,
           "type": "constant"
         },
         {
           "name": "listCreditUsers",
-          "line": 1651,
+          "line": 1660,
           "type": "function"
         },
         {
           "name": "limit",
-          "line": 1652,
+          "line": 1661,
           "type": "constant"
         },
         {
           "name": "search",
-          "line": 1653,
+          "line": 1662,
           "type": "constant"
         },
         {
           "name": "rows",
-          "line": 1654,
+          "line": 1663,
           "type": "constant"
         },
         {
           "name": "userIds",
-          "line": 1671,
+          "line": 1680,
           "type": "constant"
         },
         {
           "name": "creditsByUserId",
-          "line": 1701,
+          "line": 1710,
           "type": "constant"
         },
         {
           "name": "chartsByUserId",
-          "line": 1702,
+          "line": 1711,
           "type": "constant"
         },
         {
           "name": "reportsByUserId",
-          "line": 1703,
+          "line": 1712,
           "type": "constant"
         },
         {
           "name": "getCreditLedgerSummary",
-          "line": 1713,
+          "line": 1722,
           "type": "function"
         },
         {
           "name": "base",
-          "line": 1714,
+          "line": 1723,
           "type": "constant"
         },
         {
           "name": "listRecentCreditLedger",
-          "line": 1746,
+          "line": 1755,
           "type": "function"
         },
         {
           "name": "rows",
-          "line": 1747,
+          "line": 1756,
           "type": "constant"
         },
         {
           "name": "recordPendingStripeCheckout",
-          "line": 1777,
+          "line": 1786,
           "type": "function"
         },
         {
           "name": "recordStripeEvent",
-          "line": 1807,
+          "line": 1816,
           "type": "function"
         },
         {
           "name": "completeStripeCheckoutPurchase",
-          "line": 1824,
+          "line": 1833,
           "type": "function"
         },
         {
           "name": "balance",
-          "line": 1888,
+          "line": 1897,
           "type": "constant"
         },
         {
           "name": "listUserAstrologyReportRequests",
-          "line": 1892,
+          "line": 1901,
           "type": "function"
         },
         {
           "name": "rows",
-          "line": 1896,
+          "line": 1905,
           "type": "constant"
         },
         {
           "name": "getUserAstrologyReportRequest",
-          "line": 1905,
+          "line": 1914,
           "type": "function"
         },
         {
           "name": "getAstrologyReportRequest",
-          "line": 1918,
+          "line": 1927,
           "type": "function"
         },
         {
           "name": "listUserAstrologyReportResults",
-          "line": 1928,
+          "line": 1937,
           "type": "function"
         },
         {
           "name": "rows",
-          "line": 1932,
+          "line": 1941,
           "type": "constant"
         },
         {
           "name": "getUserAstrologyReportResult",
-          "line": 1941,
+          "line": 1950,
           "type": "function"
         },
         {
           "name": "deleteUserAstrologyReport",
-          "line": 1954,
+          "line": 1963,
           "type": "function"
         },
         {
           "name": "astrologyReportShareTokenHash",
-          "line": 1974,
+          "line": 1983,
           "type": "function"
         },
         {
           "name": "astrologyReportShareEmail",
-          "line": 1978,
+          "line": 1987,
           "type": "function"
         },
         {
           "name": "createAstrologyReportShare",
-          "line": 1985,
+          "line": 1994,
           "type": "function"
         },
         {
           "name": "token",
-          "line": 1989,
+          "line": 1998,
           "type": "constant"
         },
         {
           "name": "tokenHash",
-          "line": 1990,
+          "line": 1999,
           "type": "constant"
         },
         {
           "name": "now",
-          "line": 1991,
+          "line": 2000,
           "type": "constant"
         },
         {
           "name": "title",
-          "line": 2022,
+          "line": 2031,
           "type": "constant"
         },
         {
           "name": "shareUrl",
-          "line": 2023,
+          "line": 2032,
           "type": "constant"
         },
         {
           "name": "email",
-          "line": 2024,
+          "line": 2033,
           "type": "constant"
         },
         {
           "name": "revokeAstrologyReportShare",
-          "line": 2029,
+          "line": 2038,
           "type": "function"
         },
         {
           "name": "getSharedAstrologyReport",
-          "line": 2045,
+          "line": 2054,
           "type": "function"
         },
         {
           "name": "tokenHash",
-          "line": 2046,
+          "line": 2055,
           "type": "constant"
         },
         {
           "name": "normalizeBetaFeedbackCategory",
-          "line": 2070,
+          "line": 2079,
           "type": "function"
         },
         {
           "name": "betaFeedbackRecordFromRow",
-          "line": 2075,
+          "line": 2084,
           "type": "function"
         },
         {
           "name": "createBetaFeedback",
-          "line": 2103,
+          "line": 2112,
           "type": "function"
         },
         {
           "name": "message",
-          "line": 2104,
+          "line": 2113,
           "type": "constant"
         },
         {
           "name": "listRecentBetaFeedback",
-          "line": 2152,
+          "line": 2161,
           "type": "function"
         },
         {
           "name": "rows",
-          "line": 2153,
+          "line": 2162,
           "type": "constant"
         },
         {
           "name": "listUserArtifacts",
-          "line": 2175,
+          "line": 2184,
           "type": "function"
         },
         {
           "name": "rows",
-          "line": 2176,
+          "line": 2185,
           "type": "constant"
         },
         {
           "name": "recordAstrologyReportResult",
-          "line": 2185,
+          "line": 2194,
           "type": "function"
         },
         {
           "name": "now",
-          "line": 2189,
+          "line": 2198,
           "type": "constant"
         },
         {
           "name": "upsertComposerStreamArtifact",
-          "line": 2281,
+          "line": 2290,
           "type": "function"
         },
         {
           "name": "artifact",
-          "line": 2285,
+          "line": 2294,
           "type": "constant"
         },
         {
           "name": "now",
-          "line": 2286,
+          "line": 2295,
           "type": "constant"
         },
         {
           "name": "assertResetAllowed",
-          "line": 2334,
+          "line": 2343,
           "type": "function"
         },
         {
           "name": "parsed",
-          "line": 2335,
+          "line": 2344,
           "type": "constant"
         },
         {
           "name": "localHosts",
-          "line": 2336,
+          "line": 2345,
           "type": "constant"
         }
       ],
@@ -3559,6 +3564,7 @@
         "listUserAstrologyReportResults",
         "listUserChartMakerRequests",
         "listUserFeedItems",
+        "markAuthUserOnboardingComplete",
         "mirrorCreditBalanceToProfile",
         "purchaseAstrologyReportRequest",
         "readFoundationSnapshot",
@@ -3585,7 +3591,7 @@
       "headings": [],
       "dependency_in": 1,
       "dependency_out": 2,
-      "importance_weight": 1012.18,
+      "importance_weight": 1020.18,
       "importance_bucket": "other"
     },
     {
@@ -6957,9 +6963,9 @@
     {
       "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
       "lang": "typescript",
-      "size": 32979,
-      "lines": 629,
-      "estimated_tokens": 8243,
+      "size": 37356,
+      "lines": 690,
+      "estimated_tokens": 9337,
       "symbols": [
         {
           "name": "JsonObject",
@@ -6967,378 +6973,433 @@
           "type": "type"
         },
         {
-          "name": "routes",
+          "name": "isExpectedNavigationCancellation",
           "line": 10,
+          "type": "function"
+        },
+        {
+          "name": "routes",
+          "line": 14,
           "type": "constant"
         },
         {
           "name": "findOtp",
-          "line": 21,
+          "line": 25,
           "type": "function"
         },
         {
           "name": "otp",
-          "line": 25,
+          "line": 29,
           "type": "constant"
         },
         {
           "name": "otp",
-          "line": 31,
+          "line": 35,
           "type": "constant"
         },
         {
           "name": "readOtpFromMailpit",
-          "line": 38,
+          "line": 42,
           "type": "function"
         },
         {
           "name": "mailpitUrl",
-          "line": 39,
-          "type": "constant"
-        },
-        {
-          "name": "deadline",
-          "line": 40,
-          "type": "constant"
-        },
-        {
-          "name": "searchUrl",
           "line": 43,
           "type": "constant"
         },
         {
-          "name": "searchResponse",
+          "name": "deadline",
+          "line": 44,
+          "type": "constant"
+        },
+        {
+          "name": "searchUrl",
           "line": 47,
           "type": "constant"
         },
         {
+          "name": "searchResponse",
+          "line": 51,
+          "type": "constant"
+        },
+        {
           "name": "search",
-          "line": 52,
+          "line": 56,
           "type": "constant"
         },
         {
           "name": "messages",
-          "line": 53,
+          "line": 57,
           "type": "constant"
         },
         {
           "name": "id",
-          "line": 60,
+          "line": 64,
           "type": "constant"
         },
         {
           "name": "messageResponse",
-          "line": 63,
+          "line": 67,
           "type": "constant"
         },
         {
           "name": "message",
-          "line": 65,
+          "line": 69,
           "type": "constant"
         },
         {
           "name": "otp",
-          "line": 66,
+          "line": 70,
           "type": "constant"
         },
         {
           "name": "signInWithOtp",
-          "line": 76,
+          "line": 80,
           "type": "function"
         },
         {
           "name": "chooseUnknownBirthMoment",
-          "line": 87,
+          "line": 91,
           "type": "function"
         },
         {
           "name": "dialog",
-          "line": 89,
+          "line": 93,
           "type": "constant"
         },
         {
           "name": "makeProfileAdmin",
-          "line": 103,
+          "line": 107,
+          "type": "function"
+        },
+        {
+          "name": "userIdForEmail",
+          "line": 125,
           "type": "function"
         },
         {
           "name": "createCompletedChart",
-          "line": 121,
+          "line": 131,
           "type": "function"
         },
         {
           "name": "request",
-          "line": 124,
+          "line": 134,
           "type": "constant"
         },
         {
           "name": "result",
-          "line": 142,
+          "line": 152,
           "type": "constant"
         },
         {
           "name": "createCompletedAllyChart",
-          "line": 146,
+          "line": 156,
           "type": "function"
         },
         {
           "name": "ally",
-          "line": 149,
+          "line": 159,
           "type": "constant"
         },
         {
           "name": "request",
-          "line": 155,
+          "line": 165,
           "type": "constant"
         },
         {
           "name": "result",
-          "line": 171,
+          "line": 181,
           "type": "constant"
         },
         {
           "name": "createCompletedReport",
-          "line": 175,
+          "line": 185,
           "type": "function"
         },
         {
           "name": "chartSettings",
-          "line": 187,
+          "line": 197,
           "type": "constant"
         },
         {
           "name": "request",
-          "line": 188,
+          "line": 198,
           "type": "constant"
         },
         {
           "name": "generatedResult",
-          "line": 232,
+          "line": 242,
           "type": "constant"
         },
         {
           "name": "result",
-          "line": 238,
+          "line": 248,
           "type": "constant"
         },
         {
           "name": "signedStripeHeader",
-          "line": 249,
+          "line": 259,
           "type": "function"
         },
         {
           "name": "secret",
-          "line": 250,
+          "line": 260,
           "type": "constant"
         },
         {
           "name": "timestamp",
-          "line": 252,
+          "line": 262,
           "type": "constant"
         },
         {
           "name": "signature",
-          "line": 253,
+          "line": 263,
           "type": "constant"
         },
         {
           "name": "fulfillCheckoutThroughWebhook",
-          "line": 257,
+          "line": 267,
           "type": "function"
         },
         {
           "name": "event",
-          "line": 258,
+          "line": 268,
           "type": "constant"
         },
         {
           "name": "rawBody",
-          "line": 278,
+          "line": 288,
           "type": "constant"
         },
         {
           "name": "response",
-          "line": 279,
+          "line": 289,
           "type": "constant"
         },
         {
           "name": "hasOverflow",
-          "line": 313,
+          "line": 323,
           "type": "constant"
         },
         {
           "name": "desktopSelf",
-          "line": 320,
+          "line": 330,
           "type": "constant"
         },
         {
           "name": "mobileLibrary",
-          "line": 326,
+          "line": 336,
           "type": "constant"
         },
         {
           "name": "cards",
-          "line": 342,
+          "line": 352,
           "type": "constant"
         },
         {
           "name": "firstCard",
-          "line": 344,
+          "line": 354,
           "type": "constant"
         },
         {
           "name": "showMore",
-          "line": 349,
+          "line": 359,
           "type": "constant"
         },
         {
           "name": "email",
-          "line": 389,
+          "line": 399,
           "type": "constant"
         },
         {
           "name": "name",
-          "line": 390,
+          "line": 400,
+          "type": "constant"
+        },
+        {
+          "name": "onboardingUserId",
+          "line": 420,
+          "type": "constant"
+        },
+        {
+          "name": "onboardingFeed",
+          "line": 421,
           "type": "constant"
         },
         {
           "name": "locationDialog",
-          "line": 409,
+          "line": 433,
           "type": "constant"
         },
         {
           "name": "searchBox",
-          "line": 410,
+          "line": 434,
           "type": "constant"
         },
         {
           "name": "currentSelection",
-          "line": 411,
+          "line": 435,
           "type": "constant"
         },
         {
           "name": "searchBounds",
-          "line": 412,
+          "line": 436,
           "type": "constant"
         },
         {
           "name": "selectionBounds",
-          "line": 413,
+          "line": 437,
           "type": "constant"
         },
         {
           "name": "createChartButton",
-          "line": 423,
+          "line": 447,
           "type": "constant"
         },
         {
           "name": "chartSettings",
-          "line": 428,
+          "line": 452,
           "type": "constant"
         },
         {
           "name": "settingsBox",
-          "line": 430,
+          "line": 454,
+          "type": "constant"
+        },
+        {
+          "name": "generateResponsePromise",
+          "line": 461,
+          "type": "constant"
+        },
+        {
+          "name": "generateResponse",
+          "line": 463,
+          "type": "constant"
+        },
+        {
+          "name": "userId",
+          "line": 466,
+          "type": "constant"
+        },
+        {
+          "name": "republish",
+          "line": 475,
+          "type": "constant"
+        },
+        {
+          "name": "republishedItem",
+          "line": 477,
           "type": "constant"
         },
         {
           "name": "existingAllyChart",
-          "line": 440,
+          "line": 483,
           "type": "constant"
         },
         {
           "name": "existingOrderPanel",
-          "line": 442,
-          "type": "constant"
-        },
-        {
-          "name": "email",
-          "line": 472,
-          "type": "constant"
-        },
-        {
-          "name": "name",
-          "line": 473,
-          "type": "constant"
-        },
-        {
-          "name": "starsDialog",
           "line": 485,
           "type": "constant"
         },
         {
+          "name": "email",
+          "line": 515,
+          "type": "constant"
+        },
+        {
+          "name": "completed",
+          "line": 522,
+          "type": "constant"
+        },
+        {
+          "name": "email",
+          "line": 533,
+          "type": "constant"
+        },
+        {
+          "name": "name",
+          "line": 534,
+          "type": "constant"
+        },
+        {
+          "name": "starsDialog",
+          "line": 546,
+          "type": "constant"
+        },
+        {
           "name": "checkoutResponse",
-          "line": 495,
+          "line": 556,
           "type": "constant"
         },
         {
           "name": "checkout",
-          "line": 503,
-          "type": "constant"
-        },
-        {
-          "name": "checkoutSessionId",
-          "line": 504,
-          "type": "constant"
-        },
-        {
-          "name": "fulfilled",
-          "line": 507,
-          "type": "constant"
-        },
-        {
-          "name": "adminConfirmDialog",
-          "line": 538,
-          "type": "constant"
-        },
-        {
-          "name": "completedChart",
-          "line": 551,
-          "type": "constant"
-        },
-        {
-          "name": "selfEditPanel",
-          "line": 553,
-          "type": "constant"
-        },
-        {
-          "name": "existingSelfBirthDialog",
-          "line": 560,
-          "type": "constant"
-        },
-        {
-          "name": "existingSelfLocationDialog",
           "line": 564,
           "type": "constant"
         },
         {
-          "name": "completedReport",
-          "line": 570,
+          "name": "checkoutSessionId",
+          "line": 565,
           "type": "constant"
         },
         {
-          "name": "selectedChart",
-          "line": 588,
+          "name": "fulfilled",
+          "line": 568,
           "type": "constant"
         },
         {
-          "name": "reportFilters",
-          "line": 598,
+          "name": "adminConfirmDialog",
+          "line": 599,
           "type": "constant"
         },
         {
-          "name": "reportFilterSelect",
-          "line": 600,
+          "name": "completedChart",
+          "line": 612,
           "type": "constant"
         },
         {
-          "name": "reportChartPlate",
+          "name": "selfEditPanel",
           "line": 614,
           "type": "constant"
         },
         {
-          "name": "debugDetails",
+          "name": "existingSelfBirthDialog",
           "line": 621,
+          "type": "constant"
+        },
+        {
+          "name": "existingSelfLocationDialog",
+          "line": 625,
+          "type": "constant"
+        },
+        {
+          "name": "completedReport",
+          "line": 631,
+          "type": "constant"
+        },
+        {
+          "name": "selectedChart",
+          "line": 649,
+          "type": "constant"
+        },
+        {
+          "name": "reportFilters",
+          "line": 659,
+          "type": "constant"
+        },
+        {
+          "name": "reportFilterSelect",
+          "line": 661,
+          "type": "constant"
+        },
+        {
+          "name": "reportChartPlate",
+          "line": 675,
+          "type": "constant"
+        },
+        {
+          "name": "debugDetails",
+          "line": 682,
           "type": "constant"
         }
       ],
@@ -7356,7 +7417,7 @@
       "headings": [],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 281.25,
+      "importance_weight": 324.24,
       "importance_bucket": "other"
     },
     {
@@ -12442,124 +12503,125 @@
     {
       "file": "apps/astra-web/lib/journey.ts",
       "lang": "typescript",
-      "size": 4392,
-      "lines": 99,
-      "estimated_tokens": 1098,
+      "size": 4523,
+      "lines": 101,
+      "estimated_tokens": 1131,
       "symbols": [
         {
           "name": "JourneyStep",
-          "line": 9,
+          "line": 10,
           "type": "type"
         },
         {
           "name": "PublicJourneyCard",
-          "line": 15,
-          "type": "type"
-        },
-        {
-          "name": "JourneyViewModel",
           "line": 16,
           "type": "type"
         },
         {
+          "name": "JourneyViewModel",
+          "line": 17,
+          "type": "type"
+        },
+        {
           "name": "payloadString",
-          "line": 18,
+          "line": 19,
           "type": "function"
         },
         {
           "name": "value",
-          "line": 19,
+          "line": 20,
           "type": "constant"
         },
         {
           "name": "laneForFeedKind",
-          "line": 23,
+          "line": 24,
           "type": "function"
         },
         {
           "name": "reportRequestId",
-          "line": 30,
+          "line": 31,
           "type": "function"
         },
         {
           "name": "signal",
-          "line": 31,
+          "line": 32,
           "type": "constant"
         },
         {
           "name": "primaryActionFor",
-          "line": 36,
+          "line": 37,
           "type": "function"
         },
         {
           "name": "label",
-          "line": 37,
+          "line": 38,
           "type": "constant"
         },
         {
           "name": "reportId",
-          "line": 39,
+          "line": 40,
           "type": "constant"
         },
         {
           "name": "provenanceFor",
-          "line": 48,
+          "line": 49,
           "type": "function"
         },
         {
           "name": "stepFromFeedItem",
-          "line": 56,
+          "line": 57,
           "type": "function"
         },
         {
           "name": "getJourneyViewModel",
-          "line": 74,
+          "line": 75,
           "type": "function"
         },
         {
           "name": "steps",
-          "line": 79,
+          "line": 81,
           "type": "constant"
         },
         {
           "name": "getPublicJourneyPreview",
-          "line": 83,
+          "line": 85,
           "type": "function"
         },
         {
           "name": "availability",
-          "line": 85,
+          "line": 87,
           "type": "constant"
         },
         {
           "name": "preview",
-          "line": 86,
+          "line": 88,
           "type": "constant"
         },
         {
           "name": "snapshot",
-          "line": 91,
-          "type": "constant"
-        },
-        {
-          "name": "cardsById",
-          "line": 92,
-          "type": "constant"
-        },
-        {
-          "name": "previewIds",
           "line": 93,
           "type": "constant"
         },
         {
-          "name": "card",
+          "name": "cardsById",
+          "line": 94,
+          "type": "constant"
+        },
+        {
+          "name": "previewIds",
           "line": 95,
+          "type": "constant"
+        },
+        {
+          "name": "card",
+          "line": 97,
           "type": "constant"
         }
       ],
       "imports": [
         "./composer-selection",
         "./i18n",
+        "./journey-producers",
         "./public-composer-preview",
         "@astra/contracts",
         "@astra/db"
@@ -12575,16 +12637,16 @@
       "route_count": 0,
       "headings": [],
       "dependency_in": 4,
-      "dependency_out": 3,
-      "importance_weight": 118.42,
+      "dependency_out": 4,
+      "importance_weight": 119.41,
       "importance_bucket": "other"
     },
     {
       "file": "apps/astra-web/e2e/journey-step.spec.ts",
       "lang": "typescript",
-      "size": 7806,
-      "lines": 149,
-      "estimated_tokens": 1952,
+      "size": 8107,
+      "lines": 151,
+      "estimated_tokens": 2027,
       "symbols": [
         {
           "name": "JsonObject",
@@ -12713,27 +12775,27 @@
         },
         {
           "name": "current",
-          "line": 93,
-          "type": "constant"
-        },
-        {
-          "name": "userBOnly",
           "line": 95,
           "type": "constant"
         },
         {
+          "name": "userBOnly",
+          "line": 97,
+          "type": "constant"
+        },
+        {
           "name": "card",
-          "line": 98,
+          "line": 100,
           "type": "constant"
         },
         {
           "name": "forged",
-          "line": 108,
+          "line": 110,
           "type": "constant"
         },
         {
           "name": "currentActionUrl",
-          "line": 122,
+          "line": 124,
           "type": "constant"
         }
       ],
@@ -14352,6 +14414,122 @@
       "importance_bucket": "app/api"
     },
     {
+      "file": "apps/astra-web/lib/journey-producers.ts",
+      "lang": "typescript",
+      "size": 4693,
+      "lines": 106,
+      "estimated_tokens": 1174,
+      "symbols": [
+        {
+          "name": "clean",
+          "line": 7,
+          "type": "function"
+        },
+        {
+          "name": "composerBaseUrl",
+          "line": 11,
+          "type": "function"
+        },
+        {
+          "name": "configured",
+          "line": 12,
+          "type": "constant"
+        },
+        {
+          "name": "ensureComposerOnboardingJourney",
+          "line": 18,
+          "type": "function"
+        },
+        {
+          "name": "internalToken",
+          "line": 20,
+          "type": "constant"
+        },
+        {
+          "name": "response",
+          "line": 23,
+          "type": "constant"
+        },
+        {
+          "name": "body",
+          "line": 30,
+          "type": "constant"
+        },
+        {
+          "name": "reportSignalWrite",
+          "line": 37,
+          "type": "function"
+        },
+        {
+          "name": "signal",
+          "line": 39,
+          "type": "constant"
+        },
+        {
+          "name": "createdAt",
+          "line": 40,
+          "type": "constant"
+        },
+        {
+          "name": "sourceCardId",
+          "line": 41,
+          "type": "constant"
+        },
+        {
+          "name": "ensureReportJourneyItem",
+          "line": 93,
+          "type": "function"
+        },
+        {
+          "name": "result",
+          "line": 94,
+          "type": "constant"
+        },
+        {
+          "name": "artifact",
+          "line": 96,
+          "type": "constant"
+        },
+        {
+          "name": "write",
+          "line": 97,
+          "type": "constant"
+        },
+        {
+          "name": "reconcileCompletedReportJourneyItems",
+          "line": 101,
+          "type": "function"
+        },
+        {
+          "name": "results",
+          "line": 102,
+          "type": "constant"
+        },
+        {
+          "name": "completed",
+          "line": 103,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "./composer-private-feed",
+        "@astra/contracts",
+        "@astra/db"
+      ],
+      "exports": [
+        "ensureComposerOnboardingJourney",
+        "ensureReportJourneyItem",
+        "reconcileCompletedReportJourneyItems"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 4,
+      "dependency_out": 1,
+      "importance_weight": 97.41,
+      "importance_bucket": "other"
+    },
+    {
       "file": "apps/astra-web/app/api/billing/create-checkout-session/route.ts",
       "lang": "typescript",
       "size": 2835,
@@ -14447,6 +14625,90 @@
       "dependency_in": 0,
       "dependency_out": 2,
       "importance_weight": 97.33,
+      "importance_bucket": "app/api"
+    },
+    {
+      "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
+      "lang": "typescript",
+      "size": 2079,
+      "lines": 59,
+      "estimated_tokens": 520,
+      "symbols": [
+        {
+          "name": "RouteContext",
+          "line": 8,
+          "type": "type"
+        },
+        {
+          "name": "unauthorized",
+          "line": 14,
+          "type": "function"
+        },
+        {
+          "name": "POST",
+          "line": 18,
+          "type": "component"
+        },
+        {
+          "name": "reportRequest",
+          "line": 23,
+          "type": "constant"
+        },
+        {
+          "name": "chartRequest",
+          "line": 33,
+          "type": "constant"
+        },
+        {
+          "name": "resultPayload",
+          "line": 42,
+          "type": "constant"
+        },
+        {
+          "name": "result",
+          "line": 43,
+          "type": "constant"
+        },
+        {
+          "name": "journey",
+          "line": 44,
+          "type": "constant"
+        },
+        {
+          "name": "updatedRequest",
+          "line": 52,
+          "type": "constant"
+        },
+        {
+          "name": "POST",
+          "line": 18,
+          "type": "route_handler"
+        }
+      ],
+      "imports": [
+        "../../../../../lib/auth/profile",
+        "../../../../../lib/journey-producers",
+        "@astra/astrology",
+        "@astra/chart-maker",
+        "@astra/db",
+        "next/server"
+      ],
+      "exports": [
+        "POST"
+      ],
+      "routes": [
+        {
+          "route": "/api/reports/[requestId]/generate",
+          "method": "POST",
+          "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
+          "line": 18
+        }
+      ],
+      "route_count": 1,
+      "headings": [],
+      "dependency_in": 0,
+      "dependency_out": 2,
+      "importance_weight": 93.16,
       "importance_bucket": "app/api"
     },
     {
@@ -14570,84 +14832,6 @@
       "dependency_out": 0,
       "importance_weight": 92.41,
       "importance_bucket": "other"
-    },
-    {
-      "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-      "lang": "typescript",
-      "size": 3584,
-      "lines": 97,
-      "estimated_tokens": 896,
-      "symbols": [
-        {
-          "name": "RouteContext",
-          "line": 7,
-          "type": "type"
-        },
-        {
-          "name": "unauthorized",
-          "line": 13,
-          "type": "function"
-        },
-        {
-          "name": "POST",
-          "line": 17,
-          "type": "component"
-        },
-        {
-          "name": "reportResult",
-          "line": 22,
-          "type": "constant"
-        },
-        {
-          "name": "publishedAt",
-          "line": 34,
-          "type": "constant"
-        },
-        {
-          "name": "sourceCardId",
-          "line": 35,
-          "type": "constant"
-        },
-        {
-          "name": "composerWrite",
-          "line": 36,
-          "type": "constant"
-        },
-        {
-          "name": "write",
-          "line": 91,
-          "type": "constant"
-        },
-        {
-          "name": "POST",
-          "line": 17,
-          "type": "route_handler"
-        }
-      ],
-      "imports": [
-        "../../../../../lib/auth/profile",
-        "../../../../../lib/composer-private-feed",
-        "@astra/contracts",
-        "@astra/db",
-        "next/server"
-      ],
-      "exports": [
-        "POST"
-      ],
-      "routes": [
-        {
-          "route": "/api/reports/[requestId]/publish-signal",
-          "method": "POST",
-          "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-          "line": 17
-        }
-      ],
-      "route_count": 1,
-      "headings": [],
-      "dependency_in": 0,
-      "dependency_out": 2,
-      "importance_weight": 90.43,
-      "importance_bucket": "app/api"
     },
     {
       "file": "apps/composer-web/lib/config.ts",
@@ -15013,84 +15197,6 @@
       "dependency_out": 1,
       "importance_weight": 89.36,
       "importance_bucket": "other"
-    },
-    {
-      "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-      "lang": "typescript",
-      "size": 1668,
-      "lines": 50,
-      "estimated_tokens": 417,
-      "symbols": [
-        {
-          "name": "RouteContext",
-          "line": 7,
-          "type": "type"
-        },
-        {
-          "name": "unauthorized",
-          "line": 13,
-          "type": "function"
-        },
-        {
-          "name": "POST",
-          "line": 17,
-          "type": "component"
-        },
-        {
-          "name": "reportRequest",
-          "line": 22,
-          "type": "constant"
-        },
-        {
-          "name": "chartRequest",
-          "line": 32,
-          "type": "constant"
-        },
-        {
-          "name": "resultPayload",
-          "line": 41,
-          "type": "constant"
-        },
-        {
-          "name": "result",
-          "line": 42,
-          "type": "constant"
-        },
-        {
-          "name": "updatedRequest",
-          "line": 43,
-          "type": "constant"
-        },
-        {
-          "name": "POST",
-          "line": 17,
-          "type": "route_handler"
-        }
-      ],
-      "imports": [
-        "../../../../../lib/auth/profile",
-        "@astra/astrology",
-        "@astra/chart-maker",
-        "@astra/db",
-        "next/server"
-      ],
-      "exports": [
-        "POST"
-      ],
-      "routes": [
-        {
-          "route": "/api/reports/[requestId]/generate",
-          "method": "POST",
-          "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-          "line": 17
-        }
-      ],
-      "route_count": 1,
-      "headings": [],
-      "dependency_in": 0,
-      "dependency_out": 1,
-      "importance_weight": 89.04,
-      "importance_bucket": "app/api"
     },
     {
       "file": "apps/astra-web/components/AuthPanel.tsx",
@@ -15908,130 +16014,130 @@
       "importance_bucket": "app/api"
     },
     {
-      "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+      "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
       "lang": "markdown",
-      "size": 19169,
-      "lines": 291,
-      "estimated_tokens": 4787,
+      "size": 19137,
+      "lines": 290,
+      "estimated_tokens": 4779,
       "symbols": [
         {
           "name": "Astra Journey Product Redesign Handoff",
-          "line": 28,
+          "line": 27,
           "type": "heading"
         },
         {
           "name": "Current Status",
-          "line": 30,
+          "line": 29,
           "type": "heading"
         },
         {
-          "name": "Completion Evidence",
-          "line": 34,
+          "name": "Superseded Prior Completion Evidence",
+          "line": 33,
           "type": "heading"
         },
         {
           "name": "Design Acceptance",
-          "line": 43,
+          "line": 42,
           "type": "heading"
         },
         {
           "name": "2026-07-20 Product Checkpoint",
-          "line": 51,
+          "line": 50,
           "type": "heading"
         },
         {
           "name": "Audit evidence",
-          "line": 53,
+          "line": 52,
           "type": "heading"
         },
         {
           "name": "Recommended model for Tony's confirmation",
-          "line": 61,
+          "line": 60,
           "type": "heading"
         },
         {
           "name": "Implementation plan after approval",
-          "line": 82,
+          "line": 81,
           "type": "heading"
         },
         {
           "name": "Thread Mission",
-          "line": 95,
+          "line": 94,
           "type": "heading"
         },
         {
           "name": "Release Baseline",
-          "line": 103,
+          "line": 102,
           "type": "heading"
         },
         {
           "name": "Governing Product Truth",
-          "line": 111,
+          "line": 110,
           "type": "heading"
         },
         {
           "name": "Current Product and Code Reality",
-          "line": 121,
+          "line": 120,
           "type": "heading"
         },
         {
           "name": "First Decision Checkpoint",
-          "line": 137,
+          "line": 136,
           "type": "heading"
         },
         {
           "name": "Recommended Product Lens",
-          "line": 151,
+          "line": 150,
           "type": "heading"
         },
         {
           "name": "Non-Negotiable Boundaries",
-          "line": 166,
+          "line": 165,
           "type": "heading"
         },
         {
           "name": "YAGNI Watch List",
-          "line": 180,
+          "line": 179,
           "type": "heading"
         },
         {
           "name": "Primary Code Map",
-          "line": 196,
+          "line": 195,
           "type": "heading"
         },
         {
           "name": "Product Design Inputs",
-          "line": 213,
+          "line": 212,
           "type": "heading"
         },
         {
           "name": "Required States",
-          "line": 224,
+          "line": 223,
           "type": "heading"
         },
         {
           "name": "Implementation Sequence",
-          "line": 237,
+          "line": 236,
           "type": "heading"
         },
         {
           "name": "Acceptance Criteria",
-          "line": 250,
+          "line": 249,
           "type": "heading"
         },
         {
           "name": "Verification Bar",
-          "line": 265,
+          "line": 264,
           "type": "heading"
         },
         {
           "name": "Completion Artifacts",
-          "line": 277,
+          "line": 276,
           "type": "heading"
         },
         {
           "name": "Starting Prompt For The New Thread",
-          "line": 286,
+          "line": 285,
           "type": "heading"
         }
       ],
@@ -16042,7 +16148,7 @@
       "headings": [
         "Astra Journey Product Redesign Handoff",
         "Current Status",
-        "Completion Evidence",
+        "Superseded Prior Completion Evidence",
         "Design Acceptance",
         "2026-07-20 Product Checkpoint",
         "Audit evidence",
@@ -16455,6 +16561,62 @@
       "dependency_in": 0,
       "dependency_out": 2,
       "importance_weight": 73.26,
+      "importance_bucket": "app/api"
+    },
+    {
+      "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
+      "lang": "typescript",
+      "size": 1147,
+      "lines": 21,
+      "estimated_tokens": 287,
+      "symbols": [
+        {
+          "name": "RouteContext",
+          "line": 5,
+          "type": "type"
+        },
+        {
+          "name": "POST",
+          "line": 7,
+          "type": "component"
+        },
+        {
+          "name": "published",
+          "line": 12,
+          "type": "constant"
+        },
+        {
+          "name": "code",
+          "line": 15,
+          "type": "constant"
+        },
+        {
+          "name": "POST",
+          "line": 7,
+          "type": "route_handler"
+        }
+      ],
+      "imports": [
+        "../../../../../lib/auth/profile",
+        "../../../../../lib/journey-producers",
+        "next/server"
+      ],
+      "exports": [
+        "POST"
+      ],
+      "routes": [
+        {
+          "route": "/api/reports/[requestId]/publish-signal",
+          "method": "POST",
+          "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
+          "line": 7
+        }
+      ],
+      "route_count": 1,
+      "headings": [],
+      "dependency_in": 0,
+      "dependency_out": 2,
+      "importance_weight": 72.31,
       "importance_bucket": "app/api"
     },
     {
@@ -17883,9 +18045,9 @@
     {
       "file": "apps/astra-web/lib/composer-private-feed.ts",
       "lang": "typescript",
-      "size": 1739,
-      "lines": 55,
-      "estimated_tokens": 435,
+      "size": 1836,
+      "lines": 56,
+      "estimated_tokens": 459,
       "symbols": [
         {
           "name": "ComposerOnboardingCardsWrite",
@@ -17955,7 +18117,7 @@
       "headings": [],
       "dependency_in": 3,
       "dependency_out": 0,
-      "importance_weight": 49.12,
+      "importance_weight": 49.13,
       "importance_bucket": "other"
     },
     {
@@ -25016,6 +25178,50 @@
       "importance_bucket": "other"
     },
     {
+      "file": "apps/astra-web/app/journey/page.tsx",
+      "lang": "typescript",
+      "size": 1065,
+      "lines": 22,
+      "estimated_tokens": 267,
+      "symbols": [
+        {
+          "name": "dynamic",
+          "line": 9,
+          "type": "constant"
+        },
+        {
+          "name": "JourneyPage",
+          "line": 11,
+          "type": "component"
+        },
+        {
+          "name": "view",
+          "line": 19,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "../../components/JourneyStepReader",
+        "../../components/PageHeader",
+        "../../lib/auth/profile",
+        "../../lib/i18n",
+        "../../lib/journey",
+        "../../lib/journey-producers",
+        "next/navigation"
+      ],
+      "exports": [
+        "JourneyPage",
+        "dynamic"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 0,
+      "dependency_out": 6,
+      "importance_weight": 25.36,
+      "importance_bucket": "other"
+    },
+    {
       "file": "docs/inbox-astra/completed/astra-birth-date-time-ux-implementation-plan.md",
       "lang": "markdown",
       "size": 9591,
@@ -25130,49 +25336,6 @@
       "dependency_out": 0,
       "importance_weight": 24.42,
       "importance_bucket": "akashic"
-    },
-    {
-      "file": "apps/astra-web/app/journey/page.tsx",
-      "lang": "typescript",
-      "size": 723,
-      "lines": 16,
-      "estimated_tokens": 181,
-      "symbols": [
-        {
-          "name": "dynamic",
-          "line": 8,
-          "type": "constant"
-        },
-        {
-          "name": "JourneyPage",
-          "line": 10,
-          "type": "component"
-        },
-        {
-          "name": "view",
-          "line": 13,
-          "type": "constant"
-        }
-      ],
-      "imports": [
-        "../../components/JourneyStepReader",
-        "../../components/PageHeader",
-        "../../lib/auth/profile",
-        "../../lib/i18n",
-        "../../lib/journey",
-        "next/navigation"
-      ],
-      "exports": [
-        "JourneyPage",
-        "dynamic"
-      ],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 0,
-      "dependency_out": 5,
-      "importance_weight": 24.12,
-      "importance_bucket": "other"
     },
     {
       "file": "apps/composer-web/src/index.ts",
@@ -26668,6 +26831,55 @@
       "importance_bucket": "other"
     },
     {
+      "file": "docs/architecture/journey-step-product-model.md",
+      "lang": "markdown",
+      "size": 3548,
+      "lines": 43,
+      "estimated_tokens": 887,
+      "symbols": [
+        {
+          "name": "JourneyStep Product Model",
+          "line": 7,
+          "type": "heading"
+        },
+        {
+          "name": "Contract and ordering",
+          "line": 13,
+          "type": "heading"
+        },
+        {
+          "name": "Producer integration",
+          "line": 26,
+          "type": "heading"
+        },
+        {
+          "name": "Product states and pattern acceptance",
+          "line": 34,
+          "type": "heading"
+        },
+        {
+          "name": "Surface ownership",
+          "line": 40,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "JourneyStep Product Model",
+        "Contract and ordering",
+        "Producer integration",
+        "Product states and pattern acceptance",
+        "Surface ownership"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 18.84,
+      "importance_bucket": "other"
+    },
+    {
       "file": "apps/composer-web/akashic/agent-inbox/2026-06-10-repomap-builder-fixed.md",
       "lang": "markdown",
       "size": 1289,
@@ -27535,49 +27747,6 @@
       "importance_bucket": "other"
     },
     {
-      "file": "docs/architecture/journey-step-product-model.md",
-      "lang": "markdown",
-      "size": 2490,
-      "lines": 35,
-      "estimated_tokens": 623,
-      "symbols": [
-        {
-          "name": "JourneyStep Product Model",
-          "line": 7,
-          "type": "heading"
-        },
-        {
-          "name": "Contract and ordering",
-          "line": 13,
-          "type": "heading"
-        },
-        {
-          "name": "Product states and pattern acceptance",
-          "line": 26,
-          "type": "heading"
-        },
-        {
-          "name": "Surface ownership",
-          "line": 32,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "JourneyStep Product Model",
-        "Contract and ordering",
-        "Product states and pattern acceptance",
-        "Surface ownership"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 15.69,
-      "importance_bucket": "other"
-    },
-    {
       "file": "apps/astra-web/app/login/page.tsx",
       "lang": "typescript",
       "size": 557,
@@ -28427,6 +28596,31 @@
       "importance_bucket": "other"
     },
     {
+      "file": "apps/astra-web/playwright.config.ts",
+      "lang": "typescript",
+      "size": 1472,
+      "lines": 52,
+      "estimated_tokens": 368,
+      "symbols": [
+        {
+          "name": "astraServerCommand",
+          "line": 3,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "@playwright/test"
+      ],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 7.08,
+      "importance_bucket": "other"
+    },
+    {
       "file": "README.md",
       "lang": "markdown",
       "size": 2066,
@@ -29168,25 +29362,6 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 4.07,
-      "importance_bucket": "other"
-    },
-    {
-      "file": "apps/astra-web/playwright.config.ts",
-      "lang": "typescript",
-      "size": 1105,
-      "lines": 44,
-      "estimated_tokens": 277,
-      "symbols": [],
-      "imports": [
-        "@playwright/test"
-      ],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 3.96,
       "importance_bucket": "other"
     },
     {
@@ -30294,8 +30469,8 @@
     ],
     "2026-07-20 Product Checkpoint": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 51,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 50,
         "type": "heading"
       }
     ],
@@ -30926,8 +31101,8 @@
         "type": "heading"
       },
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 250,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 249,
         "type": "heading"
       },
       {
@@ -31215,14 +31390,14 @@
     "adminAdjustCredits": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1605,
+        "line": 1614,
         "type": "function"
       }
     ],
     "adminConfirmDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 538,
+        "line": 599,
         "type": "constant"
       }
     ],
@@ -31250,7 +31425,7 @@
     "adminUpdateUserRole": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1639,
+        "line": 1648,
         "type": "function"
       }
     ],
@@ -31478,7 +31653,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 149,
+        "line": 159,
         "type": "constant"
       }
     ],
@@ -31664,12 +31839,12 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1586,
+        "line": 1595,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1610,
+        "line": 1619,
         "type": "constant"
       }
     ],
@@ -31895,8 +32070,13 @@
         "type": "constant"
       },
       {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 96,
+        "type": "constant"
+      },
+      {
         "file": "packages/db/src/repositories.ts",
-        "line": 2285,
+        "line": 2294,
         "type": "constant"
       }
     ],
@@ -32112,7 +32292,7 @@
     "assertResetAllowed": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2334,
+        "line": 2343,
         "type": "function"
       }
     ],
@@ -32126,7 +32306,7 @@
     "assertUserOwnsFeedItem": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1160,
+        "line": 1158,
         "type": "function"
       }
     ],
@@ -32375,8 +32555,8 @@
     ],
     "Astra Journey Product Redesign Handoff": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 28,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 27,
         "type": "heading"
       }
     ],
@@ -33185,6 +33365,13 @@
         "type": "constant"
       }
     ],
+    "astraServerCommand": [
+      {
+        "file": "apps/astra-web/playwright.config.ts",
+        "line": 3,
+        "type": "constant"
+      }
+    ],
     "AstraTheme": [
       {
         "file": "apps/astra-web/components/ThemeToggle.tsx",
@@ -33393,7 +33580,7 @@
     "astrologyReportShareEmail": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1978,
+        "line": 1987,
         "type": "function"
       }
     ],
@@ -33407,7 +33594,7 @@
     "astrologyReportShareTokenHash": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1974,
+        "line": 1983,
         "type": "function"
       }
     ],
@@ -33484,8 +33671,8 @@
     ],
     "Audit evidence": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 53,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 52,
         "type": "heading"
       }
     ],
@@ -33551,7 +33738,7 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 85,
+        "line": 87,
         "type": "constant"
       },
       {
@@ -33814,22 +34001,22 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1518,
+        "line": 1527,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1580,
+        "line": 1589,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1635,
+        "line": 1644,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1888,
+        "line": 1897,
         "type": "constant"
       }
     ],
@@ -33850,7 +34037,7 @@
     "base": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1714,
+        "line": 1723,
         "type": "constant"
       }
     ],
@@ -34009,7 +34196,7 @@
     "betaFeedbackRecordFromRow": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2075,
+        "line": 2084,
         "type": "function"
       }
     ],
@@ -34040,22 +34227,22 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1347,
+        "line": 1356,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1403,
+        "line": 1412,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1472,
+        "line": 1481,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1505,
+        "line": 1514,
         "type": "constant"
       }
     ],
@@ -34305,6 +34492,11 @@
       {
         "file": "apps/astra-web/lib/composer-selection.ts",
         "line": 62,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 30,
         "type": "constant"
       },
       {
@@ -34905,7 +35097,7 @@
     "card": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 98,
+        "line": 100,
         "type": "constant"
       },
       {
@@ -34915,7 +35107,7 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 95,
+        "line": 97,
         "type": "constant"
       },
       {
@@ -35048,7 +35240,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 342,
+        "line": 352,
         "type": "constant"
       },
       {
@@ -35120,7 +35312,7 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 92,
+        "line": 94,
         "type": "constant"
       },
       {
@@ -35476,7 +35668,7 @@
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-        "line": 32,
+        "line": 33,
         "type": "constant"
       },
       {
@@ -35551,7 +35743,7 @@
     "chartsByUserId": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1702,
+        "line": 1711,
         "type": "constant"
       }
     ],
@@ -35568,12 +35760,12 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 187,
+        "line": 197,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 428,
+        "line": 452,
         "type": "constant"
       }
     ],
@@ -35745,14 +35937,14 @@
     "checkout": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 503,
+        "line": 564,
         "type": "constant"
       }
     ],
     "checkoutResponse": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 495,
+        "line": 556,
         "type": "constant"
       }
     ],
@@ -35764,7 +35956,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 504,
+        "line": 565,
         "type": "constant"
       }
     ],
@@ -35804,7 +35996,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 87,
+        "line": 91,
         "type": "function"
       }
     ],
@@ -35851,6 +36043,11 @@
       {
         "file": "apps/astra-web/lib/internal-token.ts",
         "line": 3,
+        "type": "function"
+      },
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 7,
         "type": "function"
       },
       {
@@ -35979,6 +36176,13 @@
         "file": "apps/astra-web/components/SelfTabAvatar.tsx",
         "line": 28,
         "type": "function"
+      }
+    ],
+    "code": [
+      {
+        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
+        "line": 15,
+        "type": "constant"
       }
     ],
     "Codex Brief: Astra Product Pattern Library": [
@@ -36413,31 +36617,43 @@
         "type": "heading"
       }
     ],
+    "completed": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 522,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 103,
+        "type": "constant"
+      }
+    ],
     "completedChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 551,
+        "line": 612,
         "type": "constant"
       }
     ],
     "completedReport": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 570,
+        "line": 631,
         "type": "constant"
       }
     ],
     "completeStripeCheckoutPurchase": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1824,
+        "line": 1833,
         "type": "function"
       }
     ],
     "Completion Artifacts": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 277,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 276,
         "type": "heading"
       }
     ],
@@ -36445,13 +36661,6 @@
       {
         "file": "docs/inbox-astra/ASTRA_JOB_1_CHART_REPORT_LIBRARY_PARITY.md",
         "line": 392,
-        "type": "heading"
-      }
-    ],
-    "Completion Evidence": [
-      {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 34,
         "type": "heading"
       }
     ],
@@ -36627,6 +36836,13 @@
         "file": "packages/contracts/src/index.ts",
         "line": 941,
         "type": "constant"
+      }
+    ],
+    "composerBaseUrl": [
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 11,
+        "type": "function"
       }
     ],
     "ComposerCardAction": [
@@ -37398,13 +37614,6 @@
         "type": "constant"
       }
     ],
-    "composerWrite": [
-      {
-        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 36,
-        "type": "constant"
-      }
-    ],
     "config": [
       {
         "file": "apps/composer-web/proxy.ts",
@@ -37441,6 +37650,11 @@
       {
         "file": "apps/astra-web/lib/email/config.ts",
         "line": 25,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 12,
         "type": "constant"
       },
       {
@@ -38082,7 +38296,7 @@
     "createAlly": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1304,
+        "line": 1313,
         "type": "function"
       }
     ],
@@ -38122,7 +38336,7 @@
     "createAstrologyReportRequest": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1468,
+        "line": 1477,
         "type": "function"
       }
     ],
@@ -38150,14 +38364,14 @@
     "createAstrologyReportShare": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1985,
+        "line": 1994,
         "type": "function"
       }
     ],
     "createBetaFeedback": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2103,
+        "line": 2112,
         "type": "function"
       }
     ],
@@ -38190,14 +38404,14 @@
     "createChartButton": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 423,
+        "line": 447,
         "type": "constant"
       }
     ],
     "createChartMakerRequest": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1343,
+        "line": 1352,
         "type": "function"
       }
     ],
@@ -38225,28 +38439,28 @@
     "createCompletedAllyChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 146,
+        "line": 156,
         "type": "function"
       }
     ],
     "createCompletedChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 121,
+        "line": 131,
         "type": "function"
       }
     ],
     "createCompletedReport": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 175,
+        "line": 185,
         "type": "function"
       }
     ],
     "createComposerDecision": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1187,
+        "line": 1185,
         "type": "function"
       }
     ],
@@ -38291,6 +38505,11 @@
       }
     ],
     "createdAt": [
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 40,
+        "type": "constant"
+      },
       {
         "file": "apps/composer-web/app/api/cards/publish-batch/route.ts",
         "line": 13,
@@ -38408,7 +38627,7 @@
     "creditsByUserId": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1701,
+        "line": 1710,
         "type": "constant"
       }
     ],
@@ -38496,7 +38715,7 @@
       },
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 93,
+        "line": 95,
         "type": "constant"
       },
       {
@@ -38559,8 +38778,8 @@
     ],
     "Current Product and Code Reality": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 121,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 120,
         "type": "heading"
       }
     ],
@@ -38609,15 +38828,15 @@
     ],
     "Current Status": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 30,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 29,
         "type": "heading"
       }
     ],
     "currentActionUrl": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 122,
+        "line": 124,
         "type": "constant"
       }
     ],
@@ -38688,7 +38907,7 @@
     "currentSelection": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 411,
+        "line": 435,
         "type": "constant"
       }
     ],
@@ -38934,7 +39153,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 40,
+        "line": 44,
         "type": "constant"
       },
       {
@@ -38953,7 +39172,7 @@
     "debugDetails": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 621,
+        "line": 682,
         "type": "constant"
       }
     ],
@@ -39267,7 +39486,7 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1335,
+        "line": 1344,
         "type": "constant"
       }
     ],
@@ -39281,14 +39500,14 @@
     "deleteUserAlly": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1334,
+        "line": 1343,
         "type": "function"
       }
     ],
     "deleteUserAstrologyReport": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1954,
+        "line": 1963,
         "type": "function"
       }
     ],
@@ -39367,8 +39586,8 @@
     ],
     "Design Acceptance": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 43,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 42,
         "type": "heading"
       }
     ],
@@ -39396,7 +39615,7 @@
     "desktopSelf": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 320,
+        "line": 330,
         "type": "constant"
       }
     ],
@@ -39448,7 +39667,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 89,
+        "line": 93,
         "type": "constant"
       }
     ],
@@ -39511,7 +39730,7 @@
     "displayName": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1283,
+        "line": 1292,
         "type": "constant"
       }
     ],
@@ -39656,7 +39875,7 @@
       },
       {
         "file": "apps/astra-web/app/journey/page.tsx",
-        "line": 8,
+        "line": 9,
         "type": "constant"
       },
       {
@@ -39744,17 +39963,22 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 389,
+        "line": 399,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 472,
+        "line": 515,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 533,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2024,
+        "line": 2033,
         "type": "constant"
       },
       {
@@ -39863,7 +40087,21 @@
     "ensureBetaSignupCredits": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1585,
+        "line": 1594,
+        "type": "function"
+      }
+    ],
+    "ensureComposerOnboardingJourney": [
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 18,
+        "type": "function"
+      }
+    ],
+    "ensureReportJourneyItem": [
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 93,
         "type": "function"
       }
     ],
@@ -39958,7 +40196,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 258,
+        "line": 268,
         "type": "constant"
       }
     ],
@@ -40024,7 +40262,7 @@
     "existingAllyChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 440,
+        "line": 483,
         "type": "constant"
       }
     ],
@@ -40038,7 +40276,7 @@
     "existingOrderPanel": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 442,
+        "line": 485,
         "type": "constant"
       }
     ],
@@ -40052,14 +40290,14 @@
     "existingSelfBirthDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 560,
+        "line": 621,
         "type": "constant"
       }
     ],
     "existingSelfLocationDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 564,
+        "line": 625,
         "type": "constant"
       }
     ],
@@ -40397,7 +40635,7 @@
     "filters": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1130,
+        "line": 1128,
         "type": "constant"
       }
     ],
@@ -40444,7 +40682,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 21,
+        "line": 25,
         "type": "function"
       },
       {
@@ -40481,8 +40719,8 @@
     ],
     "First Decision Checkpoint": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 137,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 136,
         "type": "heading"
       }
     ],
@@ -40531,7 +40769,7 @@
     "firstCard": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 344,
+        "line": 354,
         "type": "constant"
       }
     ],
@@ -40662,7 +40900,7 @@
     "forged": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 108,
+        "line": 110,
         "type": "constant"
       }
     ],
@@ -40892,14 +41130,14 @@
     "fulfillCheckoutThroughWebhook": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 257,
+        "line": 267,
         "type": "function"
       }
     ],
     "fulfilled": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 507,
+        "line": 568,
         "type": "constant"
       }
     ],
@@ -40976,7 +41214,7 @@
     "generatedResult": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 232,
+        "line": 242,
         "type": "constant"
       }
     ],
@@ -40992,6 +41230,20 @@
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
         "line": 643,
         "type": "function"
+      }
+    ],
+    "generateResponse": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 463,
+        "type": "constant"
+      }
+    ],
+    "generateResponsePromise": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 461,
+        "type": "constant"
       }
     ],
     "generateSectionedDeepDraft": [
@@ -41161,7 +41413,7 @@
     "getAstrologyReportRequest": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1918,
+        "line": 1927,
         "type": "function"
       }
     ],
@@ -41252,14 +41504,14 @@
     "getCreditBalance": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1570,
+        "line": 1579,
         "type": "function"
       }
     ],
     "getCreditLedgerSummary": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1713,
+        "line": 1722,
         "type": "function"
       }
     ],
@@ -41287,14 +41539,14 @@
     "getJourneyViewModel": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 74,
+        "line": 75,
         "type": "function"
       }
     ],
     "getPublicJourneyPreview": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 83,
+        "line": 85,
         "type": "function"
       }
     ],
@@ -41308,21 +41560,21 @@
     "getSharedAstrologyReport": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2045,
+        "line": 2054,
         "type": "function"
       }
     ],
     "getUserAstrologyReportRequest": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1905,
+        "line": 1914,
         "type": "function"
       }
     ],
     "getUserAstrologyReportResult": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1941,
+        "line": 1950,
         "type": "function"
       }
     ],
@@ -41336,14 +41588,14 @@
     "getUserChartMakerRequest": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1379,
+        "line": 1388,
         "type": "function"
       }
     ],
     "getUserFeedItemById": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1147,
+        "line": 1145,
         "type": "function"
       }
     ],
@@ -41506,8 +41758,8 @@
     ],
     "Governing Product Truth": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 111,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 110,
         "type": "heading"
       }
     ],
@@ -41686,7 +41938,7 @@
     "hasOverflow": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 313,
+        "line": 323,
         "type": "constant"
       }
     ],
@@ -42087,7 +42339,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 60,
+        "line": 64,
         "type": "constant"
       },
       {
@@ -42314,8 +42566,8 @@
     ],
     "Implementation plan after approval": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 82,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 81,
         "type": "heading"
       }
     ],
@@ -42335,8 +42587,8 @@
     ],
     "Implementation Sequence": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 237,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 236,
         "type": "heading"
       }
     ],
@@ -42585,6 +42837,11 @@
     ],
     "internalToken": [
       {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 20,
+        "type": "constant"
+      },
+      {
         "file": "apps/composer-web/lib/config.ts",
         "line": 53,
         "type": "constant"
@@ -42729,6 +42986,13 @@
         "file": "apps/composer-web/components/CourseAssessmentCard.tsx",
         "line": 87,
         "type": "constant"
+      }
+    ],
+    "isExpectedNavigationCancellation": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 10,
+        "type": "function"
       }
     ],
     "isFirstSelfChart": [
@@ -42920,7 +43184,7 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1161,
+        "line": 1159,
         "type": "constant"
       }
     ],
@@ -42929,6 +43193,13 @@
         "file": "docs/inbox-astra/ASTRA_CODEX_V1_QUARRY_GUARDRAILS.md",
         "line": 15,
         "type": "heading"
+      }
+    ],
+    "journey": [
+      {
+        "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
+        "line": 44,
+        "type": "constant"
       }
     ],
     "JourneyError": [
@@ -42974,14 +43245,14 @@
     "JourneyPage": [
       {
         "file": "apps/astra-web/app/journey/page.tsx",
-        "line": 10,
+        "line": 11,
         "type": "component"
       }
     ],
     "JourneyStep": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 9,
+        "line": 10,
         "type": "type"
       }
     ],
@@ -43002,7 +43273,7 @@
     "JourneyViewModel": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 16,
+        "line": 17,
         "type": "type"
       }
     ],
@@ -43109,7 +43380,7 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 37,
+        "line": 38,
         "type": "constant"
       },
       {
@@ -43135,7 +43406,7 @@
     "laneForFeedKind": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 23,
+        "line": 24,
         "type": "function"
       }
     ],
@@ -43391,7 +43662,7 @@
     "limit": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1652,
+        "line": 1661,
         "type": "constant"
       }
     ],
@@ -43454,7 +43725,7 @@
     "listCreditUsers": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1651,
+        "line": 1660,
         "type": "function"
       }
     ],
@@ -43482,56 +43753,56 @@
     "listRecentBetaFeedback": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2152,
+        "line": 2161,
         "type": "function"
       }
     ],
     "listRecentCreditLedger": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1746,
+        "line": 1755,
         "type": "function"
       }
     ],
     "listUserAllies": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1324,
+        "line": 1333,
         "type": "function"
       }
     ],
     "listUserArtifacts": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2175,
+        "line": 2184,
         "type": "function"
       }
     ],
     "listUserAstrologyReportRequests": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1892,
+        "line": 1901,
         "type": "function"
       }
     ],
     "listUserAstrologyReportResults": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1928,
+        "line": 1937,
         "type": "function"
       }
     ],
     "listUserChartMakerRequests": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1369,
+        "line": 1378,
         "type": "function"
       }
     ],
     "listUserFeedItems": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1125,
+        "line": 1123,
         "type": "function"
       }
     ],
@@ -43629,7 +43900,7 @@
     "localHosts": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2336,
+        "line": 2345,
         "type": "constant"
       }
     ],
@@ -43641,7 +43912,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 409,
+        "line": 433,
         "type": "constant"
       }
     ],
@@ -43693,7 +43964,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 39,
+        "line": 43,
         "type": "constant"
       },
       {
@@ -43733,7 +44004,14 @@
     "makeProfileAdmin": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 103,
+        "line": 107,
+        "type": "function"
+      }
+    ],
+    "markAuthUserOnboardingComplete": [
+      {
+        "file": "packages/db/src/repositories.ts",
+        "line": 1277,
         "type": "function"
       }
     ],
@@ -43892,7 +44170,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 65,
+        "line": 69,
         "type": "constant"
       },
       {
@@ -43902,7 +44180,7 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2104,
+        "line": 2113,
         "type": "constant"
       }
     ],
@@ -43936,7 +44214,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 63,
+        "line": 67,
         "type": "constant"
       }
     ],
@@ -43948,7 +44226,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 53,
+        "line": 57,
         "type": "constant"
       },
       {
@@ -44328,7 +44606,7 @@
     "mirrorCreditBalanceToProfile": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1579,
+        "line": 1588,
         "type": "function"
       }
     ],
@@ -44376,7 +44654,7 @@
     "mobileLibrary": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 326,
+        "line": 336,
         "type": "constant"
       }
     ],
@@ -44586,12 +44864,12 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 390,
+        "line": 400,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 473,
+        "line": 534,
         "type": "constant"
       },
       {
@@ -44825,8 +45103,8 @@
     ],
     "Non-Negotiable Boundaries": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 166,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 165,
         "type": "heading"
       }
     ],
@@ -44889,7 +45167,7 @@
     "normalizeBetaFeedbackCategory": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2070,
+        "line": 2079,
         "type": "function"
       }
     ],
@@ -45325,62 +45603,62 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1170,
+        "line": 1168,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1192,
+        "line": 1190,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1239,
+        "line": 1237,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1286,
+        "line": 1295,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1306,
+        "line": 1315,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1348,
+        "line": 1357,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1421,
+        "line": 1430,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1474,
+        "line": 1483,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1507,
+        "line": 1516,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1991,
+        "line": 2000,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2189,
+        "line": 2198,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2286,
+        "line": 2295,
         "type": "constant"
       },
       {
@@ -45501,6 +45779,13 @@
         "type": "constant"
       }
     ],
+    "onboardingFeed": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 421,
+        "type": "constant"
+      }
+    ],
     "OnboardingPage": [
       {
         "file": "apps/composer-web/app/onboarding/page.tsx",
@@ -45518,6 +45803,13 @@
         "file": "apps/astra-web/app/self/page.tsx",
         "line": 96,
         "type": "function"
+      }
+    ],
+    "onboardingUserId": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 420,
+        "type": "constant"
       }
     ],
     "OnboardingWorkspace": [
@@ -45806,17 +46098,17 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 25,
+        "line": 29,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 31,
+        "line": 35,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 66,
+        "line": 70,
         "type": "constant"
       },
       {
@@ -46224,22 +46516,22 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1129,
+        "line": 1127,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1191,
+        "line": 1189,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1305,
+        "line": 1314,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2335,
+        "line": 2344,
         "type": "constant"
       }
     ],
@@ -46530,7 +46822,7 @@
     "payloadString": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 18,
+        "line": 19,
         "type": "function"
       }
     ],
@@ -47022,22 +47314,22 @@
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-        "line": 17,
+        "line": 18,
         "type": "component"
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-        "line": 17,
+        "line": 18,
         "type": "route_handler"
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 17,
+        "line": 7,
         "type": "component"
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 17,
+        "line": 7,
         "type": "route_handler"
       },
       {
@@ -47223,7 +47515,7 @@
     "preview": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 86,
+        "line": 88,
         "type": "constant"
       },
       {
@@ -47266,7 +47558,7 @@
     "previewIds": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 93,
+        "line": 95,
         "type": "constant"
       }
     ],
@@ -47319,8 +47611,8 @@
     ],
     "Primary Code Map": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 196,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 195,
         "type": "heading"
       }
     ],
@@ -47334,7 +47626,7 @@
     "primaryActionFor": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 36,
+        "line": 37,
         "type": "function"
       }
     ],
@@ -47519,6 +47811,13 @@
         "type": "heading"
       }
     ],
+    "Producer integration": [
+      {
+        "file": "docs/architecture/journey-step-product-model.md",
+        "line": 26,
+        "type": "heading"
+      }
+    ],
     "product": [
       {
         "file": "apps/astra-web/app/api/reports/route.ts",
@@ -47542,8 +47841,8 @@
     ],
     "Product Design Inputs": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 213,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 212,
         "type": "heading"
       }
     ],
@@ -47767,7 +48066,7 @@
     "Product states and pattern acceptance": [
       {
         "file": "docs/architecture/journey-step-product-model.md",
-        "line": 26,
+        "line": 34,
         "type": "heading"
       }
     ],
@@ -47929,7 +48228,7 @@
     "provenanceFor": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 48,
+        "line": 49,
         "type": "function"
       }
     ],
@@ -48002,7 +48301,7 @@
     "PublicJourneyCard": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 15,
+        "line": 16,
         "type": "type"
       }
     ],
@@ -48128,6 +48427,11 @@
     ],
     "published": [
       {
+        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
+        "line": 12,
+        "type": "constant"
+      },
+      {
         "file": "apps/composer-web/src/onboardingWorkflow.ts",
         "line": 116,
         "type": "constant"
@@ -48135,13 +48439,6 @@
       {
         "file": "apps/composer-web/src/operatorWorkflow.ts",
         "line": 186,
-        "type": "constant"
-      }
-    ],
-    "publishedAt": [
-      {
-        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 34,
         "type": "constant"
       }
     ],
@@ -48237,7 +48534,7 @@
     "purchaseAstrologyReportRequest": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1501,
+        "line": 1510,
         "type": "function"
       }
     ],
@@ -48602,7 +48899,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 278,
+        "line": 288,
         "type": "constant"
       }
     ],
@@ -48677,7 +48974,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 38,
+        "line": 42,
         "type": "function"
       }
     ],
@@ -48735,16 +49032,23 @@
     ],
     "Recommended model for Tony's confirmation": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 61,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 60,
         "type": "heading"
       }
     ],
     "Recommended Product Lens": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 151,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 150,
         "type": "heading"
+      }
+    ],
+    "reconcileCompletedReportJourneyItems": [
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 101,
+        "type": "function"
       }
     ],
     "record": [
@@ -48757,7 +49061,7 @@
     "recordAstrologyReportResult": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2185,
+        "line": 2194,
         "type": "function"
       }
     ],
@@ -48795,7 +49099,7 @@
     "recordChartMakerResult": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1417,
+        "line": 1426,
         "type": "function"
       }
     ],
@@ -48852,14 +49156,14 @@
     "recordPendingStripeCheckout": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1777,
+        "line": 1786,
         "type": "function"
       }
     ],
     "recordStripeEvent": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1807,
+        "line": 1816,
         "type": "function"
       }
     ],
@@ -49006,8 +49310,8 @@
     ],
     "Release Baseline": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 103,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 102,
         "type": "heading"
       }
     ],
@@ -49164,12 +49468,12 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1473,
+        "line": 1482,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1506,
+        "line": 1515,
         "type": "constant"
       }
     ],
@@ -49289,7 +49593,7 @@
     "reportChartPlate": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 614,
+        "line": 675,
         "type": "constant"
       }
     ],
@@ -49404,14 +49708,14 @@
     "reportFilters": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 598,
+        "line": 659,
         "type": "constant"
       }
     ],
     "reportFilterSelect": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 600,
+        "line": 661,
         "type": "constant"
       }
     ],
@@ -49496,7 +49800,7 @@
     "reportId": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 39,
+        "line": 40,
         "type": "constant"
       }
     ],
@@ -49712,7 +50016,7 @@
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-        "line": 22,
+        "line": 23,
         "type": "constant"
       },
       {
@@ -49731,7 +50035,7 @@
     "reportRequestId": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 30,
+        "line": 31,
         "type": "function"
       }
     ],
@@ -49751,13 +50055,6 @@
       {
         "file": "packages/contracts/src/index.ts",
         "line": 847,
-        "type": "constant"
-      }
-    ],
-    "reportResult": [
-      {
-        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 22,
         "type": "constant"
       }
     ],
@@ -49797,7 +50094,7 @@
     "reportsByUserId": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1703,
+        "line": 1712,
         "type": "constant"
       }
     ],
@@ -49819,6 +50116,13 @@
       {
         "file": "apps/astra-web/components/ReportReader.tsx",
         "line": 271,
+        "type": "function"
+      }
+    ],
+    "reportSignalWrite": [
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 37,
         "type": "function"
       }
     ],
@@ -49907,6 +50211,20 @@
         "type": "type"
       }
     ],
+    "republish": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 475,
+        "type": "constant"
+      }
+    ],
+    "republishedItem": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 477,
+        "type": "constant"
+      }
+    ],
     "request": [
       {
         "file": "apps/astra-web/app/library/page.tsx",
@@ -49915,17 +50233,17 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 124,
+        "line": 134,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 155,
+        "line": 165,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 188,
+        "line": 198,
         "type": "constant"
       },
       {
@@ -50223,8 +50541,8 @@
     ],
     "Required States": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 224,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 223,
         "type": "heading"
       }
     ],
@@ -50456,7 +50774,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 279,
+        "line": 289,
         "type": "constant"
       },
       {
@@ -50467,6 +50785,11 @@
       {
         "file": "apps/astra-web/lib/composer-selection.ts",
         "line": 61,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 23,
         "type": "constant"
       },
       {
@@ -50580,7 +50903,7 @@
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-        "line": 42,
+        "line": 43,
         "type": "constant"
       },
       {
@@ -50590,22 +50913,27 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 142,
+        "line": 152,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 171,
+        "line": 181,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 238,
+        "line": 248,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/lib/email/send-email.ts",
         "line": 32,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 94,
         "type": "constant"
       },
       {
@@ -50649,7 +50977,7 @@
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-        "line": 41,
+        "line": 42,
         "type": "constant"
       }
     ],
@@ -50661,6 +50989,11 @@
       }
     ],
     "results": [
+      {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 102,
+        "type": "constant"
+      },
       {
         "file": "packages/astrology/src/index.ts",
         "line": 774,
@@ -50729,7 +51062,7 @@
     "revokeAstrologyReportShare": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2029,
+        "line": 2038,
         "type": "function"
       }
     ],
@@ -50881,7 +51214,7 @@
     "role": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1641,
+        "line": 1650,
         "type": "constant"
       }
     ],
@@ -50982,12 +51315,12 @@
     "RouteContext": [
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-        "line": 7,
+        "line": 8,
         "type": "type"
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 7,
+        "line": 5,
         "type": "type"
       },
       {
@@ -51031,7 +51364,7 @@
     "routes": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 10,
+        "line": 14,
         "type": "constant"
       }
     ],
@@ -51048,47 +51381,47 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1133,
+        "line": 1131,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1325,
+        "line": 1334,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1370,
+        "line": 1379,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1654,
+        "line": 1663,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1747,
+        "line": 1756,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1896,
+        "line": 1905,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1932,
+        "line": 1941,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2153,
+        "line": 2162,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2176,
+        "line": 2185,
         "type": "constant"
       },
       {
@@ -51291,7 +51624,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 52,
+        "line": 56,
         "type": "constant"
       },
       {
@@ -51301,7 +51634,7 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1653,
+        "line": 1662,
         "type": "constant"
       }
     ],
@@ -51322,14 +51655,14 @@
     "searchBounds": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 412,
+        "line": 436,
         "type": "constant"
       }
     ],
     "searchBox": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 410,
+        "line": 434,
         "type": "constant"
       }
     ],
@@ -51362,7 +51695,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 47,
+        "line": 51,
         "type": "constant"
       }
     ],
@@ -51374,7 +51707,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 43,
+        "line": 47,
         "type": "constant"
       }
     ],
@@ -51393,7 +51726,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 250,
+        "line": 260,
         "type": "constant"
       },
       {
@@ -51706,7 +52039,7 @@
     "selectedChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 588,
+        "line": 649,
         "type": "constant"
       }
     ],
@@ -51858,7 +52191,7 @@
     "selectionBounds": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 413,
+        "line": 437,
         "type": "constant"
       }
     ],
@@ -51907,7 +52240,7 @@
     "selfEditPanel": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 553,
+        "line": 614,
         "type": "constant"
       }
     ],
@@ -52093,7 +52426,7 @@
     "settingsBox": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 430,
+        "line": 454,
         "type": "constant"
       }
     ],
@@ -52198,7 +52531,7 @@
     "shareUrl": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2023,
+        "line": 2032,
         "type": "constant"
       }
     ],
@@ -52226,7 +52559,7 @@
     "showMore": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 349,
+        "line": 359,
         "type": "constant"
       }
     ],
@@ -52251,8 +52584,13 @@
     ],
     "signal": [
       {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 39,
+        "type": "constant"
+      },
+      {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 31,
+        "line": 32,
         "type": "constant"
       },
       {
@@ -52290,7 +52628,7 @@
     "signature": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 253,
+        "line": 263,
         "type": "constant"
       }
     ],
@@ -52311,7 +52649,7 @@
     "signedAmount": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1616,
+        "line": 1625,
         "type": "constant"
       }
     ],
@@ -52330,7 +52668,7 @@
     "signedStripeHeader": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 249,
+        "line": 259,
         "type": "function"
       }
     ],
@@ -52363,7 +52701,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 76,
+        "line": 80,
         "type": "function"
       }
     ],
@@ -52429,7 +52767,7 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 91,
+        "line": 93,
         "type": "constant"
       }
     ],
@@ -52560,8 +52898,8 @@
     ],
     "sourceCardId": [
       {
-        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 35,
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 41,
         "type": "constant"
       }
     ],
@@ -52688,7 +53026,7 @@
     "starsDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 485,
+        "line": 546,
         "type": "constant"
       }
     ],
@@ -52773,8 +53111,8 @@
     ],
     "Starting Prompt For The New Thread": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 286,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 285,
         "type": "heading"
       }
     ],
@@ -52807,7 +53145,7 @@
     "state": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1171,
+        "line": 1169,
         "type": "constant"
       }
     ],
@@ -52914,7 +53252,7 @@
     "stepFromFeedItem": [
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 56,
+        "line": 57,
         "type": "function"
       }
     ],
@@ -52933,7 +53271,7 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 79,
+        "line": 81,
         "type": "constant"
       }
     ],
@@ -53421,6 +53759,13 @@
         "type": "type"
       }
     ],
+    "Superseded Prior Completion Evidence": [
+      {
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 33,
+        "type": "heading"
+      }
+    ],
     "supportedTimeZones": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
@@ -53431,7 +53776,7 @@
     "Surface ownership": [
       {
         "file": "docs/architecture/journey-step-product-model.md",
-        "line": 32,
+        "line": 40,
         "type": "heading"
       }
     ],
@@ -53556,12 +53901,12 @@
     "targetEmail": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1609,
+        "line": 1618,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1640,
+        "line": 1649,
         "type": "constant"
       },
       {
@@ -53800,13 +54145,13 @@
     ],
     "Thread Mission": [
       {
-        "file": "docs/inbox-astra/ASTRA_JOB_1_CHART_REPORT_LIBRARY_PARITY.md",
-        "line": 26,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 94,
         "type": "heading"
       },
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 95,
+        "file": "docs/inbox-astra/ASTRA_JOB_1_CHART_REPORT_LIBRARY_PARITY.md",
+        "line": 26,
         "type": "heading"
       }
     ],
@@ -53888,7 +54233,7 @@
     "timestamp": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 252,
+        "line": 262,
         "type": "constant"
       }
     ],
@@ -53964,7 +54309,7 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2022,
+        "line": 2031,
         "type": "constant"
       }
     ],
@@ -54107,19 +54452,19 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1989,
+        "line": 1998,
         "type": "constant"
       }
     ],
     "tokenHash": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1990,
+        "line": 1999,
         "type": "constant"
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2046,
+        "line": 2055,
         "type": "constant"
       }
     ],
@@ -54228,12 +54573,7 @@
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-        "line": 13,
-        "type": "function"
-      },
-      {
-        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 13,
+        "line": 14,
         "type": "function"
       },
       {
@@ -54290,7 +54630,7 @@
     "updateAuthUserProfileDisplayName": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1279,
+        "line": 1288,
         "type": "function"
       }
     ],
@@ -54309,7 +54649,7 @@
       },
       {
         "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-        "line": 43,
+        "line": 52,
         "type": "constant"
       }
     ],
@@ -54330,14 +54670,14 @@
     "updateUserChartMakerBirthData": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1395,
+        "line": 1404,
         "type": "function"
       }
     ],
     "updateUserFeedItemState": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1166,
+        "line": 1164,
         "type": "function"
       }
     ],
@@ -54351,7 +54691,7 @@
     "upsertAuthUserProfile": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1238,
+        "line": 1236,
         "type": "function"
       }
     ],
@@ -54379,7 +54719,7 @@
     "upsertComposerStreamArtifact": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 2281,
+        "line": 2290,
         "type": "function"
       }
     ],
@@ -54718,7 +55058,7 @@
     "userBOnly": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 95,
+        "line": 97,
         "type": "constant"
       }
     ],
@@ -54775,6 +55115,11 @@
         "file": "apps/astra-web/app/api/stripe/webhook/route.ts",
         "line": 68,
         "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 466,
+        "type": "constant"
       }
     ],
     "userIdFor": [
@@ -54784,10 +55129,17 @@
         "type": "function"
       }
     ],
+    "userIdForEmail": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 125,
+        "type": "function"
+      }
+    ],
     "userIds": [
       {
         "file": "packages/db/src/repositories.ts",
-        "line": 1671,
+        "line": 1680,
         "type": "constant"
       }
     ],
@@ -54998,7 +55350,7 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "line": 19,
+        "line": 20,
         "type": "constant"
       },
       {
@@ -55091,8 +55443,8 @@
     ],
     "Verification Bar": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 265,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 264,
         "type": "heading"
       }
     ],
@@ -55106,7 +55458,7 @@
     "view": [
       {
         "file": "apps/astra-web/app/journey/page.tsx",
-        "line": 13,
+        "line": 19,
         "type": "constant"
       },
       {
@@ -55586,8 +55938,8 @@
         "type": "constant"
       },
       {
-        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "line": 91,
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "line": 97,
         "type": "constant"
       }
     ],
@@ -55654,8 +56006,8 @@
     ],
     "YAGNI Watch List": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 180,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 179,
         "type": "heading"
       }
     ],
@@ -55822,13 +56174,13 @@
       "route": "/api/reports/[requestId]/generate",
       "method": "POST",
       "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-      "line": 17
+      "line": 18
     },
     {
       "route": "/api/reports/[requestId]/publish-signal",
       "method": "POST",
       "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-      "line": 17
+      "line": 7
     },
     {
       "route": "/api/reports/[requestId]",
@@ -55986,14 +56338,14 @@
       },
       {
         "file": "packages/db/src/repositories.ts",
-        "weight": 1012.18,
+        "weight": 1020.18,
         "bucket": "other",
-        "estimated_tokens": 19247,
-        "lines": 2344,
-        "symbols": 214,
+        "estimated_tokens": 19335,
+        "lines": 2353,
+        "symbols": 215,
         "symbol_type_counts": {
           "constant": 84,
-          "function": 82,
+          "function": 83,
           "type": 48
         },
         "dependency_in": 1,
@@ -56085,14 +56437,14 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "weight": 281.25,
+        "weight": 324.24,
         "bucket": "other",
-        "estimated_tokens": 8243,
-        "lines": 629,
-        "symbols": 76,
+        "estimated_tokens": 9337,
+        "lines": 690,
+        "symbols": 87,
         "symbol_type_counts": {
-          "constant": 65,
-          "function": 10,
+          "constant": 74,
+          "function": 12,
           "type": 1
         },
         "dependency_in": 0,
@@ -56545,10 +56897,10 @@
       },
       {
         "file": "apps/astra-web/lib/journey.ts",
-        "weight": 118.42,
+        "weight": 119.41,
         "bucket": "other",
-        "estimated_tokens": 1098,
-        "lines": 99,
+        "estimated_tokens": 1131,
+        "lines": 101,
         "symbols": 22,
         "symbol_type_counts": {
           "constant": 11,
@@ -56556,15 +56908,15 @@
           "type": 3
         },
         "dependency_in": 4,
-        "dependency_out": 3,
+        "dependency_out": 4,
         "route_count": 0
       },
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
         "weight": 118.37,
         "bucket": "other",
-        "estimated_tokens": 1952,
-        "lines": 149,
+        "estimated_tokens": 2027,
+        "lines": 151,
         "symbols": 30,
         "symbol_type_counts": {
           "constant": 24,
@@ -56770,6 +57122,21 @@
         "route_count": 1
       },
       {
+        "file": "apps/astra-web/lib/journey-producers.ts",
+        "weight": 97.41,
+        "bucket": "other",
+        "estimated_tokens": 1174,
+        "lines": 106,
+        "symbols": 18,
+        "symbol_type_counts": {
+          "constant": 12,
+          "function": 6
+        },
+        "dependency_in": 4,
+        "dependency_out": 1,
+        "route_count": 0
+      },
+      {
         "file": "apps/astra-web/app/api/billing/create-checkout-session/route.ts",
         "weight": 97.33,
         "bucket": "app/api",
@@ -56779,6 +57146,24 @@
         "symbol_type_counts": {
           "component": 1,
           "constant": 10,
+          "route_handler": 1,
+          "type": 1
+        },
+        "dependency_in": 0,
+        "dependency_out": 2,
+        "route_count": 1
+      },
+      {
+        "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
+        "weight": 93.16,
+        "bucket": "app/api",
+        "estimated_tokens": 520,
+        "lines": 59,
+        "symbols": 10,
+        "symbol_type_counts": {
+          "component": 1,
+          "constant": 6,
+          "function": 1,
           "route_handler": 1,
           "type": 1
         },
@@ -56802,24 +57187,6 @@
         "dependency_in": 1,
         "dependency_out": 0,
         "route_count": 0
-      },
-      {
-        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
-        "weight": 90.43,
-        "bucket": "app/api",
-        "estimated_tokens": 896,
-        "lines": 97,
-        "symbols": 9,
-        "symbol_type_counts": {
-          "component": 1,
-          "constant": 5,
-          "function": 1,
-          "route_handler": 1,
-          "type": 1
-        },
-        "dependency_in": 0,
-        "dependency_out": 2,
-        "route_count": 1
       },
       {
         "file": "apps/composer-web/lib/config.ts",
@@ -56869,24 +57236,6 @@
         "dependency_in": 1,
         "dependency_out": 1,
         "route_count": 0
-      },
-      {
-        "file": "apps/astra-web/app/api/reports/[requestId]/generate/route.ts",
-        "weight": 89.04,
-        "bucket": "app/api",
-        "estimated_tokens": 417,
-        "lines": 50,
-        "symbols": 9,
-        "symbol_type_counts": {
-          "component": 1,
-          "constant": 5,
-          "function": 1,
-          "route_handler": 1,
-          "type": 1
-        },
-        "dependency_in": 0,
-        "dependency_out": 1,
-        "route_count": 1
       },
       {
         "file": "apps/astra-web/components/AuthPanel.tsx",
@@ -57057,11 +57406,11 @@
         "route_count": 1
       },
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
         "weight": 76.29,
         "bucket": "other",
-        "estimated_tokens": 4787,
-        "lines": 291,
+        "estimated_tokens": 4779,
+        "lines": 290,
         "symbols": 24,
         "symbol_type_counts": {
           "heading": 24
@@ -57144,6 +57493,23 @@
           "component": 1,
           "constant": 3,
           "route_handler": 1
+        },
+        "dependency_in": 0,
+        "dependency_out": 2,
+        "route_count": 1
+      },
+      {
+        "file": "apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts",
+        "weight": 72.31,
+        "bucket": "app/api",
+        "estimated_tokens": 287,
+        "lines": 21,
+        "symbols": 5,
+        "symbol_type_counts": {
+          "component": 1,
+          "constant": 2,
+          "route_handler": 1,
+          "type": 1
         },
         "dependency_in": 0,
         "dependency_out": 2,
@@ -57462,10 +57828,10 @@
       },
       {
         "file": "apps/astra-web/lib/composer-private-feed.ts",
-        "weight": 49.12,
+        "weight": 49.13,
         "bucket": "other",
-        "estimated_tokens": 435,
-        "lines": 55,
+        "estimated_tokens": 459,
+        "lines": 56,
         "symbols": 11,
         "symbol_type_counts": {
           "constant": 5,
@@ -59017,6 +59383,21 @@
         "route_count": 0
       },
       {
+        "file": "apps/astra-web/app/journey/page.tsx",
+        "weight": 25.36,
+        "bucket": "other",
+        "estimated_tokens": 267,
+        "lines": 22,
+        "symbols": 3,
+        "symbol_type_counts": {
+          "component": 1,
+          "constant": 2
+        },
+        "dependency_in": 0,
+        "dependency_out": 6,
+        "route_count": 0
+      },
+      {
         "file": "docs/inbox-astra/completed/astra-birth-date-time-ux-implementation-plan.md",
         "weight": 25.35,
         "bucket": "other",
@@ -59042,21 +59423,6 @@
         },
         "dependency_in": 0,
         "dependency_out": 0,
-        "route_count": 0
-      },
-      {
-        "file": "apps/astra-web/app/journey/page.tsx",
-        "weight": 24.12,
-        "bucket": "other",
-        "estimated_tokens": 181,
-        "lines": 16,
-        "symbols": 3,
-        "symbol_type_counts": {
-          "component": 1,
-          "constant": 2
-        },
-        "dependency_in": 0,
-        "dependency_out": 5,
         "route_count": 0
       },
       {
@@ -59514,6 +59880,20 @@
         "route_count": 0
       },
       {
+        "file": "docs/architecture/journey-step-product-model.md",
+        "weight": 18.84,
+        "bucket": "other",
+        "estimated_tokens": 887,
+        "lines": 43,
+        "symbols": 5,
+        "symbol_type_counts": {
+          "heading": 5
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "apps/composer-web/akashic/agent-inbox/2026-06-10-repomap-builder-fixed.md",
         "weight": 18.67,
         "bucket": "other",
@@ -59801,20 +60181,6 @@
         "weight": 15.74,
         "bucket": "other",
         "estimated_tokens": 338,
-        "lines": 35,
-        "symbols": 4,
-        "symbol_type_counts": {
-          "heading": 4
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
-        "route_count": 0
-      },
-      {
-        "file": "docs/architecture/journey-step-product-model.md",
-        "weight": 15.69,
-        "bucket": "other",
-        "estimated_tokens": 623,
         "lines": 35,
         "symbols": 4,
         "symbol_type_counts": {
@@ -60249,6 +60615,20 @@
         "symbol_type_counts": {},
         "dependency_in": 0,
         "dependency_out": 5,
+        "route_count": 0
+      },
+      {
+        "file": "apps/astra-web/playwright.config.ts",
+        "weight": 7.08,
+        "bucket": "other",
+        "estimated_tokens": 368,
+        "lines": 52,
+        "symbols": 1,
+        "symbol_type_counts": {
+          "constant": 1
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -60748,18 +61128,6 @@
         "route_count": 0
       },
       {
-        "file": "apps/astra-web/playwright.config.ts",
-        "weight": 3.96,
-        "bucket": "other",
-        "estimated_tokens": 277,
-        "lines": 44,
-        "symbols": 0,
-        "symbol_type_counts": {},
-        "dependency_in": 0,
-        "dependency_out": 0,
-        "route_count": 0
-      },
-      {
         "file": "packages/db/drizzle/0002_large_black_tom.sql",
         "weight": 3.88,
         "bucket": "other",
@@ -61199,9 +61567,9 @@
       {
         "name": "top-weighted",
         "budget_tokens": 64000,
-        "estimated_tokens": 69915,
+        "estimated_tokens": 70003,
         "file_count": 4,
-        "symbol_count": 994,
+        "symbol_count": 995,
         "files": [
           {
             "rank": 1,
@@ -61224,14 +61592,14 @@
           {
             "rank": 2,
             "file": "packages/db/src/repositories.ts",
-            "weight": 1012.18,
+            "weight": 1020.18,
             "bucket": "other",
-            "estimated_tokens": 19247,
-            "lines": 2344,
-            "symbols": 214,
+            "estimated_tokens": 19335,
+            "lines": 2353,
+            "symbols": 215,
             "symbol_type_counts": {
               "constant": 84,
-              "function": 82,
+              "function": 83,
               "type": 48
             },
             "dependency_in": 1,
@@ -61277,9 +61645,9 @@
       {
         "name": "top-weighted",
         "budget_tokens": 128000,
-        "estimated_tokens": 128353,
+        "estimated_tokens": 129535,
         "file_count": 15,
-        "symbol_count": 1640,
+        "symbol_count": 1652,
         "files": [
           {
             "rank": 1,
@@ -61302,14 +61670,14 @@
           {
             "rank": 2,
             "file": "packages/db/src/repositories.ts",
-            "weight": 1012.18,
+            "weight": 1020.18,
             "bucket": "other",
-            "estimated_tokens": 19247,
-            "lines": 2344,
-            "symbols": 214,
+            "estimated_tokens": 19335,
+            "lines": 2353,
+            "symbols": 215,
             "symbol_type_counts": {
               "constant": 84,
-              "function": 82,
+              "function": 83,
               "type": 48
             },
             "dependency_in": 1,
@@ -61407,14 +61775,14 @@
           {
             "rank": 8,
             "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-            "weight": 281.25,
+            "weight": 324.24,
             "bucket": "other",
-            "estimated_tokens": 8243,
-            "lines": 629,
-            "symbols": 76,
+            "estimated_tokens": 9337,
+            "lines": 690,
+            "symbols": 87,
             "symbol_type_counts": {
-              "constant": 65,
-              "function": 10,
+              "constant": 74,
+              "function": 12,
               "type": 1
             },
             "dependency_in": 0,
@@ -61553,9 +61921,9 @@
       }
     ],
     "coverage": {
-      "files": 362,
-      "symbols": 4131,
-      "total_estimated_tokens": 994175
+      "files": 363,
+      "symbols": 4160,
+      "total_estimated_tokens": 996590
     }
   }
 }

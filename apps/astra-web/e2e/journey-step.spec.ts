@@ -61,7 +61,7 @@ async function seedStep(userId: string, input: { rank: number; title: string; ki
     title: input.title,
     body: `${input.title} body copy for Journey lifecycle verification.`,
     displayPayload: input.kind === "report_signal"
-      ? { subtitle: "A completed private report", ctaLabel: "Open report", publicSignal: { reportId: randomUUID() } }
+      ? { subtitle: "A completed private report", ctaLabel: "Open report", publicSignal: { reportId: randomUUID(), requestId: randomUUID() } }
       : { subtitle: "Private Journey guidance" },
     rankScore: input.rank,
     reasonCode: input.kind === "report_signal" ? "explicit_report_signal_publish" : "playwright_journey_lifecycle",
@@ -90,6 +90,8 @@ test("JourneyStep is private, durable, recoverable, and responsive", async ({ br
   }
   const userA = await userIdFor(emailA);
   const userB = await userIdFor(emailB);
+  await db.update(appUserProfiles).set({ onboardingStatus: "complete", updatedAt: new Date() }).where(eq(appUserProfiles.userId, userA));
+  await db.update(appUserProfiles).set({ onboardingStatus: "complete", updatedAt: new Date() }).where(eq(appUserProfiles.userId, userB));
   const current = await seedStep(userA, { rank: 300, title: "A private current step", kind: "report_signal" });
   await seedStep(userA, { rank: 200, title: "A private next step" });
   const userBOnly = await seedStep(userB, { rank: 400, title: "B private step" });

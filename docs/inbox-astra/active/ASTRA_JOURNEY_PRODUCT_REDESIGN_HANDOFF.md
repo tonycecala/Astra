@@ -2,8 +2,8 @@
 title: "Astra Journey Product Redesign Handoff"
 type: "codex-inbox"
 project: "Astra Clean Start"
-status: "completed"
-execution_state: "completed"
+status: "ready-for-codex"
+execution_state: "in-progress"
 priority: "P0"
 owner: "Astra"
 created: "2026-07-17"
@@ -22,16 +22,15 @@ tags:
   - browser-qa
   - alpha
 updated: "2026-07-20"
-completed: "2026-07-20"
 ---
 
 # Astra Journey Product Redesign Handoff
 
 ## Current Status
 
-Completed on 2026-07-20 after Tony resumed the approved JourneyStep model. Journey now uses Astra's existing `PublishedCard` surface for one private current step, a compact queue, durable lifecycle actions, honest owning-surface links, progressive provenance, recoverable dismiss/complete actions, and a truthful empty-state path. Astryx was not introduced; it is recorded only as a future isolated admin-primitives evaluation candidate.
+Reopened again on 2026-07-20 after live alpha acceptance proved that the JourneyStep UI was deployed without real producer integration. New accounts did not receive onboarding Journey items, and a successfully generated Welcome Report did not publish its report signal into Journey. The prior completion evidence proved seeded rendering and lifecycle behavior but did not prove either real producer path.
 
-## Completion Evidence
+## Superseded Prior Completion Evidence
 
 - Implementation commit: `40bfe94` (`feat(journey): complete JourneyStep experience`), fast-forwarded to `alpha` and `origin/alpha`.
 - Production deployment: `dpl_2GojTD9KD9nXV5BmMj2XcwPruWAq`, Ready at `https://astra-alpha-764wmjehi-astra-labs.vercel.app` and served through `https://alpha.astraportrait.com`.

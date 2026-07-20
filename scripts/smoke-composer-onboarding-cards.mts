@@ -195,31 +195,20 @@ async function insertUser(id: string, userEmail: string) {
 }
 
 try {
-  const publicHtml = await requestText(`${appBaseUrl}/journey`, "");
+  const publicHtml = await requestText(`${appBaseUrl}/`, "");
   if (
-    !publicHtml.includes("Public fallback") ||
-    !publicHtml.includes("12 cards") ||
+    !publicHtml.includes("Public Journey preview") ||
     !publicHtml.includes("Cleopatra: image, strategy, and survival")
   ) {
-    throw new Error("Signed-out Journey did not render the twelve-card public preview from the Composer inventory.");
+    throw new Error("Signed-out root did not render the four-card public Journey illustration.");
   }
-  if (publicHtml.includes("Welcome to Astra")) {
+  if (publicHtml.includes("Start with your chart, then let Astra gather portraits")) {
     throw new Error("Signed-out public Journey leaked private onboarding card copy.");
   }
 
   targetUserA = await signInSmokeUser();
+  await requestText(`${appBaseUrl}/self`);
   await insertUser(targetUserB, `${targetUserB}@example.com`);
-
-  const firstRunPrivateHtml = await requestText(`${appBaseUrl}/journey`);
-  if (
-    !firstRunPrivateHtml.includes("Private journey") ||
-    !firstRunPrivateHtml.includes("Composer will generate your onboarding cards")
-  ) {
-    throw new Error("Signed-in first-run Journey did not show the Composer onboarding state before publish.");
-  }
-  if (firstRunPrivateHtml.includes("Cleopatra: image, strategy, and survival")) {
-    throw new Error("Signed-in first-run Journey must not copy public preview cards.");
-  }
 
   const prepared = prepareComposerOnboardingCardsBatch({
     targetUserId: targetUserA,
@@ -260,13 +249,13 @@ try {
     throw new Error("Another user's private feed listed Composer onboarding cards.");
   }
 
-  const publicAfterHtml = await requestText(`${appBaseUrl}/journey`, "");
-  if (publicAfterHtml.includes("Welcome to Astra")) {
+  const publicAfterHtml = await requestText(`${appBaseUrl}/`, "");
+  if (publicAfterHtml.includes("Start with your chart, then let Astra gather portraits")) {
     throw new Error("Signed-out public Journey leaked onboarding cards after publish.");
   }
 
   const privateHtml = await requestText(`${appBaseUrl}/journey`);
-  if (!privateHtml.includes("Private journey") || !privateHtml.includes("Composer is shaping this Journey") || !privateHtml.includes("Welcome to Astra")) {
+  if (!privateHtml.includes("Your private, ordered place") || !privateHtml.includes("Current step") || !privateHtml.includes("Welcome to Astra")) {
     throw new Error("Signed-in Journey did not render the Composer onboarding cards.");
   }
 } finally {

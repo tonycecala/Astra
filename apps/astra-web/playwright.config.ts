@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const astraServerCommand = process.env.ASTRA_E2E_SERVER_MODE === "production" ? "npm run start" : "npm run dev";
+
 export default defineConfig({
   testDir: "./e2e",
   timeout: 30_000,
@@ -20,7 +22,13 @@ export default defineConfig({
       timeout: 10_000
     },
     {
-      command: "ASTRA_PLACE_SEARCH_PROVIDER=open-meteo ASTRA_OPEN_METEO_GEOCODING_URL=http://127.0.0.1:4317/v1/search npm run dev",
+      command: "ASTRA_APP_BASE_URL=http://localhost:3011 COMPOSER_REQUIRE_AUTH=0 npm --workspace @astra/composer-web run dev",
+      url: "http://localhost:3012/api/status",
+      reuseExistingServer: true,
+      timeout: 120_000
+    },
+    {
+      command: `ASTRA_PLACE_SEARCH_PROVIDER=open-meteo ASTRA_OPEN_METEO_GEOCODING_URL=http://127.0.0.1:4317/v1/search ${astraServerCommand}`,
       url: "http://localhost:3011/",
       reuseExistingServer: true,
       timeout: 120_000

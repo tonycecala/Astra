@@ -334,6 +334,8 @@ const composerPrivateFeedRoute = await readFile("apps/astra-web/app/api/composer
 const composerPrivateFeedService = await readFile("apps/astra-web/lib/composer-private-feed.ts", "utf8");
 const journeyRoute = await readFile("apps/astra-web/app/journey/page.tsx", "utf8");
 const journeyModel = await readFile("apps/astra-web/lib/journey.ts", "utf8");
+const journeyProducers = await readFile("apps/astra-web/lib/journey-producers.ts", "utf8");
+const reportGenerateRoute = await readFile("apps/astra-web/app/api/reports/[requestId]/generate/route.ts", "utf8");
 const reportSignalPublishRoute = await readFile("apps/astra-web/app/api/reports/[requestId]/publish-signal/route.ts", "utf8");
 const internalTokenHelper = await readFile("apps/astra-web/lib/internal-token.ts", "utf8");
 const composerPublisher = await readFile("apps/composer-web/src/publishStreamArtifact.ts", "utf8");
@@ -351,11 +353,12 @@ if (journeyModel.includes("private_projection_from_public_source") || journeyMod
   throw new Error("Signed-in first-run Journey must wait for Composer onboarding cards instead of copying public fallback cards.");
 }
 if (
-  !reportSignalPublishRoute.includes("composerPrivateFeedWriteSchema") ||
-  !reportSignalPublishRoute.includes("persistComposerPrivateFeedWrite") ||
-  reportSignalPublishRoute.includes("upsertComposerStreamArtifact")
+  !reportSignalPublishRoute.includes("ensureReportJourneyItem") ||
+  !reportGenerateRoute.includes("ensureReportJourneyItem") ||
+  !journeyProducers.includes("persistComposerPrivateFeedWrite") ||
+  journeyProducers.includes("upsertComposerStreamArtifact")
 ) {
-  throw new Error("Report signal publishing must use the Composer private-feed contract, not the global stream reader.");
+  throw new Error("Report generation and signal publishing must use the Journey private-feed producer, not the global stream reader.");
 }
 if (!composerPrivateFeedRoute.includes("composerPrivateFeedWriteSchema") || !composerPrivateFeedRoute.includes("hasValidInternalApiToken")) {
   throw new Error("Composer private-feed API must validate the shared write contract behind the internal token.");

@@ -2,10 +2,14 @@ import { expect, type Page, test } from "@playwright/test";
 import { createHmac, randomUUID } from "node:crypto";
 import { ASTRA_REPORT_WRITER_ENV, LOCAL_DETERMINISTIC_REPORT_WRITER, buildAstrologyReportResultAsync } from "@astra/astrology";
 import { buildChartMakerRecordResult } from "@astra/chart-maker";
-import { appUserProfiles, createAlly, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, creditLedgerEntries, db, mirrorCreditBalanceToProfile, recordAstrologyReportResult, recordChartMakerResult } from "@astra/db";
+import { appUserProfiles, createAlly, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, creditLedgerEntries, db, getUserFeedItemById, listUserAstrologyReportResults, listUserFeedItems, mirrorCreditBalanceToProfile, recordAstrologyReportResult, recordChartMakerResult } from "@astra/db";
 import { eq } from "drizzle-orm";
 
 type JsonObject = Record<string, unknown>;
+
+function isExpectedNavigationCancellation(message: string) {
+  return message.includes("due to access control checks.");
+}
 
 const routes = [
   { path: "/", heading: "Astra meets you where you are", mobileHeading: "Journey" },
@@ -116,6 +120,12 @@ async function makeProfileAdmin(email: string) {
       userId: profile.userId
     });
   await mirrorCreditBalanceToProfile(db, profile.userId);
+}
+
+async function userIdForEmail(email: string) {
+  const [profile] = await db.select({ userId: appUserProfiles.userId }).from(appUserProfiles).where(eq(appUserProfiles.email, email)).limit(1);
+  if (!profile) throw new Error(`Expected profile for ${email}.`);
+  return profile.userId;
 }
 
 async function createCompletedChart(email: string, input: { name: string }) {
@@ -388,6 +398,11 @@ test.describe("clean-start routes", () => {
   test("first Self chart automatically creates a free Welcome Report", async ({ page }, testInfo) => {
     const email = `self-onboarding-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
     const name = "Astra Onboarding Smoke";
+    const browserErrors: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() === "error" && !message.text().startsWith("Failed to load resource:") && !message.text().includes("due to access control checks.")) browserErrors.push(message.text());
+    });
+    page.on("pageerror", (error) => { if (!isExpectedNavigationCancellation(error.message)) browserErrors.push(error.message); });
 
     await signInWithOtp(page, { email, name });
     await expect(page).toHaveURL(/\/self(?:[?#]|$)/);
@@ -396,6 +411,15 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("heading", { name: "Your free Welcome Report" })).toBeVisible();
     await expect(page.getByLabel("Alpha onboarding guidance")).toHaveCount(0);
     await expect(page.getByLabel("Chart generation flow")).toHaveCount(0);
+
+    await page.goto("/journey");
+    await expect(page.locator("article.astraPublishedCard .astraPublishedCardTitle")).toHaveText("Welcome to Astra");
+    await expect(page.getByText("This is part of the private welcome sequence created for your Astra account.")).toBeHidden();
+    await page.getByText("Why this now?").click();
+    await expect(page.getByText("This is part of the private welcome sequence created for your Astra account.")).toBeVisible();
+    const onboardingUserId = await userIdForEmail(email);
+    const onboardingFeed = await listUserFeedItems(db, { userId: onboardingUserId, state: "available", limit: 20 });
+    expect(onboardingFeed.items.filter((item) => item.reasonCode === "composer_onboarding_card")).toHaveLength(5);
 
     await page.goto("/self#self-birth-onboarding");
     await expect(page.getByText("Step 1 of 3: Your name")).toBeVisible();
@@ -434,8 +458,27 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("radio", { name: "Tropical" })).toBeChecked();
     await page.getByRole("radio", { name: "Sidereal" }).check();
     await expect(page.getByRole("radio", { name: "Sidereal" })).toBeChecked();
+    const generateResponsePromise = page.waitForResponse((response) => response.request().method() === "POST" && /\/api\/reports\/[^/]+\/generate$/.test(new URL(response.url()).pathname));
     await createChartButton.click();
+    const generateResponse = await generateResponsePromise;
+    expect(generateResponse.status()).toBe(201);
     await expect(page.getByRole("heading", { name: `${name} — Welcome Report` })).toBeVisible({ timeout: 15_000 });
+    const userId = await userIdForEmail(email);
+    const [generatedResult] = await listUserAstrologyReportResults(db, userId);
+    if (!generatedResult?.publicSignal) throw new Error("Expected the new account Welcome Report public signal.");
+
+    await page.goto("/journey");
+    await expect(page.locator("article.astraPublishedCard .astraPublishedCardTitle")).toHaveText(generatedResult.publicSignal.headline);
+    await expect(page.getByRole("link", { name: "Open" })).toHaveAttribute("href", `/library?reportId=${generatedResult.requestId}`);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+    await page.getByRole("button", { name: "Complete" }).click();
+    const republish = await page.request.post(`/api/reports/${generatedResult.requestId}/publish-signal`);
+    expect(republish.status()).toBe(201);
+    const republishedItem = await getUserFeedItemById(db, {
+      userId,
+      feedItemId: `report_signal_feed:${userId}:${generatedResult.requestId}`
+    });
+    expect(republishedItem?.state).toBe("seen");
 
     const existingAllyChart = await createCompletedAllyChart(email, { name: "Existing Ally", relationship: "Friend" });
     await page.goto(`/allies?chart=${existingAllyChart.request.id}&start=birth_details#ally-birth-onboarding`);
@@ -464,6 +507,24 @@ test.describe("clean-start routes", () => {
     } else {
       await expect(page.getByRole("heading", { name: "Your Journey", exact: true })).toBeVisible();
     }
+    expect(browserErrors).toEqual([]);
+  });
+
+  test("existing account reconciles a completed Welcome Report into Journey", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "Existing-account producer reconciliation is covered once on desktop.");
+    const email = `journey-existing-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
+    const browserErrors: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() === "error" && !message.text().startsWith("Failed to load resource:") && !message.text().includes("due to access control checks.")) browserErrors.push(message.text());
+    });
+    page.on("pageerror", (error) => { if (!isExpectedNavigationCancellation(error.message)) browserErrors.push(error.message); });
+    await signInWithOtp(page, { email, name: "Existing Journey Account" });
+    const completed = await createCompletedReport(email, { name: "Existing Journey Account", reportType: "identity" });
+
+    await page.goto("/journey");
+    await expect(page.locator("article.astraPublishedCard .astraPublishedCardTitle")).toHaveText(completed.result.publicSignal?.headline ?? "");
+    await expect(page.getByRole("link", { name: "Open" })).toHaveAttribute("href", `/library?reportId=${completed.request.id}`);
+    expect(browserErrors).toEqual([]);
   });
 
   test("admin Stars ledger and Synastry controls stay browser-visible", async ({ page }, testInfo) => {

@@ -10,7 +10,7 @@ import {
   composerPrivateFeedWriteResponseSchema,
   composerPrivateFeedWriteSchema
 } from "@astra/contracts";
-import { createComposerDecision, createUserFeedItem, db, upsertSourceCard } from "@astra/db";
+import { createComposerDecision, createUserFeedItem, db, markAuthUserOnboardingComplete, upsertSourceCard } from "@astra/db";
 
 export async function persistComposerPrivateFeedWrite(
   input: ComposerPrivateFeedWrite
@@ -44,6 +44,7 @@ export async function persistComposerOnboardingCardsWrite(
   for (const card of parsed.cards) {
     writes.push(await persistComposerPrivateFeedWrite(card));
   }
+  await markAuthUserOnboardingComplete(db, parsed.targetUserId);
 
   return composerOnboardingCardsWriteResponseSchema.parse({
     id: parsed.id,

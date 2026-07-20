@@ -5,6 +5,7 @@ import { db, listUserFeedItems, readFoundationSnapshot, seedSnapshot } from "@as
 import { fetchComposerAvailability } from "./composer-selection";
 import { ui } from "./i18n";
 import { buildPublicComposerPreview, PUBLIC_COMPOSER_SAMPLE_COUNT } from "./public-composer-preview";
+import { reconcileCompletedReportJourneyItems } from "./journey-producers";
 
 export type JourneyStep = {
   item: UserFeedItem;
@@ -30,7 +31,7 @@ function laneForFeedKind(kind: UserFeedItem["feedKind"]): AstraCard["lane"] {
 function reportRequestId(item: UserFeedItem) {
   const signal = item.displayPayload.publicSignal;
   if (!signal || typeof signal !== "object" || Array.isArray(signal)) return undefined;
-  return payloadString(signal as Record<string, unknown>, "reportId");
+  return payloadString(signal as Record<string, unknown>, "requestId");
 }
 
 function primaryActionFor(item: UserFeedItem): JourneyStep["primaryAction"] {
@@ -72,6 +73,7 @@ function stepFromFeedItem(item: UserFeedItem): JourneyStep {
 }
 
 export async function getJourneyViewModel(userId: string): Promise<JourneyViewModel> {
+  await reconcileCompletedReportJourneyItems(userId);
   const [available, saved] = await Promise.all([
     listUserFeedItems(db, { userId, state: "available", limit: 50 }),
     listUserFeedItems(db, { userId, state: "saved", limit: 50 })
