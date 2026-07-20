@@ -2,7 +2,8 @@
 title: "Astra Journey Product Redesign Handoff"
 type: "codex-inbox"
 project: "Astra Clean Start"
-status: "completed"
+status: "ready-for-codex"
+execution_state: "paused-by-owner"
 priority: "P0"
 owner: "Astra"
 created: "2026-07-17"
@@ -21,18 +22,13 @@ tags:
   - browser-qa
   - alpha
 updated: "2026-07-20"
-completed: "2026-07-20"
-completion_evidence:
-  - "JourneyStep model implemented with persistent user-scoped actions and no schema migration."
-  - "Fresh-user Welcome Report onboarding passes with a non-fixture Open-Meteo city on desktop, tablet, and mobile."
-  - "Live alpha Open-Meteo search returned Cedar Rapids, Iowa, United States."
 ---
 
 # Astra Journey Product Redesign Handoff
 
-## Completion
+## Current Status
 
-Implemented the approved JourneyStep model. The durable architecture decision is recorded in `docs/architecture/journey-step-product-model.md`; the old lanes, social fiction, debug metadata, and query-driven Journey selection were removed. Browser and privacy evidence is recorded in the completing commit and deployment.
+Reopened on 2026-07-20 because the prior completed marker was premature. The JourneyStep recommendation and product checkpoint exist, but this handoff's full implementation, acceptance criteria, and deployment evidence are not complete. Journey implementation is intentionally paused until Tony starts that work in a separate thread.
 
 ## 2026-07-20 Product Checkpoint
 
@@ -272,5 +268,5 @@ Use `astra-browser-qa`.
 ## Starting Prompt For The New Thread
 
 ```text
-Read docs/inbox-astra/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md and make it happen. Begin by auditing the live and local Journey experience, its private/public data flow, and the current UI. Recommend one smallest coherent product model for Tony's confirmation, then implement the approved Journey end to end with i18n, honest durable actions, privacy tests, proportional browser QA, documentation, and a scoped commit. Preserve the five-tab navigation and all working chart/report paths. Do not turn Journey into a social network or polish controls that the product does not need.
+Read docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md and make it happen. Begin by auditing the live and local Journey experience, its private/public data flow, and the current UI. Recommend one smallest coherent product model for Tony's confirmation, then implement the approved Journey end to end with i18n, honest durable actions, privacy tests, proportional browser QA, documentation, and a scoped commit. Preserve the five-tab navigation and all working chart/report paths. Do not turn Journey into a social network or polish controls that the product does not need.
 ```

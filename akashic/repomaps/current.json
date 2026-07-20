@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-07-20T15:57:14.353Z",
+  "generated_at": "2026-07-20T16:24:27.685Z",
   "root_name": "Astra",
   "files_indexed": 361,
   "total_symbols": 4093,
-  "total_estimated_tokens": 990661,
+  "total_estimated_tokens": 990647,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -16212,120 +16212,120 @@
       "importance_bucket": "app/api"
     },
     {
-      "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+      "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
       "lang": "markdown",
-      "size": 16993,
-      "lines": 277,
-      "estimated_tokens": 4246,
+      "size": 16719,
+      "lines": 273,
+      "estimated_tokens": 4177,
       "symbols": [
         {
           "name": "Astra Journey Product Redesign Handoff",
-          "line": 31,
+          "line": 27,
           "type": "heading"
         },
         {
-          "name": "Completion",
-          "line": 33,
+          "name": "Current Status",
+          "line": 29,
           "type": "heading"
         },
         {
           "name": "2026-07-20 Product Checkpoint",
-          "line": 37,
+          "line": 33,
           "type": "heading"
         },
         {
           "name": "Audit evidence",
-          "line": 39,
+          "line": 35,
           "type": "heading"
         },
         {
           "name": "Recommended model for Tony's confirmation",
-          "line": 47,
+          "line": 43,
           "type": "heading"
         },
         {
           "name": "Implementation plan after approval",
-          "line": 68,
+          "line": 64,
           "type": "heading"
         },
         {
           "name": "Thread Mission",
-          "line": 81,
+          "line": 77,
           "type": "heading"
         },
         {
           "name": "Release Baseline",
-          "line": 89,
+          "line": 85,
           "type": "heading"
         },
         {
           "name": "Governing Product Truth",
-          "line": 97,
+          "line": 93,
           "type": "heading"
         },
         {
           "name": "Current Product and Code Reality",
-          "line": 107,
+          "line": 103,
           "type": "heading"
         },
         {
           "name": "First Decision Checkpoint",
-          "line": 123,
+          "line": 119,
           "type": "heading"
         },
         {
           "name": "Recommended Product Lens",
-          "line": 137,
+          "line": 133,
           "type": "heading"
         },
         {
           "name": "Non-Negotiable Boundaries",
-          "line": 152,
+          "line": 148,
           "type": "heading"
         },
         {
           "name": "YAGNI Watch List",
-          "line": 166,
+          "line": 162,
           "type": "heading"
         },
         {
           "name": "Primary Code Map",
-          "line": 182,
+          "line": 178,
           "type": "heading"
         },
         {
           "name": "Product Design Inputs",
-          "line": 199,
+          "line": 195,
           "type": "heading"
         },
         {
           "name": "Required States",
-          "line": 210,
+          "line": 206,
           "type": "heading"
         },
         {
           "name": "Implementation Sequence",
-          "line": 223,
+          "line": 219,
           "type": "heading"
         },
         {
           "name": "Acceptance Criteria",
-          "line": 236,
+          "line": 232,
           "type": "heading"
         },
         {
           "name": "Verification Bar",
-          "line": 251,
+          "line": 247,
           "type": "heading"
         },
         {
           "name": "Completion Artifacts",
-          "line": 263,
+          "line": 259,
           "type": "heading"
         },
         {
           "name": "Starting Prompt For The New Thread",
-          "line": 272,
+          "line": 268,
           "type": "heading"
         }
       ],
@@ -16335,7 +16335,7 @@
       "route_count": 0,
       "headings": [
         "Astra Journey Product Redesign Handoff",
-        "Completion",
+        "Current Status",
         "2026-07-20 Product Checkpoint",
         "Audit evidence",
         "Recommended model for Tony's confirmation",
@@ -16345,7 +16345,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 70.3,
+      "importance_weight": 70.31,
       "importance_bucket": "other"
     },
     {
@@ -27562,9 +27562,9 @@
     {
       "file": "docs/inbox-astra/README.md",
       "lang": "markdown",
-      "size": 1274,
-      "lines": 27,
-      "estimated_tokens": 319,
+      "size": 1495,
+      "lines": 32,
+      "estimated_tokens": 374,
       "symbols": [
         {
           "name": "inbox-astra",
@@ -27578,7 +27578,7 @@
         },
         {
           "name": "Current Human-Readable Parity Docs",
-          "line": 23,
+          "line": 28,
           "type": "heading"
         }
       ],
@@ -27593,7 +27593,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 12.52,
+      "importance_weight": 12.65,
       "importance_bucket": "other"
     },
     {
@@ -30080,8 +30080,8 @@
     ],
     "2026-07-20 Product Checkpoint": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 37,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 33,
         "type": "heading"
       }
     ],
@@ -30712,8 +30712,8 @@
         "type": "heading"
       },
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 236,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 232,
         "type": "heading"
       },
       {
@@ -32161,8 +32161,8 @@
     ],
     "Astra Journey Product Redesign Handoff": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 31,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 27,
         "type": "heading"
       }
     ],
@@ -33270,8 +33270,8 @@
     ],
     "Audit evidence": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 39,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 35,
         "type": "heading"
       }
     ],
@@ -36215,17 +36215,10 @@
         "type": "function"
       }
     ],
-    "Completion": [
-      {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 33,
-        "type": "heading"
-      }
-    ],
     "Completion Artifacts": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 263,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 259,
         "type": "heading"
       }
     ],
@@ -38308,7 +38301,7 @@
     "Current Human-Readable Parity Docs": [
       {
         "file": "docs/inbox-astra/README.md",
-        "line": 23,
+        "line": 28,
         "type": "heading"
       }
     ],
@@ -38321,8 +38314,8 @@
     ],
     "Current Product and Code Reality": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 107,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 103,
         "type": "heading"
       }
     ],
@@ -38365,6 +38358,13 @@
       },
       {
         "file": "docs/inbox-astra/completed/astra-birth-date-time-ux-implementation-plan.md",
+        "line": 29,
+        "type": "heading"
+      }
+    ],
+    "Current Status": [
+      {
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
         "line": 29,
         "type": "heading"
       }
@@ -40198,8 +40198,8 @@
     ],
     "First Decision Checkpoint": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 123,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 119,
         "type": "heading"
       }
     ],
@@ -41216,8 +41216,8 @@
     ],
     "Governing Product Truth": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 97,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 93,
         "type": "heading"
       }
     ],
@@ -42019,8 +42019,8 @@
     ],
     "Implementation plan after approval": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 68,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 64,
         "type": "heading"
       }
     ],
@@ -42040,8 +42040,8 @@
     ],
     "Implementation Sequence": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 223,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 219,
         "type": "heading"
       }
     ],
@@ -44510,8 +44510,8 @@
     ],
     "Non-Negotiable Boundaries": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 152,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 148,
         "type": "heading"
       }
     ],
@@ -46975,8 +46975,8 @@
     ],
     "Primary Code Map": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 182,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 178,
         "type": "heading"
       }
     ],
@@ -47191,8 +47191,8 @@
     ],
     "Product Design Inputs": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 199,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 195,
         "type": "heading"
       }
     ],
@@ -48370,15 +48370,15 @@
     ],
     "Recommended model for Tony's confirmation": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 47,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 43,
         "type": "heading"
       }
     ],
     "Recommended Product Lens": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 137,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 133,
         "type": "heading"
       }
     ],
@@ -48641,8 +48641,8 @@
     ],
     "Release Baseline": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 89,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 85,
         "type": "heading"
       }
     ],
@@ -49844,8 +49844,8 @@
     ],
     "Required States": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 210,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 206,
         "type": "heading"
       }
     ],
@@ -52365,8 +52365,8 @@
     ],
     "Starting Prompt For The New Thread": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 272,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 268,
         "type": "heading"
       }
     ],
@@ -53387,13 +53387,13 @@
     ],
     "Thread Mission": [
       {
-        "file": "docs/inbox-astra/ASTRA_JOB_1_CHART_REPORT_LIBRARY_PARITY.md",
-        "line": 26,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 77,
         "type": "heading"
       },
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 81,
+        "file": "docs/inbox-astra/ASTRA_JOB_1_CHART_REPORT_LIBRARY_PARITY.md",
+        "line": 26,
         "type": "heading"
       }
     ],
@@ -54645,8 +54645,8 @@
     ],
     "Verification Bar": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 251,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 247,
         "type": "heading"
       }
     ],
@@ -55208,8 +55208,8 @@
     ],
     "YAGNI Watch List": [
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 166,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 162,
         "type": "heading"
       }
     ],
@@ -56706,11 +56706,11 @@
         "route_count": 1
       },
       {
-        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "weight": 70.3,
+        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "weight": 70.31,
         "bucket": "other",
-        "estimated_tokens": 4246,
-        "lines": 277,
+        "estimated_tokens": 4177,
+        "lines": 273,
         "symbols": 22,
         "symbol_type_counts": {
           "heading": 22
@@ -59449,10 +59449,10 @@
       },
       {
         "file": "docs/inbox-astra/README.md",
-        "weight": 12.52,
+        "weight": 12.65,
         "bucket": "other",
-        "estimated_tokens": 319,
-        "lines": 27,
+        "estimated_tokens": 374,
+        "lines": 32,
         "symbols": 3,
         "symbol_type_counts": {
           "heading": 3
@@ -61093,7 +61093,7 @@
     "coverage": {
       "files": 361,
       "symbols": 4093,
-      "total_estimated_tokens": 990661
+      "total_estimated_tokens": 990647
     }
   }
 }

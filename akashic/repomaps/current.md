@@ -23,7 +23,7 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `990661`
+- Estimated token footprint: `990647`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.

@@ -1193,11 +1193,11 @@
       "route_count": 1
     },
     {
-      "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-      "weight": 70.3,
+      "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+      "weight": 70.31,
       "bucket": "other",
-      "estimated_tokens": 4246,
-      "lines": 277,
+      "estimated_tokens": 4177,
+      "lines": 273,
       "symbols": 22,
       "symbol_type_counts": {
         "heading": 22
@@ -3936,10 +3936,10 @@
     },
     {
       "file": "docs/inbox-astra/README.md",
-      "weight": 12.52,
+      "weight": 12.65,
       "bucket": "other",
-      "estimated_tokens": 319,
-      "lines": 27,
+      "estimated_tokens": 374,
+      "lines": 32,
       "symbols": 3,
       "symbol_type_counts": {
         "heading": 3
@@ -5580,6 +5580,6 @@
   "coverage": {
     "files": 361,
     "symbols": 4093,
-    "total_estimated_tokens": 990661
+    "total_estimated_tokens": 990647
   }
 }
