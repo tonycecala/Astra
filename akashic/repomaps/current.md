@@ -23,7 +23,7 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `990647`
+- Estimated token footprint: `994175`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
@@ -186,4 +186,4 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - Treat auth as a first-class product concern and verify the repo's documented local auth flow.
 - Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 361 local files in `/Users/tony/Documents/Projects/Astra`.
+Generated from 362 local files in `/Users/tony/Documents/Projects/Astra`.

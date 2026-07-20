@@ -2,8 +2,8 @@
 title: "Astra Journey Product Redesign Handoff"
 type: "codex-inbox"
 project: "Astra Clean Start"
-status: "ready-for-codex"
-execution_state: "paused-by-owner"
+status: "completed"
+execution_state: "completed"
 priority: "P0"
 owner: "Astra"
 created: "2026-07-17"
@@ -22,13 +22,31 @@ tags:
   - browser-qa
   - alpha
 updated: "2026-07-20"
+completed: "2026-07-20"
 ---
 
 # Astra Journey Product Redesign Handoff
 
 ## Current Status
 
-Reopened on 2026-07-20 because the prior completed marker was premature. The JourneyStep recommendation and product checkpoint exist, but this handoff's full implementation, acceptance criteria, and deployment evidence are not complete. Journey implementation is intentionally paused until Tony starts that work in a separate thread.
+Completed on 2026-07-20 after Tony resumed the approved JourneyStep model. Journey now uses Astra's existing `PublishedCard` surface for one private current step, a compact queue, durable lifecycle actions, honest owning-surface links, progressive provenance, recoverable dismiss/complete actions, and a truthful empty-state path. Astryx was not introduced; it is recorded only as a future isolated admin-primitives evaluation candidate.
+
+## Completion Evidence
+
+- Implementation commit: `40bfe94` (`feat(journey): complete JourneyStep experience`), fast-forwarded to `alpha` and `origin/alpha`.
+- Production deployment: `dpl_2GojTD9KD9nXV5BmMj2XcwPruWAq`, Ready at `https://astra-alpha-764wmjehi-astra-labs.vercel.app` and served through `https://alpha.astraportrait.com`.
+- Static gate: `npm run check` passed lint, root typecheck, foundation contracts, dependency boundaries, no-Supabase enforcement, and the production build.
+- Journey lifecycle browser gate: `apps/astra-web/e2e/journey-step.spec.ts` passed real User A/User B authentication, read/mutation isolation, report continuity, provenance, save/restore, dismiss/undo, failure retention, empty state, console/page-error review, and 1440x900, 820x1180, and 390x844 overflow checks.
+- Adjacent browser gate: six desktop/tablet/mobile checks passed for the signed-out public `PublishedCard` illustration and navigation through Journey, Allies, and Self. `npm run test:private-feed` also passed the repository privacy smoke.
+- Live deployment gate: `/` returned 200 with “Astra meets you where you are” and “Welcome to Astra”; signed-out `/journey` returned the Next redirect marker for `/login?next=/journey`; the initial Vercel error-log scan returned no errors.
+
+## Design Acceptance
+
+- Patterns: `01-time-to-value.md` for one current focus; `05-progressive-disclosure.md` for the secondary queue and “Why this now?”; `20-fail-safe.md` for undo and retained state on mutation failure; `36-trust-building.md` for private provenance without ranking or model metadata.
+- States: signed-out illustration, loading, private empty, one step, multiple steps, saved, completed/dismissed with undo, mutation failure, and database failure are defined through the Journey route, component, loading/error boundaries, and i18n.
+- Boundary: Journey remains user-scoped and private; public illustration remains root-owned; reports, Allies, Self, and Gifts retain ownership of their artifacts. Cross-user API mutation returns 404.
+- Analytics: N/A because Astra has no active client analytics transport; durable database state remains the source of truth.
+- Guardrails: no forbidden or adversarial pattern is used. No fake social controls, hidden ranking metadata, forced action, or irreversible dismissal remains.
 
 ## 2026-07-20 Product Checkpoint
 

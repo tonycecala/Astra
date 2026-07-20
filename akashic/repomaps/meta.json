@@ -585,6 +585,38 @@
       "route_count": 1
     },
     {
+      "file": "apps/astra-web/lib/journey.ts",
+      "weight": 118.42,
+      "bucket": "other",
+      "estimated_tokens": 1098,
+      "lines": 99,
+      "symbols": 22,
+      "symbol_type_counts": {
+        "constant": 11,
+        "function": 8,
+        "type": 3
+      },
+      "dependency_in": 4,
+      "dependency_out": 3,
+      "route_count": 0
+    },
+    {
+      "file": "apps/astra-web/e2e/journey-step.spec.ts",
+      "weight": 118.37,
+      "bucket": "other",
+      "estimated_tokens": 1952,
+      "lines": 149,
+      "symbols": 30,
+      "symbol_type_counts": {
+        "constant": 24,
+        "function": 5,
+        "type": 1
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/astra-web/components/TopBar.tsx",
       "weight": 115.38,
       "bucket": "other",
@@ -931,22 +963,6 @@
       "route_count": 0
     },
     {
-      "file": "apps/astra-web/lib/journey.ts",
-      "weight": 85.23,
-      "bucket": "other",
-      "estimated_tokens": 731,
-      "lines": 66,
-      "symbols": 16,
-      "symbol_type_counts": {
-        "constant": 8,
-        "function": 5,
-        "type": 3
-      },
-      "dependency_in": 4,
-      "dependency_out": 3,
-      "route_count": 0
-    },
-    {
       "file": "apps/composer-web/app/api/cards/publish-batch/route.ts",
       "weight": 85.12,
       "bucket": "app/api",
@@ -1082,6 +1098,20 @@
       "route_count": 1
     },
     {
+      "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+      "weight": 76.29,
+      "bucket": "other",
+      "estimated_tokens": 4787,
+      "lines": 291,
+      "symbols": 24,
+      "symbol_type_counts": {
+        "heading": 24
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/astra-web/app/api/journey/items/[feedItemId]/route.ts",
       "weight": 74.46,
       "bucket": "app/api",
@@ -1193,20 +1223,6 @@
       "route_count": 1
     },
     {
-      "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-      "weight": 70.31,
-      "bucket": "other",
-      "estimated_tokens": 4177,
-      "lines": 273,
-      "symbols": 22,
-      "symbol_type_counts": {
-        "heading": 22
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
       "file": "apps/astra-web/lib/stars.ts",
       "weight": 70,
       "bucket": "other",
@@ -1306,8 +1322,8 @@
       "file": "apps/astra-web/lib/i18n.ts",
       "weight": 67.24,
       "bucket": "other",
-      "estimated_tokens": 8778,
-      "lines": 800,
+      "estimated_tokens": 8943,
+      "lines": 813,
       "symbols": 1,
       "symbol_type_counts": {
         "constant": 1
@@ -2515,10 +2531,10 @@
     },
     {
       "file": "apps/astra-web/components/JourneyStepReader.tsx",
-      "weight": 32.28,
+      "weight": 32.38,
       "bucket": "other",
-      "estimated_tokens": 948,
-      "lines": 71,
+      "estimated_tokens": 1303,
+      "lines": 82,
       "symbols": 4,
       "symbol_type_counts": {
         "component": 1,
@@ -3837,10 +3853,10 @@
     },
     {
       "file": "docs/architecture/journey-step-product-model.md",
-      "weight": 15.65,
+      "weight": 15.69,
       "bucket": "other",
-      "estimated_tokens": 544,
-      "lines": 33,
+      "estimated_tokens": 623,
+      "lines": 35,
       "symbols": 4,
       "symbol_type_counts": {
         "heading": 4
@@ -5578,8 +5594,8 @@
     }
   ],
   "coverage": {
-    "files": 361,
-    "symbols": 4093,
-    "total_estimated_tokens": 990647
+    "files": 362,
+    "symbols": 4131,
+    "total_estimated_tokens": 994175
   }
 }
