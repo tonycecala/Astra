@@ -1027,6 +1027,20 @@
       "route_count": 1
     },
     {
+      "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+      "weight": 79.29,
+      "bucket": "other",
+      "estimated_tokens": 5166,
+      "lines": 300,
+      "symbols": 25,
+      "symbol_type_counts": {
+        "heading": 25
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/astra-web/app/api/beta-feedback/route.ts",
       "weight": 78.87,
       "bucket": "app/api",
@@ -1093,20 +1107,6 @@
       "dependency_in": 0,
       "dependency_out": 1,
       "route_count": 1
-    },
-    {
-      "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-      "weight": 76.29,
-      "bucket": "other",
-      "estimated_tokens": 4779,
-      "lines": 290,
-      "symbols": 24,
-      "symbol_type_counts": {
-        "heading": 24
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
     },
     {
       "file": "apps/astra-web/app/api/journey/items/[feedItemId]/route.ts",
@@ -5611,7 +5611,7 @@
   ],
   "coverage": {
     "files": 363,
-    "symbols": 4160,
-    "total_estimated_tokens": 996590
+    "symbols": 4161,
+    "total_estimated_tokens": 996977
   }
 }

@@ -2,8 +2,8 @@
 title: "Astra Journey Product Redesign Handoff"
 type: "codex-inbox"
 project: "Astra Clean Start"
-status: "ready-for-codex"
-execution_state: "in-progress"
+status: "completed"
+execution_state: "completed"
 priority: "P0"
 owner: "Astra"
 created: "2026-07-17"
@@ -28,7 +28,17 @@ updated: "2026-07-20"
 
 ## Current Status
 
-Reopened again on 2026-07-20 after live alpha acceptance proved that the JourneyStep UI was deployed without real producer integration. New accounts did not receive onboarding Journey items, and a successfully generated Welcome Report did not publish its report signal into Journey. The prior completion evidence proved seeded rendering and lifecycle behavior but did not prove either real producer path.
+Completed on 2026-07-20 after connecting and proving the real Journey producers. New-account onboarding now creates the five private Composer steps, successful Welcome Report generation creates its private report step, and Journey read reconciles completed reports for existing accounts. Each path is deterministic, idempotent, and scoped to the authenticated user.
+
+## Final Producer Integration Evidence
+
+- Implementation: `a7bb832` (`fix(journey): connect real account producers`), merged and pushed to `alpha`.
+- Alpha deployment: `dpl_9NLBAXMENYXAsZHnFiizcV7b4Sem`, Ready and serving `https://alpha.astraportrait.com`.
+- Real new-account E2E: created a genuinely new OTP-authenticated user, opened Journey to produce exactly five onboarding steps, completed birth-data onboarding with a non-fixture place, generated the Welcome Report without seeding Journey rows, verified its Journey card and owning `/library?reportId=<requestId>` link, and proved retry does not duplicate items or reset user state.
+- Existing-account E2E: created a completed historical report without a Journey row, opened Journey as its owner, and verified reconciliation created the private report step and correct owning-report link.
+- Responsive browser QA: the producer journey passed at desktop, tablet, and mobile production-build viewports with no horizontal overflow, hydration failure, API failure, or actionable console/page error.
+- Live alpha acceptance: authenticated account `Alpha Acceptance` rendered the report as the current Journey step plus all five onboarding steps. Clicking `Open` reached the exact selected Welcome Report at `/library?reportId=1a8cc8de-65bc-432d-8f76-9d5963e79d6e`; browser console/page-error review and the hosted Vercel error-log scan were clean.
+- Full gates: `npm run check`, report API, private-feed, Composer onboarding-card, auth-profile concurrency, Journey lifecycle, and real-producer suites passed. REPOMAP was rebuilt and checked.
 
 ## Superseded Prior Completion Evidence
 

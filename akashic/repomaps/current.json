@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-07-20T22:43:13.108Z",
+  "generated_at": "2026-07-20T22:47:09.040Z",
   "root_name": "Astra",
   "files_indexed": 363,
-  "total_symbols": 4160,
-  "total_estimated_tokens": 996590,
+  "total_symbols": 4161,
+  "total_estimated_tokens": 996977,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -15770,6 +15770,158 @@
       "importance_bucket": "app/api"
     },
     {
+      "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+      "lang": "markdown",
+      "size": 20686,
+      "lines": 300,
+      "estimated_tokens": 5166,
+      "symbols": [
+        {
+          "name": "Astra Journey Product Redesign Handoff",
+          "line": 27,
+          "type": "heading"
+        },
+        {
+          "name": "Current Status",
+          "line": 29,
+          "type": "heading"
+        },
+        {
+          "name": "Final Producer Integration Evidence",
+          "line": 33,
+          "type": "heading"
+        },
+        {
+          "name": "Superseded Prior Completion Evidence",
+          "line": 43,
+          "type": "heading"
+        },
+        {
+          "name": "Design Acceptance",
+          "line": 52,
+          "type": "heading"
+        },
+        {
+          "name": "2026-07-20 Product Checkpoint",
+          "line": 60,
+          "type": "heading"
+        },
+        {
+          "name": "Audit evidence",
+          "line": 62,
+          "type": "heading"
+        },
+        {
+          "name": "Recommended model for Tony's confirmation",
+          "line": 70,
+          "type": "heading"
+        },
+        {
+          "name": "Implementation plan after approval",
+          "line": 91,
+          "type": "heading"
+        },
+        {
+          "name": "Thread Mission",
+          "line": 104,
+          "type": "heading"
+        },
+        {
+          "name": "Release Baseline",
+          "line": 112,
+          "type": "heading"
+        },
+        {
+          "name": "Governing Product Truth",
+          "line": 120,
+          "type": "heading"
+        },
+        {
+          "name": "Current Product and Code Reality",
+          "line": 130,
+          "type": "heading"
+        },
+        {
+          "name": "First Decision Checkpoint",
+          "line": 146,
+          "type": "heading"
+        },
+        {
+          "name": "Recommended Product Lens",
+          "line": 160,
+          "type": "heading"
+        },
+        {
+          "name": "Non-Negotiable Boundaries",
+          "line": 175,
+          "type": "heading"
+        },
+        {
+          "name": "YAGNI Watch List",
+          "line": 189,
+          "type": "heading"
+        },
+        {
+          "name": "Primary Code Map",
+          "line": 205,
+          "type": "heading"
+        },
+        {
+          "name": "Product Design Inputs",
+          "line": 222,
+          "type": "heading"
+        },
+        {
+          "name": "Required States",
+          "line": 233,
+          "type": "heading"
+        },
+        {
+          "name": "Implementation Sequence",
+          "line": 246,
+          "type": "heading"
+        },
+        {
+          "name": "Acceptance Criteria",
+          "line": 259,
+          "type": "heading"
+        },
+        {
+          "name": "Verification Bar",
+          "line": 274,
+          "type": "heading"
+        },
+        {
+          "name": "Completion Artifacts",
+          "line": 286,
+          "type": "heading"
+        },
+        {
+          "name": "Starting Prompt For The New Thread",
+          "line": 295,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Astra Journey Product Redesign Handoff",
+        "Current Status",
+        "Final Producer Integration Evidence",
+        "Superseded Prior Completion Evidence",
+        "Design Acceptance",
+        "2026-07-20 Product Checkpoint",
+        "Audit evidence",
+        "Recommended model for Tony's confirmation"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 79.29,
+      "importance_bucket": "other"
+    },
+    {
       "file": "apps/astra-web/app/api/beta-feedback/route.ts",
       "lang": "typescript",
       "size": 1542,
@@ -16012,153 +16164,6 @@
       "dependency_out": 1,
       "importance_weight": 76.62,
       "importance_bucket": "app/api"
-    },
-    {
-      "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-      "lang": "markdown",
-      "size": 19137,
-      "lines": 290,
-      "estimated_tokens": 4779,
-      "symbols": [
-        {
-          "name": "Astra Journey Product Redesign Handoff",
-          "line": 27,
-          "type": "heading"
-        },
-        {
-          "name": "Current Status",
-          "line": 29,
-          "type": "heading"
-        },
-        {
-          "name": "Superseded Prior Completion Evidence",
-          "line": 33,
-          "type": "heading"
-        },
-        {
-          "name": "Design Acceptance",
-          "line": 42,
-          "type": "heading"
-        },
-        {
-          "name": "2026-07-20 Product Checkpoint",
-          "line": 50,
-          "type": "heading"
-        },
-        {
-          "name": "Audit evidence",
-          "line": 52,
-          "type": "heading"
-        },
-        {
-          "name": "Recommended model for Tony's confirmation",
-          "line": 60,
-          "type": "heading"
-        },
-        {
-          "name": "Implementation plan after approval",
-          "line": 81,
-          "type": "heading"
-        },
-        {
-          "name": "Thread Mission",
-          "line": 94,
-          "type": "heading"
-        },
-        {
-          "name": "Release Baseline",
-          "line": 102,
-          "type": "heading"
-        },
-        {
-          "name": "Governing Product Truth",
-          "line": 110,
-          "type": "heading"
-        },
-        {
-          "name": "Current Product and Code Reality",
-          "line": 120,
-          "type": "heading"
-        },
-        {
-          "name": "First Decision Checkpoint",
-          "line": 136,
-          "type": "heading"
-        },
-        {
-          "name": "Recommended Product Lens",
-          "line": 150,
-          "type": "heading"
-        },
-        {
-          "name": "Non-Negotiable Boundaries",
-          "line": 165,
-          "type": "heading"
-        },
-        {
-          "name": "YAGNI Watch List",
-          "line": 179,
-          "type": "heading"
-        },
-        {
-          "name": "Primary Code Map",
-          "line": 195,
-          "type": "heading"
-        },
-        {
-          "name": "Product Design Inputs",
-          "line": 212,
-          "type": "heading"
-        },
-        {
-          "name": "Required States",
-          "line": 223,
-          "type": "heading"
-        },
-        {
-          "name": "Implementation Sequence",
-          "line": 236,
-          "type": "heading"
-        },
-        {
-          "name": "Acceptance Criteria",
-          "line": 249,
-          "type": "heading"
-        },
-        {
-          "name": "Verification Bar",
-          "line": 264,
-          "type": "heading"
-        },
-        {
-          "name": "Completion Artifacts",
-          "line": 276,
-          "type": "heading"
-        },
-        {
-          "name": "Starting Prompt For The New Thread",
-          "line": 285,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Astra Journey Product Redesign Handoff",
-        "Current Status",
-        "Superseded Prior Completion Evidence",
-        "Design Acceptance",
-        "2026-07-20 Product Checkpoint",
-        "Audit evidence",
-        "Recommended model for Tony's confirmation",
-        "Implementation plan after approval"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 76.29,
-      "importance_bucket": "other"
     },
     {
       "file": "apps/astra-web/app/api/journey/items/[feedItemId]/route.ts",
@@ -30469,8 +30474,8 @@
     ],
     "2026-07-20 Product Checkpoint": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 50,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 60,
         "type": "heading"
       }
     ],
@@ -31101,8 +31106,8 @@
         "type": "heading"
       },
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 249,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 259,
         "type": "heading"
       },
       {
@@ -32555,7 +32560,7 @@
     ],
     "Astra Journey Product Redesign Handoff": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
         "line": 27,
         "type": "heading"
       }
@@ -33671,8 +33676,8 @@
     ],
     "Audit evidence": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 52,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 62,
         "type": "heading"
       }
     ],
@@ -36652,8 +36657,8 @@
     ],
     "Completion Artifacts": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 276,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 286,
         "type": "heading"
       }
     ],
@@ -38778,8 +38783,8 @@
     ],
     "Current Product and Code Reality": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 120,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 130,
         "type": "heading"
       }
     ],
@@ -38828,7 +38833,7 @@
     ],
     "Current Status": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
         "line": 29,
         "type": "heading"
       }
@@ -39586,8 +39591,8 @@
     ],
     "Design Acceptance": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 42,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 52,
         "type": "heading"
       }
     ],
@@ -40660,6 +40665,13 @@
         "type": "heading"
       }
     ],
+    "Final Producer Integration Evidence": [
+      {
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 33,
+        "type": "heading"
+      }
+    ],
     "finalErrors": [
       {
         "file": "packages/astrology/src/index.ts",
@@ -40719,8 +40731,8 @@
     ],
     "First Decision Checkpoint": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 136,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 146,
         "type": "heading"
       }
     ],
@@ -41758,8 +41770,8 @@
     ],
     "Governing Product Truth": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 110,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 120,
         "type": "heading"
       }
     ],
@@ -42566,8 +42578,8 @@
     ],
     "Implementation plan after approval": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 81,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 91,
         "type": "heading"
       }
     ],
@@ -42587,8 +42599,8 @@
     ],
     "Implementation Sequence": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 236,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 246,
         "type": "heading"
       }
     ],
@@ -45103,8 +45115,8 @@
     ],
     "Non-Negotiable Boundaries": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 165,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 175,
         "type": "heading"
       }
     ],
@@ -47611,8 +47623,8 @@
     ],
     "Primary Code Map": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 195,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 205,
         "type": "heading"
       }
     ],
@@ -47841,8 +47853,8 @@
     ],
     "Product Design Inputs": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 212,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 222,
         "type": "heading"
       }
     ],
@@ -49032,15 +49044,15 @@
     ],
     "Recommended model for Tony's confirmation": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 60,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 70,
         "type": "heading"
       }
     ],
     "Recommended Product Lens": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 150,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 160,
         "type": "heading"
       }
     ],
@@ -49310,8 +49322,8 @@
     ],
     "Release Baseline": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 102,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 112,
         "type": "heading"
       }
     ],
@@ -50541,8 +50553,8 @@
     ],
     "Required States": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 223,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 233,
         "type": "heading"
       }
     ],
@@ -53111,8 +53123,8 @@
     ],
     "Starting Prompt For The New Thread": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 285,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 295,
         "type": "heading"
       }
     ],
@@ -53761,8 +53773,8 @@
     ],
     "Superseded Prior Completion Evidence": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 33,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 43,
         "type": "heading"
       }
     ],
@@ -54145,13 +54157,13 @@
     ],
     "Thread Mission": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 94,
+        "file": "docs/inbox-astra/ASTRA_JOB_1_CHART_REPORT_LIBRARY_PARITY.md",
+        "line": 26,
         "type": "heading"
       },
       {
-        "file": "docs/inbox-astra/ASTRA_JOB_1_CHART_REPORT_LIBRARY_PARITY.md",
-        "line": 26,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 104,
         "type": "heading"
       }
     ],
@@ -55443,8 +55455,8 @@
     ],
     "Verification Bar": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 264,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 274,
         "type": "heading"
       }
     ],
@@ -56006,8 +56018,8 @@
     ],
     "YAGNI Watch List": [
       {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "line": 179,
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "line": 189,
         "type": "heading"
       }
     ],
@@ -57338,6 +57350,20 @@
         "route_count": 1
       },
       {
+        "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
+        "weight": 79.29,
+        "bucket": "other",
+        "estimated_tokens": 5166,
+        "lines": 300,
+        "symbols": 25,
+        "symbol_type_counts": {
+          "heading": 25
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "apps/astra-web/app/api/beta-feedback/route.ts",
         "weight": 78.87,
         "bucket": "app/api",
@@ -57404,20 +57430,6 @@
         "dependency_in": 0,
         "dependency_out": 1,
         "route_count": 1
-      },
-      {
-        "file": "docs/inbox-astra/active/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
-        "weight": 76.29,
-        "bucket": "other",
-        "estimated_tokens": 4779,
-        "lines": 290,
-        "symbols": 24,
-        "symbol_type_counts": {
-          "heading": 24
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
-        "route_count": 0
       },
       {
         "file": "apps/astra-web/app/api/journey/items/[feedItemId]/route.ts",
@@ -61922,8 +61934,8 @@
     ],
     "coverage": {
       "files": 363,
-      "symbols": 4160,
-      "total_estimated_tokens": 996590
+      "symbols": 4161,
+      "total_estimated_tokens": 996977
     }
   }
 }
