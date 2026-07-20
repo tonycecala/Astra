@@ -8,8 +8,8 @@ import { eq } from "drizzle-orm";
 type JsonObject = Record<string, unknown>;
 
 const routes = [
-  { path: "/", heading: "A living stream", mobileHeading: "Journey" },
-  { path: "/journey", heading: "A living stream", mobileHeading: "Journey" },
+  { path: "/", heading: "Astra meets you where you are", mobileHeading: "Journey" },
+  { path: "/journey", heading: "Welcome back to Astra", mobileHeading: "Journey" },
   { path: "/allies", heading: "Sign in to create Ally reports", mobileHeading: "Allies" },
   { path: "/self", heading: "Sign in to see your Astra", mobileHeading: "Self" },
   { path: "/charts", heading: "Sign in to see your charts", mobileHeading: "Charts" },
@@ -81,7 +81,7 @@ async function signInWithOtp(page: Page, input: { email: string; name: string })
 
   await page.getByLabel("Code").fill(await readOtpFromMailpit(input.email));
   await page.getByRole("button", { name: "Verify code" }).click();
-  await expect(page.getByRole("heading", { level: 1, name: input.email })).toBeVisible();
+  await expect(page.locator(".self-profile-name")).toHaveText(input.email);
 }
 
 async function chooseUnknownBirthMoment(page: Page, input: { year: string; month: string; dayLabel: string }) {
@@ -400,15 +400,13 @@ test.describe("clean-start routes", () => {
   });
 
   test("first Self chart automatically creates a free Welcome Report", async ({ page }, testInfo) => {
-    test.skip(testInfo.project.name !== "desktop", "The auth-backed onboarding journey is covered on desktop in this regression test.");
-
     const email = `self-onboarding-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
     const name = "Astra Onboarding Smoke";
 
     await signInWithOtp(page, { email, name });
     await expect(page).toHaveURL(/\/self(?:[?#]|$)/);
 
-    await expect(page.getByRole("heading", { level: 1, name: email })).toBeVisible();
+    await expect(page.locator(".self-profile-name")).toHaveText(email);
     await expect(page.getByRole("heading", { name: "Your free Welcome Report" })).toBeVisible();
     await expect(page.getByLabel("Alpha onboarding guidance")).toHaveCount(0);
     await expect(page.getByLabel("Chart generation flow")).toHaveCount(0);
@@ -421,6 +419,14 @@ test.describe("clean-start routes", () => {
     await page.getByRole("button", { exact: true, name: "Next" }).click();
     await expect(page.getByText("Step 2 of 3: Birth details")).toBeVisible();
     await chooseUnknownBirthMoment(page, { year: "1961", month: "May", dayLabel: "May 23, 1961" });
+    await page.getByRole("button", { name: "Edit birth location" }).click();
+    const locationDialog = page.getByRole("dialog", { name: "Birth Location" });
+    await locationDialog.getByLabel("Search birth place").fill("Cedar Rapids");
+    await locationDialog.getByRole("button", { name: "Search", exact: true }).click();
+    await locationDialog.getByRole("button", { name: /Cedar Rapids, Iowa, United States/ }).click();
+    await expect(locationDialog.getByText("Cedar Rapids, Iowa, United States", { exact: true })).toBeVisible();
+    await locationDialog.getByRole("button", { name: "Continue", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Edit birth location" })).toContainText("Cedar Rapids, Iowa, United States");
     await page.getByRole("button", { exact: true, name: "Next" }).click();
     await expect(page.getByText("Step 3 of 3: Report")).toBeVisible();
     const createChartButton = page.getByRole("button", { name: "Create Free Welcome Report", exact: true });
@@ -455,10 +461,18 @@ test.describe("clean-start routes", () => {
     await expect(existingOrderPanel.getByText("Birth place", { exact: true })).toHaveCount(0);
 
     await page.goto("/library");
-    await expect(page.getByRole("heading", { name: "Artifacts worth keeping" })).toBeVisible();
+    if (testInfo.project.name === "mobile") {
+      await expect(page.locator(".topbar-route-title")).toHaveText("Library");
+    } else {
+      await expect(page.getByRole("heading", { name: "Artifacts worth keeping" })).toBeVisible();
+    }
 
     await page.goto("/journey");
-    await expect(page.getByRole("heading", { name: "A living stream" })).toBeVisible();
+    if (testInfo.project.name === "mobile") {
+      await expect(page.locator(".topbar-route-title")).toHaveText("Journey");
+    } else {
+      await expect(page.getByRole("heading", { name: "Your Journey", exact: true })).toBeVisible();
+    }
   });
 
   test("admin Stars ledger and Synastry controls stay browser-visible", async ({ page }, testInfo) => {

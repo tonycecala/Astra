@@ -217,6 +217,8 @@ export const createUserFeedItemSchema = z.object({
   expiresAt: isoDateSchema.optional()
 });
 
+export const journeyFeedItemActionSchema = z.enum(["complete", "dismiss", "save", "restore"]);
+
 export const createComposerDecisionSchema = z.object({
   userId: idSchema,
   userFeedItemId: idSchema,
@@ -974,6 +976,7 @@ export type ComposerDecision = z.infer<typeof composerDecisionSchema>;
 export type PrivateFeedRequest = z.infer<typeof privateFeedRequestSchema>;
 export type PrivateFeedResponse = z.infer<typeof privateFeedResponseSchema>;
 export type CreateUserFeedItem = z.infer<typeof createUserFeedItemSchema>;
+export type JourneyFeedItemAction = z.infer<typeof journeyFeedItemActionSchema>;
 export type CreateComposerDecision = z.infer<typeof createComposerDecisionSchema>;
 export type ComposerPrivateFeedDecisionInput = z.infer<typeof composerPrivateFeedDecisionInputSchema>;
 export type ComposerPrivateFeedWrite = z.infer<typeof composerPrivateFeedWriteSchema>;

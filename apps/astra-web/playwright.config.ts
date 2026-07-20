@@ -12,12 +12,20 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure"
   },
-  webServer: {
-    command: "ASTRA_PLACE_SEARCH_PROVIDER=local-fixture npm run dev",
-    url: "http://localhost:3011/journey",
-    reuseExistingServer: true,
-    timeout: 120_000
-  },
+  webServer: [
+    {
+      command: "node ../../scripts/e2e-open-meteo-fixture.mjs",
+      url: "http://127.0.0.1:4317/health",
+      reuseExistingServer: true,
+      timeout: 10_000
+    },
+    {
+      command: "ASTRA_PLACE_SEARCH_PROVIDER=open-meteo ASTRA_OPEN_METEO_GEOCODING_URL=http://127.0.0.1:4317/v1/search npm run dev",
+      url: "http://localhost:3011/",
+      reuseExistingServer: true,
+      timeout: 120_000
+    }
+  ],
   projects: [
     {
       name: "desktop",

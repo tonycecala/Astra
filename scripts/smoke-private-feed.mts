@@ -17,6 +17,7 @@ import {
   publicStreamItems,
   sourceCards,
   upsertSourceCard,
+  updateUserFeedItemState,
   user
 } from "@astra/db";
 
@@ -118,6 +119,13 @@ try {
     ownershipRejected = true;
   }
   if (!ownershipRejected) throw new Error("assertUserOwnsFeedItem must reject another user's feed item.");
+
+  const savedItem = await updateUserFeedItemState(db, { userId: userA, feedItemId: itemA.id, action: "save" });
+  if (savedItem?.state !== "saved" || !savedItem.savedAt) throw new Error("Journey save did not persist its state and timestamp.");
+  const restoredItem = await updateUserFeedItemState(db, { userId: userA, feedItemId: itemA.id, action: "restore" });
+  if (restoredItem?.state !== "available" || restoredItem.savedAt) throw new Error("Journey restore did not return the item to the queue.");
+  const forgedMutation = await updateUserFeedItemState(db, { userId: userA, feedItemId: itemB.id, action: "dismiss" });
+  if (forgedMutation) throw new Error("Journey mutation changed another user's feed item.");
 
   const decision = await createComposerDecision(db, {
     userId: userA,

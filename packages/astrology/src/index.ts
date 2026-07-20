@@ -43,6 +43,7 @@ export const ASTRA_OPENAI_API_KEY_ENV = "ASTRA_OPENAI_API_KEY";
 export const ASTRA_OPENROUTER_API_KEY_ENV = "ASTRA_OPENROUTER_API_KEY";
 export const ASTRA_OPENROUTER_BASE_URL_ENV = "ASTRA_OPENROUTER_BASE_URL";
 export const ASTRA_PLACE_SEARCH_PROVIDER_ENV = "ASTRA_PLACE_SEARCH_PROVIDER";
+export const ASTRA_OPEN_METEO_GEOCODING_URL_ENV = "ASTRA_OPEN_METEO_GEOCODING_URL";
 export const LOCAL_CHART_ROUTINE_ENGINE = "local-chart-routine";
 export const LOCAL_DETERMINISTIC_REPORT_WRITER = "local-deterministic-writer";
 export const DEBUG_MODEL_REPORT_WRITER = "debug-model-writer";
@@ -668,8 +669,8 @@ function openMeteoPlaceResult(value: OpenMeteoPlace) {
   };
 }
 
-async function searchOpenMeteoBirthPlaces(query: BirthPlaceSearchQuery, fetchImpl: BirthPlaceSearchFetch) {
-  const url = new URL(OPEN_METEO_GEOCODING_URL);
+async function searchOpenMeteoBirthPlaces(query: BirthPlaceSearchQuery, fetchImpl: BirthPlaceSearchFetch, endpoint = OPEN_METEO_GEOCODING_URL) {
+  const url = new URL(endpoint);
   url.searchParams.set("name", query.query);
   url.searchParams.set("count", String(query.limit));
   url.searchParams.set("language", "en");
@@ -762,7 +763,7 @@ export async function searchBirthPlaces(
   }
 
   if (provider === "open-meteo") {
-    return searchOpenMeteoBirthPlaces(query, fetchImpl);
+    return searchOpenMeteoBirthPlaces(query, fetchImpl, env[ASTRA_OPEN_METEO_GEOCODING_URL_ENV]?.trim() || OPEN_METEO_GEOCODING_URL);
   }
 
   if (provider !== "local-fixture") {

@@ -24,6 +24,7 @@ import {
   type ReportChartBasisSnapshot,
   type SourceCard,
   type UserFeedItem,
+  type JourneyFeedItemAction,
   allySchema,
   artifactSchema,
   astrologyReportRequestSchema,
@@ -1160,6 +1161,27 @@ export async function assertUserOwnsFeedItem(database: AstraDb, input: { userId:
   const item = await getUserFeedItemById(database, input);
   if (!item) throw new Error("Feed item was not found for the supplied user.");
   return item;
+}
+
+export async function updateUserFeedItemState(
+  database: AstraDb,
+  input: { userId: string; feedItemId: string; action: JourneyFeedItemAction }
+): Promise<UserFeedItem | null> {
+  const now = new Date();
+  const state = input.action === "complete" ? "seen" : input.action === "dismiss" ? "dismissed" : input.action === "save" ? "saved" : "available";
+  const [row] = await database
+    .update(userFeedItems)
+    .set({
+      state,
+      seenAt: input.action === "complete" ? now : null,
+      dismissedAt: input.action === "dismiss" ? now : null,
+      savedAt: input.action === "save" ? now : null,
+      updatedAt: now
+    })
+    .where(and(eq(userFeedItems.id, input.feedItemId), eq(userFeedItems.userId, input.userId)))
+    .returning();
+
+  return row ? userFeedItemFromRow(row) : null;
 }
 
 export async function createComposerDecision(

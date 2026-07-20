@@ -2,9 +2,9 @@
 title: "Astra Journey Product Redesign Handoff"
 type: "codex-inbox"
 project: "Astra Clean Start"
-status: "awaiting-owner-confirmation"
+status: "completed"
 priority: "P0"
-owner: "Next Journey thread"
+owner: "Astra"
 created: "2026-07-17"
 mission: "Define what Journey is for, then rebuild the tab as Astra's coherent private ongoing experience."
 depends_on:
@@ -21,9 +21,18 @@ tags:
   - browser-qa
   - alpha
 updated: "2026-07-20"
+completed: "2026-07-20"
+completion_evidence:
+  - "JourneyStep model implemented with persistent user-scoped actions and no schema migration."
+  - "Fresh-user Welcome Report onboarding passes with a non-fixture Open-Meteo city on desktop, tablet, and mobile."
+  - "Live alpha Open-Meteo search returned Cedar Rapids, Iowa, United States."
 ---
 
 # Astra Journey Product Redesign Handoff
+
+## Completion
+
+Implemented the approved JourneyStep model. The durable architecture decision is recorded in `docs/architecture/journey-step-product-model.md`; the old lanes, social fiction, debug metadata, and query-driven Journey selection were removed. Browser and privacy evidence is recorded in the completing commit and deployment.
 
 ## 2026-07-20 Product Checkpoint
 

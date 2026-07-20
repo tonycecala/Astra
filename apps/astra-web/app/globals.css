@@ -833,6 +833,46 @@ textarea {
   gap: 18px;
 }
 
+.journey-step-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  gap: 18px;
+  align-items: start;
+}
+
+.journey-current-step,
+.journey-queue,
+.journey-empty {
+  border: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  padding: clamp(20px, 4vw, 34px);
+}
+
+.journey-current-step h2,
+.journey-queue h2,
+.journey-empty h2 {
+  margin: 0;
+  color: var(--gold);
+}
+
+.journey-current-step .eyebrow { margin: 0 0 10px; }
+.journey-step-subtitle { color: var(--muted); font-weight: 650; }
+.journey-step-body { max-width: 68ch; font-size: 1.05rem; line-height: 1.65; white-space: pre-line; }
+.journey-step-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.journey-queue { padding: 20px; }
+.journey-queue-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.journey-queue-heading span { color: var(--muted); font-size: .88rem; }
+.journey-queue ol { display: grid; gap: 0; margin: 16px 0 0; padding-left: 24px; }
+.journey-queue ol li { padding: 12px 0 12px 6px; border-bottom: 1px solid var(--line); }
+.journey-queue li span { display: block; margin-top: 3px; color: var(--muted); font-size: .88rem; }
+.journey-saved { margin-top: 26px; }
+.journey-saved h3 { color: var(--gold); font-size: 1rem; }
+.journey-saved ul { display: grid; gap: 10px; padding: 0; list-style: none; }
+.journey-saved li { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.public-journey-preview { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 24px; }
+.public-journey-preview h2 { color: var(--gold); }
+
 .reader-toolbar {
   display: flex;
   align-items: center;
@@ -4344,6 +4384,10 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
   .reader-layout {
     grid-template-columns: 1fr;
   }
+
+  .journey-step-layout { grid-template-columns: 1fr; }
+  .journey-current-step, .journey-queue, .journey-empty { border-radius: 8px; padding: 18px; }
+  .journey-step-actions .button { flex: 1 1 100%; justify-content: center; }
 
   .reader-detail {
     position: static;
