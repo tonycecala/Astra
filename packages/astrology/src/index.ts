@@ -42,6 +42,8 @@ export const ASTRA_REPORT_MODEL_ENV = "ASTRA_REPORT_MODEL";
 export const ASTRA_OPENAI_API_KEY_ENV = "ASTRA_OPENAI_API_KEY";
 export const ASTRA_OPENROUTER_API_KEY_ENV = "ASTRA_OPENROUTER_API_KEY";
 export const ASTRA_OPENROUTER_BASE_URL_ENV = "ASTRA_OPENROUTER_BASE_URL";
+export const ASTRA_OPENROUTER_APP_NAME = "AstraComposer";
+export const ASTRA_OPENROUTER_SITE_URL = "https://astracomposer.local";
 export const ASTRA_PLACE_SEARCH_PROVIDER_ENV = "ASTRA_PLACE_SEARCH_PROVIDER";
 export const ASTRA_OPEN_METEO_GEOCODING_URL_ENV = "ASTRA_OPEN_METEO_GEOCODING_URL";
 export const LOCAL_CHART_ROUTINE_ENGINE = "local-chart-routine";
@@ -53,7 +55,7 @@ export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
-export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-plainspoken-v6";
+export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-relationship-context-v9";
 export const GEMINI_INTRO_IDENTITY_REPORT_MODEL = "google/gemini-3.5-flash";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
@@ -63,6 +65,212 @@ function isWelcomeReportRequest(request: AstrologyReportRequest) {
     ? request.context
     : undefined;
   return request.reportType === "identity" && context?.modelPilot === "gemini-intro-identity";
+}
+
+// Legacy one-dimensional situations are retained only for the unambiguous
+// compatibility values. "nontraditional" was retired because it mixed
+// structure with qualitative assumptions that only explicit fields can supply.
+export const relationshipSituationKeys = ["single", "partnered", "strained", "separated", "unspecified"] as const;
+export type RelationshipSituation = (typeof relationshipSituationKeys)[number];
+
+const relationshipStatuses = ["single", "partnered", "separated", "unspecified"] as const;
+const relationshipConditions = ["stable", "evolving", "strained", "ending", "recovering", "unspecified"] as const;
+const relationshipStructures = [
+  "monogamous",
+  "consensually_nonmonogamous",
+  "polyamorous",
+  "open",
+  "long_distance",
+  "living_apart",
+  "queerplatonic",
+  "chosen_family_centered",
+  "other",
+  "unspecified"
+] as const;
+const relationshipIntentions = ["not_seeking", "open_to_connection", "dating", "deepen", "repair", "discern", "recover", "unspecified"] as const;
+const relationshipRecencies = ["recent", "established", "unspecified"] as const;
+
+export type NormalizedRelationshipContext = {
+  status: (typeof relationshipStatuses)[number];
+  condition: (typeof relationshipConditions)[number];
+  structure: (typeof relationshipStructures)[number];
+  intention: (typeof relationshipIntentions)[number];
+  recency: (typeof relationshipRecencies)[number];
+  partnerPronouns: string | null;
+  notes: string | null;
+};
+
+const unspecifiedRelationshipContext: NormalizedRelationshipContext = {
+  status: "unspecified",
+  condition: "unspecified",
+  structure: "unspecified",
+  intention: "unspecified",
+  recency: "unspecified",
+  partnerPronouns: null,
+  notes: null
+};
+
+function recordValue(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : undefined;
+}
+
+function enumValue<const T extends readonly string[]>(value: unknown, allowed: T, fallback: T[number]) {
+  return typeof value === "string" && allowed.includes(value as T[number]) ? value as T[number] : fallback;
+}
+
+export function normalizedRelationshipContextFromRequest(
+  request: Pick<AstrologyReportRequest, "context">
+): NormalizedRelationshipContext {
+  const context = recordValue(request.context);
+  const relationship = recordValue(context?.relationshipContext);
+  if (!relationship) return { ...unspecifiedRelationshipContext };
+  return {
+    status: enumValue(relationship.status, relationshipStatuses, "unspecified"),
+    condition: enumValue(relationship.condition, relationshipConditions, "unspecified"),
+    structure: enumValue(relationship.structure, relationshipStructures, "unspecified"),
+    intention: enumValue(relationship.intention, relationshipIntentions, "unspecified"),
+    recency: enumValue(relationship.recency, relationshipRecencies, "unspecified"),
+    partnerPronouns: typeof relationship.partnerPronouns === "string" ? relationship.partnerPronouns.trim() || null : null,
+    notes: typeof relationship.notes === "string" ? relationship.notes.trim() || null : null
+  };
+}
+
+function canonicalIdentityFromRequest(request: Pick<AstrologyReportRequest, "context">) {
+  const context = recordValue(request.context);
+  return typeof context?.canonicalIdentity === "string" ? context.canonicalIdentity.trim() : "";
+}
+
+function readerFocusInstruction(request: Pick<AstrologyReportRequest, "question" | "intent">) {
+  const entries = [
+    request.question ? `- Reader question: ${request.question}` : "",
+    request.intent ? `- Reader intent: ${request.intent}` : ""
+  ].filter(Boolean);
+  if (!entries.length) return "Reader focus: none supplied. Do not invent one.";
+  return [
+    "Reader focus: use the supplied question and intent as editorial context.",
+    ...entries,
+    "Answer the focus directly where the selected evidence supports it. Do not force it into unrelated chapters or invent facts, motives, history, or outcomes."
+  ].join("\n");
+}
+
+function relationshipContextInstruction(request: Pick<AstrologyReportRequest, "context">) {
+  const context = normalizedRelationshipContextFromRequest(request);
+  const shared = [
+    "Relationship-content rules:",
+    `- Supplied context only: status=${context.status}; condition=${context.condition}; structure=${context.structure}; intention=${context.intention}; recency=${context.recency}; partner pronouns=${context.partnerPronouns ?? "not supplied"}; notes=${context.notes ?? "not supplied"}.`,
+    "- Treat relationship as connection broadly: romance, partnership, former partners, friendship, family, chosen family, and other close bonds can matter.",
+    "- A field marked unspecified is intentionally unknown. Leave it unknown instead of completing a plausible story.",
+    "- Never infer condition from status or status from condition. Status does not establish that a bond is healthy, stable, secure, settled, strained, repairing, or in crisis.",
+    "- Never infer a specific structure from other, dating from single, recency or grief from separated, or gender or number of partners.",
+    "- Never infer jealousy, infidelity, coercion, abuse, consent problems, control by another person, or another person's motives, thoughts, feelings, or intentions.",
+    "- Do not presume the reader has a current romantic partner, wants one, is monogamous, or should preserve a connection.",
+    "- Do not use astrology to tell the reader to stay, leave, reconcile, wait, diagnose another person, or claim certainty about another person's motives.",
+    "- Describe the reader's choices, boundaries, needs, and observable patterns with agency. Do not frame endurance, repair, merging, or independence as inherently virtuous.",
+    "- Apply context only in Relationships and, when useful, Integration. Identity must remain context-free."
+  ];
+  const application: string[] = [];
+  if (context.status === "single") {
+    application.push("Status application: discuss friendship, chosen family, intimacy, solitude, support, and possible romance without presuming dating or seeking.");
+  } else if (context.status === "partnered") {
+    application.push("Status application: discuss maintaining connection, autonomy, appreciation, communication, and shared rhythms without presuming health, stability, security, crisis, strain, repair, cohabitation, monogamy, or romance.");
+  } else if (context.status === "separated") {
+    application.push("Status application: discuss what separation can clarify without presuming recency, grief, contact, closure-seeking, cause, or the other person's motives.");
+  }
+  if (context.condition === "strained") {
+    application.push("Condition application: discuss strain without assuming the relationship type, cause, safety, or future. Distinguish mutual repair from one-sided endurance as a question for discernment. Safety is unknown: do not recommend direct conversation, disclosure, confrontation, repair, a boundary, a request, or contact. You may state only that any future direct exchange would need to be safe, welcome, and chosen by everyone involved.");
+  }
+  if (context.structure === "other") {
+    application.push("Structure application: the structure is user-described as other, and nothing else is known. Discuss the value of explicit expectations without calling the structure flexible, undefined, unconventional, outside a default script, or naming or implying any particular structure.");
+  } else if (context.structure !== "unspecified") {
+    application.push(`Structure application: the explicitly supplied structure is ${context.structure.replaceAll("_", " ")}. Do not add unsupplied terms or participants.`);
+  }
+  if (context.intention === "not_seeking") {
+    application.push("Intention application: the reader is not seeking a relationship. Center existing bonds, support, intimacy, solitude, and self-directed life. Do not recommend dating, romantic pursuit, staying open, or remaining in closeness longer.");
+  } else if (context.intention === "open_to_connection") {
+    application.push("Intention application: the reader is open to connection. This describes receptivity only; it does not mean active dating, a current bond, or an undefined relationship structure.");
+  } else if (context.intention === "dating") {
+    application.push("Intention application: the reader is dating. Dating-specific examples are allowed, but do not infer a particular person, pace, goal, or relationship history.");
+  } else if (context.intention === "deepen") {
+    application.push("Intention application: the reader wants to deepen a connection. Do not translate deepening into strain, repair, cohabitation, or a specific bond type.");
+  } else if (context.intention === "repair") {
+    application.push("Intention application: the reader is considering repair. This does not establish the cause, severity, mutuality, safety, or desired outcome of repair.");
+  } else if (context.intention === "discern") {
+    application.push("Intention application: the reader is discerning. Support observation and choice without steering toward staying, leaving, repair, or distance.");
+  } else if (context.intention === "recover") {
+    application.push("Intention application: recovery refers to the reader's own steadiness and forward movement. Do not reinterpret it as recovering, repairing, or resuming the connection.");
+  }
+  if (!application.length) {
+    application.push("Context application: use relationship-neutral language that applies to close bonds generally.");
+  }
+  return [...shared, ...application].join("\n");
+}
+
+function editorialRoleInstruction(request: AstrologyReportRequest) {
+  if (request.reportType !== "core" && request.reportType !== "core_self" && request.reportType !== "chart_interpretation" && request.reportType !== "deep") return "";
+  return [
+    "Editorial boundaries for the report ladder:",
+    "- Identity explains the central organizing pattern; do not make it a substitute for the rest of the report.",
+    "- Relationships explains connection patterns and choices; do not repeat Identity's self-definition lesson.",
+    "- Growth names the enduring capacity, compensation, or pattern that must mature. It is not a whole-report summary or a generic to-do list.",
+    "- Integration turns the report into two or three cross-domain operating principles. Do not re-explain Growth, repeat every chart factor, or imply present-day celestial timing."
+  ].join("\n");
+}
+
+const sectionVoicePlans: Record<string, string> = {
+  Identity: "Close with a grounded recognition of the reader's stable center; do not prescribe an action.",
+  Emotions: "Close by naming a condition that helps feelings become usable information; do not prescribe disclosure.",
+  Relationships: "Close with a bounded relational condition or question. Do not use move, fix, task, risk, or repair as the closing frame.",
+  Work: "Close with a prioritization rule that protects useful effort from scattered effort.",
+  Drive: "Close with a proportion or pacing principle, not a productivity assignment.",
+  Gifts: "Close by affirming how a capacity becomes dependable through practice; do not turn the chapter into a warning.",
+  "Blind Spots": "Close with a verification question that separates observation from interpretation.",
+  Growth: "Close by naming the capacity that can mature; do not prescribe a deadline or a confrontation.",
+  Integration: "Close with two or three operating principles stated as choices, not a small action, fix, task, risk, or weekly assignment."
+};
+
+function voicePlanForSection(title: string) {
+  return sectionVoicePlans[title] ?? "Use a distinct, natural closing that belongs only to this chapter.";
+}
+
+function reportVoicePlan(headings: readonly string[]) {
+  return [
+    "Report-level voice plan:",
+    "- Give every chapter a distinct closing function. Do not reuse a move/fix/task/risk conclusion across chapters.",
+    "- Avoid stock transitions such as 'The useful move,' 'The fix,' 'The task,' 'The risk,' or 'The pattern worth watching.'",
+    ...headings.map((heading) => `- ${heading}: ${voicePlanForSection(heading)}`)
+  ].join("\n");
+}
+
+function reportEvidenceOwnershipPlan(cards: readonly ReportSectionSignalCard[]) {
+  return [
+    "Report-level evidence ownership:",
+    "- Each chapter owns the full interpretation of its selected signals. A signal reused elsewhere may support a different consequence, but must not be reintroduced with the same aspect framing, mechanism, or conclusion.",
+    ...cards.map((card) => `- ${card.title}: ${card.chartSignals.slice(0, 2).map((signal) => signal.label).join("; ") || "synthesis only"}`)
+  ].join("\n");
+}
+
+function deepChapterFocusInstruction(request: AstrologyReportRequest, title: string) {
+  if (!new Set<string>(["Relationships", "Integration"]).has(title)) return "";
+  const lines = [readerFocusInstruction(request)];
+  if (title === "Relationships") lines.push(relationshipContextInstruction(request));
+  if (title === "Integration") {
+    lines.push(relationshipContextInstruction(request));
+    lines.push("Integration editorial job: turn the useful findings into two or three cross-domain operating principles. Use the reader's focus only where it helps choose an honest next move.");
+  }
+  return lines.filter(Boolean).join("\n");
+}
+
+function canonicalIdentityInstruction(request: AstrologyReportRequest) {
+  const identity = canonicalIdentityFromRequest(request);
+  if (!identity) return "";
+  return [
+    "Canonical Identity contract:",
+    "- The application will replace the generated Identity section with the canonical Identity below.",
+    "- Do not contradict, rewrite, or re-teach it in another chapter.",
+    "- Treat it as stable chart interpretation, not relationship context.",
+    "",
+    identity
+  ].join("\n");
 }
 
 type ZodiacMode = ChartSettings["zodiacMode"];
@@ -467,15 +675,15 @@ const sectionSignalMeanings: Record<string, Pick<ReportSectionSignalCard, "capac
   },
   Emotions: {
     capacities: ["emotional perception", "memory", "protective intelligence"],
-    risks: ["emotional overcontrol", "withdrawal", "mood saturation"],
+    risks: ["sorting feelings before feeling them", "withdrawing to process", "letting one mood color the whole day"],
     tensions: ["feeling versus containment"],
     developmentalTasks: ["let feeling become usable information", "build steady recovery rhythms"]
   },
   Relationships: {
-    capacities: ["attachment pattern awareness", "desire", "repair"],
-    risks: ["projection", "avoidance", "reactivity"],
+    capacities: ["awareness of connection patterns", "desire", "repair skills"],
+    risks: ["filling gaps with assumptions", "leaving needs unstated", "acting before checking"],
     tensions: ["closeness versus autonomy"],
-    developmentalTasks: ["make relational needs explicit", "practice direct repair"]
+    developmentalTasks: ["make relational needs explicit", "practice clear repair when safe and appropriate"]
   },
   Work: {
     capacities: ["craft", "execution", "role clarity"],
@@ -497,7 +705,7 @@ const sectionSignalMeanings: Record<string, Pick<ReportSectionSignalCard, "capac
   },
   "Blind Spots": {
     capacities: ["pattern recognition", "self-correction"],
-    risks: ["distortion", "avoidance", "excess"],
+    risks: ["mistaking an interpretation for an observation", "stepping away before checking", "using more force than the moment needs"],
     tensions: ["instinct versus consequence"],
     developmentalTasks: ["catch the repeated distortion early", "add friction before escalation"]
   },
@@ -515,19 +723,19 @@ const sectionSignalMeanings: Record<string, Pick<ReportSectionSignalCard, "capac
   },
   Attraction: {
     capacities: ["chemistry", "recognition", "relational aliveness"],
-    risks: ["projection", "pursuit without clarity"],
+    risks: ["filling gaps with assumptions", "pursuit without clarity"],
     tensions: ["desire versus actual contact"],
     developmentalTasks: ["name what is attractive without making it the whole story"]
   },
   Friction: {
     capacities: ["honest contrast", "growth pressure", "repair potential"],
-    risks: ["reactivity", "misread motive", "repeated conflict loop"],
+    risks: ["responding before checking", "misreading motive", "repeated conflict loop"],
     tensions: ["difference versus threat"],
     developmentalTasks: ["separate useful tension from avoidable escalation"]
   },
   Communication: {
     capacities: ["translation", "listening", "shared language"],
-    risks: ["assumption", "defensiveness", "talking past each other"],
+    risks: ["assumption", "protecting a position before listening", "talking past each other"],
     tensions: ["meaning intended versus meaning received"],
     developmentalTasks: ["make the implicit agreement explicit"]
   },
@@ -1363,6 +1571,18 @@ function compactInterpretiveNote(note: InterpretiveNote) {
 
 type RawReportSignal = ReportSectionSignalCard["chartSignals"][number] & { sections: string[] };
 
+function ownedSectionsForAspect(source: string, target: string) {
+  const bodies = new Set([source, target]);
+  if (bodies.has("sun")) return ["Identity", "Growth"];
+  if (bodies.has("moon")) return ["Emotions", "Integration"];
+  if (bodies.has("venus")) return ["Relationships", "Gifts"];
+  if (bodies.has("mars")) {
+    return ["Drive", bodies.has("jupiter") || bodies.has("saturn") ? "Work" : "Relationships"];
+  }
+  if (bodies.has("mercury")) return ["Work", "Gifts"];
+  return ["Growth", "Blind Spots"];
+}
+
 function reportSectionSignalCardsFromRawSignals(rawSignals: RawReportSignal[], headings: readonly string[]) {
   return headings.map((heading) => {
     const meaning = sectionSignalMeanings[heading] ?? sectionSignalMeanings.Identity;
@@ -1425,7 +1645,7 @@ function buildReportSectionSignalCards(chartSignature: ChartSignature, headings:
         label: `${bodyDisplayName(source)} ${match.type} ${bodyDisplayName(target)}`,
         facts: [bodyDisplayName(source), match.type, bodyDisplayName(target), `orb ${match.orb} degrees`],
         priority: Number(Math.max(0.2, 1 - match.orb / 10).toFixed(3)),
-        sections: sectionsForAspect(source, target)
+        sections: ownedSectionsForAspect(source, target)
       });
     }
   }
@@ -1726,6 +1946,36 @@ function sectionIdFromTitle(requestId: string, title: string, index: number) {
   return `${requestId}:${slug || `section-${index + 1}`}`;
 }
 
+function normalizeReportVoice(value: string) {
+  const preserveInitialCase = (match: string, replacement: string) => (
+    /^[A-Z]/.test(match)
+      ? `${replacement.charAt(0).toUpperCase()}${replacement.slice(1)}`
+      : replacement
+  );
+  return value
+    .replace(/\bthe task isn't to ([^.]+)\.\s+it's to\b/gi, (match, contrast: string) => (
+      `${preserveInitialCase(match, "the point is not to")} ${contrast}. It is to`
+    ))
+    .replace(/\bthe useful move(?: here)? isn't\b/gi, (match) => preserveInitialCase(match, "a better response is not"))
+    .replace(/\bthe useful move(?: here)? is\b/gi, (match) => preserveInitialCase(match, "what helps is"))
+    .replace(/\bthe fix isn't\b/gi, (match) => preserveInitialCase(match, "a better response is not"))
+    .replace(/\bthe fix is\b/gi, (match) => preserveInitialCase(match, "a better response is"))
+    .replace(/\bthe task worth naming,\s*gently,\s*is not\b/gi, (match) => preserveInitialCase(match, "the point is not"))
+    .replace(/\bthe task isn't to\b/gi, (match) => preserveInitialCase(match, "you do not need to"))
+    .replace(/\bthe task isn't\b/gi, (match) => preserveInitialCase(match, "the point is not"))
+    .replace(/\bthe task is\b/gi, (match) => preserveInitialCase(match, "what matters is"))
+    .replace(/\bthe risk isn't\b/gi, (match) => preserveInitialCase(match, "the pressure point is not"))
+    .replace(/\bthe risk is\b/gi, (match) => preserveInitialCase(match, "the pressure point is"))
+    .replace(/\b(?:so\s+)?the pattern worth watching is this:\s*/gi, (match) => preserveInitialCase(match, "notice whether "))
+    .replace(/\bthe pattern worth watching is\b/gi, (match) => preserveInitialCase(match, "notice whether"))
+    .replace(/\bthe useful move(?: here)?\b/gi, (match) => preserveInitialCase(match, "what helps"))
+    .replace(/\bthe fix\b/gi, (match) => preserveInitialCase(match, "a better response"))
+    .replace(/\bthe task(?: worth naming)?\b/gi, (match) => preserveInitialCase(match, "what matters"))
+    .replace(/\bthe risk\b/gi, (match) => preserveInitialCase(match, "the pressure point"))
+    .replace(/\bthe practical move\b/gi, (match) => preserveInitialCase(match, "a practical response"))
+    .replace(/\bthe pattern worth watching\b/gi, (match) => preserveInitialCase(match, "the pattern to notice"));
+}
+
 function markdownSectionsFromText(text: string, request: AstrologyReportRequest): AstrologyReportSection[] {
   const normalized = text
     .replace(/^#\s+.+$/m, "")
@@ -1737,11 +1987,13 @@ function markdownSectionsFromText(text: string, request: AstrologyReportRequest)
       const title = (match[1] ?? "").trim();
       const bodyStart = (match.index ?? 0) + match[0].length;
       const bodyEnd = headings[index + 1]?.index ?? normalized.length;
-      const body = normalized
-        .slice(bodyStart, bodyEnd)
-        .replace(/\*\*Chart Evidence\*\*[\s\S]*$/i, "")
-        .replace(/^[-*]\s+/gm, "")
-        .trim();
+      const body = normalizeReportVoice(
+        normalized
+          .slice(bodyStart, bodyEnd)
+          .replace(/\*\*Chart Evidence\*\*[\s\S]*$/i, "")
+          .replace(/^[-*]\s+/gm, "")
+          .trim()
+      );
       if (!title || !body || /^generation metadata$/i.test(title)) return null;
       return {
         id: sectionIdFromTitle(request.id, title, index),
@@ -1773,10 +2025,16 @@ function parseModelDraft(text: string, request: AstrologyReportRequest, chartSig
   if (!baseline.publicSignal) {
     throw new Error("Deterministic baseline did not include a public signal.");
   }
+  const canonicalIdentity = canonicalIdentityFromRequest(request);
+  const sections = markdownSectionsFromText(text, request).map((section) => (
+    canonicalIdentity && section.title === "Identity"
+      ? { ...section, body: canonicalIdentity }
+      : section
+  ));
 
   return {
-    summary: summaryFromMarkdown(text, baseline.summary ?? `${request.subjectName}'s report is grounded in the computed chart signature.`),
-    sections: markdownSectionsFromText(text, request),
+    summary: summaryFromMarkdown(canonicalIdentity || text, baseline.summary ?? `${request.subjectName}'s report is grounded in the computed chart signature.`),
+    sections,
     publicSignal: {
       ...baseline.publicSignal,
       provenanceSummary: `${baseline.publicSignal.provenanceSummary}, ${DEBUG_MODEL_REPORT_WRITER}`
@@ -1806,6 +2064,21 @@ const astraInterpretiveContract = [
   "End with a useful resolution that belongs to this section. It may be a practical next move, a clear recognition, or a concise way to hold the tension.",
   "Avoid textbook astrology, stock spirituality, inflated certainty, generic coaching, and repeated evidence verbs.",
   "When a signal appears in multiple sections, interpret a different consequence in each life domain instead of repeating its thesis or advice."
+];
+
+const astraPsychologicalSafetyContract = [
+  "This is reflective interpretation, not diagnosis, therapy, risk assessment, or factual knowledge about another person.",
+  "Frame tendencies as possibilities with words such as may, can, might, under stress, or if this fits. Use certainty only for supplied chart facts.",
+  "Do not turn a chart tendency into invented biography. Never claim that the reader has probably lost a relationship, job, trust, opportunity, learned a wound early, compensated for an old injury, or already lived through a specific event.",
+  "Describe observable behavior instead of labeling the reader with projection, control, avoidance, reactivity, self-sabotage, power struggle, emotional overcontrol, dissociation, or trauma.",
+  "Never invent a clinical condition, trauma history, attachment style or diagnosis, abuse dynamic, compulsion, unconscious motive, old wound, or another person's inner life.",
+  "Do not claim the reader can identify another person's wound, weak spot, pressure point, motive, capacity, mood, grief, need, or what will change them. Keep perception claims anchored to what the reader notices and can verify.",
+  "Avoid categorical biography and behavior claims such as 'you act before you think,' 'you usually land right,' or 'you react first.' Use bounded possibility language unless stating a supplied chart fact.",
+  "Any recommendation involving direct conversation, disclosure, confrontation, boundaries, or repair must be conditional on it being safe and appropriate.",
+  "Do not imply that the reader must repair every relationship, that endurance is virtuous, or that astrology can decide whether a relationship continues.",
+  "Keep the report balanced: substantial resources and capacities, specific tensions, and proportionate applications. Gifts must not read like a disguised Blind Spots chapter.",
+  "Do not diminish the reader with phrases such as party trick, impressive but thin, charm stays shallow, applause before depth, or similar contemptuous formulations.",
+  "Avoid a visible rhetorical template. Across the report, use 'That's not a flaw,' 'The useful move,' 'The fix isn't,' and 'The task isn't' no more than once each, and avoid repeated not-X-but-Y constructions."
 ];
 
 const astraEvidenceContract = [
@@ -1945,6 +2218,9 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     ...astraPlainspokenVoiceContract,
     plainspokenParagraphRule(request, "section"),
     ...astraInterpretiveContract,
+    ...astraPsychologicalSafetyContract,
+    reportVoicePlan(headings),
+    reportEvidenceOwnershipPlan(sectionCards),
     '- Avoid generic phrases such as "you are a natural communicator," "this aspect gifts you," "you may struggle," or "this placement indicates" unless rewritten into more specific language.',
     "Speak directly to the reader using you and your. Never describe the report subject as a case or third-person label.",
     "Keep second-person grammar clean: write you want, you understand, you adapt, and you believe; never write you wants, you understands, you adapts, or you believes.",
@@ -1958,6 +2234,9 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     basis.type === "natal"
       ? "Across every natal section, avoid forecast language such as this season, current activation, currently active, or unusually active. Present-day practical language is welcome; invented celestial timing is not."
       : "",
+    editorialRoleInstruction(request),
+    canonicalIdentityInstruction(request),
+    headings.join("\n").includes("Relationships") || basis.type === "synastry" ? relationshipContextInstruction(request) : "",
     "Do not include Generation Metadata. The application appends it after validation.",
     previousErrors.length ? "The previous draft failed validation. Rewrite the full report and avoid these errors:" : "",
     ...previousErrors.map((error) => `- ${error}`),
@@ -2002,8 +2281,13 @@ function buildDeepThesisPrompt(request: AstrologyReportRequest, cards: ReportSec
     "Return one private governing thesis. Aim for 35-75 words and never exceed 90 words. Use plain prose with no heading, bullets, JSON, or metadata.",
     "This thesis is an internal writing compass, not customer-facing copy.",
     "Name the central human tension that can organize all nine chapters without reducing them to one repeated lesson.",
+    "Plan at least three dimensions: a central identity pattern, a relational or agency pattern, and a stabilizing resource or developmental capacity.",
+    "Assign each major aspect one primary chapter and at most one brief secondary reference. A secondary reference must extend, not restate, its primary interpretation.",
+    "Deep must add breadth: nourishment, belonging, joy, meaning, creativity, thriving conditions, decision-making, or contribution must receive real space alongside tension.",
     "Do not mention planets, signs, houses, aspects, astrology, chart factors, or timing claims.",
     `Subject: ${request.subjectName}`,
+    editorialRoleInstruction(request),
+    canonicalIdentityInstruction(request),
     "Section planning notes:",
     ...cards.map((card) => `- ${card.title}: capacities ${card.capacities.join(", ")}; risks ${card.risks.join(", ")}; tension ${card.tensions.join(", ")}; task ${card.developmentalTasks.join(", ")}.`)
   ].join("\n");
@@ -2103,6 +2387,7 @@ function buildDeepSectionPrompt(input: {
   const { request, chartSignature, card, thesis, previousErrors } = input;
   const depth = deepSectionDepth[card.title];
   const sunPlacement = chartSignature.points.find((point) => point.body === "Sun");
+  const reportCards = buildReportSectionSignalCardsForRequest(request, reportHeadingsFor(request));
   return [
     "You are writing one chapter of a premium Astra Deep Report from structured notes.",
     "Write only this chapter's body as plain Markdown. Astra supplies the chapter heading. Do not write any heading, other chapter, report title, evidence block, metadata, JSON, or planning commentary.",
@@ -2115,9 +2400,13 @@ function buildDeepSectionPrompt(input: {
     `Private governing thesis: ${thesis}`,
     "Use the thesis as a quiet through-line, not as a sentence to repeat.",
     `This chapter must answer, rather than quote or announce, this distinct governing question: ${card.tensions.join("; ")}.`,
+    deepChapterFocusInstruction(request, card.title),
     ...astraPlainspokenVoiceContract,
     plainspokenParagraphRule(request, "chapter"),
     ...astraInterpretiveContract,
+    ...astraPsychologicalSafetyContract,
+    `Chapter voice plan: ${voicePlanForSection(card.title)}`,
+    reportEvidenceOwnershipPlan(reportCards),
     ...astraEvidenceContract,
     "Use at least two selected signals when available, including a section-specific secondary signal.",
     "Do not generalize this chapter into the whole report and do not repeat a generic warning or practice from another life domain.",
@@ -2126,7 +2415,7 @@ function buildDeepSectionPrompt(input: {
       ? `The first three sentences must include "${sunPlacement.sign} Sun" or "Sun in ${sunPlacement.sign}"${chartSignature.calculationMode === "signs-aspects-only" ? "." : " and integrate its house context."}`
       : "",
     card.title === "Integration"
-      ? "Synthesize enduring natal patterns into one grounded way of working with the chart. This is not a forecast and must not claim that anything is newly or currently activated."
+      ? "Synthesize enduring natal patterns into two or three cross-domain operating principles. This is not a second Growth chapter and not a forecast, and must not claim that anything is newly or currently activated."
       : "",
     "Section signal card:",
     sectionSignalCardBlock(card),
@@ -2168,6 +2457,9 @@ function validateDeepSection(input: {
   errors.push(...validateUnsupportedSectionClaims({ sections: [section] } as ReportDraft, [input.card], input.chartSignature).map((message) =>
     retryIssue(message.startsWith("Missing visible chart evidence") ? "evidence_mismatch" : "unsupported_claim", message)
   ));
+  errors.push(...validateRelationshipAndSafetyClaims(input.request, [section]).map((message) =>
+    retryIssue("unsupported_claim", message)
+  ));
   if (input.card.title === "Identity") {
     const sun = input.chartSignature.points.find((point) => point.body === "Sun");
     const firstThreeSentences = section.body.split(/(?<=[.!?])\s+/).slice(0, 3).join(" ");
@@ -2187,11 +2479,13 @@ function deepSectionFromText(text: string, request: AstrologyReportRequest, titl
     if (sections.length !== 1) throw new Error(`Expected one chapter, found ${sections.length}.`);
     return sections[0]!;
   }
-  const body = text
-    .replace(/^#\s+.+$/gm, "")
-    .replace(/\*\*Chart Evidence\*\*[\s\S]*$/i, "")
-    .replace(/^[-*]\s+/gm, "")
-    .trim();
+  const body = normalizeReportVoice(
+    text
+      .replace(/^#\s+.+$/gm, "")
+      .replace(/\*\*Chart Evidence\*\*[\s\S]*$/i, "")
+      .replace(/^[-*]\s+/gm, "")
+      .trim()
+  );
   if (!body) throw new Error("Model draft did not include chapter prose.");
   return {
     id: sectionIdFromTitle(request.id, title, 0),
@@ -2342,7 +2636,13 @@ async function generateSectionedDeepDraft(input: ReportWriterInput, writer: Prom
       }
     );
   }
-  const generatedSections = settledSections.map((result) => (result as PromiseFulfilledResult<DeepSectionGeneration>).value);
+  const canonicalIdentity = canonicalIdentityFromRequest(input.request);
+  const generatedSections = settledSections.map((result) => {
+    const generated = (result as PromiseFulfilledResult<DeepSectionGeneration>).value;
+    return canonicalIdentity && generated.section.title === "Identity"
+      ? { ...generated, section: { ...generated.section, body: canonicalIdentity } }
+      : generated;
+  });
   const baseline = writeDeterministicCoreReport(input);
   const identity = generatedSections.find((generated) => generated.section.title === "Identity")?.section.body ?? "";
   const draft: ReportDraft = {
@@ -2369,6 +2669,84 @@ function reportHeadingsFor(request: AstrologyReportRequest) {
   if (request.reportType === "synastry") return [...synastryReportHeadings];
   if (request.reportType === "progressed") return [...progressedReportHeadings];
   return [...personCoreReportHeadings];
+}
+
+const contextGenderedPartnerPronounPattern = /\b(?:he|him|his|she|her|hers)\b/i;
+// "Mutual repair" can be an analytic distinction.  Only flag language that
+// actually recommends or initiates direct relationship action.
+const directRelationshipActionPattern = /\b(?:confront|(?:have|start|initiate) (?:a )?direct conversation|state (?:a|the|your) boundary|make a direct request|try to repair|repair (?:the relationship|this (?:relationship|connection)))\b/i;
+const safetyConditionPattern = /\b(?:when|if|where)\s+(?:(?:direct (?:conversation|engagement)|it)\s+(?:is|['’]s)\s+)?safe(?:\s+and\s+appropriate)?\b|\bsafe and appropriate\b/i;
+const inventedBiographyPattern = /\b(?:you(?:'|’)ve likely lived through|you have likely lived through|probably (?:lost|cost)|cost you (?:a relationship|a job|trust|an opportunity)|has cost you (?:relationships?|jobs?|trust|opportunities)|you learned early|learned to compensate|compensate rather than heal|old,? tender spot|oldest wound|never quite healed|damage is already done|not enough as you were)\b/i;
+const unverifiedPsychologicalHistoryPattern = /\b(?:old wound|early wound|wound from (?:childhood|the past|earlier life)|history taught you|learned (?:early|in childhood)|learned self-protection|learned to (?:hide|protect|defend|compensate)|defensive (?:reaction|pattern|strategy)|a defense you built|protection you developed)\b/i;
+const attachmentLabelPattern = /\battachment style\b/i;
+const unverifiedOtherPersonInsightPattern = /\b(?:another person(?:'s)?|other people(?:'s)?|someone(?:'s)?|a person(?:'s)?)\s+(?:wound|weak spot|pressure point|capacity|motive|mood|grief|need)\b|\b(?:see|sense|know|pick up on)\s+(?:what will change someone|a person(?:'s)? weak spot|the wound in (?:a person|someone)|someone(?:'s)? (?:mood|grief|need)|what someone else is going through|things other people have not said)\b|\bbefore (?:they|someone|other people) (?:say|know)\b/i;
+const unverifiedOtherPersonStatePattern = /\b(?:what|how)\s+(?:another person|someone else|they)\s+(?:want|wants|feel|feels|think|thinks|need|needs|intend|intends)\b|\b(?:another person|someone else|the other person)(?:'s|’s)\s+(?:imagination|inner life|unspoken feeling|unstated need)\b/i;
+const psychologicalLabelPattern = /\b(?:projection|avoidance|reactivity|self-sabotage|power struggle|emotional overcontrol|dissociation|trauma response)\b/i;
+const categoricalBehaviorPattern = /\b(?:you act before you think|you react before you think|your first read .* usually lands right|you (?:usually|always) (?:know|sense|see|read|react|act)|most of the time it works|you trust your first read)\b/i;
+const statusToConditionPattern = /\b(?:less as (?:a )?crisis|more as texture|not (?:a )?crisis|healthy relationship|stable relationship|secure relationship|settled relationship|relationship is (?:healthy|stable|secure|settled))\b/i;
+const stockConclusionPattern = /\b(?:the useful move(?: here)?|the fix|the task(?: worth naming)?|the risk|the practical move|the pattern worth watching)\b/i;
+
+function validateRelationshipAndSafetyClaims(
+  request: AstrologyReportRequest,
+  sections: readonly Pick<AstrologyReportSection, "title" | "body">[]
+) {
+  const errors: string[] = [];
+  const context = normalizedRelationshipContextFromRequest(request);
+  for (const section of sections) {
+    const text = section.body;
+    if (attachmentLabelPattern.test(text)) errors.push(`${section.title} must not assign an attachment style.`);
+    if (inventedBiographyPattern.test(text)) errors.push(`${section.title} invents reader biography from a chart tendency.`);
+    if (unverifiedPsychologicalHistoryPattern.test(text)) errors.push(`${section.title} invents an old wound, defense, or psychological history.`);
+    if (unverifiedOtherPersonInsightPattern.test(text)) errors.push(`${section.title} claims unverified access to another person's vulnerabilities or inner life.`);
+    if (unverifiedOtherPersonStatePattern.test(text)) errors.push(`${section.title} claims unverified access to another person's thoughts, feelings, or needs.`);
+    if (psychologicalLabelPattern.test(text)) errors.push(`${section.title} uses a psychological label instead of observable behavior.`);
+    if (categoricalBehaviorPattern.test(text)) errors.push(`${section.title} turns an interpretive tendency into a categorical behavior claim.`);
+    const canonicalIdentityIsSupplied = section.title === "Identity" && Boolean(canonicalIdentityFromRequest(request));
+    if (!canonicalIdentityIsSupplied && stockConclusionPattern.test(text)) {
+      errors.push(`${section.title} uses a prohibited stock conclusion instead of its chapter-specific voice plan.`);
+    }
+    if (["strained", "ending"].includes(context.condition) && directRelationshipActionPattern.test(text) && !safetyConditionPattern.test(text)) {
+      errors.push(`${section.title} recommends direct relationship action without saying it is conditional on safety and appropriateness.`);
+    }
+
+    if (section.title !== "Relationships" && section.title !== "Integration") continue;
+    if (!context.partnerPronouns && contextGenderedPartnerPronounPattern.test(text)) {
+      errors.push(`${section.title} uses a partner gender pronoun that was not supplied.`);
+    }
+    if (context.status === "partnered" && context.condition === "unspecified" && context.intention !== "repair" &&
+      (/\b(?:under strain|strained relationship|working on repair|relationship is strained|repairing the relationship|things are tense|current tension)\b/i.test(text) ||
+        statusToConditionPattern.test(text))) {
+      errors.push(`${section.title} infers a qualitative relationship condition from partnered status.`);
+    }
+    if (context.status === "single" && context.intention === "unspecified" &&
+      /\b(?:on your next date|your dating life|as you date|when you date|people you date|actively dating)\b/i.test(text)) {
+      errors.push(`${section.title} infers dating from single status.`);
+    }
+    if (context.status === "separated" &&
+      /\b(?:recent breakup|recently separated|still grieving|active grief|why (?:they|he|she) left|closure|unfinished ending|the breakup)\b/i.test(text)) {
+      errors.push(`${section.title} infers recency, grief, cause, or closure from separated status.`);
+    }
+    if (context.status === "unspecified" && context.condition === "strained" && /\bpartner\b/i.test(text)) {
+      errors.push(`${section.title} infers a partner from a strained condition with unspecified status.`);
+    }
+    if (context.structure === "other" &&
+      /\b(?:non[- ]?monogam(?:y|ous)|polyam(?:ory|orous)|open relationship|multiple partners?|metamours?|relationship anarchy|flexible and undefined|outside (?:a|the) default script|unconventional structure|(?:is not|isn['’]t|not) (?:a )?fixed script|fixed script)\b/i.test(text)) {
+      errors.push(`${section.title} infers a specific quality or type from structure other.`);
+    }
+    if (context.intention === "not_seeking" &&
+      /\b(?:start dating|date again|next date|dating life|attraction filter|open yourself to romance|seek romance|stay one extra minute when someone gets close)\b/i.test(text)) {
+      errors.push(`${section.title} contradicts the not-seeking intention.`);
+    }
+    if (context.intention === "open_to_connection" &&
+      /\b(?:actively dating|as you date|your dating life|not in a defined structure|undefined structure|without a defined structure(?: in play)?)\b/i.test(text)) {
+      errors.push(`${section.title} turns openness into active dating or an undefined structure.`);
+    }
+    if (context.intention === "recover" &&
+      /\b(?:recover|repair|restore|resume|rebuild)\s+(?:the|your|this)?\s*(?:connection|relationship|bond)\b/i.test(text)) {
+      errors.push(`${section.title} turns personal recovery into recovering the connection.`);
+    }
+  }
+  return [...new Set(errors)];
 }
 
 function validateModelDraft(request: AstrologyReportRequest, draft: ReportDraft, chartSignature: ChartSignature) {
@@ -2462,6 +2840,7 @@ function validateModelDraft(request: AstrologyReportRequest, draft: ReportDraft,
   }
 
   errors.push(...validateUnsupportedSectionClaims(draft, sectionCards, chartSignature));
+  errors.push(...validateRelationshipAndSafetyClaims(request, draft.sections ?? []));
 
   return errors;
 }
@@ -2836,8 +3215,8 @@ async function writeOpenRouterModelText(
     headers: {
       authorization: `Bearer ${config.openRouterApiKey}`,
       "content-type": "application/json",
-      "http-referer": "http://localhost:3011",
-      "x-title": "Astra"
+      "http-referer": process.env.OPENROUTER_SITE_URL?.trim() || ASTRA_OPENROUTER_SITE_URL,
+      "x-title": process.env.OPENROUTER_APP_NAME?.trim() || ASTRA_OPENROUTER_APP_NAME
     },
     body: JSON.stringify({
       model: config.reportModel,

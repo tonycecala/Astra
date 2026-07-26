@@ -7,7 +7,10 @@ import {
   ASTRA_REPORT_WRITER_ENV,
   DEBUG_MODEL_REPORT_WRITER,
   LOCAL_CHART_ROUTINE_ENGINE,
+  ASTRA_OPENROUTER_APP_NAME,
+  ASTRA_OPENROUTER_SITE_URL,
   buildAstrologyReportResultAsync,
+  buildAstrologyReportSectionEvidence,
   measureReportReadability
 } from "@astra/astrology";
 import { astrologyReportRequestSchema } from "@astra/contracts";
@@ -20,6 +23,19 @@ const request = astrologyReportRequestSchema.parse({
   reportType: "deep",
   subjectName: "Deep Quality Fixture",
   birthData: { date: "1961-05-23", time: "09:30", birthTimeKnown: true, timezone: "America/Chicago", location: "Chicago, IL, USA", latitude: 41.8781, longitude: -87.6298 },
+  question: "What relationship pattern would be useful to understand?",
+  intent: "relationship-context quality fixture",
+  context: {
+    relationshipContext: {
+      status: "separated",
+      condition: "unspecified",
+      structure: "unspecified",
+      intention: "unspecified",
+      recency: "unspecified",
+      partnerPronouns: null,
+      notes: null
+    }
+  },
   source: "self",
   status: "queued",
   costCredits: 10,
@@ -68,13 +84,15 @@ function sectionWordTarget(title: string) {
   return 310;
 }
 
-function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTransport?: boolean; timingFailure?: boolean; thirdPersonFailure?: boolean; usefulLongThesis?: boolean; identityThirdSentence?: boolean } = {}) {
+function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTransport?: boolean; timingFailure?: boolean; thirdPersonFailure?: boolean; unsafeRelationshipFirst?: boolean; invalidFirst?: Partial<Record<string, string>>; usefulLongThesis?: boolean; identityThirdSentence?: boolean } = {}) {
   const calls = new Map<string, number>();
   const prompts = new Map<string, string[]>();
   const requestBodies: Array<Record<string, unknown>> = [];
+  const requestHeaders: Headers[] = [];
   let active = 0;
   let maxActive = 0;
   const fetchImpl = async (_url: string | URL | Request, init?: RequestInit) => {
+    requestHeaders.push(new Headers(init?.headers));
     const body = JSON.parse(String(init?.body)) as { messages?: Array<{ content?: string }> } & Record<string, unknown>;
     requestBodies.push(body);
     const prompt = body.messages?.map((message) => message.content ?? "").join("\n") ?? "";
@@ -87,10 +105,14 @@ function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTranspor
     await new Promise((resolve) => setTimeout(resolve, 5));
     active -= 1;
     const words = title === "Emotions" && options.retryEmotions && count === 1 ? 120 : sectionWordTarget(title);
-    const openingOverride = title === "Identity" && options.identityThirdSentence
+    const openingOverride = options.invalidFirst?.[title] && count === 1
+      ? options.invalidFirst[title]
+      : title === "Identity" && options.identityThirdSentence
       ? "You already know yourself pretty well. That is not the hard part. Your Gemini Sun gives the identity chapter a clear center."
       : title === "Relationships"
-      ? options.thirdPersonFailure && count === 1
+      ? options.unsafeRelationshipFirst && count === 1
+        ? "You should confront them and say what you need before the relationship gets worse."
+        : options.thirdPersonFailure && count === 1
         ? "This person tends to hide what matters until distance does the speaking."
         : "The person you choose matters, but so does what you are willing to say plainly."
       : undefined;
@@ -105,7 +127,7 @@ function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTranspor
       headers: { "content-type": "application/json" }
     });
   };
-  return { fetchImpl, calls, prompts, requestBodies, maxActive: () => maxActive };
+  return { fetchImpl, calls, prompts, requestBodies, requestHeaders, maxActive: () => maxActive };
 }
 
 const provider = sectionedProvider({ retryEmotions: true, retryWorkTransport: true });
@@ -160,8 +182,21 @@ assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Write each chapter in
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Open each section with a direct second-person statement using You or Your/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Vary the sentence shape across sections/);
 assert.match(completed.sections.find((section) => section.title === "Relationships")?.body ?? "", /The person you choose/);
+assert.doesNotMatch(provider.prompts.get("Thesis")?.[0] ?? "", /Reader question:/);
+assert.doesNotMatch(provider.prompts.get("Thesis")?.[0] ?? "", /Supplied context only:/);
+assert.match(provider.prompts.get("Relationships")?.[0] ?? "", /status=separated/);
+assert.match(provider.prompts.get("Relationships")?.[0] ?? "", /without presuming recency, grief, contact, closure-seeking, cause/);
+assert.doesNotMatch(provider.prompts.get("Growth")?.[0] ?? "", /Reader question:/);
+assert.match(provider.prompts.get("Integration")?.[0] ?? "", /Integration editorial job:/);
+assert.match(provider.prompts.get("Integration")?.[0] ?? "", /status=separated/);
+assert.match(provider.prompts.get("Integration")?.[0] ?? "", /two or three cross-domain operating principles/);
+assert.doesNotMatch(provider.prompts.get("Emotions")?.[0] ?? "", /Reader question:/);
 assert.ok(provider.requestBodies.length > 0);
 for (const body of provider.requestBodies) assert.deepEqual(body.reasoning, { effort: "none" });
+for (const headers of provider.requestHeaders) {
+  assert.equal(headers.get("http-referer"), ASTRA_OPENROUTER_SITE_URL);
+  assert.equal(headers.get("x-title"), ASTRA_OPENROUTER_APP_NAME);
+}
 
 const geminiProvider = sectionedProvider();
 const geminiCompleted = await buildAstrologyReportResultAsync(request, {
@@ -212,6 +247,80 @@ assert.match(relationshipMetadata?.failures?.[0]?.rejectedText ?? "", /This pers
 assert.match(subjectLabelProvider.prompts.get("Relationships")?.[1] ?? "", /address the report subject as you or your/);
 assert.match(correctedSubjectLabel.sections.find((section) => section.title === "Relationships")?.body ?? "", /The person you choose/);
 
+const unsafeRelationshipProvider = sectionedProvider({ unsafeRelationshipFirst: true });
+const strainedSafetyRequest = astrologyReportRequestSchema.parse({
+  ...request,
+  id: "61111111-1111-4111-8111-000000000076",
+  context: { relationshipContext: { status: "unspecified", condition: "strained", structure: "unspecified", intention: "discern", recency: "unspecified", partnerPronouns: null, notes: null } }
+});
+const correctedUnsafeRelationship = await buildAstrologyReportResultAsync(strainedSafetyRequest, { env, fetchImpl: unsafeRelationshipProvider.fetchImpl });
+assert.equal(correctedUnsafeRelationship.status, "completed");
+const unsafeRelationshipMetadata = correctedUnsafeRelationship.generationMetadata?.sections?.find((section) => section.title === "Relationships");
+assert.equal(unsafeRelationshipMetadata?.attemptCount, 2);
+assert.match(unsafeRelationshipMetadata?.failures?.[0]?.issues[0]?.message ?? "", /without saying it is conditional on safety/);
+assert.doesNotMatch(correctedUnsafeRelationship.sections.find((section) => section.title === "Relationships")?.body ?? "", /confront them/);
+
+const structureOtherRequest = astrologyReportRequestSchema.parse({
+  ...request,
+  id: "61111111-1111-4111-8111-000000000077",
+  context: { relationshipContext: { status: "unspecified", condition: "unspecified", structure: "other", intention: "unspecified", recency: "unspecified", partnerPronouns: null, notes: null } }
+});
+const correctedStructureOther = sectionedProvider({
+  invalidFirst: { Relationships: "Since your relational structure is not a fixed script, you learned early to compensate rather than heal. You can sense someone's grief before they say it. The useful move is to trust that read." }
+});
+const structureOtherResult = await buildAstrologyReportResultAsync(structureOtherRequest, { env, fetchImpl: correctedStructureOther.fetchImpl });
+assert.equal(structureOtherResult.status, "completed");
+const structureOtherMetadata = structureOtherResult.generationMetadata?.sections?.find((section) => section.title === "Relationships");
+assert.equal(structureOtherMetadata?.attemptCount, 2);
+assert.match(structureOtherMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /specific quality or type from structure other|reader biography|another person's vulnerabilities/);
+
+const openToConnectionRequest = astrologyReportRequestSchema.parse({
+  ...request,
+  id: "61111111-1111-4111-8111-000000000078",
+  context: { relationshipContext: { status: "single", condition: "unspecified", structure: "unspecified", intention: "open_to_connection", recency: "unspecified", partnerPronouns: null, notes: null } }
+});
+const correctedOpenToConnection = sectionedProvider({
+  invalidFirst: { Relationships: "Because you are open to connection without a defined structure in play, trust the terms to emerge on their own." }
+});
+const openToConnectionResult = await buildAstrologyReportResultAsync(openToConnectionRequest, { env, fetchImpl: correctedOpenToConnection.fetchImpl });
+assert.equal(openToConnectionResult.status, "completed");
+const openToConnectionMetadata = openToConnectionResult.generationMetadata?.sections?.find((section) => section.title === "Relationships");
+assert.equal(openToConnectionMetadata?.attemptCount, 2);
+assert.match(openToConnectionMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /turns openness into active dating or an undefined structure/);
+
+const partneredConditionRequest = astrologyReportRequestSchema.parse({
+  ...request,
+  id: "61111111-1111-4111-8111-000000000079",
+  context: { relationshipContext: { status: "partnered", condition: "unspecified", structure: "unspecified", intention: "unspecified", recency: "unspecified", partnerPronouns: null, notes: null } }
+});
+const correctedPartneredCondition = sectionedProvider({
+  invalidFirst: { Relationships: "Given your status as partnered, this pattern shows up less as crisis and more as texture." }
+});
+const partneredConditionResult = await buildAstrologyReportResultAsync(partneredConditionRequest, { env, fetchImpl: correctedPartneredCondition.fetchImpl });
+assert.equal(partneredConditionResult.status, "completed");
+const partneredConditionMetadata = partneredConditionResult.generationMetadata?.sections?.find((section) => section.title === "Relationships");
+assert.equal(partneredConditionMetadata?.attemptCount, 2);
+assert.match(partneredConditionMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /qualitative relationship condition from partnered status/);
+
+const categoricalProvider = sectionedProvider({
+  invalidFirst: { "Blind Spots": "You act before you think, and most of the time it works. The useful move is to trust your first read." }
+});
+const correctedCategorical = await buildAstrologyReportResultAsync(request, { env, fetchImpl: categoricalProvider.fetchImpl });
+assert.equal(correctedCategorical.status, "completed");
+const categoricalMetadata = correctedCategorical.generationMetadata?.sections?.find((section) => section.title === "Blind Spots");
+assert.equal(categoricalMetadata?.attemptCount, 2);
+assert.match(categoricalMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /categorical behavior claim/);
+
+const stockClosingProvider = sectionedProvider({
+  invalidFirst: { Work: "The task isn't to slow down. It's to choose one priority and finish it." }
+});
+const correctedStockClosing = await buildAstrologyReportResultAsync(request, { env, fetchImpl: stockClosingProvider.fetchImpl });
+assert.equal(correctedStockClosing.status, "completed");
+const stockClosingMetadata = correctedStockClosing.generationMetadata?.sections?.find((section) => section.title === "Work");
+assert.equal(stockClosingMetadata?.attemptCount, 1);
+assert.doesNotMatch(correctedStockClosing.sections.find((section) => section.title === "Work")?.body ?? "", /The task isn't/);
+assert.match(correctedStockClosing.sections.find((section) => section.title === "Work")?.body ?? "", /The point is not to slow down\. It is to choose one priority/);
+
 const usefulLongThesisProvider = sectionedProvider({ usefulLongThesis: true });
 const usefulLongThesis = await buildAstrologyReportResultAsync(request, { env, fetchImpl: usefulLongThesisProvider.fetchImpl });
 assert.equal(usefulLongThesis.status, "completed");
@@ -224,6 +333,101 @@ const identityThirdSentence = await buildAstrologyReportResultAsync(request, { e
 assert.equal(identityThirdSentence.status, "completed");
 assert.equal(identityThirdSentence.generationMetadata?.attemptCount, 10);
 assert.equal(identityThirdSentence.generationMetadata?.sections?.find((section) => section.title === "Identity")?.attemptCount, 1);
+
+const relationshipSituationCases = [
+  {
+    relationshipContext: { status: "single", condition: "unspecified", structure: "unspecified", intention: "not_seeking", recency: "unspecified", partnerPronouns: null, notes: null },
+    expected: /intention=not_seeking/,
+    application: /reader is not seeking a relationship/
+  },
+  {
+    relationshipContext: { status: "single", condition: "unspecified", structure: "unspecified", intention: "dating", recency: "unspecified", partnerPronouns: null, notes: null },
+    expected: /intention=dating/,
+    application: /reader is dating/
+  },
+  {
+    relationshipContext: { status: "partnered", condition: "unspecified", structure: "unspecified", intention: "deepen", recency: "unspecified", partnerPronouns: null, notes: null },
+    expected: /status=partnered/,
+    application: /without presuming health, stability, security, crisis, strain, repair, cohabitation, monogamy, or romance/
+  },
+  {
+    relationshipContext: { status: "unspecified", condition: "strained", structure: "unspecified", intention: "discern", recency: "unspecified", partnerPronouns: null, notes: null },
+    expected: /condition=strained/,
+    application: /do not recommend direct conversation, disclosure, confrontation, repair/
+  },
+  {
+    relationshipContext: { status: "separated", condition: "recovering", structure: "unspecified", intention: "recover", recency: "unspecified", partnerPronouns: null, notes: null },
+    expected: /status=separated; condition=recovering/,
+    application: /recovery refers to the reader's own steadiness/
+  },
+  {
+    relationshipContext: { status: "unspecified", condition: "unspecified", structure: "other", intention: "unspecified", recency: "unspecified", partnerPronouns: null, notes: null },
+    expected: /structure=other/,
+    application: /nothing else is known/
+  },
+  {
+    relationshipContext: { status: "unspecified", condition: "unspecified", structure: "unspecified", intention: "unspecified", recency: "unspecified", partnerPronouns: null, notes: null },
+    expected: /status=unspecified/,
+    application: /relationship-neutral language/
+  }
+] as const;
+
+for (const [index, scenario] of relationshipSituationCases.entries()) {
+  const scenarioProvider = sectionedProvider();
+  const scenarioRequest = astrologyReportRequestSchema.parse({
+    ...request,
+    id: `61111111-1111-4111-8111-${String(index + 1).padStart(12, "0")}`,
+    question: "What relationship pattern should I understand without assuming a conventional partner?",
+    intent: "structured relationship-context test",
+    context: { relationshipContext: scenario.relationshipContext }
+  });
+  const scenarioResult = await buildAstrologyReportResultAsync(scenarioRequest, { env, fetchImpl: scenarioProvider.fetchImpl });
+  assert.equal(scenarioResult.status, "completed");
+  assert.doesNotMatch(scenarioProvider.prompts.get("Thesis")?.[0] ?? "", scenario.expected);
+  assert.match(scenarioProvider.prompts.get("Relationships")?.[0] ?? "", scenario.expected);
+  assert.match(scenarioProvider.prompts.get("Relationships")?.[0] ?? "", scenario.application);
+  assert.match(scenarioProvider.prompts.get("Relationships")?.[0] ?? "", /Report-level evidence ownership:/);
+  assert.match(scenarioProvider.prompts.get("Relationships")?.[0] ?? "", /Chapter voice plan:/);
+  assert.doesNotMatch(scenarioProvider.prompts.get("Growth")?.[0] ?? "", /Supplied context only:/);
+  assert.match(scenarioProvider.prompts.get("Integration")?.[0] ?? "", /Integration editorial job:/);
+}
+
+const canonicalIdentity = prose("Identity", 400);
+const canonicalProvider = sectionedProvider();
+const canonicalRequest = astrologyReportRequestSchema.parse({
+  ...request,
+  id: "61111111-1111-4111-8111-000000000099",
+  context: {
+    relationshipContext: relationshipSituationCases[0].relationshipContext,
+    canonicalIdentity
+  }
+});
+const canonicalResult = await buildAstrologyReportResultAsync(canonicalRequest, { env, fetchImpl: canonicalProvider.fetchImpl });
+assert.equal(canonicalResult.status, "completed", canonicalResult.error);
+assert.equal(canonicalResult.sections.find((section) => section.title === "Identity")?.body, canonicalIdentity);
+assert.match(canonicalProvider.prompts.get("Thesis")?.[0] ?? "", /Canonical Identity contract:/);
+
+const ownedEvidence = buildAstrologyReportSectionEvidence(request, [
+  "Identity",
+  "Emotions",
+  "Relationships",
+  "Work",
+  "Drive",
+  "Gifts",
+  "Blind Spots",
+  "Growth",
+  "Integration"
+]);
+const aspectUsage = new Map<string, string[]>();
+for (const section of ownedEvidence) {
+  for (const evidence of section.evidenceBullets) {
+    if (!/\b(?:conjunction|sextile|square|trine|opposition)\b/i.test(evidence.label)) continue;
+    aspectUsage.set(evidence.label, [...(aspectUsage.get(evidence.label) ?? []), section.title]);
+  }
+}
+for (const [label, sections] of aspectUsage) {
+  assert.ok(sections.length <= 2, `${label} appeared in too many chapters: ${sections.join(", ")}`);
+}
 
 const simpleReading = measureReportReadability("You see the problem. You name it. Then you choose what to do next.");
 const denseReading = measureReportReadability("Interpersonal differentiation requires sustained psychological interpretation and multidimensional contextualization before meaningful reconciliation becomes conceivable.");
