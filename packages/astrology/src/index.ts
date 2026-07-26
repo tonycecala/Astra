@@ -55,7 +55,7 @@ export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
-export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-relationship-context-v10";
+export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-relationship-context-v11";
 export const GEMINI_INTRO_IDENTITY_REPORT_MODEL = "google/gemini-3.5-flash";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
@@ -217,7 +217,7 @@ function editorialRoleInstruction(request: AstrologyReportRequest) {
 }
 
 const sectionVoicePlans: Record<string, string> = {
-  Identity: "Close with a grounded recognition of the reader's stable center; do not prescribe an action.",
+  Identity: "Close with a plain statement of what stays consistent for the reader; do not prescribe an action.",
   Emotions: "Close by naming a condition that helps feelings become usable information; do not prescribe disclosure.",
   Relationships: "Close with a bounded relational condition or question. Do not use move, fix, task, risk, or repair as the closing frame.",
   Work: "Close with a prioritization rule that protects useful effort from scattered effort.",
@@ -1887,7 +1887,7 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
           ? `${card.title} compares ${subject}'s chart with ${basis.partner.subjectName}'s chart through the cross-chart contacts selected below.`
           : basis.type === "progressed"
             ? `${card.title} reads the secondary progressed chart for ${basis.asOfDate} in relationship to the natal chart.`
-            : `${subject}'s ${card.title} begins with ${chartHeadline}. The Sun at ${sun.degree} degrees ${sun.sign} gives this pattern ${articleFor(sunElement)} ${sunElement}, ${sunSign.mode} center of gravity. The Moon at ${moon.degree} degrees ${moon.sign} gives the emotional weather ${articleFor(moonElement)} ${moonElement}, ${moonSign.mode} rhythm.`,
+            : `${subject}'s ${card.title} begins with ${chartHeadline}. The Sun at ${sun.degree} degrees ${sun.sign} gives this pattern ${articleFor(sunElement)} ${sunElement}, ${sunSign.mode} style. The Moon at ${moon.degree} degrees ${moon.sign} describes ${articleFor(moonElement)} ${moonElement}, ${moonSign.mode} emotional response.`,
         basis.type === "natal"
           ? houseText
           : `The calculation uses ${settingsText}, and the interpretation follows the resulting chart contacts.`,
@@ -2045,12 +2045,16 @@ function parseModelDraft(text: string, request: AstrologyReportRequest, chartSig
 const astraPlainspokenVoiceContract = [
   "VOICE MODE: PLAINSPOKEN",
   "Target a 6th to 7th grade reading level, aiming near grade 6.5, without dumbing down the insight.",
-  "Prefer familiar words and shorter sentence structures. Keep necessary astrology terms, then explain them simply.",
-  "Use short sentences, everyday words, direct statements, and observable behavior.",
-  "Keep most sentences under 20 words. Break apart stacked clauses when one sentence is carrying several ideas.",
+  "Write like a wise farmer: calm, direct, concrete, and spare. Say only what helps. Make the point clear without decoration.",
+  "Use familiar words and short sentence structures. Keep necessary astrology terms, then explain them simply.",
+  "Aim for 12 to 14 words per sentence on average. Keep most sentences between 8 and 16 words, and nearly all under 20.",
+  "Use one main idea per sentence. Break every stacked clause into two or more clean sentences.",
+  "Prefer concrete choices, actions, needs, time, work, and relationships over poetic or psychological shorthand.",
+  "Do not use vague figurative phrases such as 'lose your shape,' 'hold your center,' 'blur your edges,' 'room to breathe,' 'emotional weather,' 'live wire,' 'static,' or 'fog.' Name the plain meaning instead.",
+  "For example, replace 'closeness without losing your shape' with 'closeness without giving up your own plans, friends, or time.'",
   "Say what happens, what it costs, and what can change. If a simpler sentence works, use it.",
-  "Sound like a wise, experienced person speaking plainly: warm and lived-in, never academic, clinical, ornate, or stylized.",
-  "Mix short and medium sentences. Keep adult psychological nuance; plain does not mean choppy or childish.",
+  "Sound warm and lived-in, never academic, clinical, ornate, mystical, or clever for its own sake.",
+  "Keep adult psychological nuance. Plain does not mean choppy or childish.",
   "Open each section with a direct second-person statement using You or Your. Vary the sentence shape across sections. Do not begin with a question or stock setup such as 'Here's the question,' 'Here is the question,' or 'This section asks.'",
   "Use words such as actually, real, really, and here's sparingly; do not turn them into a repeated voice tic.",
   "Use needed astrology terms accurately, then explain their human meaning in ordinary language."
@@ -2062,7 +2066,7 @@ const astraInterpretiveContract = [
   "Prefer concrete psychological claims over abstract astrological description.",
   "Build each section from chart factor to human pattern to its relevant tension or cost, then offer one section-specific useful response.",
   "Include the relevant gift naturally, but do not force gift, cost, tension, and practice into a repeated checklist.",
-  "End with a useful resolution that belongs to this section. It may be a practical next move, a clear recognition, or a concise way to hold the tension.",
+  "End with a useful resolution that belongs to this section. It may be a practical next step, a clear fact to notice, or a plain statement of the choice or tradeoff.",
   "Avoid textbook astrology, stock spirituality, inflated certainty, generic coaching, and repeated evidence verbs.",
   "When a signal appears in multiple sections, interpret a different consequence in each life domain instead of repeating its thesis or advice."
 ];
