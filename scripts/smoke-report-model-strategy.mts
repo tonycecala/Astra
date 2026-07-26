@@ -89,7 +89,7 @@ assert.ok((result.generationMetadata?.latencyMs ?? -1) >= 0);
 assert.ok(!result.sections.some((section) => section.body.includes("turn_off_thought")));
 assert.deepEqual(identityReasoning, { effort: "none" });
 assert.match(identityPrompt, /VOICE MODE: PLAINSPOKEN/);
-assert.match(identityPrompt, /6th to 8th grade reading level/);
+assert.match(identityPrompt, /6th to 7th grade reading level, aiming near grade 6\.5/);
 assert.match(identityPrompt, /Write each section in 2 or 3 paragraphs/);
 assert.match(identityPrompt, /Vary the sentence shape across sections/);
 assert.match(identityPrompt, /Identity: target 350-450 words; remain between 325 and 500 words/);
@@ -121,7 +121,7 @@ const welcomeResult = await buildAstrologyReportResultAsync(
 assert.equal(welcomeResult.status, "completed");
 assert.match(welcomePrompt, /Welcome Report depth rules:/);
 assert.match(welcomePrompt, /VOICE MODE: PLAINSPOKEN/);
-assert.match(welcomePrompt, /6th to 8th grade reading level/);
+assert.match(welcomePrompt, /6th to 7th grade reading level, aiming near grade 6\.5/);
 assert.match(welcomePrompt, /warm and lived-in/);
 assert.match(welcomePrompt, /Identity section in exactly 3 short paragraphs/);
 assert.match(welcomePrompt, /Vary the sentence shape across sections/);

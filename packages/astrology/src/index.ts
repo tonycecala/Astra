@@ -55,7 +55,7 @@ export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
-export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-relationship-context-v9";
+export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-relationship-context-v10";
 export const GEMINI_INTRO_IDENTITY_REPORT_MODEL = "google/gemini-3.5-flash";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
@@ -2044,7 +2044,8 @@ function parseModelDraft(text: string, request: AstrologyReportRequest, chartSig
 
 const astraPlainspokenVoiceContract = [
   "VOICE MODE: PLAINSPOKEN",
-  "Target roughly a 6th to 8th grade reading level without dumbing down the insight.",
+  "Target a 6th to 7th grade reading level, aiming near grade 6.5, without dumbing down the insight.",
+  "Prefer familiar words and shorter sentence structures. Keep necessary astrology terms, then explain them simply.",
   "Use short sentences, everyday words, direct statements, and observable behavior.",
   "Keep most sentences under 20 words. Break apart stacked clauses when one sentence is carrying several ideas.",
   "Say what happens, what it costs, and what can change. If a simpler sentence works, use it.",

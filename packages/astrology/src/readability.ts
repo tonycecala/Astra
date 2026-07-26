@@ -1,5 +1,5 @@
 export const ASTRA_PLAINSPOKEN_READING_GRADE_MIN = 6;
-export const ASTRA_PLAINSPOKEN_READING_GRADE_MAX = 8;
+export const ASTRA_PLAINSPOKEN_READING_GRADE_MAX = 7;
 export const ASTRA_READABILITY_ALGORITHM = "flesch-kincaid-en-us-v1";
 
 export type ReportReadabilityMetrics = {
