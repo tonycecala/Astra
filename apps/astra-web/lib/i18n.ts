@@ -531,6 +531,17 @@ export const ui = {
     reportTypeCore: "Core Report",
     reportTypeDeep: "Deep Report",
     reportSectionIntegration: "Integration",
+    deepSubtitleFocuses: {
+      identity: "organizing identity",
+      emotions: "emotional clarity",
+      relationships: "reciprocity and explicit terms",
+      work: "contribution and useful effort",
+      drive: "force, pacing, and proportion",
+      gifts: "resources available to develop",
+      blindSpots: "interpretations needing verification",
+      growth: "updating self-understanding",
+      integration: "cross-domain decision criteria"
+    },
     reportTypeProgressed: "Progressed Report",
     reportTypeSynastry: "Synastry Report",
     reportTypeCoreSelf: "Core Report",

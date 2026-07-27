@@ -2105,6 +2105,14 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   margin-top: 0;
 }
 
+.reportMarkdownSubtitle {
+  margin: -5px 0 18px;
+  color: var(--muted);
+  font-size: 0.92rem !important;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
 .reportMarkdown p,
 .reportMarkdown li {
   font-size: clamp(1.0625rem, 1.6vw, 1.125rem);

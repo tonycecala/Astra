@@ -33,7 +33,15 @@ function inlineMarkdown(text: string) {
 
 type ReportEvidenceByTitle = Record<string, Array<{ label: string; meaning: string }>>;
 
-export function ReportMarkdown({ markdown, evidenceByTitle = {} }: { markdown: string; evidenceByTitle?: ReportEvidenceByTitle }) {
+export function ReportMarkdown({
+  markdown,
+  evidenceByTitle = {},
+  sectionSubtitles = {}
+}: {
+  markdown: string;
+  evidenceByTitle?: ReportEvidenceByTitle;
+  sectionSubtitles?: Record<string, string>;
+}) {
   const lines = markdown.split(/\r?\n/);
   const nodes: ReactNode[] = [];
   let paragraph: string[] = [];
@@ -130,6 +138,8 @@ export function ReportMarkdown({ markdown, evidenceByTitle = {} }: { markdown: s
           {title}
         </h2>
       );
+      const subtitle = sectionSubtitles[title];
+      if (subtitle) nodes.push(<p className="reportMarkdownSubtitle" key={`subtitle-${nodes.length}`}>{subtitle}</p>);
       replacedFirstSectionTitle = true;
       continue;
     }

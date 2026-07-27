@@ -1,6 +1,6 @@
 ---
 title: Astra Semantic Synthesis V2 Implementation Handoff
-status: active
+status: completed
 type: implementation-handoff
 project: Astra Clean Start
 author: Tony + Codex
@@ -14,8 +14,9 @@ phase_1_status: complete
 phase_2_status: complete
 phase_3_status: complete
 phase_4_status: complete
-phase_5_status: complete-hold-after-bounded-refinement
-next_phase: Product-owner review of Phase 5.1 HOLD
+phase_5_status: complete-practical-go-on-claim-planned-baseline
+phase_6_status: complete-presentation-recommendation-only
+next_phase: V2 complete; review subtitle presentation in production
 supersedes: ../completed/ASTRA_WEIGHTED_CHART_SIGNAL_GRAPH_TODO.md
 depends_on:
   - ../../decisions/ASTRA_CHART_LOCATION_INTEGRITY_AND_SIGNAL_GRAPH.md
@@ -915,3 +916,74 @@ The deterministic assignment planner met the seven-complex, single-reuse, distin
 - human review did not find the three new Deep controls materially better than V1.
 
 Tony remained a fully evaluated historical control and was not regenerated. Core, canonical Identity, headings, UI, routes, database contracts, and public contracts remained unchanged. Per the approved stop condition, no additional refinement and no Phase 6 presentation work began.
+
+## Phase 5.1 Practical GO and Rejected Phase 5.2 Research — 2026-07-27
+
+The subsequent claim-planned Cheyenne Deep canary completed in one outer
+attempt with zero operator-driven sentence retries. It reached the practical
+semantic average and had no factual or trust-boundary blocker. Tony was not
+regenerated. The full decision, evidence, cost, and Caelus comparison are in:
+
+- `docs/evaluations/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_EVALUATION.md`;
+- `.astra-exports/semantic-synthesis-v2-phase-5/2026-07-27-cheyenne-claim-planned-bakeoff-v14`.
+
+Decision: **practical GO for the Phase 5.1 claim-planned baseline**.
+
+The Phase 5.2 operation-reconciliation prompt was a bounded research
+experiment. Two Cheyenne attempts did not complete. The candidate prompt was
+removed and was not adopted. It must not be restored as production behavior or
+used to resume sentence-level remediation.
+
+## Phase 6 Completion — 2026-07-27
+
+Phase 6 tested presentation deterministically against the accepted Cheyenne
+Phase 5.1 Deep report. It made zero model calls, generated zero reports, and did
+not use Tony as a new control.
+
+Delivered:
+
+- deterministic presentation builder:
+  `scripts/lib/semantic-synthesis-v2-phase-6.ts`;
+- private comparison runner:
+  `scripts/run-semantic-synthesis-v2-phase-6.mts`;
+- Phase 6 deterministic gate:
+  `scripts/smoke-semantic-synthesis-v2-phase-6.mts`;
+- private comparison packet:
+  `.astra-exports/semantic-synthesis-v2-phase-6/2026-07-27-cheyenne-presentation`;
+- completed evaluation:
+  `docs/inbox-astra/completed/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_6_PRESENTATION_EVALUATION.md`.
+
+The comparison held all prose, selected evidence, chapter keys, and contracts
+constant. Flexible ordering moved five chapters across twelve total positions.
+The safe subtitle variant covered eight of nine chapters with zero
+graph/provenance leakage; Growth was intentionally left without a subtitle
+rather than exposing configuration plumbing or inventing an atomic fact.
+
+All report-rule and public-API fingerprints, Phase 1–6 deterministic suites,
+report quality gates, lint, typecheck, foundation and boundary checks, and
+production build passed. The existing Library report journey, adjacent legacy
+route redirect, and private preview were verified in the rendered browser with
+zero console/page errors.
+
+Decision: **keep the current stable headings and fixed Deep order**. Do not
+adopt the wholesale functional-heading set or confidence-ranked flexible
+ordering. A short optional atomic evidence subtitle is the only recommended
+customer-facing experiment, and it requires separate product-owner approval.
+No UI, route, schema, database, public contract, calculation authority,
+evidence boundary, report contract, or `@astra/astrology` facade changed.
+
+### Approved Deep subtitle implementation
+
+The optional Deep subtitle was subsequently approved and implemented in the
+existing report reader. It is strictly presentation-only: one direct selected
+atomic placement or aspect fact plus the existing bounded chapter focus. Unsafe
+or non-atomic evidence is omitted. The fixed chapter order, current headings,
+chapter keys, report prose, selected evidence, calculation authority, routes,
+schema, persistence, contracts, and public `@astra/astrology` facade remain
+unchanged. The existing export Markdown includes the same subtitle treatment.
+
+All Phase 0–6 deterministic gates, catalog/API fingerprints, report-quality
+checks, lint, typecheck, foundation/boundary checks, and production build
+passed. The real Library-to-Deep-report journey passed desktop, tablet, and
+mobile browser QA with zero console/page errors. No model call, report
+generation, or Tony regeneration occurred.

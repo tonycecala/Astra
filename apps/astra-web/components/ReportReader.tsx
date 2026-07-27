@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { buildAstrologyChartSnapshot, buildAstrologyReportSectionEvidence } from "@astra/astrology";
 import type { AstrologyReportRequest, AstrologyReportResult } from "@astra/contracts";
 import { ui } from "../lib/i18n";
+import { deepChapterSubtitles } from "../lib/report-deep-presentation";
 import { formatReportParagraphs } from "../lib/report-paragraphs";
 import { reportDisplayTitle, reportFamilyLabel } from "../lib/report-display";
 import { ReportChartPlate } from "./ReportChartPlate";
@@ -29,7 +30,8 @@ export function ReportReader({
   const subject = reportSubjectContext(request);
   const title = reportDisplayTitle(request, report.publicSignal?.headline);
   const evidenceByTitle = buildReportEvidenceByTitle(request, report);
-  const reportMarkdown = reportMarkdownFrom(report, request, title, subject.name, evidenceByTitle);
+  const sectionSubtitles = deepChapterSubtitles(request, evidenceByTitle, ui.library.deepSubtitleFocuses);
+  const reportMarkdown = reportMarkdownFrom(report, request, title, subject.name, evidenceByTitle, sectionSubtitles);
   const sectionMarkdown = reportSectionsMarkdownFrom(report, request, evidenceByTitle);
   const chartSnapshot = buildReportChartSnapshot(request);
 
@@ -92,7 +94,7 @@ export function ReportReader({
         <ReportChartPlate request={request} chart={chartSnapshot} />
         {debug ? <ReportDebugDetails report={report} request={request} /> : null}
         {report.sections.length ? (
-          <ReportMarkdown markdown={sectionMarkdown} evidenceByTitle={evidenceByTitle} />
+          <ReportMarkdown markdown={sectionMarkdown} evidenceByTitle={evidenceByTitle} sectionSubtitles={sectionSubtitles} />
         ) : (
           <div className="reportMarkdown"><p>{ui.library.selectedReportNoSections}</p></div>
         )}
@@ -250,7 +252,8 @@ function reportMarkdownFrom(
   request: AstrologyReportRequest | null,
   title: string,
   subjectName: string,
-  evidenceByTitle: ReportEvidenceByTitle
+  evidenceByTitle: ReportEvidenceByTitle,
+  sectionSubtitles: Record<string, string>
 ) {
   const metadata = [
     `Subject: ${subjectName}`,
@@ -261,7 +264,9 @@ function reportMarkdownFrom(
   const sections = report.sections
     .map((section) => {
       const evidence = evidenceMarkdownFor(section.title, evidenceByTitle);
-      return [`## ${customerFacingSectionTitle(section.title, request)}`, customerFacingReportBody(section.body), evidence].filter(Boolean).join("\n\n");
+      const displayTitle = customerFacingSectionTitle(section.title, request);
+      const subtitle = sectionSubtitles[displayTitle];
+      return [`## ${displayTitle}`, subtitle ? `*${subtitle}*` : "", customerFacingReportBody(section.body), evidence].filter(Boolean).join("\n\n");
     })
     .join("\n\n");
 
