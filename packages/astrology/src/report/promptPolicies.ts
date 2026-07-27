@@ -123,7 +123,7 @@ export function enrichedChapterOwnershipInstruction(title: string, cards: readon
     Identity: "Identity ownership: this is the only chapter that may explain private reflection or private processing. Keep the conclusion descriptive, not a practice sequence.",
     Work: "Work ownership: stay with allocation and contribution—what receives time, effort, skill, or visible credit. Do not use reflection, checking, private processing, or self-definition as the chapter's mechanism or conclusion.",
     Integration: "Integration ownership: stay with values and decision criteria—what to weigh, protect, choose, or decline. Do not prescribe reflection, verification, or action steps, and do not restate Work's allocation or contribution rule.",
-    Drive: "Drive ownership: stay with proportion and force—how much effort or momentum a situation calls for. Do not turn this into a test of whether a first impression is true.",
+    Drive: "Drive ownership: stay with proportion and force—how momentum finds a workable pace in the moment. Do not turn Drive into Work's task-importance, task-size, allocation, or contribution conclusion, and do not turn it into a test of whether a first impression is true.",
     Gifts: "Gifts ownership: describe a usable capacity and the contribution it can make. Do not turn ease into a warning about shallow talent, unfinished work, refinement, or verification.",
     "Blind Spots": "Blind Spots ownership: this is the only chapter that may distinguish observation from interpretation or ask the reader to check a first read before acting.",
     Growth: "Growth ownership: stay with self-updating—how a stable self-concept can take in new information. Do not repeat observation-versus-interpretation, checking a first read, or a refinement lesson."
@@ -160,6 +160,13 @@ export function enrichedProseBoundaryInstruction(
 }
 
 export function reportEvidenceOwnershipPlan(cards: readonly PromptPolicySignalCard[]) {
+  if (cards.some((card) => card.hypothesis)) {
+    return [
+      "Report-level evidence ownership:",
+      "- Use only the atomic selected evidence in the current chapter writer packet.",
+      "- Do not recover, request, or infer omitted signals or graph relationships."
+    ].join("\n");
+  }
   return [
     "Report-level evidence ownership:",
     "- Each chapter owns the full interpretation of its selected signals. A signal reused elsewhere may support a different consequence, but must not be reintroduced with the same aspect framing, mechanism, or conclusion.",

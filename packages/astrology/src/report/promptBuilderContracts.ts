@@ -1,4 +1,9 @@
 import type { AstrologyReportRequest } from "@astra/contracts";
+import {
+  atomicWriterFact,
+  buildWriterChapterClaimPlan,
+  selectedWriterSignals
+} from "./writerClaimPlanning";
 
 export type PromptBuilderSignalCard = {
   hypothesis?: string;
@@ -110,11 +115,131 @@ export function buildDeepThesisPrompt(
 }
 
 export type SectionPromptCard = DeepThesisSignalCard & {
-  chartSignals: Array<{ id: string; label: string; facts: string[]; priority: number }>;
+  chartSignals: Array<{
+    id: string;
+    label: string;
+    facts: string[];
+    priority: number;
+    allowedContribution?: string;
+    prohibitedInference?: string;
+  }>;
+  writerSignals?: SectionPromptCard["chartSignals"];
   evidenceBullets: Array<{ label: string; meaning: string }>;
   counterweight?: string;
   claimBoundary?: string;
+  chapterQuestion?: string;
+  intendedConclusion?: string;
 };
+
+function chapterApplication(card: SectionPromptCard) {
+  return card.hypothesis?.match(/Chapter application:\s*([^.]*)/i)?.[1]?.trim() || card.title.toLowerCase();
+}
+
+function intendedChapterConclusion(card: SectionPromptCard) {
+  if (card.intendedConclusion) return card.intendedConclusion;
+  const synthesis = card.hypothesis?.split(/\s+Chapter application:/i)[0]?.trim();
+  return synthesis || card.tensions[0] || `Develop only the selected ${card.title.toLowerCase()} meaning.`;
+}
+
+const conclusionNoiseWords = new Set([
+  "a", "an", "and", "as", "at", "be", "by", "describe", "do", "for", "from",
+  "how", "in", "into", "is", "it", "may", "not", "of", "on", "only", "or",
+  "selected", "the", "this", "to", "without"
+]);
+
+function conclusionTokens(value: string) {
+  return new Set(
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((token) => token.length > 2 && !conclusionNoiseWords.has(token))
+  );
+}
+
+function conclusionOverlap(left: string, right: string) {
+  const leftTokens = conclusionTokens(left);
+  const rightTokens = conclusionTokens(right);
+  if (!leftTokens.size || !rightTokens.size) return 0;
+  const shared = [...leftTokens].filter((token) => rightTokens.has(token)).length;
+  return shared / Math.min(leftTokens.size, rightTokens.size);
+}
+
+export function assertDistinctChapterConclusions(
+  cards: readonly Pick<SectionPromptCard, "title" | "intendedConclusion">[]
+) {
+  const reserved = cards.filter((card) => card.intendedConclusion);
+  for (let leftIndex = 0; leftIndex < reserved.length; leftIndex += 1) {
+    for (let rightIndex = leftIndex + 1; rightIndex < reserved.length; rightIndex += 1) {
+      const left = reserved[leftIndex]!;
+      const right = reserved[rightIndex]!;
+      const leftConclusion = left.intendedConclusion!;
+      const rightConclusion = right.intendedConclusion!;
+      if (
+        leftConclusion.trim().toLowerCase() === rightConclusion.trim().toLowerCase() ||
+        conclusionOverlap(leftConclusion, rightConclusion) >= 0.72
+      ) {
+        throw new Error(
+          `Semantic Synthesis V2 chapter conclusions overlap: ${left.title} and ${right.title}.`
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Give the prose model a compact authorization packet while retaining the
+ * complete evidence graph outside the prompt for deterministic inspection.
+ */
+export function buildSectionWriterPacket(card: SectionPromptCard) {
+  if (!card.hypothesis) {
+    return [
+      `## ${card.title}`,
+      "",
+      "Chart signals:",
+      ...card.chartSignals.map((signal) => `- ${signal.label}: ${signal.facts.join("; ")}`),
+      "",
+      `Capacities: ${card.capacities.join("; ") || "none listed"}`,
+      `Risks: ${card.risks.join("; ") || "none listed"}`,
+      `Tensions: ${card.tensions.join("; ") || "none listed"}`,
+      `Developmental tasks: ${card.developmentalTasks.join("; ") || "none listed"}`,
+      "",
+      "Claim policy: selected section signals only."
+    ].join("\n");
+  }
+  const application = chapterApplication(card);
+  const signals = selectedWriterSignals(card);
+  const claimBoundary = card.claimBoundary || "Do not infer biography, categorical behavior, events, current timing, skill, or another person's inner state.";
+  const counterweight = card.counterweight ||
+    "The selected facts do not prove the intended conclusion; uncertainty remains.";
+  const claimPlan = card.writerSignals ? buildWriterChapterClaimPlan(card) : null;
+  return [
+    `## ${card.title}`,
+    "",
+    `Chapter question: ${card.chapterQuestion ?? `What can the selected facts responsibly show about ${application}?`}`,
+    `Intended conclusion: ${intendedChapterConclusion(card)}`,
+    "",
+    "Atomic selected evidence (use only these 2 or 3 facts):",
+    ...signals.flatMap((signal, index) => [
+      `- ${claimPlan ? `${claimPlan.atoms[index]!.id} ` : ""}Fact: ${atomicWriterFact(signal)}`,
+      `  Allowed contribution: ${claimPlan?.atoms[index]?.boundedMeaning ?? signal.allowedContribution ?? "This selected fact may contribute only to the bounded chapter conclusion; it does not establish a human fact."}`,
+      `  Prohibited inference: ${claimPlan?.atoms[index]?.prohibitedInference ?? signal.prohibitedInference ?? claimBoundary}`
+    ]),
+    "",
+    `Counterweight: ${counterweight}`,
+    `Prohibited conclusion: ${claimBoundary} Do not introduce another chart fact, infer a relationship among the selected facts, narrate evidence-graph traversal or a rulership chain, or turn the counterweight into proof of an existing skill, habit, accuracy, self-correction, or outcome.`,
+    ...(claimPlan
+      ? [
+          "",
+          "Approved paragraph claim plan:",
+          ...claimPlan.claims.map((claim) =>
+            `- P${claim.paragraph} (${claim.atomIds.join(" + ")}, ${claim.relation}): ${claim.instruction} End this paragraph with exactly ${claim.marker}`
+          ),
+          "Write exactly these three prose paragraphs in this order. The support markers are internal audit metadata; do not explain them or use any other brackets."
+        ]
+      : [])
+  ].filter(Boolean).join("\n");
+}
 
 export type SectionPromptChart = {
   calculationMode: string;
@@ -161,10 +286,12 @@ export function buildDeepSectionPrompt(
     `Target length: ${depth?.target ?? "275-400"} words. Hard minimum: ${depth?.minimum ?? 275}. Hard maximum: ${depth?.maximum ?? 435}.`,
     `Subject: ${request.subjectName}`,
     chartSignature.calculationMode === "signs-aspects-only" ? `Zodiac: ${chartSignature.zodiacMode}. Chart detail: signs and aspects only; do not mention houses, Rising, Ascendant, Midheaven, or angles.` : `Zodiac: ${chartSignature.zodiacMode}. Houses: ${chartSignature.houseSystem}.`,
-    card.hypothesis ? `Chapter-specific synthesis: ${card.hypothesis}` : `Private governing thesis: ${thesis}`,
-    card.hypothesis ? "Develop this chapter's synthesis without importing another chapter's conclusion. Use the report thesis only as background, not as a repeated frame." : "Use the thesis as a quiet through-line, not as a sentence to repeat.",
-    card.hypothesis && card.counterweight ? `Counterweight to preserve: ${card.counterweight}` : "",
-    card.hypothesis && card.claimBoundary ? `Claim boundary: ${card.claimBoundary}` : "",
+    card.hypothesis
+      ? `Chapter-specific conclusion: ${card.intendedConclusion ?? intendedChapterConclusion(card)}`
+      : `Private governing thesis: ${thesis}`,
+    card.hypothesis
+      ? "Use only the current chapter authorization packet. Do not recover the broader technical hypothesis or import another chapter's conclusion."
+      : "Use the thesis as a quiet through-line, not as a sentence to repeat.",
     card.hypothesis ? "Give this chapter its own consequence or condition; do not force it into a move, fix, risk, or task conclusion." : `This chapter must answer, rather than quote or announce, this distinct governing question: ${card.tensions.join("; ")}.`,
     dependencies.deepChapterFocusInstruction(request, card.title), ...dependencies.plainspokenContract, dependencies.plainspokenParagraphRule(request, "chapter"), ...dependencies.interpretiveContractFor([card]), ...dependencies.psychologicalSafetyContract,
     `Chapter voice plan: ${dependencies.voicePlanForSection(card.title)}`,
@@ -188,7 +315,7 @@ export function buildEnrichedCoreSectionPrompt(
   return [
     "You are writing one chapter of an Astra Core Report from a single structured section card.", "Write only this chapter's body as plain Markdown. Astra supplies the heading. Do not write any heading, other chapter, report title, evidence block, metadata, JSON, or planning commentary.", `Chapter: ${card.title}.`, `Target length: ${depth.target} words. Hard minimum: ${depth.minimum}. Hard maximum: ${depth.maximum}.`, `Subject: ${request.subjectName}`,
     chartSignature.calculationMode === "signs-aspects-only" ? `Zodiac: ${chartSignature.zodiacMode}. Chart detail: signs and aspects only; do not mention houses, Rising, Ascendant, Midheaven, or angles.` : `Zodiac: ${chartSignature.zodiacMode}. Houses: ${chartSignature.houseSystem}.`,
-    `Chapter-specific synthesis: ${card.hypothesis ?? card.tensions.join("; ")}`, card.counterweight ? `Counterweight to preserve: ${card.counterweight}` : "", card.claimBoundary ? `Claim boundary: ${card.claimBoundary}` : "", "Develop only this chapter's consequence. Do not introduce or summarize another chapter's mechanism, rule, or conclusion.", dependencies.canonicalIdentityBridgeInstruction(request), dependencies.deepChapterFocusInstruction(request, card.title), ...dependencies.plainspokenContract, dependencies.plainspokenParagraphRule(request, "chapter"), ...dependencies.interpretiveContractFor([card]), ...dependencies.psychologicalSafetyContract,
+    `Chapter-specific conclusion: ${card.intendedConclusion ?? intendedChapterConclusion(card)}`, "Use only the current chapter authorization packet. Do not recover the broader technical hypothesis or import another chapter's mechanism, rule, or conclusion.", dependencies.canonicalIdentityBridgeInstruction(request), dependencies.deepChapterFocusInstruction(request, card.title), ...dependencies.plainspokenContract, dependencies.plainspokenParagraphRule(request, "chapter"), ...dependencies.interpretiveContractFor([card]), ...dependencies.psychologicalSafetyContract,
     `Chapter voice plan: ${dependencies.voicePlanForSection(card.title)}`, dependencies.enrichedSynthesisVoicePlan([card]), dependencies.enrichedChapterOwnershipInstruction(card.title, [card]), dependencies.enrichedProseBoundaryInstruction(request, card.title, [card]), dependencies.reportEvidenceOwnershipPlan([card]), ...dependencies.evidenceContract, "Use at least two selected signals when available, including a section-specific secondary signal.", "Do not invent transits, progressions, current activation, seasonal timing, biography, or another person's inner state.", card.title === "Integration" ? "Integration editorial job: state values and decision criteria across domains. Do not re-teach Identity or repeat Work's allocation rule." : "", "Section signal card:", dependencies.sectionSignalCardBlock(card), previousErrors.length ? "The previous version of this chapter failed. Rewrite only this chapter and correct every issue:" : "", ...previousErrors.map((error) => `- ${error}`)
   ].filter(Boolean).join("\n");
 }

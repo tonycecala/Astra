@@ -51,7 +51,13 @@ import {
   normalizedRelationshipContextFromRequest,
   recordValue
 } from "./report/relationshipContext";
+import {
+  chapterEvidencePlanningPolicy,
+  planWriterFact,
+  type WriterEvidenceRole
+} from "./report/evidencePlanning";
 import { reportRuleCatalog } from "./report/rules/catalog";
+import { reportDetectors } from "./report/rules/detectors";
 import {
   editorialRoleInstruction,
   enrichedChapterOwnershipInstruction,
@@ -68,10 +74,13 @@ import {
   buildDeepSectionPrompt as buildDeepSectionPromptFromContracts,
   buildDeepThesisPrompt as buildDeepThesisPromptFromContracts,
   buildEnrichedCoreSectionPrompt as buildEnrichedCoreSectionPromptFromContracts,
+  buildSectionWriterPacket,
+  assertDistinctChapterConclusions,
   familyDepthRules as promptBuilderFamilyDepthRules,
   interpretiveContractFor as promptBuilderInterpretiveContractFor,
   plainspokenParagraphRule as promptBuilderPlainspokenParagraphRule
 } from "./report/promptBuilderContracts";
+import { auditWriterClaimMarkers } from "./report/writerClaimPlanning";
 import {
   monolithicRetryIssue as monolithicRetryIssueFromReport,
   providerRetryIssue as providerRetryIssueFromReport,
@@ -135,7 +144,7 @@ export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
 export const ASTRA_SEMANTIC_SYNTHESIS_VERSION = "2.0.0-phase-4";
-export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-semantic-synthesis-v1";
+export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-semantic-synthesis-v2-claim-planned";
 export const GEMINI_INTRO_IDENTITY_REPORT_MODEL = "google/gemini-3.5-flash";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
@@ -337,7 +346,11 @@ type ReportSectionSignalCard = {
     label: string;
     facts: string[];
     priority: number;
+    allowedContribution?: string;
+    prohibitedInference?: string;
   }>;
+  /** The two or three atomic facts authorized for model prose. */
+  writerSignals?: ReportSectionSignalCard["chartSignals"];
   capacities: string[];
   risks: string[];
   tensions: string[];
@@ -350,6 +363,8 @@ type ReportSectionSignalCard = {
   hypothesis?: string;
   counterweight?: string;
   claimBoundary?: string;
+  chapterQuestion?: string;
+  intendedConclusion?: string;
   /** Internal Phase 4 selection trace. It is never serialized into a public report contract. */
   meaningComplexIds?: string[];
 };
@@ -1707,7 +1722,12 @@ function complexAnchorSignal(
   const seedNode = complex.seedNodeIds.map((id) => nodeById.get(id)).find(Boolean);
   if (
     !seedNode ||
-    (seedNode.type === "RulershipPath" && seedNode.attributes.pathType === "dispositor-chain")
+    (
+      seedNode.type === "RulershipPath" &&
+      /\b(?:dispositor-chain|final-dispositor)\b/.test(
+        String(seedNode.attributes.pathType ?? "").replaceAll("_", "-")
+      )
+    )
   ) return null;
   return {
     id: `v2_anchor_${complex.id}`,
@@ -1725,7 +1745,12 @@ function evidenceSignal(
   const terminal = network.nodes.find((node) => node.id === path.terminalNodeId);
   if (
     !terminal ||
-    (terminal.type === "RulershipPath" && terminal.attributes.pathType === "dispositor-chain")
+    (
+      terminal.type === "RulershipPath" &&
+      /\b(?:dispositor-chain|final-dispositor)\b/.test(
+        String(terminal.attributes.pathType ?? "").replaceAll("_", "-")
+      )
+    )
   ) return null;
   return {
     id: `v2_evidence_${complex.id}_${path.id}`,
@@ -1743,6 +1768,48 @@ function evidencePathChapterFit(
   const terminal = network.nodes.find((node) => node.id === path.terminalNodeId);
   if (!terminal) return 0;
   return terminal.domains.filter((domain) => selection.domainFocus.includes(domain)).length;
+}
+
+function authorizeWriterSignal(
+  signal: ReportSectionSignalCard["chartSignals"][number],
+  role: WriterEvidenceRole,
+  selection: MeaningComplexChapterSelection
+): ReportSectionSignalCard["chartSignals"][number] {
+  const authorization = planWriterFact(selection.title, signal, role);
+  return {
+    ...signal,
+    ...authorization
+  };
+}
+
+function selectAuthorizedWriterSignals(
+  chartSignals: ReportSectionSignalCard["chartSignals"],
+  counterweightSignals: ReportSectionSignalCard["chartSignals"],
+  selection: MeaningComplexChapterSelection
+) {
+  const counterweightLabels = new Set(counterweightSignals.map((signal) => signal.label));
+  const selected = chartSignals.slice(0, 2);
+  const counterweight = counterweightSignals.find((signal) =>
+    !selected.some((candidate) => candidate.label === signal.label)
+  );
+  if (counterweight) selected.push(counterweight);
+  if (selected.length < 3) {
+    const next = chartSignals.find((signal) =>
+      !selected.some((candidate) => candidate.label === signal.label)
+    );
+    if (next) selected.push(next);
+  }
+  return selected.slice(0, 3).map((signal, index) =>
+    authorizeWriterSignal(
+      signal,
+      counterweightLabels.has(signal.label)
+        ? "counterweight"
+        : index === 0
+          ? "primary"
+          : "support",
+      selection
+    )
+  );
 }
 
 function phase4Card(
@@ -1823,6 +1890,12 @@ function phase4Card(
   const counterweight = counterweightSignals.length
     ? `Counterevidence retained: ${counterweightSignals.map((signal) => signal.label).join("; ")}.`
     : undefined;
+  const writerSignals = selectAuthorizedWriterSignals(
+    chartSignals,
+    counterweightSignals,
+    selection
+  );
+  const planningPolicy = chapterEvidencePlanningPolicy(selection.title);
   return {
     ...fallback,
     chartSignals,
@@ -1839,6 +1912,9 @@ function phase4Card(
     ].join(" "),
     ...(counterweight ? { counterweight } : {}),
     claimBoundary: primary.claimBoundary,
+    chapterQuestion: `What can these selected facts responsibly show about ${selection.interpretiveJob}?`,
+    intendedConclusion: planningPolicy.intendedConclusion,
+    writerSignals,
     meaningComplexIds: [
       primary.id,
       ...supporting.map((complex) => complex.id)
@@ -1873,7 +1949,7 @@ function applyMeaningComplexViewToCards(
     }
   }
   const ownedSignalLabels = new Set<string>();
-  return cards.map((card) => {
+  const plannedCards = cards.map((card) => {
     const selection = selectionByTitle.get(card.title as MeaningComplexChapterSelection["title"]);
     if (!selection) return card;
     if (selection.title === "Identity") {
@@ -1905,6 +1981,8 @@ function applyMeaningComplexViewToCards(
     }
     return planned;
   });
+  assertDistinctChapterConclusions(plannedCards);
+  return plannedCards;
 }
 
 /**
@@ -2219,33 +2297,7 @@ export function buildAstrologyReportSectionEvidence(input: AstrologyReportReques
 }
 
 function sectionSignalCardBlock(card: ReportSectionSignalCard) {
-  const shared = [
-    `## ${card.title}`,
-    "",
-    "Chart signals:",
-    ...card.chartSignals.map((signal) => `- ${signal.label}: ${signal.facts.join("; ")}`),
-  ];
-  if (card.hypothesis) {
-    return [
-      ...shared,
-      "",
-      `Primary hypothesis: ${card.hypothesis}`,
-      ...(card.counterweight ? [`Counterweight: ${card.counterweight}`] : []),
-      ...(card.claimBoundary ? [`Claim boundary: ${card.claimBoundary}`] : []),
-      "",
-      "Claim policy: selected section signals only. Treat the hypothesis as a bounded interpretation, not biography or fact."
-    ].join("\n");
-  }
-  return [
-    ...shared,
-    "",
-    `Capacities: ${card.capacities.join("; ") || "none listed"}`,
-    `Risks: ${card.risks.join("; ") || "none listed"}`,
-    `Tensions: ${card.tensions.join("; ") || "none listed"}`,
-    `Developmental tasks: ${card.developmentalTasks.join("; ") || "none listed"}`,
-    "",
-    "Claim policy: selected section signals only."
-  ].join("\n");
+  return buildSectionWriterPacket(card);
 }
 
 function deterministicReportLabel(reportType: AstrologyReportRequest["reportType"]) {
@@ -2717,19 +2769,23 @@ function validateSectionedReportSection(input: {
   card: ReportSectionSignalCard;
   depth: { minimum: number; target: string; maximum: number };
 }) {
-  return validateSectionedReportSectionFromReport({
-    text: input.text,
-    request: input.request,
-    title: input.card.title,
-    sunSign: input.chartSignature.points.find((point) => point.body === "Sun")?.sign,
-    depth: input.depth,
-    forbiddenFragments: forbiddenReportFragments,
-    thirdPersonSubjectLabelPattern,
-    isNatalBasis: reportBasisFor(input.request).type === "natal",
-    parseSection: () => deepSectionFromText(input.text, input.request, input.card.title),
-    validateUnsupportedClaims: (section) => validateUnsupportedSectionClaims({ sections: [section] } as ReportDraft, [input.card]),
-    validateRelationshipAndSafetyClaims: (sections) => validateRelationshipAndSafetyClaims(input.request, sections)
-  });
+  const claimAudit = auditWriterClaimMarkers(input.text, input.card);
+  return [
+    ...claimAudit.errors.map((message) => retryIssue("evidence_mismatch", message)),
+    ...validateSectionedReportSectionFromReport({
+      text: claimAudit.prose,
+      request: input.request,
+      title: input.card.title,
+      sunSign: input.chartSignature.points.find((point) => point.body === "Sun")?.sign,
+      depth: input.depth,
+      forbiddenFragments: forbiddenReportFragments,
+      thirdPersonSubjectLabelPattern,
+      isNatalBasis: reportBasisFor(input.request).type === "natal",
+      parseSection: () => deepSectionFromText(claimAudit.prose, input.request, input.card.title),
+      validateUnsupportedClaims: (section) => validateUnsupportedSectionClaims({ sections: [section] } as ReportDraft, [input.card]),
+      validateRelationshipAndSafetyClaims: (sections) => validateRelationshipAndSafetyClaims(input.request, sections)
+    })
+  ];
 }
 
 function validateDeepSection(input: {
@@ -2812,7 +2868,11 @@ async function generateValidatedDeepSection(input: {
     maxAttempts: 3,
     write: (previousErrors) => input.writer(buildDeepSectionPrompt({ ...input, previousErrors }), 1400),
     validate: (response) => validateDeepSection({ ...input, text: response.text }),
-    value: (response) => deepSectionFromText(response.text, input.request, input.card.title),
+    value: (response) => deepSectionFromText(
+      auditWriterClaimMarkers(response.text, input.card).prose,
+      input.request,
+      input.card.title
+    ),
     mergeUsage: mergeModelUsage,
     providerIssues: (error) => [providerRetryIssue(error)],
     retryFailure: (attempt, issues, latencyMs, response) => response
@@ -2847,7 +2907,11 @@ async function generateValidatedEnrichedCoreSection(input: {
     maxAttempts: 3,
     write: (previousErrors) => input.writer(buildEnrichedCoreSectionPrompt({ ...input, previousErrors }), 750),
     validate: (response) => validateEnrichedCoreSection({ ...input, text: response.text }),
-    value: (response) => deepSectionFromText(response.text, input.request, input.card.title),
+    value: (response) => deepSectionFromText(
+      auditWriterClaimMarkers(response.text, input.card).prose,
+      input.request,
+      input.card.title
+    ),
     mergeUsage: mergeModelUsage,
     providerIssues: (error) => [providerRetryIssue(error)],
     retryFailure: (attempt, issues, latencyMs, response) => response
@@ -3040,14 +3104,14 @@ const contextGenderedPartnerPronounPattern = /\b(?:he|him|his|she|her|hers)\b/i;
 // actually recommends or initiates direct relationship action.
 const directRelationshipActionPattern = /\b(?:confront|(?:have|start|initiate) (?:a )?direct conversation|state (?:a|the|your) boundary|make a direct request|try to repair|repair (?:the relationship|this (?:relationship|connection)))\b/i;
 const safetyConditionPattern = /\b(?:when|if|where)\s+(?:(?:direct (?:conversation|engagement)|it)\s+(?:is|['’]s)\s+)?safe(?:\s+and\s+appropriate)?\b|\bsafe and appropriate\b/i;
-const inventedBiographyPattern = /\b(?:you(?:'|’)ve likely lived through|you have likely lived through|probably (?:lost|cost)|cost you (?:a relationship|a job|trust|an opportunity)|has cost you (?:relationships?|jobs?|trust|opportunities)|you learned early|learned to compensate|compensate rather than heal|old,? tender spot|oldest wound|never quite healed|damage is already done|not enough as you were|growing up|in (?:your )?childhood|throughout your career|in past relationships|your early home life|early[- ]home memories?|what you remember about (?:your )?home|the emotional truth of (?:a|your|the) household|a family pattern)\b/i;
+const inventedBiographyPattern = /\b(?:you(?:'|’)ve likely lived through|you have likely lived through|probably (?:lost|cost)|cost you (?:a relationship|a job|trust|an opportunity)|has cost you (?:relationships?|jobs?|trust|opportunities)|you learned early|learned to compensate|compensate rather than heal|old,? tender spot|old(?:est)? emotional wounds?|old wound|oldest wound|never quite healed|damage is already done|not enough as you were|growing up|in (?:your )?childhood|throughout your career|in past relationships|your early home life|early[- ]home memories?|what you remember about (?:your )?home|the emotional truth of (?:a|your|the) household|a family pattern)\b/i;
 const unverifiedPsychologicalHistoryPattern = /\b(?:old wound|early wound|wound from (?:childhood|the past|earlier life)|history taught you|learned (?:early|in childhood)|learned self-protection|learned to (?:hide|protect|defend|compensate)|defensive (?:reaction|pattern|strategy)|a defense you built|protection you developed|early (?:family|household|relationship) dynamics?)\b/i;
 const attachmentLabelPattern = /\battachment style\b/i;
-const unverifiedOtherPersonInsightPattern = /\b(?:another person(?:'s)?|other people(?:'s)?|someone(?:'s)?|a person(?:'s)?)\s+(?:wound|weak spot|pressure point|capacity|motive|mood|grief|need)\b|\b(?:see|sense|know|pick up on)\s+(?:what will change someone|a person(?:'s)? weak spot|the wound in (?:a person|someone)|someone(?:'s)? (?:mood|grief|need)|what someone else is going through|things other people have not said)\b|\bbefore (?:they|someone|other people) (?:say|know)\b/i;
-const unverifiedOtherPersonStatePattern = /\b(?:what|how)\s+(?:another person|someone else|they)\s+(?:want|wants|feel|feels|think|thinks|need|needs|intend|intends)\b|\b(?:another person|someone else|the other person)(?:'s|’s)\s+(?:imagination|inner life|unspoken feeling|unstated need|reaction|response)\b|\b(?:people|others|those around you)\s+(?:lean in|trust you|rely on you|look to you|experience you as|see you as)\b|\b(?:someone|another person|the other person)\s+(?:is|seems|appears|may be)\s+(?:holding back|withdrawing|upset|afraid|uncertain)\b|\b(?:make|leave)\s+(?:someone|people|others)\s+feel\b|\bwhat\s+(?:someone|another person|people|others)\s+(?:receive|take away|feel|think|need)\b/i;
+const unverifiedOtherPersonInsightPattern = /\b(?:another person(?:'s)?|other people(?:'s)?|someone(?:'s)?|a person(?:'s)?)\s+(?:wound|weak spot|pressure point|capacity|motive|mood|grief|need)\b|\b(?:see|sense|know|pick up on)\s+(?:what will change someone|a person(?:'s)? weak spot|the wound in (?:a person|someone)|someone(?:'s)? (?:mood|grief|need)|what someone else is going through|things other people have not said)\b|\b(?:tell|know|understand|see)\s+what\s+(?:another person|someone|other people)\s+(?:means?|wants?|needs?|feels?|thinks?)\b|\bbefore (?:they|someone|other people) (?:say|know)\b/i;
+const unverifiedOtherPersonStatePattern = /\b(?:what|how)\s+(?:another person|someone else|they)\s+(?:want|wants|feel|feels|think|thinks|need|needs|intend|intends)\b|\b(?:another person|someone else|the other person)(?:'s|’s)\s+(?:imagination|inner life|unspoken feeling|unstated need|reaction|response)\b|\b(?:people|others|those around you)\s+(?:lean in|trust you|rely on you|look to you|experience you as|see you as)\b|\b(?:you are|you may be|you tend to be)\s+(?:often )?seen by (?:others|people) as someone who (?:knows?|understands?) what (?:they|others|people) need\b|\b(?:someone|another person|the other person)\s+(?:is|seems|appears|may be)\s+(?:holding back|withdrawing|upset|afraid|uncertain)\b|\b(?:make|leave)\s+(?:someone|people|others)\s+feel\b|\bwhat\s+(?:someone|another person|people|others)\s+(?:receive|take away|feel|think|need)\b/i;
 const psychologicalLabelPattern = /\b(?:projection|avoidance|reactivity|self-sabotage|power struggle|emotional overcontrol|dissociation|trauma response)\b/i;
-const categoricalBehaviorPattern = /\b(?:you act before you think|you react before you think|your first read .* usually lands right|you (?:usually|always|never) (?:know|sense|see|read|react|act|withdraw|overcommit)|most of the time it works|you trust your first read|you are (?:the kind|the type|someone) who|your instinct is to)\b/i;
-const unsupportedScenarioPattern = /\b(?:replay(?:ing)? (?:a |the )?conversation|track(?:ing)? (?:texts?|replies)|returned favors?|daily chores?|walking it off|go(?:ing)? for a walk|need (?:real )?recovery time|intuition often proves right|settled (?:young|early)|old effort|past attempts?|older material|nothing is hidden from you|you clearly have)\b/i;
+const categoricalBehaviorPattern = /\b(?:you act before you think|you react before you think|your first read .* usually lands right|you (?:usually|always|never) (?:know|sense|see|read|react|act|withdraw|overcommit)|most of the time it works|you trust your first read|you are (?:the kind|the type|someone) who|your instinct is to|(?:your|a) (?:steady architecture|sustained effort|perceptual sharpness|resource judgment)|recovery through activity)\b/i;
+const unsupportedScenarioPattern = /\b(?:replay(?:ing)? (?:a |the )?conversation|track(?:ing)? (?:texts?|replies)|returned favors?|daily chores?|walking it off|go(?:ing)? for a walk|need (?:real )?recovery time|intuition often proves right|settled (?:young|early)|old effort|past attempts?|older material|nothing is hidden from you|you clearly have|regulate closeness now|preference for demonstrating care|being someone who is simply there)\b/i;
 const statusToConditionPattern = /\b(?:less as (?:a )?crisis|more as texture|not (?:a )?crisis|healthy relationship|stable relationship|secure relationship|settled relationship|relationship is (?:healthy|stable|secure|settled))\b/i;
 const stockConclusionPattern = /\b(?:the useful move(?: here)?|the fix|the task(?: worth naming)?|the risk|the practical move|the pattern worth watching)\b/i;
 const unnecessaryOrbPrecisionPattern = /\b(?:orb(?:\s+of)?|close and exact|(?:aspect|trine|square|opposition|sextile|conjunction|quincunx)\s+(?:is\s+)?exact|exact\s+(?:aspect|trine|square|opposition|sextile|conjunction|quincunx)|(?:under|within|nearly|less than)\s+(?:one|\d+(?:\.\d+)?)\s+degrees?|degrees?\s+(?:apart|from exact))\b|\b(?:aspect|conjunct(?:ion)?|oppos(?:es|ition)|squar(?:e|es)|trin(?:e|es)|sextil(?:e|es)|quincunx(?:es)?)\b[^.!?]{0,160}\b(?:angular distance|tightness|closeness|exactness|intensity|precision|measurement)\b|\b(?:angular distance|tightness|closeness|exactness|precision|measurement)\b[^.!?]{0,160}\b(?:aspect|conjunct(?:ion)?|oppos(?:es|ition)|squar(?:e|es)|trin(?:e|es)|sextil(?:e|es)|quincunx(?:es)?)\b/i;
@@ -3057,7 +3121,7 @@ const aspectChainInventionPattern = /\b(?:opposition|trine|square|sextile|conjun
 const rulershipAsAspectPattern = /\b(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)\s+(?:is\s+)?disposed\s+by\s+(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)\s*,?\s+(?:which\s+is\s+)?(?:an?\s+)?(?:conjunction|opposition|square|trine|sextile|quincunx)\s+aspect\b/i;
 const genericDispositorChainNarrationPattern = /\bdispositor chains?\b|\b(?:rulership|dispositor)\s+(?:chain|sequence)\b|\b(?:the|this|a)\s+chain\s+(?:tracing|leading|running|ending|going)\s+(?:back\s+)?(?:to|through|from)\s+(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)\b/i;
 const privilegedPerceptionPattern = /\b(?:sharpens?|gives|offers|provides)\s+(?:you|your).{0,35}\b(?:read|sense)\s+(?:of|on)\s+(?:(?:hidden|social|group|unspoken)\s+){0,2}(?:undercurrents|signals|dynamics|people)\b|\b(?:sense|read|pick up on)\s+(?:(?:hidden|social|group|unspoken)\s+){1,2}(?:undercurrents|signals|dynamics)\b|\b(?:shapes?|influences?|guides?)\s+how\s+you\s+(?:read|sense)\s+(?:a\s+room|a\s+(?:friend\s+)?group|people|social\s+dynamics)\b|\bfirst impression\s+(?:can|may|might)?\s*(?:feel|seem)\s+(?:complete|convincing|certain|accurate)\b|\b(?:feeling|sense)\s+of\s+knowing\s+(?:can|may|might)?\s*(?:arrive|come)\s+(?:fast|quickly|immediately)\b/i;
-const categoricalCertaintyOrChangePattern = /\b(?:feel|feels|seem|seems)\s+(?:sure|certain)\s+(?:right away|fast|immediately)\b|\b(?:conclusion|assessment|belief).{0,30}\bsettled fast\b|\b(?:change|update).{0,20}\b(?:all at once|by a real overhaul|wholesale)\b|\b(?:you|that part of you)\s+already\s+(?:know|knows|has learned)\s+how\b/i;
+const categoricalCertaintyOrChangePattern = /\b(?:feel|feels|seem|seems)\s+(?:sure|certain)\s+(?:right away|fast|immediately)\b|\b(?:conclusion|assessment|belief).{0,30}\bsettled fast\b|\b(?:change|update).{0,20}\b(?:all at once|by a real overhaul|wholesale)\b|\b(?:immediate|rapid|sudden)\s+(?:overhaul|transformation|reinvention|change)\b|\b(?:you|that part of you)\s+already\s+(?:know|knows|has learned)\s+how\b|\b(?:counterevidence|counterweight).{0,80}\b(?:shows|proves|confirms|demonstrates).{0,80}\b(?:already|reliably)\s+(?:developed|built|learned|practiced|self-correct)\b|\byou\s+(?:have|already have|have already)\s+(?:developed|built|learned)\s+(?:a )?(?:reliable )?(?:self-correction|habit|skill)\b/i;
 const explicitClaimNegationPattern = /\b(?:does not|doesn't|do not|don't|is not|isn't|are not|aren't|cannot|can't|never|no proof|not evidence|not confirmation|does nothing to prove|not that|not currently)\b/i;
 
 function hasAffirmedClaim(text: string, pattern: RegExp) {
@@ -3090,6 +3154,9 @@ function validateRelationshipAndSafetyClaims(
     if (genericDispositorChainNarrationPattern.test(text)) errors.push(`${section.title} narrates an unsupported generic dispositor chain.`);
     if (hasAffirmedClaim(text, privilegedPerceptionPattern)) errors.push(`${section.title} turns symbolic evidence into privileged or accurate social perception.`);
     if (categoricalCertaintyOrChangePattern.test(text)) errors.push(`${section.title} invents rapid certainty, wholesale change, or an established self-correction habit.`);
+    if (section.title === "Drive" && reportDetectors.driveWorkAllocationRepetition.test(text)) {
+      errors.push("Drive repeats Work's task-importance or allocation conclusion instead of owning force and pacing.");
+    }
     if (!context.partnerPronouns && contextGenderedPartnerPronounPattern.test(text)) {
       errors.push(`${section.title} uses a partner gender pronoun that was not supplied.`);
     }

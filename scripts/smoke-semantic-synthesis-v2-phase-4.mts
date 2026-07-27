@@ -16,6 +16,7 @@ import {
   astrologyReportRequestSchema,
   type AstrologyReportRequest
 } from "@astra/contracts";
+import { chapterEvidencePlanningPolicy } from "../packages/astrology/src/report/evidencePlanning";
 
 const birthData = {
   date: "1961-05-23",
@@ -86,6 +87,30 @@ assert.deepEqual(
   views,
   buildAstrologyMeaningComplexReportViews(deepRequest),
   "Phase 4 selection must be deterministic for identical input."
+);
+const deepPlanningPolicies = views.deep.chapters.map((chapter) => ({
+  title: chapter.title,
+  ...chapterEvidencePlanningPolicy(chapter.title)
+}));
+const deepIntendedConclusions = deepPlanningPolicies.map((policy) => policy.intendedConclusion);
+assert.equal(
+  new Set(deepIntendedConclusions).size,
+  deepIntendedConclusions.length,
+  "Phase 4 must reserve one distinct intended conclusion per Deep chapter."
+);
+assert.ok(
+  deepPlanningPolicies.every((policy) =>
+    policy.intendedConclusion.trim() && policy.prohibitedInference.trim()
+  ),
+  "Every Phase 4 chapter plan must include an intended conclusion and prohibited inference."
+);
+assert.match(
+  deepPlanningPolicies.find((policy) => policy.title === "Work")?.intendedConclusion ?? "",
+  /effort or contribution.*allocated/i
+);
+assert.match(
+  deepPlanningPolicies.find((policy) => policy.title === "Drive")?.intendedConclusion ?? "",
+  /pacing or proportion of force/i
 );
 
 const networkComplexIds = new Set(network.complexes.map((complex) => complex.id));

@@ -189,6 +189,66 @@ assert.ok(evaluateReportDeterministically(marissaLunarChainFailure, {
   contextIsUnspecified: true
 }).hardGateIssues.includes("generic dispositor-chain narration"));
 
+const cheyenneRelationshipsChainFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Relationships"
+    ? { ...section, body: "The chain tracing through Jupiter and Mars explains how relationship needs move through the chart." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(cheyenneRelationshipsChainFailure, {
+  key: "cheyenne-relationships-chain/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("generic dispositor-chain narration"));
+
+const cheyenneRelationshipsBounded = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Relationships"
+    ? { ...section, body: "Moon in Capricorn can frame a relational condition, while Jupiter opposition Saturn names a tension without proving a causal sequence." }
+    : section)
+});
+assert.equal(evaluateReportDeterministically(cheyenneRelationshipsBounded, {
+  key: "cheyenne-relationships-bounded/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("generic dispositor-chain narration"), false);
+
+const cheyenneRelationshipsBiographyFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Relationships"
+    ? { ...section, body: "Chiron disposed by the Moon reveals old emotional wounds and how you regulate closeness now." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(cheyenneRelationshipsBiographyFailure, {
+  key: "cheyenne-relationships-biography/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("invented biography"));
+
+const cheyenneRelationshipsClaimBounded = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Relationships"
+    ? { ...section, body: "Chiron disposed by the Moon can add symbolic context to the chapter without establishing a personal history or current relational behavior." }
+    : section)
+});
+assert.equal(evaluateReportDeterministically(cheyenneRelationshipsClaimBounded, {
+  key: "cheyenne-relationships-claim-bounded/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("invented biography"), false);
+
+const cheyenneRelationshipsBehaviorFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Relationships"
+    ? { ...section, body: "Moon in Capricorn suggests a preference for demonstrating care through consistency, through being someone who is simply there." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(cheyenneRelationshipsBehaviorFailure, {
+  key: "cheyenne-relationships-current-behavior/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("invented routine, history, or categorical scenario"));
+
 for (const validDirectRulership of [
   "The Moon is disposed by Jupiter.",
   "Jupiter is the Moon's dispositor.",
@@ -314,6 +374,89 @@ assert.ok(evaluateReportDeterministically(certaintyFailure, {
   contextIsUnspecified: true
 }).hardGateIssues.includes("rapid certainty, wholesale change, or established self-correction inferred"));
 
+const documentedOverreachFailures = [
+  {
+    key: "other-person-meaning",
+    body: "You can tell what another person means beneath their words.",
+    issue: "another-person inner-state claim",
+    bounded: "Ask for clarification rather than treating an impression as proof of what another person means."
+  },
+  {
+    key: "stable-habit",
+    body: "Your steady architecture supports sustained effort and recovery through activity.",
+    issue: "categorical behavior",
+    bounded: "This chart can describe a tension around effort, not a proven recovery method or stable habit."
+  },
+  {
+    key: "established-self-correction",
+    body: "Counterevidence shows you have already developed a reliable self-correction.",
+    issue: "rapid certainty, wholesale change, or established self-correction inferred",
+    bounded: "Counterevidence can qualify an interpretation without proving an established self-correction."
+  },
+  {
+    key: "social-reception",
+    body: "You are often seen by others as someone who knows what they need.",
+    issue: "another-person inner-state claim",
+    bounded: "This chart does not establish how others see you or what they need from you."
+  },
+  {
+    key: "immediate-overhaul",
+    body: "This placement brings an immediate overhaul in how you approach your life.",
+    issue: "rapid certainty, wholesale change, or established self-correction inferred",
+    bounded: "A natal placement can describe a possible tension without proving wholesale change."
+  }
+] as const;
+
+for (const failure of documentedOverreachFailures) {
+  const failingReport = report("deep", {
+    sections: deep.sections.map((section) => section.title === "Growth"
+      ? { ...section, body: failure.body }
+      : section)
+  });
+  assert.ok(evaluateReportDeterministically(failingReport, {
+    key: `${failure.key}/deep`,
+    family: "deep",
+    canonicalIdentityHash: identityHash,
+    contextIsUnspecified: true
+  }).hardGateIssues.includes(failure.issue));
+
+  const boundedReport = report("deep", {
+    sections: deep.sections.map((section) => section.title === "Growth"
+      ? { ...section, body: failure.bounded }
+      : section)
+  });
+  assert.equal(evaluateReportDeterministically(boundedReport, {
+    key: `${failure.key}-bounded/deep`,
+    family: "deep",
+    canonicalIdentityHash: identityHash,
+    contextIsUnspecified: true
+  }).hardGateIssues.includes(failure.issue), false);
+}
+
+const driveWorkAllocationFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Drive"
+    ? { ...section, body: "Before deciding how intensely to engage, assess the task's importance or size." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(driveWorkAllocationFailure, {
+  key: "drive-work-allocation/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("Drive repeats Work's task-importance or allocation conclusion instead of owning force and pacing."));
+
+const boundedDrivePacing = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Drive"
+    ? { ...section, body: "Let your initial momentum settle into a workable pace before you add more force." }
+    : section)
+});
+assert.equal(evaluateReportDeterministically(boundedDrivePacing, {
+  key: "drive-pacing-bounded/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("Drive repeats Work's task-importance or allocation conclusion instead of owning force and pacing."), false);
+
 const repeatedFramingFailure = report("deep", {
   sections: deep.sections.map((section) => {
     if (section.title === "Work") {
@@ -377,6 +520,30 @@ const candidateGateWithHistoricalControl = evaluateSemanticGate(
 assert.equal(candidateGateWithHistoricalControl.pass, true);
 assert.deepEqual(candidateGateWithHistoricalControl.candidateKeys, ["control/core", "control/deep"]);
 assert.deepEqual(candidateGateWithHistoricalControl.historicalKeys, ["tony/deep"]);
+
+const practicalEvaluation = semanticEvaluation("practical/deep", 2);
+practicalEvaluation.scores.importance = 1;
+practicalEvaluation.scores.dimensionality = 3;
+practicalEvaluation.scores.tone = 3;
+practicalEvaluation.scores.usefulness = 3;
+practicalEvaluation.scores.tier_differentiation = 3;
+practicalEvaluation.scores.semantic_repetition = 3;
+const practicalRepetition: Phase5RepetitionEvaluation[] = [{
+  key: "practical/deep",
+  score: 2,
+  rationale: "Minor thematic recurrence is acceptable.",
+  repeatedMechanisms: ["minor recurrence"],
+  offendingExcerpts: []
+}];
+assert.equal(evaluateSemanticGate([practicalEvaluation], practicalRepetition).pass, false);
+const practicalGate = evaluateSemanticGate([practicalEvaluation], practicalRepetition, {
+  semanticAverageMinimum: 2.4,
+  contextSafetyAverageMinimum: null,
+  minimumCategories: ["astrological_correctness", "context_safety"],
+  repetitionScoreMinimum: 2
+});
+assert.equal(practicalGate.pass, true);
+assert.deepEqual(practicalGate.thresholds.minimumCategories, ["astrological_correctness", "context_safety"]);
 assert.deepEqual(
   validateSemanticEvaluation(
     ["control/core", "control/deep", "tony/deep"],

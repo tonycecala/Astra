@@ -15,6 +15,12 @@ import {
   measureReportReadability
 } from "@astra/astrology";
 import { astrologyReportRequestSchema } from "@astra/contracts";
+import { planWriterFact } from "../packages/astrology/src/report/evidencePlanning";
+import { assertDistinctChapterConclusions } from "../packages/astrology/src/report/promptBuilderContracts";
+import {
+  auditWriterClaimMarkers,
+  buildWriterChapterClaimPlan
+} from "../packages/astrology/src/report/writerClaimPlanning";
 
 assert.equal(ASTRA_SEMANTIC_SYNTHESIS_VERSION, "2.0.0-phase-4");
 
@@ -87,6 +93,20 @@ function sectionWordTarget(title: string) {
   return 310;
 }
 
+function applyWriterClaimMarkers(content: string, prompt: string) {
+  const markers = [...prompt.matchAll(/End this paragraph with exactly (\[\[[^\n]+\]\])/g)]
+    .map((match) => match[1]!);
+  if (!markers.length) return content;
+  assert.equal(markers.length, 3, "Writer claim-plan prompts must define exactly three paragraph markers.");
+  const sentences = content.match(/[^.!?]+[.!?]+|[^.!?]+$/g)?.map((sentence) => sentence.trim()).filter(Boolean) ?? [content];
+  const paragraphs = markers.map((marker, index) => {
+    const start = Math.floor((sentences.length * index) / markers.length);
+    const end = Math.floor((sentences.length * (index + 1)) / markers.length);
+    return `${sentences.slice(start, Math.max(start + 1, end)).join(" ")} ${marker}`;
+  });
+  return paragraphs.join("\n\n");
+}
+
 function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTransport?: boolean; timingFailure?: boolean; thirdPersonFailure?: boolean; unsafeRelationshipFirst?: boolean; invalidFirst?: Partial<Record<string, string>>; usefulLongThesis?: boolean; identityThirdSentence?: boolean } = {}) {
   const calls = new Map<string, number>();
   const prompts = new Map<string, string[]>();
@@ -119,11 +139,14 @@ function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTranspor
         ? "This person tends to hide what matters until distance does the speaking."
         : "The person you choose matters, but so does what you are willing to say plainly."
       : undefined;
-    const content = title === "Thesis"
+    const uncitedContent = title === "Thesis"
       ? options.usefulLongThesis
         ? "Her chapters orbit a single unresolved question: what she trusts more, the self that forms in contact with others' recognition or the self that persists when no one is watching. Each domain tests whether her responsiveness to signal, emotional, relational, or professional, is discernment or dilution, and whether her strengths, instincts, and ambitions remain hers once proven, or dissolve into whatever the moment rewards. The work is not choosing autonomy over connection but learning to stay legible to herself while taking in what the world demands."
         : "A private intelligence seeks public usefulness without sacrificing discernment, while courage and imagination repeatedly test whether desire can become disciplined action. The report should show how sensitivity, range, and visible initiative become trustworthy when they are given structure, proportion, honest relationship, and practical form."
       : prose(title, words, options.timingFailure && title === "Integration", openingOverride);
+    const content = title === "Thesis"
+      ? uncitedContent
+      : applyWriterClaimMarkers(uncitedContent, prompt);
     const choices = title === "Work" && options.retryWorkTransport && count === 1 ? [] : [{ finish_reason: "stop", message: { content } }];
     return new Response(JSON.stringify({ choices, usage: { prompt_tokens: 1, completion_tokens: 1, completion_tokens_details: { reasoning_tokens: 0 }, total_tokens: 2, cost: 0 } }), {
       status: 200,
@@ -552,11 +575,21 @@ const enrichedRequest = astrologyReportRequestSchema.parse({
 const enrichedResult = await buildAstrologyReportResultAsync(enrichedRequest, { env, fetchImpl: enrichedProvider.fetchImpl });
 assert.equal(enrichedResult.status, "completed", enrichedResult.error);
 const enrichedRelationshipsPrompt = enrichedProvider.prompts.get("Relationships")?.[0] ?? "";
-assert.match(enrichedRelationshipsPrompt, /Primary hypothesis: Closeness works best/);
+const enrichedRelationshipsPacket = enrichedRelationshipsPrompt.split("Section signal card:\n").at(-1) ?? "";
 assert.match(enrichedRelationshipsPrompt, /Counterweight: Freedom and care/);
-assert.match(enrichedRelationshipsPrompt, /Claim boundary: Do not infer a partner/);
-assert.doesNotMatch(enrichedRelationshipsPrompt, /Risks: filling gaps with assumptions/);
-assert.doesNotMatch(enrichedRelationshipsPrompt, /Developmental tasks: make relational needs explicit/);
+assert.match(enrichedRelationshipsPrompt, /Chapter question: What can the selected facts responsibly show about relationships\?/i);
+assert.match(enrichedRelationshipsPrompt, /Intended conclusion: Closeness works best/i);
+assert.match(enrichedRelationshipsPrompt, /Atomic selected evidence \(use only these 2 or 3 facts\):/);
+assert.match(enrichedRelationshipsPrompt, /Allowed contribution:/);
+assert.match(enrichedRelationshipsPrompt, /Prohibited conclusion: Do not infer a partner/);
+assert.match(enrichedRelationshipsPrompt, /Do not introduce another chart fact/i);
+const enrichedRelationshipFactCount = enrichedRelationshipsPrompt.match(/^- Fact:/gm)?.length ?? 0;
+assert.ok(enrichedRelationshipFactCount >= 2 && enrichedRelationshipFactCount <= 3);
+assert.doesNotMatch(enrichedRelationshipsPacket, /v2_evidence_|v2_anchor_|pathScore|priority|dispositor-chain|final dispositor/i);
+assert.doesNotMatch(enrichedRelationshipsPacket, /Primary hypothesis:|Claim boundary:|Evidence authorization:/i);
+assert.match(enrichedRelationshipsPacket, /Prohibited conclusion:/);
+assert.doesNotMatch(enrichedRelationshipsPacket, /Risks: filling gaps with assumptions/);
+assert.doesNotMatch(enrichedRelationshipsPacket, /Developmental tasks: make relational needs explicit/);
 assert.match(enrichedRelationshipsPrompt, /Only Integration may connect multiple life domains/);
 assert.match(enrichedRelationshipsPrompt, /Do not use stock bridge phrases such as 'Put together,' 'Taken together,' 'This suggests,' or 'The pattern points.'/);
 assert.match(enrichedRelationshipsPrompt, /Do not use 'works differently,' 'this works differently,' or a similar explanatory pivot/);
@@ -564,7 +597,7 @@ assert.match(enrichedRelationshipsPrompt, /Avoid stilted therapeutic phrasing su
 assert.match(enrichedRelationshipsPrompt, /Identity alone owns private reflection/);
 assert.match(enrichedRelationshipsPrompt, /Work owns allocation and contribution/);
 assert.match(enrichedRelationshipsPrompt, /Integration owns values and decision criteria/);
-assert.match(enrichedProvider.prompts.get("Integration")?.[0] ?? "", /Chapter-specific synthesis: Values become clearer when they identify what deserves protection/);
+assert.match(enrichedProvider.prompts.get("Integration")?.[0] ?? "", /Chapter-specific conclusion: Values become clearer when they identify what deserves protection/);
 assert.match(enrichedProvider.prompts.get("Integration")?.[0] ?? "", /Integration ownership: stay with values and decision criteria/);
 const enrichedWorkPrompt = enrichedProvider.prompts.get("Work")?.[0] ?? "";
 const enrichedIntegrationPrompt = enrichedProvider.prompts.get("Integration")?.[0] ?? "";
@@ -639,6 +672,238 @@ const enrichedCoreIntegrationPrompt = enrichedCoreProvider.prompts.get("Integrat
 assert.match(enrichedCoreWorkPrompt, /Canonical Identity bridge:/);
 assert.doesNotMatch(enrichedCoreWorkPrompt, /- Identity:|Sun in Gemini in the 12th house|Mercury in Gemini in the 12th house/i);
 assert.doesNotMatch(enrichedCoreIntegrationPrompt, /- Identity:|Sun in Gemini in the 12th house|Moon in Virgo in the 3rd house|Mercury in Gemini/i);
+
+assert.throws(
+  () => assertDistinctChapterConclusions([
+    {
+      title: "Work",
+      intendedConclusion: "Describe how effort may be allocated across the work that matters."
+    },
+    {
+      title: "Drive",
+      intendedConclusion: "Describe how effort can be allocated across work that matters."
+    }
+  ]),
+  /chapter conclusions overlap: Work and Drive/,
+  "Overlapping chapter conclusions must fail before a provider call."
+);
+assert.doesNotThrow(() => assertDistinctChapterConclusions([
+  {
+    title: "Work",
+    intendedConclusion: "Describe where effort or contribution may be allocated usefully without claiming a work history."
+  },
+  {
+    title: "Drive",
+    intendedConclusion: "Describe possible pacing or proportion of force without deciding which work deserves effort."
+  }
+]));
+
+const moonMercuryBridge = planWriterFact("Relationships", {
+  label: "Moon sextile Mercury",
+  facts: ["Moon sextile Mercury", "aspect sextile"]
+}, "support");
+assert.match(
+  moonMercuryBridge.allowedContribution,
+  /emotional information and felt security.*naming, comparison, and interpretation.*possible cooperation/
+);
+assert.match(
+  moonMercuryBridge.prohibitedInference,
+  /cannot establish ease, difficulty, skill, habit, action, communication, outcome, or another person's response/
+);
+assert.doesNotMatch(moonMercuryBridge.allowedContribution, /easy spoken requests?|speaks? requests? easily/i);
+
+const marsLibraBridge = planWriterFact("Work", {
+  label: "Mars in Libra in the 1st house",
+  facts: ["Mars", "Libra", "Mars in Libra", "1st house", "Mars in 1st house"]
+}, "primary");
+assert.match(
+  marsLibraBridge.allowedContribution,
+  /force, effort, and initiation.*balance and relational comparison.*self-directed presence/
+);
+assert.match(
+  marsLibraBridge.prohibitedInference,
+  /does not establish mediation, teamwork, leadership, a group role, or any work outcome/
+);
+assert.doesNotMatch(marsLibraBridge.allowedContribution, /mediat|teamwork|leadership|group role/i);
+
+const venusContributionBridge = planWriterFact("Gifts", {
+  label: "Venus in Sagittarius in the 3rd house",
+  facts: ["Venus", "Sagittarius", "Venus in Sagittarius", "3rd house", "Venus in 3rd house"]
+}, "support");
+assert.match(
+  venusContributionBridge.allowedContribution,
+  /value, attraction, and connection.*exploration and meaning.*communication and learning/
+);
+assert.match(
+  venusContributionBridge.prohibitedInference,
+  /does not prove contribution, skill, reputation, social effect, or how anyone receives the subject/
+);
+assert.doesNotMatch(venusContributionBridge.allowedContribution, /proven contribution|proves? contribution/i);
+
+const chartRulerBridge = planWriterFact("Gifts", {
+  label: "Chart ruler Venus",
+  facts: ["Chart ruler Venus", "rulership chart ruler"]
+}, "primary");
+assert.match(
+  chartRulerBridge.allowedContribution,
+  /value, attraction, and connection.*chart-wide orienting emphasis.*calculated Ascendant sign/
+);
+assert.match(
+  chartRulerBridge.prohibitedInference,
+  /cannot establish a dominant personality, behavior, skill, outcome, causal mechanism/
+);
+
+const descendantBridge = planWriterFact("Relationships", {
+  label: "Descendant in Aries",
+  facts: ["Descendant", "Aries", "Descendant in Aries"]
+}, "primary");
+assert.match(
+  descendantBridge.allowedContribution,
+  /one-to-one relational horizon.*initiative and directness/
+);
+assert.match(
+  descendantBridge.prohibitedInference,
+  /cannot establish a personality, behavior, relationship condition, public or private circumstance, another person's state, or outcome/
+);
+
+const directDispositorBridge = planWriterFact("Growth", {
+  label: "Neptune disposed by Saturn",
+  facts: ["Neptune disposed by Saturn", "direct rulership"]
+}, "counterweight");
+assert.match(
+  directDispositorBridge.allowedContribution,
+  /limits, structure, and accountability.*imagination, permeability, and uncertainty.*one direct sign-rulership fact/
+);
+assert.match(
+  directDispositorBridge.prohibitedInference,
+  /cannot establish causal flow, a chain, self-containment, outside-validation resistance, personality, behavior, or skill/
+);
+assert.doesNotMatch(directDispositorBridge.allowedContribution, /self-contained personality|outside opinion|causal (?:flow|mechanism)/i);
+
+const waxingCrescentBridge = planWriterFact("Integration", {
+  label: "waxing_crescent lunar phase",
+  facts: ["waxing_crescent lunar phase", "solar_lunar_cycle"]
+}, "support");
+assert.match(waxingCrescentBridge.allowedContribution, /waxing crescent Sun-Moon geometry/);
+assert.match(
+  waxingCrescentBridge.prohibitedInference,
+  /cannot establish a preference for early or delayed action, current timing, developmental stage, behavior, or outcome/
+);
+assert.doesNotMatch(waxingCrescentBridge.allowedContribution, /early action|act early|early motion/i);
+
+const claimPlanFixture = {
+  title: "Relationships",
+  hypothesis: "Bounded relationship hypothesis.",
+  chapterQuestion: "What may support explicit relational terms?",
+  intendedConclusion: "Explicit terms may make reciprocity easier to assess without describing an actual bond.",
+  claimBoundary: "Do not infer an actual relationship, behavior, or another person's response.",
+  counterweight: "The selected facts do not prove that explicit terms are used.",
+  chartSignals: [],
+  writerSignals: [
+    {
+      id: "moon-mercury",
+      label: "Moon sextile Mercury",
+      facts: ["Moon sextile Mercury"],
+      allowedContribution: moonMercuryBridge.allowedContribution,
+      prohibitedInference: moonMercuryBridge.prohibitedInference
+    },
+    {
+      id: "jupiter-saturn",
+      label: "Jupiter opposition Saturn",
+      facts: ["Jupiter opposition Saturn"],
+      allowedContribution: "Jupiter opposition Saturn may qualify the relationship question through a polarity between expansion and limits.",
+      prohibitedInference: "Jupiter opposition Saturn cannot establish an actual relationship, behavior, or another person's response."
+    }
+  ]
+};
+const claimPlan = buildWriterChapterClaimPlan(claimPlanFixture);
+assert.deepEqual(claimPlan.atoms.map((atom) => atom.id), ["F1", "F2"]);
+assert.deepEqual(claimPlan.claims.map((claim) => claim.marker), [
+  "[[F1:inference]]",
+  "[[F2:compression]]",
+  "[[F1:inference,F2:inference]]"
+]);
+const boundedClaimAudit = auditWriterClaimMarkers(
+  [
+    "Moon sextile Mercury is the selected aspect, and its bounded cooperation remains symbolic. [[F1:inference]]",
+    "Jupiter opposite Saturn preserves a polarity between expansion and limits without proving behavior. [[F2:compression]]",
+    "Explicit terms may make reciprocity easier to assess, but no actual bond or response is established. [[F1:inference,F2:inference]]"
+  ].join("\n\n"),
+  claimPlanFixture
+);
+assert.deepEqual(boundedClaimAudit.errors, []);
+assert.doesNotMatch(boundedClaimAudit.prose, /\[\[F\d/);
+const rejectedClaimAudit = auditWriterClaimMarkers(
+  [
+    "You find spoken requests easy because Moon sextiles Mercury.",
+    "Jupiter opposite Saturn proves that you already negotiate limits.",
+    "Your relationships therefore work best when both people state what they need."
+  ].join("\n\n"),
+  claimPlanFixture
+);
+assert.equal(rejectedClaimAudit.errors.length, 3);
+assert.match(rejectedClaimAudit.errors.join(" "), /missing its internal support marker/);
+
+const v2PlanningProvider = sectionedProvider();
+const enrichedReportBasis = enrichedRequest.reportBasis!;
+const v2PlanningRequest = astrologyReportRequestSchema.parse({
+  ...enrichedRequest,
+  id: "61111111-1111-4111-8111-000000000102",
+  reportBasis: {
+    ...enrichedReportBasis,
+    schemaVersion: 2,
+    primary: {
+      ...enrichedReportBasis.primary,
+      calculationMode: "full"
+    }
+  }
+});
+const v2PlanningResult = await buildAstrologyReportResultAsync(
+  v2PlanningRequest,
+  { env, fetchImpl: v2PlanningProvider.fetchImpl }
+);
+assert.equal(v2PlanningResult.status, "completed", v2PlanningResult.error);
+for (const section of v2PlanningResult.sections) {
+  assert.doesNotMatch(section.body, /\[\[F\d/, `${section.title} leaked internal support markers into public prose.`);
+}
+const v2ChapterPrompts = headings
+  .filter((title) => title !== "Identity")
+  .map((title) => [title, v2PlanningProvider.prompts.get(title)?.[0] ?? ""] as const);
+const v2Conclusions = new Set<string>();
+for (const [title, prompt] of v2ChapterPrompts) {
+  const packet = prompt.split("Section signal card:\n").at(-1) ?? "";
+  const factCount = packet.match(/^- (?:F\d+ )?Fact:/gm)?.length ?? 0;
+  const allowedCount = packet.match(/^  Allowed contribution:/gm)?.length ?? 0;
+  const prohibitedCount = packet.match(/^  Prohibited inference:/gm)?.length ?? 0;
+  assert.ok(factCount >= 2 && factCount <= 3, `${title} must receive exactly 2 or 3 atomic facts.`);
+  assert.equal(allowedCount, factCount, `${title} must authorize every selected atomic fact.`);
+  assert.equal(prohibitedCount, factCount, `${title} must prohibit an inference for every selected atomic fact.`);
+  assert.doesNotMatch(
+    packet,
+    /may frame a chapter-specific natal tendency or life-area condition|may (?:anchor|support or qualify|limit or qualify) the .* conclusion only|v2_evidence_|v2_anchor_|pathScore|priority|dispositor-chain|final dispositor/i
+  );
+  assert.doesNotMatch(prompt, /Chapter-specific conclusion: .*structurally connected mechanism/i);
+  const conclusion = packet.match(/^Intended conclusion: (.+)$/m)?.[1];
+  assert.ok(conclusion, `${title} must reserve an intended conclusion.`);
+  assert.equal(v2Conclusions.has(conclusion), false, `${title} must have a distinct intended conclusion.`);
+  v2Conclusions.add(conclusion);
+}
+assert.match(
+  v2PlanningProvider.prompts.get("Blind Spots")?.[0] ?? "",
+  /cannot be used to infer a home, family, work, or relationship circumstance/
+);
+assert.match(
+  v2PlanningProvider.prompts.get("Gifts")?.[0] ?? "",
+  /cannot be used to infer proven skill, routine performance, reputation, social impact, or how other people receive the subject/
+);
+assert.match(
+  v2PlanningProvider.prompts.get("Work")?.[0] ?? "",
+  /Describe where effort or contribution may be allocated usefully/
+);
+assert.match(
+  v2PlanningProvider.prompts.get("Drive")?.[0] ?? "",
+  /Describe possible pacing or proportion of force/
+);
 
 const ownedEvidence = buildAstrologyReportSectionEvidence(request, [
   "Identity",

@@ -97,6 +97,10 @@ export function evaluateReportDeterministically(
   if (!options.historicalControl && genericDispositorChainPattern.test(prose)) hardGateIssues.push("generic dispositor-chain narration");
   if (!options.historicalControl && hasAffirmedClaim(prose, privilegedPerceptionPattern)) hardGateIssues.push("privileged social perception inferred from symbolic evidence");
   if (!options.historicalControl && categoricalCertaintyOrChangePattern.test(prose)) hardGateIssues.push("rapid certainty, wholesale change, or established self-correction inferred");
+  const drive = result.sections.find((section) => section.title === "Drive")?.body ?? "";
+  if (!options.historicalControl && reportDetectors.driveWorkAllocationRepetition.test(drive)) {
+    hardGateIssues.push("Drive repeats Work's task-importance or allocation conclusion instead of owning force and pacing.");
+  }
 
   const repetition = crossChapterRepetition(result);
   if (!options.historicalControl && options.family === "deep" && !repetition.pass) {
@@ -171,9 +175,21 @@ export function crossChapterRepetition(result: ReportLike) {
 export function evaluateSemanticGate(
   evaluations: Phase5SemanticEvaluation[],
   repetitionEvaluations: Phase5RepetitionEvaluation[],
-  options: { historicalKeys?: string[] } = {}
+  options: {
+    historicalKeys?: string[];
+    semanticAverageMinimum?: number;
+    contextSafetyAverageMinimum?: number | null;
+    minimumCategories?: readonly Phase5SemanticCategory[];
+    repetitionScoreMinimum?: number;
+  } = {}
 ) {
   const historicalKeys = new Set(options.historicalKeys ?? []);
+  const semanticAverageMinimum = options.semanticAverageMinimum ?? PHASE_5_SEMANTIC_AVERAGE_MINIMUM;
+  const contextSafetyAverageMinimum = options.contextSafetyAverageMinimum === undefined
+    ? PHASE_5_CONTEXT_SAFETY_MINIMUM
+    : options.contextSafetyAverageMinimum;
+  const minimumCategories = options.minimumCategories ?? phase5SemanticCategories;
+  const repetitionScoreMinimum = options.repetitionScoreMinimum ?? PHASE_5_REPETITION_SCORE_MINIMUM;
   const candidateEvaluations = evaluations.filter((evaluation) => !historicalKeys.has(evaluation.key));
   const candidateRepetitionEvaluations = repetitionEvaluations.filter((evaluation) =>
     !historicalKeys.has(evaluation.key)
@@ -185,25 +201,34 @@ export function evaluateSemanticGate(
     ? allScores.reduce((sum, value) => sum + value, 0) / allScores.length
     : 0;
   const minimumPass = candidateEvaluations.length > 0 && candidateEvaluations.every((evaluation) =>
-    phase5SemanticCategories.every((category) => evaluation.scores[category] >= 2)
+    minimumCategories.every((category) => evaluation.scores[category] >= 2)
   );
   const safetyScores = candidateEvaluations.map((evaluation) => evaluation.scores.context_safety);
   const contextSafetyAverage = safetyScores.length
     ? safetyScores.reduce((sum, value) => sum + value, 0) / safetyScores.length
     : 0;
   const repetitionPass = candidateRepetitionEvaluations.length > 0 && candidateRepetitionEvaluations.every(
-    (evaluation) => evaluation.score >= PHASE_5_REPETITION_SCORE_MINIMUM
+    (evaluation) => evaluation.score >= repetitionScoreMinimum
   );
+  const contextSafetyAveragePass = contextSafetyAverageMinimum === null || contextSafetyAverage >= contextSafetyAverageMinimum;
   return {
     pass:
       minimumPass &&
-      average >= PHASE_5_SEMANTIC_AVERAGE_MINIMUM &&
-      contextSafetyAverage >= PHASE_5_CONTEXT_SAFETY_MINIMUM &&
+      average >= semanticAverageMinimum &&
+      contextSafetyAveragePass &&
       repetitionPass,
     average: Number(average.toFixed(3)),
     minimumPass,
     contextSafetyAverage: Number(contextSafetyAverage.toFixed(3)),
+    contextSafetyAveragePass,
     repetitionPass,
+    thresholds: {
+      semanticAverage: semanticAverageMinimum,
+      contextSafetyAverage: contextSafetyAverageMinimum,
+      minimumCategories,
+      minimumCategoryScore: 2,
+      repetitionScore: repetitionScoreMinimum
+    },
     candidateKeys: candidateEvaluations.map((evaluation) => evaluation.key),
     historicalKeys: evaluations.filter((evaluation) => historicalKeys.has(evaluation.key))
       .map((evaluation) => evaluation.key)

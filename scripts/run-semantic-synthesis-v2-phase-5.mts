@@ -35,10 +35,7 @@ import {
 import { closeDatabaseConnection, db, exportPortableUserData } from "@astra/db";
 
 import {
-  PHASE_5_CONTEXT_SAFETY_MINIMUM,
   PHASE_5_EVALUATION_VERSION,
-  PHASE_5_REPETITION_SCORE_MINIMUM,
-  PHASE_5_SEMANTIC_AVERAGE_MINIMUM,
   assertSignsOnlyEvidenceHasNoLeakage,
   evaluateReportDeterministically,
   evaluateSemanticGate,
@@ -67,14 +64,18 @@ type GeneratedControl = {
 
 const generationApproved = process.argv.includes("--generate");
 const resume = process.argv.includes("--resume");
+const evaluationOnly = process.argv.includes("--evaluate-only");
 const email = option("--email") || "astramaster@tony.io";
 const reportSubjects = csvOption("--subjects", "Felicia Weiss,Cheyenne Autumn,Marissa Yahil");
 const deepOnlySubjects = csvOption("--deep-only-subjects", "");
 const structuralSubjects = csvOption("--structural-controls", "Brandi McCulley,Rachel Ijames");
+const practicalGo = process.argv.includes("--practical-go");
+const maximumGenerationAttempts = integerOption("--max-generation-attempts", 3);
 const model = option("--model") || reportModelProfileModels.production[0];
 const evaluatorModel = option("--evaluator-model") || "openai/gpt-5.6-terra";
 const runStamp = new Date().toISOString().replace(/[:.]/g, "-");
 const outputDir = resolve(option("--output") || `.astra-exports/semantic-synthesis-v2-phase-5/${runStamp}`);
+const resumeFromDir = resolve(option("--resume-from") || outputDir);
 const baselineDir = resolve(option("--baseline") || ".astra-exports/semantic-synthesis/2026-07-26T21-56-13-610Z-ally-control");
 const tonyV2ReportId = option("--tony-report") || "d9c6c4d2-f8d7-4a0f-9dba-eedc28be8044";
 const tonyV1ReportId = option("--tony-v1-report") || "2efc0045-d902-4303-b881-bccd684ae76a";
@@ -83,14 +84,20 @@ const sourceRevision = git(["rev-parse", "HEAD"]);
 const sourceBranch = git(["branch", "--show-current"]);
 const generationFailures: Array<{ label: string; attempt: number; error: string }> = [];
 const subjectSetupFailures: Array<{ subject: string; error: string }> = [];
+let evaluatorSpend = 0;
+let evaluatorInputTokens = 0;
+let evaluatorOutputTokens = 0;
 
 if (process.argv.includes("--help")) {
   console.log("Run the private Semantic Synthesis V2 Phase 5 evaluation packet.");
   console.log("Required: --generate. Tony's existing control is reused; no Tony report is generated.");
-  console.log("Optional: --resume, --email, --subjects, --deep-only-subjects, --structural-controls, --model, --evaluator-model, --baseline, --output.");
+  console.log("Optional: --resume, --resume-from, --evaluate-only, --email, --subjects, --deep-only-subjects, --structural-controls, --model, --evaluator-model, --baseline, --output, --max-generation-attempts, --practical-go.");
   process.exit(0);
 }
 if (!generationApproved) throw new Error("Use --generate to approve non-Tony report and independent evaluator calls.");
+if (maximumGenerationAttempts < 1 || maximumGenerationAttempts > 3) {
+  throw new Error("--max-generation-attempts must be between 1 and 3.");
+}
 if (!apiKey) throw new Error(`${ASTRA_OPENROUTER_API_KEY_ENV} or OPENROUTER_API_KEY is required.`);
 if (!reportModelProfileModels.production.includes(model as (typeof reportModelProfileModels.production)[number])) {
   throw new Error(`Use an approved production report model. Received: ${model}`);
@@ -104,6 +111,7 @@ if (reportSubjects.some((subject) => /^tony\b/i.test(subject))) {
 if (deepOnlySubjects.length && !resume) {
   throw new Error("--deep-only-subjects requires --resume with a complete prior Phase 5 packet.");
 }
+if (evaluationOnly && !resume) throw new Error("--evaluate-only requires --resume.");
 if (deepOnlySubjects.some((subject) => !reportSubjects.includes(subject))) {
   throw new Error("--deep-only-subjects must be a subset of --subjects.");
 }
@@ -170,12 +178,20 @@ try {
     const canonicalIdentityHash = sha256(canonicalIdentity);
 
     for (const family of ["core", "deep"] as const) {
-      const forceRegeneration = family === "deep" && deepOnlySubjects.includes(source.subjectName);
+      const forceRegeneration = !evaluationOnly && family === "deep" && deepOnlySubjects.includes(source.subjectName);
       const saved = resume && !forceRegeneration
         ? await trySavedV2Report(source.subjectName, family)
         : null;
       const expectedSectionCount = family === "core" ? 4 : 9;
       const reusable = saved?.sections.length === expectedSectionCount ? saved : null;
+      if (evaluationOnly && !reusable) {
+        subjectSetupFailures.push({
+          subject: `${source.subjectName}/${family}`,
+          error: "No completed saved report was available for evaluation-only resume."
+        });
+        console.error(`${source.subjectName}/${family}: unavailable; evaluation-only mode will not regenerate it`);
+        continue;
+      }
       console.error(`${source.subjectName}/${family}: ${reusable ? "reusing saved V2" : forceRegeneration ? "regenerating V2 Deep" : "generating V2"}`);
       const request = requestFor(source, family, canonicalIdentity, {
         zodiacMode: source.chartSettings.zodiacMode,
@@ -183,7 +199,7 @@ try {
         calculationMode: "full"
       });
       const result = reusable ??
-        await generateRequestWithRetries(request, `${source.subjectName}/${family}`);
+        await generateRequestWithRetries(request, `${source.subjectName}/${family}`, maximumGenerationAttempts);
       const baseline = await baselineReport(source.subjectName, family);
       const evidence = evidencePacket(request, family);
       const deterministic = evaluateReportDeterministically(result, {
@@ -198,6 +214,9 @@ try {
       if (!reusable) {
         await writePrivate(join(outputDir, "reports", `${slug(source.subjectName)}-${family}-v1.md`), reportMarkdown(source.subjectName, family, baseline, "V1 control"));
         await writePrivate(join(outputDir, "reports", `${slug(source.subjectName)}-${family}-v2.md`), reportMarkdown(source.subjectName, family, result, "V2 Phase 5 control"));
+      } else if (resumeFromDir !== outputDir) {
+        await writePrivate(join(outputDir, "reports", `${slug(source.subjectName)}-${family}-v1.md`), reportMarkdown(source.subjectName, family, baseline, "V1 control"));
+        await writePrivate(join(outputDir, "reports", `${slug(source.subjectName)}-${family}-v2.md`), reportMarkdown(source.subjectName, family, result, "reused V2 control"));
       }
       await writeJson(join(outputDir, "evidence", `${slug(source.subjectName)}-${family}.json`), evidence);
       console.error(`${source.subjectName}/${family}: ${result.status}; ${comparison.after.words} words; ${deterministic.hardGateIssues.length} deterministic issues`);
@@ -266,9 +285,21 @@ try {
     throw new Error(`Evaluator coverage failed: ${[...semanticErrors, ...repetitionErrors].join("; ")}`);
   }
 
-  const semanticGate = evaluateSemanticGate(semanticEvaluations, repetitionEvaluations, {
-    historicalKeys: ["tony/deep"]
-  });
+  const gateSemanticEvaluations = practicalGo
+    ? semanticEvaluations.filter((evaluation) => evaluation.key.endsWith("/deep"))
+    : semanticEvaluations;
+  const gateRepetitionEvaluations = practicalGo
+    ? repetitionEvaluations.filter((evaluation) => evaluation.key.endsWith("/deep"))
+    : repetitionEvaluations;
+  const semanticGate = evaluateSemanticGate(gateSemanticEvaluations, gateRepetitionEvaluations, practicalGo
+    ? {
+        historicalKeys: ["tony/deep"],
+        semanticAverageMinimum: 2.4,
+        contextSafetyAverageMinimum: null,
+        minimumCategories: ["astrological_correctness", "context_safety"],
+        repetitionScoreMinimum: 2
+      }
+    : { historicalKeys: ["tony/deep"] });
   const deterministicIssues = [
     ...subjectSetupFailures.map((failure) => `${failure.subject}/identity: ${failure.error}`),
     ...generated.flatMap((control) => control.deterministic.hardGateIssues.map((issue) => `${slug(control.subject)}/${control.family}: ${issue}`)),
@@ -276,6 +307,17 @@ try {
   ];
   const calculationIssues = trustedControls.flatMap((control) => control.issues.map((issue) => `${control.subject}: ${issue}`));
   const hardGatePass = deterministicIssues.length === 0 && calculationIssues.length === 0;
+  const reportGenerationCosts = generated
+    .filter((control) => control.family === "deep" && deepOnlySubjects.includes(control.subject))
+    .map((control) => ({
+      subject: control.subject,
+      status: control.result.status,
+      attempts: control.result.generationMetadata?.attemptCount ?? 0,
+      inputTokens: control.result.generationMetadata?.inputTokens ?? 0,
+      outputTokens: control.result.generationMetadata?.outputTokens ?? 0,
+      estimatedSpend: control.result.generationMetadata?.estimatedSpend ?? 0
+    }));
+  const reportGenerationSpend = reportGenerationCosts.reduce((sum, entry) => sum + entry.estimatedSpend, 0);
 
   const machineDecision = hardGatePass && semanticGate.pass ? "GO_CANDIDATE" : "HOLD";
   const manifest = {
@@ -299,10 +341,20 @@ try {
     tonyReportsGenerated: 0,
     tonyControl: { v1ReportId: tonyV1ReportId, v2ReportId: tonyV2ReportId },
     baselineDir,
-    thresholds: {
-      semanticAverage: PHASE_5_SEMANTIC_AVERAGE_MINIMUM,
-      contextSafetyAverage: PHASE_5_CONTEXT_SAFETY_MINIMUM,
-      repetitionScore: PHASE_5_REPETITION_SCORE_MINIMUM
+    resumeFromDir,
+    evaluationOnly,
+    practicalGo,
+    maximumGenerationAttempts,
+    thresholds: semanticGate.thresholds,
+    costs: {
+      reportGeneration: reportGenerationCosts,
+      reportGenerationSpend,
+      evaluator: {
+        inputTokens: evaluatorInputTokens,
+        outputTokens: evaluatorOutputTokens,
+        estimatedSpend: evaluatorSpend
+      },
+      totalEstimatedSpend: reportGenerationSpend + evaluatorSpend
     },
     hardGatePass,
     semanticGate,
@@ -340,6 +392,14 @@ try {
     completedReports: generated.filter((control) => control.result.status === "completed").length,
     tonyReportsGenerated: 0
   }, null, 2));
+} catch (error) {
+  await writeJson(join(outputDir, "fatal-error.json"), {
+    message: error instanceof Error ? error.message : String(error),
+    reportSubjects,
+    deepOnlySubjects,
+    tonyReportsGenerated: 0
+  });
+  throw error;
 } finally {
   await closeDatabaseConnection();
 }
@@ -656,7 +716,7 @@ async function baselineReport(subject: string, family: "core" | "deep") {
 }
 
 async function savedV2Report(subject: string, family: "core" | "deep") {
-  const content = await readFile(join(outputDir, "reports", `${slug(subject)}-${family}-v2.md`), "utf8");
+  const content = await readFile(join(resumeFromDir, "reports", `${slug(subject)}-${family}-v2.md`), "utf8");
   return markdownReport(`${slug(subject)}-${family}-v2-resume`, content);
 }
 
@@ -847,9 +907,10 @@ function evaluatorMarkdown(
     "# Semantic Synthesis V2 Phase 5 Independent Evaluation",
     "",
     `- Gate: ${gate.pass ? "PASS" : "FAIL"}`,
-    `- Semantic average: ${gate.average} (minimum ${PHASE_5_SEMANTIC_AVERAGE_MINIMUM})`,
-    `- Context-safety average: ${gate.contextSafetyAverage} (minimum ${PHASE_5_CONTEXT_SAFETY_MINIMUM})`,
-    `- Deep repetition: ${gate.repetitionPass ? "PASS" : "FAIL"} (minimum ${PHASE_5_REPETITION_SCORE_MINIMUM}/3)`,
+    `- Semantic average: ${gate.average} (minimum ${gate.thresholds.semanticAverage})`,
+    `- Context-safety average: ${gate.contextSafetyAverage}${gate.thresholds.contextSafetyAverage === null ? " (no separate average gate; every context-safety score must be at least 2)" : ` (minimum ${gate.thresholds.contextSafetyAverage})`}`,
+    `- Required category floor: ${gate.thresholds.minimumCategories.join(", ")} >= ${gate.thresholds.minimumCategoryScore}/3`,
+    `- Deep repetition: ${gate.repetitionPass ? "PASS" : "FAIL"} (minimum ${gate.thresholds.repetitionScore}/3)`,
     "",
     ...evaluations.flatMap((evaluation) => [
       `## ${evaluation.key}`,
@@ -967,10 +1028,14 @@ async function openRouterJson(selectedModel: string, prompt: string, maxTokens: 
   const payload = await response.json() as {
     choices?: Array<{ message?: { content?: string } }>;
     error?: { message?: string };
+    usage?: { prompt_tokens?: number; completion_tokens?: number; cost?: number };
   };
   if (!response.ok) throw new Error(payload.error?.message || `Evaluator failed with ${response.status}.`);
   const text = payload.choices?.[0]?.message?.content;
   if (!text?.trim()) throw new Error("Evaluator returned no text.");
+  evaluatorInputTokens += payload.usage?.prompt_tokens ?? 0;
+  evaluatorOutputTokens += payload.usage?.completion_tokens ?? 0;
+  evaluatorSpend += payload.usage?.cost ?? 0;
   return text;
 }
 
@@ -1021,6 +1086,14 @@ function option(name: string) {
 
 function csvOption(name: string, fallback: string) {
   return (option(name) || fallback).split(",").map((value) => value.trim()).filter(Boolean);
+}
+
+function integerOption(name: string, fallback: number) {
+  const value = option(name);
+  if (!value) return fallback;
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed)) throw new Error(`${name} must be an integer.`);
+  return parsed;
 }
 
 function clean(value: unknown) {

@@ -9,6 +9,7 @@ import {
   buildAstrologyReportSectionEvidence,
   reportModelProfileModels
 } from "@astra/astrology";
+import { hasAffirmedClaim as hasAffirmedDetectorClaim, reportDetectors } from "../packages/astrology/src/report/rules/detectors";
 import {
   astrologyReportRequestSchema,
   hasResolvedBirthCoordinates
@@ -23,7 +24,7 @@ type RecordedAttempt = {
   issues: string[];
   usage: unknown;
 };
-type BlockerKey = "relationships-lunar-chain" | "blind-spots-privileged-perception";
+type BlockerKey = "relationships-lunar-chain" | "blind-spots-privileged-perception" | "felicia-blind-spots-context-safety" | "felicia-drive-work-allocation" | "cheyenne-relationships-dispositor-chain" | "cheyenne-relationships-claim-boundary";
 
 const bodyName = "(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)";
 const genericChainPattern = new RegExp(
@@ -47,22 +48,64 @@ const perceptionRebuttalTermPattern = /\b(?:read|sense|perceiv\w*|accura\w*|cert
 const blockerKey = (option("--blocker") || "relationships-lunar-chain") as BlockerKey;
 const controls = {
   "relationships-lunar-chain": {
+    subject: "Marissa Yahil",
+    source: "marissa-yahil",
+    canonicalReport: "marissa-yahil-core-v2.md",
     chapter: "Relationships",
     artifact: "marissa-relationships-lunar-chain",
     reportFile: "marissa-relationships.md",
     label: "Marissa Relationships lunar-chain narration blocker"
   },
   "blind-spots-privileged-perception": {
+    subject: "Marissa Yahil",
+    source: "marissa-yahil",
+    canonicalReport: "marissa-yahil-core-v2.md",
     chapter: "Blind Spots",
     artifact: "marissa-blind-spots-privileged-perception",
     reportFile: "marissa-blind-spots.md",
     label: "Marissa Blind Spots privileged-perception blocker"
+  },
+  "felicia-blind-spots-context-safety": {
+    subject: "Felicia Weiss",
+    source: "felicia-weiss",
+    canonicalReport: "felicia-weiss-core-v2.md",
+    chapter: "Blind Spots",
+    artifact: "felicia-blind-spots-context-safety",
+    reportFile: "felicia-blind-spots.md",
+    label: "Felicia Blind Spots context-safety blocker"
+  },
+  "felicia-drive-work-allocation": {
+    subject: "Felicia Weiss",
+    source: "felicia-weiss",
+    canonicalReport: "felicia-weiss-core-v2.md",
+    chapter: "Drive",
+    artifact: "felicia-drive-work-allocation",
+    reportFile: "felicia-drive.md",
+    label: "Felicia Drive Work-allocation repetition blocker"
+  },
+  "cheyenne-relationships-dispositor-chain": {
+    subject: "Cheyenne Autumn",
+    source: "cheyenne-autumn",
+    canonicalReport: "cheyenne-autumn-core-v2.md",
+    chapter: "Relationships",
+    artifact: "cheyenne-relationships-dispositor-chain",
+    reportFile: "cheyenne-relationships.md",
+    label: "Cheyenne Relationships generic dispositor-chain blocker"
+  },
+  "cheyenne-relationships-claim-boundary": {
+    subject: "Cheyenne Autumn",
+    source: "cheyenne-autumn",
+    canonicalReport: "cheyenne-autumn-core-v2.md",
+    chapter: "Relationships",
+    artifact: "cheyenne-relationships-claim-boundary",
+    reportFile: "cheyenne-relationships.md",
+    label: "Cheyenne Relationships biography and established-behavior blocker"
   }
 } as const;
 const control = controls[blockerKey];
 if (!control) throw new Error(`Unsupported blocker: ${blockerKey}`);
 
-if (blockerKey === "relationships-lunar-chain") {
+if (blockerKey === "relationships-lunar-chain" || blockerKey === "cheyenne-relationships-dispositor-chain") {
   for (const value of [
     "The chain tracing back to Chiron suggests this reciprocity pattern is not automatic or fully settled.",
     "The dispositor chain carries the Moon's meaning through several planets.",
@@ -76,6 +119,24 @@ if (blockerKey === "relationships-lunar-chain") {
     "Saturn is the final dispositor."
   ]) {
     if (genericChainPattern.test(value)) throw new Error(`Validator preflight rejected valid direct rulership: ${value}`);
+  }
+} else if (blockerKey === "cheyenne-relationships-claim-boundary") {
+  const rejected = "Chiron disposed by the Moon reveals old emotional wounds and how you regulate closeness now. Moon in Capricorn suggests a preference for demonstrating care through consistency, through being someone who is simply there.";
+  const bounded = "Chiron disposed by the Moon can add symbolic context without establishing personal history or current relational behavior.";
+  if (!reportDetectors.inventedBiography.test(rejected) || !reportDetectors.unsupportedScenario.test(rejected)) {
+    throw new Error(`Validator preflight missed Cheyenne claim-boundary failure: ${rejected}`);
+  }
+  if (reportDetectors.inventedBiography.test(bounded) || reportDetectors.unsupportedScenario.test(bounded)) {
+    throw new Error(`Validator preflight rejected bounded Cheyenne language: ${bounded}`);
+  }
+} else if (blockerKey === "felicia-drive-work-allocation") {
+  const rejected = "Before deciding how intensely to engage, assess the task's importance or size.";
+  const bounded = "Let your initial momentum settle into a workable pace before you add more force.";
+  if (!reportDetectors.driveWorkAllocationRepetition.test(rejected)) {
+    throw new Error(`Validator preflight missed Work-allocation repetition: ${rejected}`);
+  }
+  if (reportDetectors.driveWorkAllocationRepetition.test(bounded)) {
+    throw new Error(`Validator preflight rejected bounded Drive pacing: ${bounded}`);
   }
 } else {
   for (const value of [
@@ -104,7 +165,7 @@ const packetDir = resolve(
 const outputDir = join(packetDir, "blockers", control.artifact);
 const apiKey = clean(process.env.ASTRA_OPENROUTER_API_KEY) || clean(process.env.OPENROUTER_API_KEY);
 
-if (!generationApproved) throw new Error(`Use --generate to approve the single Marissa ${control.chapter} chapter call.`);
+if (!generationApproved) throw new Error(`Use --generate to approve the single ${control.subject} ${control.chapter} chapter call.`);
 if (!apiKey) throw new Error("ASTRA_OPENROUTER_API_KEY or OPENROUTER_API_KEY is required.");
 if (!reportModelProfileModels.production.includes(model as (typeof reportModelProfileModels.production)[number])) {
   throw new Error(`Use an approved production report model. Received: ${model}`);
@@ -119,25 +180,25 @@ try {
   });
   const chart = [...bundle.data.chartRequests]
     .filter((candidate) =>
-      candidate.subjectName === "Marissa Yahil" &&
+      candidate.subjectName === control.subject &&
       candidate.source === "ally" &&
       candidate.status === "completed"
     )
     .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))[0];
-  if (!chart) throw new Error("No completed Marissa Yahil ally chart was found.");
+  if (!chart) throw new Error(`No completed ${control.subject} ally chart was found.`);
   if (!hasResolvedBirthCoordinates(chart.birthData)) {
-    throw new Error("Marissa Yahil does not have resolved birth coordinates.");
+    throw new Error(`${control.subject} does not have resolved birth coordinates.`);
   }
 
   const settings = recordFrom(recordFrom(chart.context).chartSettings);
   const zodiacMode = textFrom(settings.zodiacMode) || "tropical";
   const houseSystem = textFrom(settings.houseSystem) || "whole-sign";
-  if (!new Set(["tropical", "sidereal"]).has(zodiacMode)) throw new Error("Marissa has invalid Zodiac settings.");
-  if (!new Set(["whole-sign", "placidus"]).has(houseSystem)) throw new Error("Marissa has invalid house settings.");
+  if (!new Set(["tropical", "sidereal"]).has(zodiacMode)) throw new Error(`${control.subject} has invalid Zodiac settings.`);
+  if (!new Set(["whole-sign", "placidus"]).has(houseSystem)) throw new Error(`${control.subject} has invalid house settings.`);
 
-  const coreReport = await readFile(join(packetDir, "reports", "marissa-yahil-core-v2.md"), "utf8");
+  const coreReport = await readFile(join(packetDir, "reports", control.canonicalReport), "utf8");
   const canonicalIdentity = markdownSection(coreReport, "Identity");
-  if (!canonicalIdentity) throw new Error("Marissa canonical Identity was not found in the Phase 5 packet.");
+  if (!canonicalIdentity) throw new Error(`${control.subject} canonical Identity was not found in the Phase 5 packet.`);
 
   const now = new Date().toISOString();
   const request = astrologyReportRequestSchema.parse({
@@ -145,7 +206,7 @@ try {
     userId: chart.userId,
     chartRequestId: chart.id,
     reportType: "deep",
-    subjectName: "Marissa Yahil",
+    subjectName: control.subject,
     birthData: chart.birthData,
     question: "What does this natal chart show when each life area is synthesized from its strongest evidence?",
     intent: `Semantic Synthesis V2 Phase 5.1 targeted ${control.label}.`,
@@ -198,9 +259,9 @@ try {
   const selection = views?.deep.chapters.find((chapter) => chapter.title === control.chapter);
   const evidence = buildAstrologyReportSectionEvidence(request, headings)
     .find((chapter) => chapter.title === control.chapter);
-  if (!selection || !evidence) throw new Error(`Marissa ${control.chapter} selection or evidence was not built.`);
+  if (!selection || !evidence) throw new Error(`${control.subject} ${control.chapter} selection or evidence was not built.`);
   const primary = network.complexes.find((complex) => complex.id === selection.primaryComplexId);
-  if (!primary) throw new Error(`Marissa ${control.chapter} primary meaning complex was not found.`);
+  if (!primary) throw new Error(`${control.subject} ${control.chapter} primary meaning complex was not found.`);
 
   const exposedChainEvidence = evidence.evidenceBullets.filter((bullet) =>
     /\bdispositor-chain\b/i.test(`${bullet.label} ${bullet.meaning}`)
@@ -274,7 +335,7 @@ try {
   if (acceptedBody) {
     await writePrivate(
       join(outputDir, control.reportFile),
-      `# Marissa Yahil — Deep ${control.chapter} targeted control\n\n## ${control.chapter}\n\n${acceptedBody}\n`
+      `# ${control.subject} — Deep ${control.chapter} targeted control\n\n## ${control.chapter}\n\n${acceptedBody}\n`
     );
   }
   await writePrivate(
@@ -291,7 +352,7 @@ try {
       "- Complete Deep reports generated: 0",
       "- Other subjects generated: 0",
       "- Validator preflight against known failure and paraphrases: PASS",
-      `- Generic chain evidence omitted: ${exposedChainEvidence.length === 0 ? "PASS" : "FAIL"}`,
+      `- Generic chain narration omitted: ${acceptedBody && !genericChainPattern.test(acceptedBody) ? "PASS" : "FAIL"}`,
       `- Targeted semantic overreach omitted: ${acceptedBody && targetedOverreachPass(acceptedBody, blockerKey) ? "PASS" : "FAIL"}`,
       `- Required chapter anchors retained: ${acceptedBody && requiredAnchorsPass(acceptedBody, blockerKey) ? "PASS" : "FAIL"}`,
       `- Unsupported biography: ${acceptedBody && !inventedBiographyPattern.test(acceptedBody) ? "PASS" : "FAIL"}`,
@@ -328,7 +389,7 @@ function buildPrompt(
     evidenceBullets: EvidenceBullet[];
   },
   previousIssues: string[]
-) {
+  ) {
   const blockerInstructions = blockerKey === "relationships-lunar-chain"
     ? [
         "State only direct rulership facts supplied below. Do not mention or infer any rulership chain, dispositor chain, sequence, endpoint, or chain relationship to Chiron.",
@@ -336,13 +397,39 @@ function buildPrompt(
         "Keep examples generic and conditional. Do not assume another person, partner, conflict, or current relationship.",
         "Use at least two selected signals. Include the Moon in Pisces in the 3rd house and the direct fact that the Moon rules the 7th house while remaining placed in the 3rd house."
       ]
-    : [
+    : blockerKey === "cheyenne-relationships-dispositor-chain"
+      ? [
+        "Do not use the phrase dispositor chain or explain a chain, sequence, hand-off, endpoint, or system of planetary governance.",
+        "Keep relationship language conditional and do not infer a partner, another person's feelings, needs, motives, or relationship status.",
+        "Use at least two selected signals. Include the Moon in Capricorn in the 4th house and Jupiter opposition Saturn without orb narration."
+      ]
+      : blockerKey === "cheyenne-relationships-claim-boundary"
+        ? [
+          "Use the chapter packet as an authorization boundary: state atomic selected facts, their bounded relevance to connection and reciprocity, and the counterweight without narrating an evidence graph.",
+          "Do not infer old wounds, emotional history, current closeness regulation, a learned habit, a present behavior, timing, a partner, or another person's feelings, needs, motives, or relationship status.",
+          "Do not use the words wound, wounds, regulate, history, childhood, or currently.",
+          "Use at least two selected signals. Include the Moon in Capricorn in the 4th house and Jupiter opposition Saturn without orb narration."
+        ]
+    : blockerKey === "blind-spots-privileged-perception"
+      ? [
         "Treat Pluto as symbolically important within the selected life area. Keep every personal application conditional and grounded in observable information.",
         "Keep the 11th-house application neutral: group, friendship, or shared-cause matters may carry symbolic weight.",
         "Build the chapter around two distinctions: symbolic importance is not biography, and counterevidence keeps an interpretation provisional.",
         "Treat groups only as life-area context. Do not include examples about evaluating people or group dynamics.",
         "Use at least two selected signals. Include Pluto in Scorpio in the 11th house and Neptune sextile Pluto without orb narration."
-      ];
+      ]
+      : blockerKey === "felicia-blind-spots-context-safety"
+        ? [
+        "Treat Pluto as symbolically important within one-to-one relationship contexts without turning it into knowledge of another person's motives, needs, feelings, or meaning.",
+        "Build the chapter around one distinction: an observation is not proof of an interpretation. Invite direct clarification and observable information rather than a fast conclusion.",
+        "Do not claim sharp social perception, a complete first impression, or that you can tell what another person means beneath their words.",
+        "Use at least two selected signals. Include Pluto in Virgo in the 7th house and Neptune sextile Pluto without orb narration."
+        ]
+        : [
+          "Drive owns force and pacing in the moment. Keep the conclusion on how momentum settles, builds, pauses, or changes pressure—not on whether a task deserves effort.",
+          "Do not use task importance, task size, contribution, allocation, visible value, or deciding how intensely to engage as a Drive conclusion; those belong to Work.",
+          "Use at least two selected signals. Include the Sun in Pisces in the 1st house and Sun opposition Pluto without orb narration."
+        ];
   return [
     `Write only the body of one Astra Deep ${evidence.chapter} chapter in plain Markdown.`,
     "Do not write a heading, report title, evidence block, JSON, or another chapter.",
@@ -395,17 +482,50 @@ function validateChapter(body: string, bullets: EvidenceBullet[], activeBlocker:
   if (inventedBiographyPattern.test(body)) issues.push("The chapter invents biography or history.");
   if (categoricalBehaviorPattern.test(body)) issues.push("The chapter states categorical behavior.");
   if (otherPersonInnerStatePattern.test(body)) issues.push("The chapter claims another person's inner state.");
+  if (activeBlocker === "felicia-blind-spots-context-safety" || activeBlocker === "felicia-drive-work-allocation" || activeBlocker === "cheyenne-relationships-claim-boundary") {
+    if (reportDetectors.inventedBiography.test(body)) issues.push("The chapter violates the shared biography claim boundary.");
+    if (reportDetectors.unsupportedScenario.test(body)) issues.push("The chapter states unsupported current relational behavior.");
+    if (reportDetectors.otherPersonInnerLife.test(body)) issues.push("The chapter violates the shared other-person context-safety boundary.");
+    if (reportDetectors.categoricalBehavior.test(body)) issues.push("The chapter violates the shared categorical-behavior boundary.");
+    if (hasAffirmedDetectorClaim(body, reportDetectors.categoricalCertaintyOrChange)) {
+      issues.push("The chapter violates the shared categorical-certainty-or-change boundary.");
+    }
+  }
   if (unsupportedElsewhereEvidencePattern.test(body)) issues.push("The chapter invokes unselected evidence from elsewhere in the chart.");
   if (hasAffirmedClaim(body, currentActivationPattern)) issues.push("The chapter invents current timing or activation.");
   if (unnecessaryOrbPrecisionPattern.test(body)) issues.push("The chapter narrates unnecessary orb precision.");
   if (activeBlocker === "relationships-lunar-chain") {
     if (!moonAnchorPattern.test(body)) issues.push("The chapter omits the Moon in Pisces anchor.");
     if (!moonRulesSeventhPattern.test(body)) issues.push("The chapter omits that the Moon rules the seventh house.");
+  } else if (activeBlocker === "cheyenne-relationships-dispositor-chain" || activeBlocker === "cheyenne-relationships-claim-boundary") {
+    if (!/\bMoon\s+(?:is|sits|stands|falls|placed|located)?\s*(?:in\s+)?Capricorn\b/i.test(body)) {
+      issues.push("The chapter omits the Moon in Capricorn anchor.");
+    }
+    if (!/\b(?:Jupiter\s+(?:opposes?|opposition)\s+Saturn|Saturn\s+(?:opposes?|opposition)\s+Jupiter)\b/i.test(body)) {
+      issues.push("The chapter omits Jupiter opposition Saturn.");
+    }
+  } else if (activeBlocker === "felicia-drive-work-allocation") {
+    if (reportDetectors.driveWorkAllocationRepetition.test(body)) {
+      issues.push("Drive repeats Work's task-importance or allocation conclusion instead of owning force and pacing.");
+    }
+    if (!/\bSun\s+(?:is|sits|stands|falls|placed|located)?\s*(?:in\s+)?Pisces\b/i.test(body)) {
+      issues.push("The chapter omits the Sun in Pisces anchor.");
+    }
+    if (!/\b(?:Sun\s+(?:opposes?|opposition)\s+Pluto|Pluto\s+(?:opposes?|opposition)\s+Sun)\b/i.test(body)) {
+      issues.push("The chapter omits Sun opposition Pluto.");
+    }
+    if (/\b(?:Sun\s+(?:trines?|trine)\s+Neptune|Neptune\s+(?:trines?|trine)\s+Sun)\b/i.test(body)) {
+      issues.push("The chapter imports Sun trine Neptune without selected evidence.");
+    }
   } else {
     if (hasAffirmedClaim(body, privilegedPerceptionPattern)) issues.push("The chapter turns symbolic evidence into privileged or rapid social perception.");
     const rebuttalTerms = body.match(perceptionRebuttalTermPattern)?.length ?? 0;
     if (rebuttalTerms > 4) issues.push("The chapter circles the forbidden perception claim instead of developing a bounded Blind Spots mechanism.");
-    if (!plutoAnchorPattern.test(body)) issues.push("The chapter omits the Pluto in Scorpio anchor.");
+    if (activeBlocker === "felicia-blind-spots-context-safety") {
+      if (!/\bPluto\s+(?:is|sits|stands|falls|placed|located)?\s*(?:in\s+)?Virgo\b/i.test(body)) {
+        issues.push("The chapter omits the Pluto in Virgo anchor.");
+      }
+    } else if (!plutoAnchorPattern.test(body)) issues.push("The chapter omits the Pluto in Scorpio anchor.");
     if (!neptunePlutoSextilePattern.test(body)) issues.push("The chapter omits Neptune sextile Pluto.");
   }
   if (/\bChiron\b/i.test(body) && !bullets.some((bullet) => /\bChiron\b/i.test(`${bullet.label} ${bullet.meaning}`))) {
@@ -424,16 +544,29 @@ function normalizeBody(value: string) {
 }
 
 function targetedOverreachPass(body: string, activeBlocker: BlockerKey) {
-  return activeBlocker === "relationships-lunar-chain"
+  return activeBlocker === "relationships-lunar-chain" || activeBlocker === "cheyenne-relationships-dispositor-chain"
     ? !genericChainPattern.test(body)
+    : activeBlocker === "cheyenne-relationships-claim-boundary"
+      ? !reportDetectors.inventedBiography.test(body) && !reportDetectors.unsupportedScenario.test(body)
+    : activeBlocker === "felicia-drive-work-allocation"
+      ? !reportDetectors.driveWorkAllocationRepetition.test(body)
     : !hasAffirmedClaim(body, privilegedPerceptionPattern) &&
+      (activeBlocker !== "felicia-blind-spots-context-safety" || !reportDetectors.otherPersonInnerLife.test(body)) &&
       (body.match(perceptionRebuttalTermPattern)?.length ?? 0) <= 4;
 }
 
 function requiredAnchorsPass(body: string, activeBlocker: BlockerKey) {
   return activeBlocker === "relationships-lunar-chain"
     ? moonAnchorPattern.test(body) && moonRulesSeventhPattern.test(body)
-    : plutoAnchorPattern.test(body) && neptunePlutoSextilePattern.test(body);
+    : activeBlocker === "cheyenne-relationships-dispositor-chain" || activeBlocker === "cheyenne-relationships-claim-boundary"
+      ? /\bMoon\s+(?:is|sits|stands|falls|placed|located)?\s*(?:in\s+)?Capricorn\b/i.test(body) &&
+        /\b(?:Jupiter\s+(?:opposes?|opposition)\s+Saturn|Saturn\s+(?:opposes?|opposition)\s+Jupiter)\b/i.test(body)
+    : activeBlocker === "felicia-drive-work-allocation"
+      ? /\bSun\s+(?:is|sits|stands|falls|placed|located)?\s*(?:in\s+)?Pisces\b/i.test(body) &&
+        /\b(?:Sun\s+(?:opposes?|opposition)\s+Pluto|Pluto\s+(?:opposes?|opposition)\s+Sun)\b/i.test(body)
+    : (activeBlocker === "felicia-blind-spots-context-safety"
+        ? /\bPluto\s+(?:is|sits|stands|falls|placed|located)?\s*(?:in\s+)?Virgo\b/i.test(body)
+        : plutoAnchorPattern.test(body)) && neptunePlutoSextilePattern.test(body);
 }
 
 function hasAffirmedClaim(text: string, pattern: RegExp) {

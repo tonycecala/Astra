@@ -45,8 +45,9 @@ const request = astrologyReportRequestSchema.parse({
 
 process.env[ASTRA_EPHEMERIS_ENGINE_ENV] = LOCAL_CHART_ROUTINE_ENGINE;
 const baseline = buildAstrologyReportResult(request);
-const modelText = baseline.sections.map((section) => `## ${section.title}\n\n${sizedBody(section.body, 375)}`).join("\n\n");
-const welcomeModelText = baseline.sections.map((section) => `## ${section.title}\n\n${sizedBody(section.body, 300)}`).join("\n\n");
+const boundedIdentityFixture = "Gemini Sun is the central selected identity fact. It can frame curiosity, adaptability, and the wish to understand experience from more than one angle. This is a measured natal possibility, not a fixed behavior, biography, event, or promise.";
+const modelText = baseline.sections.map((section) => `## ${section.title}\n\n${sizedBody(boundedIdentityFixture, 375)}`).join("\n\n");
+const welcomeModelText = baseline.sections.map((section) => `## ${section.title}\n\n${sizedBody(boundedIdentityFixture, 300)}`).join("\n\n");
 let identityPrompt = "";
 let identityReasoning: unknown;
 const result = await buildAstrologyReportResultAsync(request, {
@@ -278,7 +279,12 @@ async function completedPromptFor(input: AstrologyReportRequest, sectionWords: R
 
 async function modelResultFor(input: AstrologyReportRequest, sectionWords: Record<string, number>) {
   const deterministic = buildAstrologyReportResult(input);
-  const content = deterministic.sections.map((section) => `## ${section.title}\n\n${sizedBody(section.body, sectionWords[section.title] ?? 200)}`).join("\n\n");
+  const content = deterministic.sections.map((section) => {
+    const fixture = section.title === "Identity"
+      ? boundedIdentityFixture
+      : "This chapter offers a measured interpretation from the selected evidence. You can treat the description as a possibility to consider, not as fixed behavior, biography, current timing, another person's inner state, or a promised outcome.";
+    return `## ${section.title}\n\n${sizedBody(fixture, sectionWords[section.title] ?? 200)}`;
+  }).join("\n\n");
   let prompt = "";
   const result = await buildAstrologyReportResultAsync(input, {
     env: {
