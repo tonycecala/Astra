@@ -14,7 +14,8 @@ phase_1_status: complete
 phase_2_status: complete
 phase_3_status: complete
 phase_4_status: complete
-next_phase: Phase 5
+phase_5_status: complete-hold
+next_phase: Phase 5 remediation
 supersedes: ../ASTRA_WEIGHTED_CHART_SIGNAL_GRAPH_TODO.md
 depends_on:
   - ../../decisions/ASTRA_CHART_LOCATION_INTEGRITY_AND_SIGNAL_GRAPH.md
@@ -861,4 +862,37 @@ Human inspection found that the V2 report was materially more chart-specific, wh
 
 ```text
 Implement only Phase 5 of Astra Semantic Synthesis V2: evaluation and internal rollout evidence. Retain every Phase 0–4 deterministic gate. Build the synthetic and trusted-chart control suite, evaluator packet, and human-review packet with selected complexes, support paths, counterevidence, omitted candidates, V1 comparison, and the existing cross-chapter semantic-repetition metric. Use the completed single Tony Phase 4 report as the Tony control; do not generate a Tony matrix or another Tony report. Evaluate astrological correctness, importance, synthesis, specificity, dimensionality, tone, usefulness, Core/Deep distinction, fallbacks, context safety, and semantic repetition. Produce one explicit GO, HOLD, or NO-GO decision. Do not change headings, UI, routes, database or public contracts, or prose style.
+```
+
+## Phase 5 Completion — 2026-07-26
+
+Phase 5 evaluation is complete on `codex/astra-semantic-synthesis-v2-phase-5`.
+
+Delivered:
+
+- deterministic Phase 5 evaluator gates: `scripts/smoke-semantic-synthesis-v2-phase-5.mts`;
+- shared deterministic and semantic evaluation policy: `scripts/lib/semantic-synthesis-v2-evaluation.ts`;
+- private control/evaluator runner: `scripts/run-semantic-synthesis-v2-phase-5.mts`;
+- six-chart trusted control matrix across Tropical, Sidereal, Whole Sign, Placidus, full, and signs-and-aspects-only modes;
+- fresh Felicia, Cheyenne, and Marissa Core/Deep controls with V1 comparisons;
+- the existing Tony Phase 4 Deep control, with zero new Tony reports;
+- selected complexes, support paths, counterevidence, omitted candidates, and complete provenance;
+- independent semantic and repetition evaluation;
+- completed human review;
+- durable evaluation: `docs/evaluations/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_EVALUATION.md`.
+
+Decision: **HOLD**.
+
+Hard deterministic gates passed. Semantic rollout gates failed:
+
+- overall semantic average: 2.129/3; required 2.6;
+- context safety: 2.429/3; required 2.8;
+- Deep repetition: Felicia 1/3, Cheyenne 1/3, Marissa 1/3, Tony 2/3; required at least 2/3 for every report.
+
+Phase 6 remains blocked. V2 stays internal.
+
+### Next bounded remediation goal
+
+```text
+Implement only the Phase 5 remediation identified in docs/evaluations/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_EVALUATION.md. Preserve every Phase 0–5 deterministic gate, current headings, UI, routes, database contracts, and public contracts. Make generated prose a strict subset of each selected chapter evidence packet; block unsupported biography, categorical behavior, family-history inference, and another person's inner state; and revise Deep chapter ownership so repeated roots produce genuinely distinct mechanisms and conclusions or yield to stronger omitted candidates. Reuse the completed Phase 5 packet and Tony's existing Phase 4 report. Do not generate another Tony report and do not begin Phase 6. Rerun the non-Tony controls and produce a new GO, HOLD, or NO-GO decision only after all hard gates and semantic thresholds pass.
 ```

@@ -5,7 +5,8 @@ type: architecture-decision
 project: Astra Clean Start
 created: 2026-07-26
 updated: 2026-07-26
-decision_version: 2.0.0-phase-4
+decision_version: 2.0.0-phase-5
+rollout_status: HOLD
 scope: natal astrology
 ---
 
@@ -25,6 +26,14 @@ Astra V2 uses a modern psychological natal voice over a deterministic structural
 - Every production rule requires a stable identifier, definition, confidence tier, provenance, and deterministic tests.
 
 This decision governs implementation functions. No local function may silently select a different school.
+
+## Phase 5 Rollout Decision
+
+The deterministic doctrine and evidence engine are retained. V2 report rollout is on **HOLD**.
+
+The Phase 5 trusted-chart matrix passed calculation, provenance, independent-support, reduced-mode leakage, canonical Identity, Core/Deep view, fallback, and context-stability gates. The generated prose failed the accepted semantic thresholds for evidence fidelity, context safety, and cross-chapter repetition.
+
+Phase 6 heading and presentation work remains blocked. See `docs/evaluations/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_EVALUATION.md`.
 
 ## Phase 1 Calculation Policies
 

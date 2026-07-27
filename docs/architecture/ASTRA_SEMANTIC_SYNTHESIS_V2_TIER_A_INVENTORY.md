@@ -1,11 +1,11 @@
 ---
 title: Astra Semantic Synthesis V2 Tier A Signal Inventory
-status: verified-phase-4
+status: verified-phase-5-hold
 type: implementation-inventory
 project: Astra Clean Start
 created: 2026-07-26
 updated: 2026-07-26
-scope: Phase 0 through Phase 4
+scope: Phase 0 through Phase 5
 ---
 
 # Astra Semantic Synthesis V2 Tier A Signal Inventory
@@ -17,7 +17,7 @@ scope: Phase 0 through Phase 4
 - `absent`: deliberately not implemented yet.
 - `blocked`: the selected calculation source cannot provide trustworthy input.
 
-The baseline column describes Semantic Synthesis V1 before V2. The current-result column describes the verified state after Phase 4.
+The baseline column describes Semantic Synthesis V1 before V2. The current-result column describes the verified deterministic state after Phase 5. Semantic report rollout remains on HOLD.
 
 ## Verified calculation-library capabilities
 
