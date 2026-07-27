@@ -24,6 +24,13 @@ import {
   ASTRA_READABILITY_ALGORITHM,
   measureReportReadability
 } from "./readability";
+import {
+  normalizeAstrologyChartFacts,
+  type NormalizedChartFacts,
+  type RawAngleInput,
+  type RawLunarNodeInput,
+  type RawNormalizedPointInput
+} from "./normalizedChartFacts";
 
 export {
   ASTRA_PLAINSPOKEN_READING_GRADE_MAX,
@@ -31,6 +38,7 @@ export {
   ASTRA_READABILITY_ALGORITHM,
   measureReportReadability
 } from "./readability";
+export * from "./normalizedChartFacts";
 
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER = "astra-astrology-report-adapter";
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION = "0.1.0";
@@ -422,6 +430,8 @@ type ChartSignature = {
   sun: EphemerisPoint;
   moon: EphemerisPoint;
   ascendant?: EphemerisPoint;
+  midheaven?: EphemerisPoint;
+  lunarNodes: EphemerisPoint[];
   points: EphemerisPoint[];
   houseCusps: Array<{ angle: number; house: number }>;
   houseSystem: HouseSystemMode;
@@ -668,7 +678,9 @@ type HoroscopeHouse = {
 
 type HoroscopeLike = {
   Ascendant?: HoroscopePoint;
+  Midheaven?: HoroscopePoint;
   CelestialBodies: Record<string, HoroscopePoint | undefined>;
+  CelestialPoints: Record<string, HoroscopePoint | undefined>;
   Houses?: HoroscopeHouse[];
 };
 
@@ -1258,6 +1270,11 @@ const horoscopeBodyMap = [
   ["Chiron", "chiron"]
 ] as const;
 
+const horoscopeNodeMap = [
+  ["North Node", "northnode"],
+  ["South Node", "southnode"]
+] as const;
+
 function round(value: number, places = 2) {
   const factor = 10 ** places;
   return Math.round(value * factor) / factor;
@@ -1276,9 +1293,9 @@ function pointFor(body: string, longitude: number): EphemerisPoint {
   const sign = signForLongitude(normalized);
   return {
     body,
-    longitude: round(normalized),
+    longitude: round(normalized, 4),
     sign: sign.name,
-    degree: round(normalized % 30)
+    degree: round(normalized % 30, 4)
   };
 }
 
@@ -1357,6 +1374,13 @@ function buildChartSignatureFor(
     birthData.latitude !== undefined &&
     birthData.longitude !== undefined;
   const ascendant = hasAscendantInputs && horoscope.Ascendant ? pointFromHoroscope("Ascendant", horoscope.Ascendant, includeHouses) ?? undefined : undefined;
+  const midheaven = hasAscendantInputs && horoscope.Midheaven ? pointFromHoroscope("Midheaven", horoscope.Midheaven, includeHouses) ?? undefined : undefined;
+  const lunarNodes = horoscopeNodeMap.flatMap(([label, key]) => {
+    const point = horoscope.CelestialPoints[key];
+    if (!point) return [];
+    const parsed = pointFromHoroscope(label, point, includeHouses);
+    return parsed ? [parsed] : [];
+  });
   const houseCusps = hasAscendantInputs
     ? (horoscope.Houses ?? []).flatMap((house, index) => {
         const angle = house.ChartPosition?.StartPosition?.Ecliptic?.DecimalDegrees;
@@ -1370,6 +1394,8 @@ function buildChartSignatureFor(
     sun,
     moon,
     ascendant,
+    midheaven,
+    lunarNodes,
     points,
     houseCusps,
     houseSystem: chartSettings.houseSystem,
@@ -1475,6 +1501,106 @@ function buildBasisChartContext(request: AstrologyReportRequest): BasisChartCont
 
 function buildChartSignature(request: AstrologyReportRequest): ChartSignature {
   return buildBasisChartContext(request).active;
+}
+
+function shiftBirthDateDays(birthData: ChartBirthData, days: number): ChartBirthData {
+  const [year, month, day] = birthData.date.split("-").map(Number);
+  const shifted = new Date(Date.UTC(year ?? 0, (month ?? 1) - 1, (day ?? 1) + days, 12));
+  return { ...birthData, date: shifted.toISOString().slice(0, 10) };
+}
+
+function dailyMotion(current: EphemerisPoint, future: EphemerisPoint | undefined) {
+  if (!future) return undefined;
+  return ((future.longitude - current.longitude + 540) % 360) - 180;
+}
+
+function normalizedPointKind(body: string): RawNormalizedPointInput["kind"] {
+  if (body === "Sun" || body === "Moon") return "luminary";
+  if (body === "Chiron") return "chiron";
+  return "planet";
+}
+
+export function buildAstrologyNormalizedChartFacts(input: AstrologyReportRequest): NormalizedChartFacts {
+  const request = astrologyReportRequestSchema.parse(input);
+  const basis = reportBasisFor(request);
+  if (basis.type !== "natal") {
+    throw new Error("Semantic Synthesis V2 Phase 1 normalizes natal chart facts only.");
+  }
+  const current = buildChartSignatureFor(
+    basis.primary.birthData,
+    basis.chartSettings,
+    request.id,
+    basis.primary.calculationMode
+  );
+  const future = buildChartSignatureFor(
+    shiftBirthDateDays(basis.primary.birthData, 1),
+    basis.chartSettings,
+    request.id,
+    basis.primary.calculationMode
+  );
+  const futureByBody = new Map(
+    [...future.points, ...future.lunarNodes].map((point) => [point.body, point])
+  );
+  const points: RawNormalizedPointInput[] = current.points.map((point) => ({
+    id: bodyIdFor(point.body),
+    label: point.body,
+    kind: normalizedPointKind(point.body),
+    longitude: point.longitude,
+    ...(point.house ? { house: point.house } : {}),
+    retrograde: point.retrograde ?? false,
+    ...(futureByBody.has(point.body)
+      ? { dailyMotion: dailyMotion(point, futureByBody.get(point.body)) }
+      : {}),
+    sourceFactId: `${request.id}:ephemeris:${bodyIdFor(point.body)}`
+  }));
+  const lunarNodes: RawLunarNodeInput[] = current.lunarNodes.flatMap((point) => {
+    const id = point.body === "North Node" ? "north-node" : point.body === "South Node" ? "south-node" : null;
+    if (!id) return [];
+    return [{
+      id,
+      label: point.body as RawLunarNodeInput["label"],
+      longitude: point.longitude,
+      ...(point.house ? { house: point.house } : {}),
+      ...(futureByBody.has(point.body)
+        ? { dailyMotion: dailyMotion(point, futureByBody.get(point.body)) }
+        : {}),
+      sourceFactId: `${request.id}:ephemeris:${id}`
+    }];
+  });
+  const angles: RawAngleInput[] = current.calculationMode === "signs-aspects-only"
+    ? []
+    : [
+        ...(current.ascendant
+          ? [{
+              id: "ascendant" as const,
+              label: "Ascendant" as const,
+              longitude: current.ascendant.longitude,
+              sourceFactId: `${request.id}:angle:ascendant`
+            }]
+          : []),
+        ...(current.midheaven
+          ? [{
+              id: "midheaven" as const,
+              label: "Midheaven" as const,
+              longitude: current.midheaven.longitude,
+              sourceFactId: `${request.id}:angle:midheaven`
+            }]
+          : [])
+      ];
+
+  return normalizeAstrologyChartFacts({
+    zodiacMode: current.zodiacMode,
+    houseSystem: current.houseSystem,
+    calculationMode: current.calculationMode,
+    points,
+    lunarNodes,
+    angles,
+    houseCusps: current.houseCusps.map((cusp) => ({
+      house: cusp.house,
+      longitude: cusp.angle,
+      sourceFactId: `${request.id}:house-cusp:${cusp.house}`
+    }))
+  });
 }
 
 function bodyDisplayName(bodyId: string) {

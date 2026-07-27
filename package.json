@@ -44,6 +44,7 @@
     "test:report-api": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/smoke-report-api.mts",
     "test:report-basis-contracts": "node --import tsx scripts/smoke-report-basis-contracts.mts",
     "test:report-settings-quality": "node --import tsx scripts/smoke-report-settings-quality.mts",
+    "test:semantic-synthesis-v2-phase-1": "node --import tsx scripts/smoke-semantic-synthesis-v2-phase-1.mts",
     "test:report-model-strategy": "node --import tsx scripts/smoke-report-model-strategy.mts",
     "test:report-deep-quality": "node --import tsx scripts/smoke-report-deep-quality.mts",
     "test:report-paragraphs": "node --import tsx scripts/smoke-report-paragraphs.mts",
