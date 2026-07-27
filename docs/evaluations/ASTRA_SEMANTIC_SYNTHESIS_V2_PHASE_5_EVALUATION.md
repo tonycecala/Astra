@@ -1223,3 +1223,48 @@ trust-boundary blocker and every chapter reaches a coherent owned conclusion.
 The repeated grounding/weighing rhetoric and phrases such as “old sore spots”
 are structural or stylistic limitations, not reasons for another sentence-level
 repair. The private writer-packet contract therefore receives **practical GO**.
+
+## Phase 5.2 operation-reconciliation experiment — 2026-07-27
+
+Decision: **HOLD; candidate prompt not adopted. Phase 5.1 practical GO remains
+the active baseline.**
+
+The 5.1 Cheyenne report contained 14 forms of `weigh`, `weighed`, or
+`weighing`, plus repeated balance and grounding language. Exact fact labels
+were already mostly reconciled across chapters. The discriminating upstream
+hypothesis was that action-oriented semantic bridges caused different aspects
+to converge on the same response:
+
+- opposition required comparison;
+- square required adjustment;
+- quincunx required calibration.
+
+A candidate 5.2 packet made aspect contributions descriptive and reserved one
+unique, positive conclusion operation per chapter. Deterministic preflight
+rejected duplicate operations and proved a counterweight aspect could not
+prescribe weighing, balancing, adjustment, or calibration. Catalog/API
+fingerprints, Phases 1–5, model strategy, Deep quality, lint, typecheck,
+production build, and diff validation all passed before generation.
+
+Two Cheyenne Deep outer attempts then failed identically before a complete
+report:
+
+| Attempt | Packet | Result | Locally retained cost |
+| --- | --- | --- | ---: |
+| 1 | `2026-07-27-cheyenne-operation-reconciled-phase-5-2-v15` | Blind Spots exhausted built-in retries on unnecessary orb precision | $0.271295375 |
+| 2 | `2026-07-27-cheyenne-operation-reconciled-phase-5-2-v16` | Same Blind Spots failure; runner then terminated on an orphaned-Core evaluator call | unavailable because the fatal runner path did not write a manifest |
+
+Core and Identity were reused. Tony, Felicia, and Marissa were not generated.
+No sentence detector, validator weakening, or third canary was added.
+
+The prompt candidate was removed because deterministic packet validity is not
+enough to replace the empirically approved 5.1 baseline. This does not prove
+the operation concept caused the orb language; it proves only that 5.2 did not
+meet report-completion reliability and therefore cannot receive GO.
+
+One private evaluator fix is retained: semantic pair evaluation now requires
+both a completed Core and completed Deep control. A failed Deep candidate can
+no longer send an orphaned Core report to the pair evaluator. Deterministic
+fixtures cover both incomplete rejection and complete-pair acceptance.
+
+No Phase 6 work was started.

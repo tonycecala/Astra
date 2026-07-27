@@ -37,6 +37,7 @@ import { closeDatabaseConnection, db, exportPortableUserData } from "@astra/db";
 import {
   PHASE_5_EVALUATION_VERSION,
   assertSignsOnlyEvidenceHasNoLeakage,
+  completeSemanticPair,
   evaluateReportDeterministically,
   evaluateSemanticGate,
   phase5SemanticCategories,
@@ -244,9 +245,11 @@ try {
   await writeJson(join(outputDir, "evidence", "tony-deep.json"), tonyEvidence);
 
   const semanticEvaluations: Phase5SemanticEvaluation[] = [];
+  const semanticCandidateControls: GeneratedControl[] = [];
   for (const subject of reportSubjects) {
-    const pair = generated.filter((control) => control.subject === subject && control.result.status === "completed");
+    const pair = completeSemanticPair(generated, subject);
     if (!pair.length) continue;
+    semanticCandidateControls.push(...pair);
     semanticEvaluations.push(...await evaluatePairSemantically(pair));
   }
   semanticEvaluations.push(...await evaluateTonySemantically(tonyResult, tonyBaseline, tonyEvidence));
@@ -268,8 +271,7 @@ try {
   }));
 
   const expectedSemanticKeys = [
-    ...generated.filter((control) => control.result.status === "completed")
-      .map((control) => `${slug(control.subject)}/${control.family}`),
+    ...semanticCandidateControls.map((control) => `${slug(control.subject)}/${control.family}`),
     "tony/deep"
   ];
   const semanticErrors = validateSemanticEvaluation(expectedSemanticKeys, semanticEvaluations);

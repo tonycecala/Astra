@@ -1,6 +1,6 @@
 ---
 title: "Next clean thread handoff: resume Semantic Synthesis V2 Phase 5 after the astrology refactor"
-status: "active"
+status: "completed"
 created: "2026-07-27"
 date: "2026-07-27"
 updated: "2026-07-27"
@@ -12,6 +12,8 @@ to: "/Users/tony/Documents/Projects/Astra"
 blocked_by: "Behavior-preserving refactor of packages/astrology/src/index.ts"
 resume_phase: "Semantic Synthesis V2 Phase 5.1"
 decision_at_handoff: "HOLD"
+completion_commit: "3bf843c"
+completion_decision: "Phase 5.1 practical GO approved by Tony"
 tags:
   - "handoff"
   - "fresh-thread"
@@ -210,3 +212,12 @@ Start with Marissa's remaining counterevidence-to-established-self-correction
 overreach. It is already isolated in the Phase 5 HOLD findings and is the
 smallest clean test that the post-refactor evidence and validation paths still
 preserve qualitative claim boundaries.
+
+## Completion note
+
+This handoff was completed and superseded on 2026-07-27. The post-refactor
+Phase 5.1 work was committed as `3bf843c`, the evidence-grounded writer packet
+received practical GO, and Tony explicitly approved Phase 5.1. The later
+evidence-grounded practical bar supersedes this handoff's older sentence-level
+remediation loop and stricter cohort gate. Preserve this file as history; do not
+resume its recommended Marissa blocker.

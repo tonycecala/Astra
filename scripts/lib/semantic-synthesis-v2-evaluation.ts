@@ -37,6 +37,20 @@ export type Phase5RepetitionEvaluation = {
   offendingExcerpts: string[];
 };
 
+export function completeSemanticPair<T extends {
+  subject: string;
+  family: "core" | "deep";
+  result: { status: string };
+}>(controls: readonly T[], subject: string) {
+  const completed = controls.filter((control) =>
+    control.subject === subject && control.result.status === "completed"
+  );
+  return completed.some((control) => control.family === "core") &&
+    completed.some((control) => control.family === "deep")
+    ? completed
+    : [];
+}
+
 type ReportLike = {
   status: string;
   sections: Array<{ title: string; body: string }>;

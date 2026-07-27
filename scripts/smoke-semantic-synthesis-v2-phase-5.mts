@@ -6,6 +6,7 @@ import {
   PHASE_5_REPETITION_SCORE_MINIMUM,
   PHASE_5_SEMANTIC_AVERAGE_MINIMUM,
   assertSignsOnlyEvidenceHasNoLeakage,
+  completeSemanticPair,
   crossChapterRepetition,
   evaluateReportDeterministically,
   evaluateSemanticGate,
@@ -56,6 +57,26 @@ assert.equal(PHASE_5_EVALUATION_VERSION, "2.0.0-phase-5");
 assert.equal(PHASE_5_SEMANTIC_AVERAGE_MINIMUM, 2.6);
 assert.equal(PHASE_5_CONTEXT_SAFETY_MINIMUM, 2.8);
 assert.equal(PHASE_5_REPETITION_SCORE_MINIMUM, 2);
+
+const semanticPairControls = [
+  { subject: "Cheyenne", family: "core" as const, result: { status: "completed" } },
+  { subject: "Cheyenne", family: "deep" as const, result: { status: "failed" } }
+];
+assert.deepEqual(
+  completeSemanticPair(semanticPairControls, "Cheyenne"),
+  [],
+  "A failed Deep candidate must not send its orphaned Core control to the pair evaluator."
+);
+assert.equal(
+  completeSemanticPair(
+    semanticPairControls.map((control) => ({
+      ...control,
+      result: { status: "completed" }
+    })),
+    "Cheyenne"
+  ).length,
+  2
+);
 
 const core = report("core");
 const deep = report("deep");
