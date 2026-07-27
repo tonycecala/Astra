@@ -6,6 +6,7 @@ import {
   ASTRA_NATAL_ASPECT_RULES,
   ASTRA_NODE_CONTACT_ORB,
   ASTRA_V2_DOCTRINE_VERSION,
+  buildAstrologyChartSnapshot,
   buildAstrologyNormalizedChartFacts,
   classifyHouseMode,
   normalizeAstrologyChartFacts,
@@ -233,6 +234,15 @@ for (const facts of fullFacts) {
 const tropicalWhole = fullFacts[0]!;
 const tropicalPlacidus = fullFacts[1]!;
 const siderealWhole = fullFacts[2]!;
+const v1Snapshot = buildAstrologyChartSnapshot(requestFor(settingsMatrix[0]!, "full"));
+assert.ok(
+  v1Snapshot.placements.every(({ angle }) => angle === Number(angle.toFixed(2))),
+  "The existing V1 chart path must retain its two-decimal placement contract."
+);
+assert.ok(
+  tropicalWhole.points.some(({ longitude }) => longitude !== Number(longitude.toFixed(2))),
+  "The Phase 1 adapter must retain the additional precision required for motion and aspect-phase geometry."
+);
 assert.notEqual(
   tropicalWhole.points.find((candidate) => candidate.id === "sun")?.longitude,
   siderealWhole.points.find((candidate) => candidate.id === "sun")?.longitude,

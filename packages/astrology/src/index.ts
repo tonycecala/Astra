@@ -1288,14 +1288,14 @@ function signForLongitude(longitude: number) {
   return zodiacSigns[Math.floor(normalizeDegrees(longitude) / 30)] ?? zodiacSigns[0];
 }
 
-function pointFor(body: string, longitude: number): EphemerisPoint {
+function pointFor(body: string, longitude: number, precision = 2): EphemerisPoint {
   const normalized = normalizeDegrees(longitude);
   const sign = signForLongitude(normalized);
   return {
     body,
-    longitude: round(normalized, 4),
+    longitude: round(normalized, precision),
     sign: sign.name,
-    degree: round(normalized % 30, 4)
+    degree: round(normalized % 30, precision)
   };
 }
 
@@ -1324,11 +1324,16 @@ function buildOrigin(birthData: ChartBirthData) {
   });
 }
 
-function pointFromHoroscope(body: string, point: HoroscopePoint, includeHouse = true): EphemerisPoint | null {
+function pointFromHoroscope(
+  body: string,
+  point: HoroscopePoint,
+  includeHouse = true,
+  precision = 2
+): EphemerisPoint | null {
   const longitude = point.ChartPosition?.Ecliptic?.DecimalDegrees;
   if (longitude === undefined) return null;
   return {
-    ...pointFor(body, longitude),
+    ...pointFor(body, longitude, precision),
     ...(includeHouse && point.House?.id ? { house: point.House.id } : {}),
     retrograde: point.isRetrograde
   };
@@ -1343,7 +1348,8 @@ function buildChartSignatureFor(
   birthData: ChartBirthData,
   chartSettings: ChartSettings,
   requestId: string,
-  calculationMode: ChartCalculationMode | "legacy"
+  calculationMode: ChartCalculationMode | "legacy",
+  precision = 2
 ): ChartSignature {
   const includeHouses = calculationMode !== "signs-aspects-only";
   const horoscope = new Horoscope({
@@ -1359,7 +1365,7 @@ function buildChartSignatureFor(
   const points = horoscopeBodyMap.flatMap(([label, key]) => {
     const point = horoscope.CelestialBodies[key];
     if (!point) return [];
-    const parsed = pointFromHoroscope(label, point, includeHouses);
+    const parsed = pointFromHoroscope(label, point, includeHouses, precision);
     return parsed ? [parsed] : [];
   });
   const sun = points.find((point) => point.body === "Sun");
@@ -1373,12 +1379,12 @@ function buildChartSignatureFor(
     birthData.time &&
     birthData.latitude !== undefined &&
     birthData.longitude !== undefined;
-  const ascendant = hasAscendantInputs && horoscope.Ascendant ? pointFromHoroscope("Ascendant", horoscope.Ascendant, includeHouses) ?? undefined : undefined;
-  const midheaven = hasAscendantInputs && horoscope.Midheaven ? pointFromHoroscope("Midheaven", horoscope.Midheaven, includeHouses) ?? undefined : undefined;
+  const ascendant = hasAscendantInputs && horoscope.Ascendant ? pointFromHoroscope("Ascendant", horoscope.Ascendant, includeHouses, precision) ?? undefined : undefined;
+  const midheaven = hasAscendantInputs && horoscope.Midheaven ? pointFromHoroscope("Midheaven", horoscope.Midheaven, includeHouses, precision) ?? undefined : undefined;
   const lunarNodes = horoscopeNodeMap.flatMap(([label, key]) => {
     const point = horoscope.CelestialPoints[key];
     if (!point) return [];
-    const parsed = pointFromHoroscope(label, point, includeHouses);
+    const parsed = pointFromHoroscope(label, point, includeHouses, precision);
     return parsed ? [parsed] : [];
   });
   const houseCusps = hasAscendantInputs
@@ -1530,13 +1536,15 @@ export function buildAstrologyNormalizedChartFacts(input: AstrologyReportRequest
     basis.primary.birthData,
     basis.chartSettings,
     request.id,
-    basis.primary.calculationMode
+    basis.primary.calculationMode,
+    4
   );
   const future = buildChartSignatureFor(
     shiftBirthDateDays(basis.primary.birthData, 1),
     basis.chartSettings,
     request.id,
-    basis.primary.calculationMode
+    basis.primary.calculationMode,
+    4
   );
   const futureByBody = new Map(
     [...future.points, ...future.lunarNodes].map((point) => [point.body, point])
