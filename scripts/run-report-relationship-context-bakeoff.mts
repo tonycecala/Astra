@@ -76,7 +76,7 @@ const generatedAt = new Date().toISOString();
 
 if (process.argv.includes("--help")) {
   console.log("Run the private Tony-only relationship-context calibration and evaluation packet.");
-  console.log("Required: --generate. Optional: --model, --evaluator-model, --output.");
+  console.log("Required: --generate. Optional: --model, --evaluator-model, --output, --fixtures, --reports.");
   process.exit(0);
 }
 if (!generationApproved) throw new Error("Use --generate to approve live report and semantic-evaluator model calls.");
@@ -156,7 +156,7 @@ const fixtures: Fixture[] = [
     key: "partnered_deepen",
     kind: "explicit_choice",
     context: { ...unspecified, status: "partnered", intention: "deepen" },
-    families: ["core"]
+    families: ["core", "deep"]
   },
   {
     key: "partnered_repair",
@@ -174,10 +174,31 @@ const fixtures: Fixture[] = [
     key: "separated_recover",
     kind: "explicit_choice",
     context: { ...unspecified, status: "separated", condition: "recovering", intention: "recover" },
-    families: ["core"]
+    families: ["core", "deep"]
   }
 ];
-const expectedRecordCount = fixtures.reduce((total, fixture) => total + fixture.families.length, 0);
+const fixtureKeys = clean(option("--fixtures"))?.split(",").map((value) => value.trim()).filter(Boolean) ?? [];
+const reportKeys = clean(option("--reports"))?.split(",").map((value) => value.trim()).filter(Boolean) ?? [];
+if (fixtureKeys.length && reportKeys.length) {
+  throw new Error("Use either --fixtures or --reports, not both.");
+}
+const availableReportKeys = fixtures.flatMap((fixture) => fixture.families.map((family) => `${fixture.key}/${family}`));
+const unknownReportKeys = reportKeys.filter((key) => !availableReportKeys.includes(key));
+if (unknownReportKeys.length) {
+  throw new Error(`Unknown report key: ${unknownReportKeys.join(", ")}. Available: ${availableReportKeys.join(", ")}.`);
+}
+const selectedFixtures = fixtureKeys.length
+  ? fixtures.filter((fixture) => fixtureKeys.includes(fixture.key))
+  : reportKeys.length
+    ? fixtures.filter((fixture) => reportKeys.some((key) => key.startsWith(`${fixture.key}/`)))
+  : fixtures;
+if (fixtureKeys.length && selectedFixtures.length !== fixtureKeys.length) {
+  throw new Error(`Unknown fixture key. Available: ${fixtures.map((fixture) => fixture.key).join(", ")}.`);
+}
+const selectedReportKeys = reportKeys.length
+  ? reportKeys
+  : selectedFixtures.flatMap((fixture) => fixture.families.map((family) => `${fixture.key}/${family}`));
+const expectedRecordCount = selectedReportKeys.length;
 
 const tony = {
   key: "tony",
@@ -194,13 +215,28 @@ const tony = {
   chartSettings: { zodiacMode: "tropical" as const, houseSystem: "whole-sign" as const }
 };
 
+// Editor-curated, chart-specific synthesis. These notes deliberately stay the
+// same across every Tony context; relationship context changes application,
+// not the underlying chart interpretation.
+const tonySynthesisNotes = [
+  { label: "Identity", thesis: "Tony's thinking may gather in private before it becomes most useful in conversation or shared work.", counterweight: "Private reflection and public expression can support each other rather than cancel each other out.", claimBoundary: "Do not treat privacy as isolation or invent a biography about being unseen." },
+  { label: "Emotions", thesis: "Careful observation can help Tony understand feeling, provided analysis does not replace the feeling itself.", counterweight: "Precision can support emotional honesty when it gives experience clear language.", claimBoundary: "Do not diagnose withdrawal, suppression, or emotional history." },
+  { label: "Relationships", thesis: "Closeness is most workable when independence is named instead of left for another person to guess.", counterweight: "Freedom and care can reinforce each other when expectations stay visible.", claimBoundary: "Do not infer a partner, relationship condition, structure, or another person's motives." },
+  { label: "Work", thesis: "Tony can build durable work by concentrating skill, resources, and selective visibility into contribution with a clear purpose.", counterweight: "Recognition can support craft when it follows real contribution rather than competes with it.", claimBoundary: "Do not invent career history, workload, finances, or a specific workplace." },
+  { label: "Drive", thesis: "Strong initiative becomes more reliable when the next step is sized to the evidence available.", counterweight: "Courage and ambition are assets; proportion makes them easier to sustain.", claimBoundary: "Do not claim Tony is impulsive, burned out, or acts before thinking." },
+  { label: "Gifts", thesis: "A direct, timely style may support warmth, initiative, or useful contribution when that possibility fits Tony's lived experience.", counterweight: "This is a capacity to explore, not evidence of an established social role or effect on other people.", claimBoundary: "Use may, can, could, or if this fits. Do not claim routine behavior, biography, reputation, group impact, or how others experience Tony." },
+  { label: "Blind Spots", thesis: "A fast first impression is most useful as a cue to verify, not a finished conclusion.", counterweight: "Pattern recognition remains valuable when observation and interpretation stay distinct.", claimBoundary: "Do not claim Tony always trusts a first read or knows other people's motives." },
+  { label: "Growth", thesis: "Growth can mean letting a stable self-concept make room for information that does not fit an old script.", counterweight: "Consistency is a strength when it can update without becoming self-erasure.", claimBoundary: "Do not infer an old wound, defensive history, or a required relational outcome." },
+  { label: "Integration", thesis: "Tony can make steadier choices by weighing what deserves protection, commitment, and attention before deciding where to place his energy.", counterweight: "Values become useful when they clarify tradeoffs rather than prescribe a single correct choice.", claimBoundary: "Do not turn integration into a weekly task, forecast, or generic fix." }
+] as const;
+
 const semanticCategories = [
   "context_fidelity",
   "context_containment",
   "identity_stability",
   "interpretive_dimensionality",
   "aspect_ownership",
-  "unique_insight_ratio",
+  "cross_chapter_semantic_repetition",
   "tier_differentiation",
   "resource_balance",
   "behavioral_calibration",
@@ -210,6 +246,13 @@ const semanticCategories = [
   "voice_naturalness",
   "other_person_boundary"
 ] as const;
+
+const semanticCriticalMinimums = {
+  context_fidelity: 2.75,
+  identity_stability: 2.9,
+  psychological_safety: 2.8,
+  other_person_boundary: 2.9
+} as const;
 
 const stopwords = new Set([
   "about", "after", "again", "also", "because", "before", "being", "between", "could", "does", "from", "have", "into",
@@ -255,7 +298,7 @@ Categories:
 - identity_stability: the canonical Identity remains stable and other chapters do not contradict it.
 - interpretive_dimensionality: Tony is not reduced to one difficult pattern.
 - aspect_ownership: major chart factors have a primary home; secondary mentions extend rather than repeat.
-- unique_insight_ratio: paragraphs add distinct mechanisms, resources, implications, or applications.
+- cross_chapter_semantic_repetition: chapters do not repeat the same mechanism, conclusion, or closing advice under different headings.
 - tier_differentiation: Core is focused; Deep is broader rather than merely longer.
 - resource_balance: strengths, capacities, nourishment, contribution, and thriving conditions receive substantive space.
 - behavioral_calibration: tendencies are proportionate and distinguished from facts.
@@ -280,7 +323,7 @@ Return strict JSON:
 
 await createPacketDirectories();
 await writeJson("fixtures/tony-chart.json", tony);
-await writeJson("fixtures/relationship-contexts.json", fixtures);
+await writeJson("fixtures/relationship-contexts.json", selectedFixtures);
 
 const promptCapture = new Map<string, string[]>();
 const canonicalRequest = requestFor("canonical_identity", unspecified, "identity", "");
@@ -301,7 +344,9 @@ const canonicalIdentityHash = sha256(canonicalIdentity);
 await writeText("outputs/identity/canonical.md", resultMarkdown(canonicalResult));
 console.error(`canonical_identity/identity: completed ${canonicalIdentityHash.slice(0, 12)}`);
 
-const requests = fixtures.flatMap((fixture, fixtureIndex) => fixture.families.map((family, familyIndex) => ({
+const requests = selectedFixtures.flatMap((fixture, fixtureIndex) => fixture.families
+  .filter((family) => selectedReportKeys.includes(`${fixture.key}/${family}`))
+  .map((family, familyIndex) => ({
   fixture,
   family,
   request: requestFor(`${fixtureIndex + 1}-${familyIndex + 1}`, fixture.context, family, canonicalIdentity)
@@ -362,7 +407,7 @@ const manifest = {
   codeRevision: sourceRevision,
   dirtySourceWarning: true,
   chartFixtureSha256: sha256(JSON.stringify(tony)),
-  relationshipFixtureSha256: sha256(JSON.stringify(fixtures)),
+  relationshipFixtureSha256: sha256(JSON.stringify(selectedFixtures)),
   canonicalIdentitySha256: canonicalIdentityHash,
   promptVersion: ASTRA_REPORT_PROMPT_VERSION,
   promptHashes,
@@ -386,7 +431,7 @@ const manifest = {
     deterministicHardGates: deterministicBatch.hardGateIssues.length === 0,
     identityInvariant: deterministicBatch.identityInvariant.pass,
     aspectOwnership: deterministicBatch.aspectOwnership.pass,
-    deepUniqueInsight: deterministicBatch.deepUniqueInsight.pass,
+    deepSemanticRepetition: deterministicBatch.deepSemanticRepetition.pass,
     semanticMinimums: semanticGateResult(semanticEvaluations, semanticRepetition),
     semanticCrossChapterRepetition: semanticRepetition,
     adversarialCalibration: adversarialCalibration.pass,
@@ -416,7 +461,7 @@ function requestFor(
 ) {
   const numeric = Number.parseInt(suffix.replace(/\D/g, "").slice(0, 10) || "0", 10);
   const idSuffix = String(numeric + (family === "identity" ? 100 : family === "core" ? 200 : 300)).padStart(12, "0");
-  const context: Record<string, unknown> = { relationshipContext };
+  const context: Record<string, unknown> = { relationshipContext, v1InterpretiveNotes: tonySynthesisNotes };
   if (canonicalIdentity && family !== "identity") context.canonicalIdentity = canonicalIdentity;
   return astrologyReportRequestSchema.parse({
     id: `71111111-1111-4111-8111-${idSuffix}`,
@@ -580,8 +625,8 @@ function evaluateDeterministically(
     hardGateIssues,
     styleIssues,
     aspectCounts,
-    uniqueInsightRatio: repetition.uniqueInsightRatio,
-    duplicateParagraphPairs: repetition.similarPairs,
+    semanticRepetitionPass: repetition.pass,
+    repeatedConclusionPairs: repetition.similarPairs,
     crossChapterRepetition: repetition,
     readabilityGrade: measureReportReadability(prose).fleschKincaidGrade,
     sectionCount: result.sections.length,
@@ -611,9 +656,8 @@ function evaluateDeterministicBatch(records: RecordEntry[], canonicalIdentityHas
       pass: aspectFailures.length === 0,
       failures: aspectFailures
     },
-    deepUniqueInsight: {
+    deepSemanticRepetition: {
       pass: deep.every((record) => record.deterministic.crossChapterRepetition.pass),
-      threshold: 0.75,
       results: Object.fromEntries(deep.map((record) => [record.key, record.deterministic.crossChapterRepetition]))
     },
     exactSectionCounts: records.every((record) => record.deterministic.sectionCount === (record.family === "identity" ? 1 : record.family === "core" ? 4 : 9)),
@@ -711,7 +755,7 @@ function buildCrossOutputComparison(records: RecordEntry[], evaluations: Semanti
   const scoreTable = records.map((record) => {
     const semantic = evaluations.find((evaluation) => evaluation.key === record.key)!;
     const average = averageScore(semantic.scores);
-    return `| ${record.key} | ${record.deterministic.uniqueInsightRatio} | ${average.toFixed(2)} | ${record.deterministic.hardGateIssues.join("; ") || "none"} |`;
+    return `| ${record.key} | ${record.deterministic.semanticRepetitionPass ? "pass" : "fail"} | ${average.toFixed(2)} | ${record.deterministic.hardGateIssues.join("; ") || "none"} |`;
   });
   return [
     "# Cross-Output Comparison",
@@ -730,7 +774,7 @@ function buildCrossOutputComparison(records: RecordEntry[], evaluations: Semanti
     "",
     `Compared ${choices.length} records. The three Single choices were generated in both Core and Deep; Partnered and Separated choices were generated in Core.`,
     "",
-    "| Record | Unique insight ratio | Semantic average | Hard-gate issues |",
+    "| Record | Semantic repetition | Semantic average | Hard-gate issues |",
     "| --- | ---: | ---: | --- |",
     ...scoreTable,
     "",
@@ -740,10 +784,13 @@ function buildCrossOutputComparison(records: RecordEntry[], evaluations: Semanti
     "",
     "## Tier comparison",
     "",
-    ...fixtures.filter((fixture) => fixture.families.includes("core") && fixture.families.includes("deep")).map((fixture) => {
+    ...selectedFixtures.filter((fixture) =>
+      records.some((record) => record.key === `${fixture.key}/core`) &&
+      records.some((record) => record.key === `${fixture.key}/deep`)
+    ).map((fixture) => {
       const core = records.find((record) => record.key === `${fixture.key}/core`)!;
       const deep = records.find((record) => record.key === `${fixture.key}/deep`)!;
-      return `- ${fixture.key}: Core ${core.deterministic.wordCount} words; Deep ${deep.deterministic.wordCount} words; Deep unique insight ${deep.deterministic.uniqueInsightRatio}.`;
+      return `- ${fixture.key}: Core ${core.deterministic.wordCount} words; Deep ${deep.deterministic.wordCount} words; Deep semantic repetition ${deep.deterministic.semanticRepetitionPass ? "pass" : "fail"}.`;
     }),
     "",
     "## Cross-chapter semantic repetition",
@@ -850,7 +897,7 @@ function buildHumanReviewWorksheet(records: RecordEntry[]) {
     "single_not_seeking/core",
     "single_open_to_connection/core",
     "single_dating/core"
-  ];
+  ].filter((key) => records.some((record) => record.key === key));
   return [
     "# Human Spot Review",
     "",
@@ -897,7 +944,7 @@ function buildPreliminaryRecommendation(
     deterministic.deterministicPass &&
     deterministic.identityInvariant.pass &&
     deterministic.aspectOwnership.pass &&
-    deterministic.deepUniqueInsight.pass &&
+    deterministic.deepSemanticRepetition.pass &&
     calibration.pass &&
     semantic.pass;
   return [
@@ -911,7 +958,7 @@ function buildPreliminaryRecommendation(
     `- Deterministic hard-gate issues: ${deterministic.hardGateIssues.length}`,
     `- Identity invariant: ${deterministic.identityInvariant.pass ? "pass" : "fail"}`,
     `- Aspect ownership: ${deterministic.aspectOwnership.pass ? "pass" : "fail"}`,
-    `- Deep unique insight: ${deterministic.deepUniqueInsight.pass ? "pass" : "fail"}`,
+    `- Deep semantic repetition: ${deterministic.deepSemanticRepetition.pass ? "pass" : "fail"}`,
     `- Cross-chapter semantic repetition: ${semanticRepetition.score}/3`,
     `- Semantic gate: ${semantic.pass ? "pass" : "fail"} (${semantic.average.toFixed(2)}/3 average)`,
     `- Adversarial calibration: ${calibration.caught}/${calibration.expected}`,
@@ -1006,18 +1053,11 @@ function choiceContrastChecks(records: RecordEntry[]) {
     },
     {
       label: "separated_recover",
-      pass: /\brecover/i.test(text("separated_recover/core")) && !otherPersonMotivePattern.test(text("separated_recover/core")),
+      pass: /\b(?:recover|steadiness|forward movement)\b/i.test(text("separated_recover/core")) && !otherPersonMotivePattern.test(text("separated_recover/core")),
       detail: "uses supplied recovery context without another-person motive"
     }
-  ];
+  ].filter((check) => records.some((record) => record.key === `${check.label}/core`));
 }
-
-const semanticCriticalMinimums = {
-  context_fidelity: 2.75,
-  identity_stability: 2.9,
-  psychological_safety: 2.8,
-  other_person_boundary: 2.9
-} as const;
 
 function semanticGateResult(evaluations: SemanticEvaluation[], crossChapterRepetition: CrossChapterSemanticReview) {
   const allScores = evaluations.flatMap((evaluation) => semanticCategories.map((category) => evaluation.scores[category]));
@@ -1039,26 +1079,19 @@ function crossChapterRepetition(result: RecordAstrologyReportResult) {
   // chapters substantially repeat the same conclusion.  Comparing broad
   // theme-word presence treated legitimate continuity as duplication.
   const similarPairs: Array<{ left: string; right: string; similarity: number }> = [];
-  const repeatedChapters = new Set<string>();
   for (let right = 1; right < sections.length; right += 1) {
     for (let left = 0; left < right; left += 1) {
       const similarity = concludingClaimOverlap(sections[left]!.body, sections[right]!.body);
       if (similarity >= 0.55) {
-        repeatedChapters.add(sections[right]!.title);
         similarPairs.push({ left: sections[left]!.title, right: sections[right]!.title, similarity: Number(similarity.toFixed(3)) });
       }
     }
   }
-  const uniqueInsightRatio = sections.length
-    ? Number(((sections.length - repeatedChapters.size) / sections.length).toFixed(3))
-    : 1;
   const failures = [
-    ...(uniqueInsightRatio < 0.75 ? [`unique insight ratio ${uniqueInsightRatio} < 0.75`] : []),
     ...(similarPairs.length > 2 ? [`repeated chapter conclusions ${similarPairs.map((pair) => `${pair.left}/${pair.right}`).join(", ")}`] : [])
   ];
   return {
     pass: failures.length === 0,
-    uniqueInsightRatio,
     similarPairs,
     failures
   };

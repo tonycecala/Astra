@@ -55,7 +55,8 @@ export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
-export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-relationship-context-v11";
+export const ASTRA_SEMANTIC_SYNTHESIS_VERSION = "1.0.0";
+export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-semantic-synthesis-v1";
 export const GEMINI_INTRO_IDENTITY_REPORT_MODEL = "google/gemini-3.5-flash";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
@@ -137,7 +138,7 @@ export function normalizedRelationshipContextFromRequest(
 
 function canonicalIdentityFromRequest(request: Pick<AstrologyReportRequest, "context">) {
   const context = recordValue(request.context);
-  return typeof context?.canonicalIdentity === "string" ? context.canonicalIdentity.trim() : "";
+  return typeof context?.canonicalIdentity === "string" ? normalizeReportVoice(context.canonicalIdentity.trim()) : "";
 }
 
 function readerFocusInstruction(request: Pick<AstrologyReportRequest, "question" | "intent">) {
@@ -222,9 +223,9 @@ const sectionVoicePlans: Record<string, string> = {
   Relationships: "Close with a bounded relational condition or question. Do not use move, fix, task, risk, or repair as the closing frame.",
   Work: "Close with a prioritization rule that protects useful effort from scattered effort.",
   Drive: "Close with a proportion or pacing principle, not a productivity assignment.",
-  Gifts: "Close by affirming how a capacity becomes dependable through practice; do not turn the chapter into a warning.",
-  "Blind Spots": "Close with a verification question that separates observation from interpretation.",
-  Growth: "Close by naming the capacity that can mature; do not prescribe a deadline or a confrontation.",
+  Gifts: "Close by naming how a usable capacity supports contribution, connection, or expression. Do not turn it into a refinement or verification warning.",
+  "Blind Spots": "Close with the report's only verification question: separate observation from interpretation before acting on a first read.",
+  Growth: "Close by naming how a stable self-concept can update. Do not prescribe a deadline, confrontation, or verification practice.",
   Integration: "Close with two or three operating principles stated as choices, not a small action, fix, task, risk, or weekly assignment."
 };
 
@@ -239,6 +240,64 @@ function reportVoicePlan(headings: readonly string[]) {
     "- Avoid stock transitions such as 'The useful move,' 'The fix,' 'The task,' 'The risk,' or 'The pattern worth watching.'",
     ...headings.map((heading) => `- ${heading}: ${voicePlanForSection(heading)}`)
   ].join("\n");
+}
+
+function enrichedSynthesisVoicePlan(cards: readonly ReportSectionSignalCard[]) {
+  if (!cards.some((card) => card.hypothesis)) return "";
+  return [
+    "Enriched report-level voice plan:",
+    "- Treat each chapter hypothesis as a different job. Coherence comes from contrast between those jobs, not from restating one report-wide lesson.",
+    "- Only Integration may connect multiple life domains or name a report-wide operating principle.",
+    "- Do not repeat a reflection, check, or action sequence, closing question, or practical rule from another chapter under a new heading.",
+    "- Do not use stock bridge phrases such as 'Put together,' 'Taken together,' 'This suggests,' or 'The pattern points.' State the chapter's own conclusion plainly.",
+    "- Do not use 'works differently,' 'this works differently,' or a similar explanatory pivot. State the distinct meaning directly.",
+    "- Identity alone owns private reflection: describe how private processing shapes self-knowledge, then name the stable rhythm without prescribing action.",
+    "- Work owns allocation and contribution: discuss where time, effort, skill, and visibility create value. Do not repeat private processing, reflection, checking, or self-definition there.",
+    "- Integration owns values and decision criteria: name what the reader weighs, protects, or declines when choosing. Do not turn it into a reflection-check-action sequence or repeat Work's allocation rule.",
+    "- Relationships names a relational condition. Drive owns proportion and force. Gifts owns a usable resource and its contribution. Blind Spots alone owns observation versus interpretation and checking a first read. Growth alone owns self-updating: how a stable self-concept can take in new information."
+  ].join("\n");
+}
+
+function enrichedChapterOwnershipInstruction(title: string, cards: readonly ReportSectionSignalCard[]) {
+  if (!cards.some((card) => card.hypothesis)) return "";
+  const instructions: Record<string, string> = {
+    Identity: "Identity ownership: this is the only chapter that may explain private reflection or private processing. Keep the conclusion descriptive, not a practice sequence.",
+    Work: "Work ownership: stay with allocation and contribution—what receives time, effort, skill, or visible credit. Do not use reflection, checking, private processing, or self-definition as the chapter's mechanism or conclusion.",
+    Integration: "Integration ownership: stay with values and decision criteria—what to weigh, protect, choose, or decline. Do not prescribe reflection, verification, or action steps, and do not restate Work's allocation or contribution rule.",
+    Drive: "Drive ownership: stay with proportion and force—how much effort or momentum a situation calls for. Do not turn this into a test of whether a first impression is true.",
+    Gifts: "Gifts ownership: describe a usable capacity and the contribution it can make. Do not turn ease into a warning about shallow talent, unfinished work, refinement, or verification.",
+    "Blind Spots": "Blind Spots ownership: this is the only chapter that may distinguish observation from interpretation or ask the reader to check a first read before acting.",
+    Growth: "Growth ownership: stay with self-updating—how a stable self-concept can take in new information. Do not repeat observation-versus-interpretation, checking a first read, or a refinement lesson."
+  };
+  return instructions[title] ?? "";
+}
+
+function enrichedProseBoundaryInstruction(
+  request: AstrologyReportRequest,
+  title: string,
+  cards: readonly ReportSectionSignalCard[]
+) {
+  if (!cards.some((card) => card.hypothesis)) return "";
+  if (title === "Relationships") {
+    const condition = normalizedRelationshipContextFromRequest(request).condition;
+    if (condition === "strained" || condition === "ending") {
+      return [
+        "Relationship safety boundary for this chapter:",
+        "- Safety is unknown. Do not directly advise disclosure, contact, confrontation, repair, or stating a need or boundary.",
+        "- If naming a possible future conversation or disclosure, explicitly qualify it with the exact words \"when safe and appropriate\" in the same sentence.",
+        "- Private discernment is always available; direct engagement is not presumed."
+      ].join("\n");
+    }
+  }
+  if (title === "Gifts") {
+    return [
+      "Gifts calibration boundary for this chapter:",
+      "- Present capacities as bounded possibilities supported by the chart, not as established biography, reputation, routine behavior, or proven effect on other people.",
+      "- Use calibrated language such as may, can, could, or \"if this fits\" for human capacities.",
+      "- Do not claim that the reader routinely reads rooms, steadies groups, helps things hold together, is relied upon, or produces a known response in others."
+    ].join("\n");
+  }
+  return "";
 }
 
 function reportEvidenceOwnershipPlan(cards: readonly ReportSectionSignalCard[]) {
@@ -265,8 +324,9 @@ function canonicalIdentityInstruction(request: AstrologyReportRequest) {
   if (!identity) return "";
   return [
     "Canonical Identity contract:",
-    "- The application will replace the generated Identity section with the canonical Identity below.",
+    "- The application will insert the canonical Identity section below; do not generate it.",
     "- Do not contradict, rewrite, or re-teach it in another chapter.",
+    "- A later chapter may rely on Identity only as a short bridge. Do not restate its private-reflection mechanism, signals, or reflection-to-expression sequence.",
     "- Treat it as stable chart interpretation, not relationship context.",
     "",
     identity
@@ -440,6 +500,10 @@ type ReportSectionSignalCard = {
     label: string;
     meaning: string;
   }>;
+  /** Optional, editor-curated synthesis for a named chapter. Kept internal to the report writer. */
+  hypothesis?: string;
+  counterweight?: string;
+  claimBoundary?: string;
 };
 
 export type AstrologyReportSectionEvidence = {
@@ -523,6 +587,8 @@ type SectionedDeepFailureGeneration = {
   sections: DeepSectionPartMetadata[];
 };
 
+type SectionedCoreFailureGeneration = Omit<SectionedDeepFailureGeneration, "thesis">;
+
 class DeepPartGenerationError extends Error {
   constructor(message: string, readonly title: string, readonly generation: ValidatedWriterPart) {
     super(message);
@@ -534,6 +600,13 @@ class SectionedDeepReportGenerationError extends Error {
   constructor(message: string, readonly generation: SectionedDeepFailureGeneration) {
     super(message);
     this.name = "SectionedDeepReportGenerationError";
+  }
+}
+
+class SectionedCoreReportGenerationError extends Error {
+  constructor(message: string, readonly generation: SectionedCoreFailureGeneration) {
+    super(message);
+    this.name = "SectionedCoreReportGenerationError";
   }
 }
 
@@ -778,6 +851,8 @@ type InterpretiveNote = {
   humanMeaning?: unknown;
   evidence?: unknown;
   practicalInstruction?: unknown;
+  counterweight?: unknown;
+  claimBoundary?: unknown;
 };
 
 export class BirthPlaceSearchUnavailableError extends Error {
@@ -1558,15 +1633,120 @@ function contextString(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
-function compactInterpretiveNote(note: InterpretiveNote) {
-  const parts = [
-    contextString(note.label),
-    contextString(note.thesis),
-    contextString(note.meaning) ?? contextString(note.humanMeaning),
-    contextString(note.evidence),
-    contextString(note.practicalInstruction)
-  ].filter(Boolean);
-  return parts.length ? parts.join(": ") : null;
+type SectionSynthesisNote = Pick<ReportSectionSignalCard, "hypothesis" | "counterweight" | "claimBoundary">;
+
+function sectionSynthesisNotesFromRequest(request: AstrologyReportRequest) {
+  const context = recordValue(request.context);
+  const notes = context?.v1InterpretiveNotes;
+  if (!Array.isArray(notes)) return new Map<string, SectionSynthesisNote>();
+
+  const byTitle = new Map<string, SectionSynthesisNote>();
+  for (const rawNote of notes.slice(0, 24)) {
+    if (!rawNote || typeof rawNote !== "object") continue;
+    const note = rawNote as InterpretiveNote;
+    const title = contextString(note.label);
+    const hypothesis = contextString(note.thesis) ?? contextString(note.meaning) ?? contextString(note.humanMeaning);
+    if (!title || !hypothesis || byTitle.has(title)) continue;
+    const counterweight = contextString(note.counterweight);
+    const claimBoundary = contextString(note.claimBoundary);
+    byTitle.set(title, {
+      hypothesis,
+      ...(counterweight ? { counterweight } : {}),
+      ...(claimBoundary ? { claimBoundary } : {})
+    });
+  }
+  return byTitle;
+}
+
+function enrichSectionSignalCards(
+  request: AstrologyReportRequest,
+  cards: ReportSectionSignalCard[]
+) {
+  const notes = sectionSynthesisNotesFromRequest(request);
+  if (!notes.size) return cards;
+  return cards.map((card) => ({ ...card, ...(notes.get(card.title) ?? {}) }));
+}
+
+/**
+ * Enriched cards are curated chapter briefs, not a request to repeat every
+ * relevant signal in every chapter. Keep Identity's private-reflection
+ * material there; each enriched chapter receives only evidence that serves its
+ * distinct editorial job. Ordinary reports retain their full fallback.
+ */
+function prosePlanningCard(card: ReportSectionSignalCard): ReportSectionSignalCard {
+  if (!card.hypothesis) return card;
+  const signalKind = (signal: ReportSectionSignalCard["chartSignals"][number]) => signal.id.split("_")[0] ?? "";
+  const signalBodies = (signal: ReportSectionSignalCard["chartSignals"][number]) => {
+    const parts = signal.id.split("_");
+    if (parts[0] === "aspect" && parts.length >= 4) return new Set([parts[1], parts[parts.length - 1]]);
+    if (parts[0] === "placement" && parts[1]) return new Set([parts[1]]);
+    return new Set<string>();
+  };
+  const isAspect = (signal: ReportSectionSignalCard["chartSignals"][number]) => signalKind(signal) === "aspect";
+  const isPlacement = (signal: ReportSectionSignalCard["chartSignals"][number], body: string) =>
+    signalKind(signal) === "placement" && signalBodies(signal).has(body);
+  const aspectIncludes = (signal: ReportSectionSignalCard["chartSignals"][number], body: string) =>
+    isAspect(signal) && signalBodies(signal).has(body);
+  const isIdentityReflectionSignal = (signal: ReportSectionSignalCard["chartSignals"][number]) =>
+    /\b(?:Sun|Moon)\b|Mercury in .*12th house|12th house/i.test(`${signal.label}; ${signal.facts.join("; ")}`);
+
+  /**
+   * Enriched evidence ownership is chart-agnostic. It assigns signal types and
+   * planetary roles to chapter jobs; it never keys a rule to a named aspect,
+   * sign, or Tony fixture.
+   */
+  const remainingSignals = card.title === "Work"
+    ? card.chartSignals.filter((signal) =>
+        !isIdentityReflectionSignal(signal) && (
+          signalKind(signal) === "house" ||
+          isPlacement(signal, "mercury") ||
+          (aspectIncludes(signal, "mercury") && !aspectIncludes(signal, "venus"))
+        )
+      )
+    : card.title === "Emotions"
+      ? card.chartSignals.filter((signal) => isPlacement(signal, "moon") || aspectIncludes(signal, "moon"))
+    : card.title === "Drive"
+      ? card.chartSignals.filter((signal) =>
+          isPlacement(signal, "mars") ||
+          (aspectIncludes(signal, "mars") && !aspectIncludes(signal, "venus") && !aspectIncludes(signal, "neptune"))
+        )
+    : card.title === "Gifts"
+        ? card.chartSignals.filter((signal) => isPlacement(signal, "venus"))
+      : card.title === "Relationships"
+        ? (() => {
+            const dynamics = card.chartSignals.filter((signal) =>
+              aspectIncludes(signal, "venus") ||
+              (aspectIncludes(signal, "mars") && aspectIncludes(signal, "neptune"))
+            );
+            return dynamics.length
+              ? dynamics
+              : card.chartSignals.filter((signal) => isPlacement(signal, "venus") || isPlacement(signal, "mars"));
+          })()
+      : card.title === "Blind Spots"
+        ? card.chartSignals.filter((signal) => {
+            const bodies = signalBodies(signal);
+            const personalBodies = ["sun", "moon", "mercury", "venus", "mars"];
+            return (isAspect(signal) && personalBodies.every((body) => !bodies.has(body))) || isPlacement(signal, "saturn");
+          })
+        : card.title === "Growth"
+          ? (() => {
+              const signThemes = card.chartSignals.filter((signal) => signalKind(signal) === "sign");
+              return signThemes.length > 1 ? signThemes.slice(1) : [];
+            })()
+          : card.title === "Integration"
+            ? card.chartSignals.filter((signal) => !isIdentityReflectionSignal(signal) && !/\bMercury\b/i.test(signal.label))
+            : card.chartSignals;
+  return {
+    ...card,
+    // An enriched card may intentionally have no raw signal left after its
+    // shared evidence is assigned elsewhere. Do not restore the full card:
+    // its curated hypothesis remains the bounded brief for this chapter.
+    chartSignals: remainingSignals
+  };
+}
+
+function prosePlanningCards(cards: readonly ReportSectionSignalCard[]) {
+  return cards.map(prosePlanningCard);
 }
 
 type RawReportSignal = ReportSectionSignalCard["chartSignals"][number] & { sections: string[] };
@@ -1583,7 +1763,11 @@ function ownedSectionsForAspect(source: string, target: string) {
   return ["Growth", "Blind Spots"];
 }
 
-function reportSectionSignalCardsFromRawSignals(rawSignals: RawReportSignal[], headings: readonly string[]) {
+function reportSectionSignalCardsFromRawSignals(
+  rawSignals: RawReportSignal[],
+  headings: readonly string[],
+  selectionLimit = 4
+) {
   return headings.map((heading) => {
     const meaning = sectionSignalMeanings[heading] ?? sectionSignalMeanings.Identity;
     const selected = rawSignals
@@ -1593,7 +1777,7 @@ function reportSectionSignalCardsFromRawSignals(rawSignals: RawReportSignal[], h
         const rightPriority = heading === "Identity" && right.id.includes("sun") ? right.priority + 2 : right.priority;
         return rightPriority - leftPriority;
       })
-      .slice(0, heading === "Right Now" || heading === "Integration" ? 3 : 4);
+      .slice(0, heading === "Right Now" || heading === "Integration" ? 3 : selectionLimit);
     const fallback = selected.length ? selected : rawSignals.slice().sort((left, right) => right.priority - left.priority).slice(0, 2);
     const chartSignals = fallback.map((signal) => ({
       id: signal.id,
@@ -1616,7 +1800,11 @@ function reportSectionSignalCardsFromRawSignals(rawSignals: RawReportSignal[], h
   });
 }
 
-function buildReportSectionSignalCards(chartSignature: ChartSignature, headings: readonly string[]): ReportSectionSignalCard[] {
+function buildReportSectionSignalCards(
+  chartSignature: ChartSignature,
+  headings: readonly string[],
+  selectionLimit = 4
+): ReportSectionSignalCard[] {
   const rawSignals: RawReportSignal[] = [];
   const placements = [
     ...chartSignature.points,
@@ -1676,7 +1864,7 @@ function buildReportSectionSignalCards(chartSignature: ChartSignature, headings:
     });
   }
 
-  return reportSectionSignalCardsFromRawSignals(rawSignals, headings);
+  return reportSectionSignalCardsFromRawSignals(rawSignals, headings, selectionLimit);
 }
 
 function crossChartSignals(
@@ -1767,9 +1955,13 @@ function synastryReportSectionSignalCards(context: BasisChartContext, headings: 
 
 function buildReportSectionSignalCardsForRequest(request: AstrologyReportRequest, headings: readonly string[]) {
   const context = buildBasisChartContext(request);
-  if (context.basis.type === "progressed") return progressedReportSectionSignalCards(context, headings);
-  if (context.basis.type === "synastry") return synastryReportSectionSignalCards(context, headings);
-  return buildReportSectionSignalCards(context.primary, headings);
+  const enrichedSelectionLimit = sectionSynthesisNotesFromRequest(request).size ? 12 : 4;
+  const cards = context.basis.type === "progressed"
+    ? progressedReportSectionSignalCards(context, headings)
+    : context.basis.type === "synastry"
+      ? synastryReportSectionSignalCards(context, headings)
+      : buildReportSectionSignalCards(context.primary, headings, enrichedSelectionLimit);
+  return enrichSectionSignalCards(request, cards);
 }
 
 export function buildAstrologyReportSectionEvidence(input: AstrologyReportRequest, headings: readonly string[]): AstrologyReportSectionEvidence[] {
@@ -1780,11 +1972,25 @@ export function buildAstrologyReportSectionEvidence(input: AstrologyReportReques
 }
 
 function sectionSignalCardBlock(card: ReportSectionSignalCard) {
-  return [
+  const shared = [
     `## ${card.title}`,
     "",
     "Chart signals:",
     ...card.chartSignals.map((signal) => `- ${signal.label}: ${signal.facts.join("; ")}`),
+  ];
+  if (card.hypothesis) {
+    return [
+      ...shared,
+      "",
+      `Primary hypothesis: ${card.hypothesis}`,
+      ...(card.counterweight ? [`Counterweight: ${card.counterweight}`] : []),
+      ...(card.claimBoundary ? [`Claim boundary: ${card.claimBoundary}`] : []),
+      "",
+      "Claim policy: selected section signals only. Treat the hypothesis as a bounded interpretation, not biography or fact."
+    ].join("\n");
+  }
+  return [
+    ...shared,
     "",
     `Capacities: ${card.capacities.join("; ") || "none listed"}`,
     `Risks: ${card.risks.join("; ") || "none listed"}`,
@@ -1793,19 +1999,6 @@ function sectionSignalCardBlock(card: ReportSectionSignalCard) {
     "",
     "Claim policy: selected section signals only."
   ].join("\n");
-}
-
-function v1InterpretiveContextFromRequest(request: AstrologyReportRequest) {
-  const context = request.context;
-  const notes = context && typeof context === "object" ? (context.v1InterpretiveNotes as unknown) : undefined;
-  if (!Array.isArray(notes)) return null;
-
-  const compactNotes = notes
-    .map((note) => (note && typeof note === "object" ? compactInterpretiveNote(note as InterpretiveNote) : null))
-    .filter(Boolean)
-    .slice(0, 24);
-
-  return compactNotes.length ? compactNotes : null;
 }
 
 function deterministicReportLabel(reportType: AstrologyReportRequest["reportType"]) {
@@ -1873,7 +2066,7 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
       : `the natal chart: ${chartHeadline}`;
   const summary = `${subject}'s ${reportLabel.toLowerCase()} uses ${basisSummary}, calculated with ${settingsText}. ${basis.type === "natal" ? houseText : ""}`.trim();
   const headings = reportHeadingsFor(request);
-  const sectionCards = buildReportSectionSignalCardsForRequest(request, headings);
+  const sectionCards = prosePlanningCards(buildReportSectionSignalCardsForRequest(request, headings));
   const sunElement = elementAdjective(sunSign.element);
   const moonElement = elementAdjective(moonSign.element);
 
@@ -1953,6 +2146,9 @@ function normalizeReportVoice(value: string) {
       : replacement
   );
   return value
+    .replace(/\bworth sitting with\b/gi, (match) => preserveInitialCase(match, "worth considering"))
+    .replace(/\bsitting with\b/gi, (match) => preserveInitialCase(match, "considering"))
+    .replace(/\bsit with\b/gi, (match) => preserveInitialCase(match, "consider"))
     .replace(/\bthe task isn't to ([^.]+)\.\s+it's to\b/gi, (match, contrast: string) => (
       `${preserveInitialCase(match, "the point is not to")} ${contrast}. It is to`
     ))
@@ -2020,17 +2216,46 @@ function summaryFromMarkdown(text: string, fallback: string) {
   return firstParagraph ? firstParagraph.slice(0, 700) : fallback;
 }
 
+function writerHeadingsFor(request: AstrologyReportRequest): string[] {
+  const headings: string[] = reportHeadingsFor(request);
+  return canonicalIdentityFromRequest(request) ? headings.filter((heading) => heading !== "Identity") : headings;
+}
+
+function canonicalIdentitySection(request: AstrologyReportRequest, index: number): AstrologyReportSection | null {
+  const body = canonicalIdentityFromRequest(request);
+  if (!body) return null;
+  return {
+    id: sectionIdFromTitle(request.id, "Identity", index),
+    title: "Identity",
+    body,
+    emphasis: "primary"
+  };
+}
+
+function assembleReportSections(
+  request: AstrologyReportRequest,
+  generatedSections: AstrologyReportSection[]
+) : AstrologyReportSection[] {
+  const generatedByTitle = new Map(generatedSections.map((section) => [section.title, section]));
+  return reportHeadingsFor(request).flatMap((title, index) => {
+    if (title === "Identity") {
+      const canonical = canonicalIdentitySection(request, index);
+      if (canonical) return [canonical];
+    }
+    const generated = generatedByTitle.get(title);
+    return generated ? [{ ...generated, id: sectionIdFromTitle(request.id, title, index), emphasis: index === 0 ? "primary" : title === "Integration" ? "practice" : "supporting" }] : [];
+  });
+}
+
 function parseModelDraft(text: string, request: AstrologyReportRequest, chartSignature: ChartSignature): ReportDraft {
   const baseline = writeDeterministicCoreReport({ request, chartSignature });
   if (!baseline.publicSignal) {
     throw new Error("Deterministic baseline did not include a public signal.");
   }
   const canonicalIdentity = canonicalIdentityFromRequest(request);
-  const sections = markdownSectionsFromText(text, request).map((section) => (
-    canonicalIdentity && section.title === "Identity"
-      ? { ...section, body: canonicalIdentity }
-      : section
-  ));
+  const writerHeadings = new Set<string>(writerHeadingsFor(request));
+  const generatedSections = markdownSectionsFromText(text, request).filter((section) => writerHeadings.has(section.title));
+  const sections = assembleReportSections(request, generatedSections);
 
   return {
     summary: summaryFromMarkdown(canonicalIdentity || text, baseline.summary ?? `${request.subjectName}'s report is grounded in the computed chart signature.`),
@@ -2055,6 +2280,7 @@ const astraPlainspokenVoiceContract = [
   "Say what happens, what it costs, and what can change. If a simpler sentence works, use it.",
   "Sound warm and lived-in, never academic, clinical, ornate, mystical, or clever for its own sake.",
   "Keep adult psychological nuance. Plain does not mean choppy or childish.",
+  "Avoid stilted therapeutic phrasing such as 'sitting with' or 'sit with.' Prefer considering, reflecting on, notice, or a plain concrete verb.",
   "Open each section with a direct second-person statement using You or Your. Vary the sentence shape across sections. Do not begin with a question or stock setup such as 'Here's the question,' 'Here is the question,' or 'This section asks.'",
   "Use words such as actually, real, really, and here's sparingly; do not turn them into a repeated voice tic.",
   "Use needed astrology terms accurately, then explain their human meaning in ordinary language."
@@ -2071,12 +2297,21 @@ const astraInterpretiveContract = [
   "When a signal appears in multiple sections, interpret a different consequence in each life domain instead of repeating its thesis or advice."
 ];
 
+function interpretiveContractFor(cards: readonly ReportSectionSignalCard[]) {
+  if (!cards.some((card) => card.hypothesis)) return astraInterpretiveContract;
+  return astraInterpretiveContract.map((line) => line === "Build each section from chart factor to human pattern to its relevant tension or cost, then offer one section-specific useful response."
+    ? "Build each section from chart factor to human pattern. Use the curated hypothesis, counterweight, and claim boundary when supplied; do not force every chapter through a cost-and-response sequence."
+    : line
+  );
+}
+
 const astraPsychologicalSafetyContract = [
   "This is reflective interpretation, not diagnosis, therapy, risk assessment, or factual knowledge about another person.",
   "Frame tendencies as possibilities with words such as may, can, might, under stress, or if this fits. Use certainty only for supplied chart facts.",
   "Do not turn a chart tendency into invented biography. Never claim that the reader has probably lost a relationship, job, trust, opportunity, learned a wound early, compensated for an old injury, or already lived through a specific event.",
   "Describe observable behavior instead of labeling the reader with projection, control, avoidance, reactivity, self-sabotage, power struggle, emotional overcontrol, dissociation, or trauma.",
   "Never invent a clinical condition, trauma history, attachment style or diagnosis, abuse dynamic, compulsion, unconscious motive, old wound, or another person's inner life.",
+  "When using an example involving another person, use someone or a neutral description unless partner pronouns were explicitly supplied. Do not add he, she, him, her, his, or hers.",
   "Do not claim the reader can identify another person's wound, weak spot, pressure point, motive, capacity, mood, grief, need, or what will change them. Keep perception claims anchored to what the reader notices and can verify.",
   "Avoid categorical biography and behavior claims such as 'you act before you think,' 'you usually land right,' or 'you react first.' Use bounded possibility language unless stating a supplied chart fact.",
   "Any recommendation involving direct conversation, disclosure, confrontation, boundaries, or repair must be conditional on it being safe and appropriate.",
@@ -2177,16 +2412,19 @@ function familyDepthRules(request: AstrologyReportRequest) {
 function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: ChartSignature, previousErrors: string[] = []) {
   const basis = reportBasisFor(request);
   const headings = reportHeadingsFor(request);
-  const v1InterpretiveContext = v1InterpretiveContextFromRequest(request);
+  const writerHeadings = writerHeadingsFor(request);
   const sectionCards = buildReportSectionSignalCardsForRequest(request, headings);
-  const requiredHeadings = headings.map((heading) => `## ${heading}`).join("\n");
+  const hasEnrichedSynthesis = sectionCards.some((card) => card.hypothesis);
+  const requiredHeadings = writerHeadings.map((heading) => `## ${heading}`).join("\n");
   const sunPlacement = chartSignature.points.find((point) => point.body === "Sun");
   return [
     "You are writing an astrology reading from structured notes.",
     "The notes are not prose.",
     "Use the notes the way a human writer uses notes: understand them, synthesize them, then write fresh second-person prose.",
-    "Before writing, infer one report-level governing thesis from the repeated signals, strongest placements, tensions, and developmental tasks.",
-    "Do not print that thesis as a separate heading. Let it quietly organize every section.",
+    hasEnrichedSynthesis
+      ? "Use the supplied chapter hypotheses as the report plan. Do not invent a second governing thesis or make every chapter a variation of one lesson."
+      : "Before writing, infer one report-level governing thesis from the repeated signals, strongest placements, tensions, and developmental tasks.",
+    hasEnrichedSynthesis ? "Keep the chapters coherent through their distinct roles, not through a repeated sequence or conclusion." : "Do not print that thesis as a separate heading. Let it quietly organize every section.",
     basis.type === "progressed"
       ? `This is a secondary progressed report as of ${basis.asOfDate}. Interpret progressed placements and progressed-to-natal contacts, not generic natal traits.`
       : basis.type === "synastry"
@@ -2200,7 +2438,7 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     "Do not write JSON.",
     "Write plain Markdown only.",
     "",
-    `Write a complete plain Markdown Astra report for ${request.subjectName}.`,
+    `Write the generated chapters of a plain Markdown Astra report for ${request.subjectName}.`,
     `Selected report depth: ${request.reportType}.`,
     familyDepthRules(request),
     "",
@@ -2209,6 +2447,7 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     requiredHeadings,
     "",
     "Use the required headings exactly as written.",
+    canonicalIdentityFromRequest(request) ? "Do not write Identity. The application inserts the canonical Identity section after generation." : "",
     'If Integration is selected, the heading must be exactly "## Integration"; do not rename it Right Now, Timing, or Current Chapter.',
     "",
     "Write only the prose body for each selected section.",
@@ -2222,17 +2461,20 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     "Astra Voice Contract:",
     ...astraPlainspokenVoiceContract,
     plainspokenParagraphRule(request, "section"),
-    ...astraInterpretiveContract,
+    ...interpretiveContractFor(sectionCards),
     ...astraPsychologicalSafetyContract,
     reportVoicePlan(headings),
+    enrichedSynthesisVoicePlan(sectionCards),
     reportEvidenceOwnershipPlan(sectionCards),
     '- Avoid generic phrases such as "you are a natural communicator," "this aspect gifts you," "you may struggle," or "this placement indicates" unless rewritten into more specific language.',
     "Speak directly to the reader using you and your. Never describe the report subject as a case or third-person label.",
     "Keep second-person grammar clean: write you want, you understand, you adapt, and you believe; never write you wants, you understands, you adapts, or you believes.",
     "",
     ...astraEvidenceContract,
-    "Make the sections feel like chapters of one chart, not isolated mini-readings. Each section should deepen or complicate the governing thesis.",
-    "Identity opening rule: begin Identity from the Sun placement unless the Identity card has no Sun signal. The first or second sentence must include the exact phrase '[Sign] Sun' or 'Sun in [Sign]' using the Sun sign from the Identity card. Include Sun house or house-system nuance when present, then integrate Mercury/Sun relationship, chart ruler or Ascendant, and dominant identity aspects or themes. Do not make the Sun generic or treat it as standalone Sun-sign astrology.",
+    hasEnrichedSynthesis
+      ? "Make the sections feel like chapters of one chart by giving each its own consequence. Do not re-teach Identity's private reflection in Work or Integration."
+      : "Make the sections feel like chapters of one chart, not isolated mini-readings. Each section should deepen or complicate the governing thesis.",
+    writerHeadings.includes("Identity") ? "Identity opening rule: begin Identity from the Sun placement unless the Identity card has no Sun signal. The first or second sentence must include the exact phrase '[Sign] Sun' or 'Sun in [Sign]' using the Sun sign from the Identity card. Include Sun house or house-system nuance when present, then integrate Mercury/Sun relationship, chart ruler or Ascendant, and dominant identity aspects or themes. Do not make the Sun generic or treat it as standalone Sun-sign astrology." : "",
     basis.type === "natal"
       ? "Integration must synthesize enduring natal patterns into a practical way of working with the chart. It is not a forecast and must not claim a transit, progression, season, or unusual current activation."
       : "Use timing language only from the supplied dated evidence.",
@@ -2257,7 +2499,6 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
       ? "- Chart detail: signs and aspects only; houses and Rising omitted"
       : `- House system: ${chartSignature.houseSystem}`,
     `- Zodiac: ${chartSignature.zodiacMode}`,
-    v1InterpretiveContext?.length ? ["", "V1 interpretive context notes:", ...v1InterpretiveContext.map((note) => `- ${note}`)].join("\n") : "",
     "",
     "Section signal cards:",
     sectionCards.map(sectionSignalCardBlock).join("\n\n---\n\n"),
@@ -2280,12 +2521,29 @@ const deepSectionDepth: Record<string, { minimum: number; target: string; maximu
   Integration: { minimum: 225, target: "225-325", maximum: 360 }
 };
 
+function enrichedCoreSectionDepth(request: AstrologyReportRequest, title: string) {
+  return paidReportSectionDepth[request.reportType]?.[title] ?? { minimum: 175, target: "200-275", maximum: 315 };
+}
+
+function canonicalIdentityBridgeInstruction(request: AstrologyReportRequest) {
+  if (!canonicalIdentityFromRequest(request)) return "";
+  return [
+    "Canonical Identity bridge:",
+    "- Identity is already supplied to the reader as stable chart interpretation; do not generate or summarize it.",
+    "- Do not import Identity's private-reflection mechanism, its signals, or its reflection-to-expression sequence into this chapter.",
+    "- If a bridge is needed, refer only to the reader's established way of working in one short sentence, then return to this chapter's own evidence."
+  ].join("\n");
+}
+
 function buildDeepThesisPrompt(request: AstrologyReportRequest, cards: ReportSectionSignalCard[]) {
+  const hasEnrichedSynthesis = cards.some((card) => card.hypothesis);
   return [
     "You are planning one premium astrology report from structured section notes.",
     "Return one private governing thesis. Aim for 35-75 words and never exceed 90 words. Use plain prose with no heading, bullets, JSON, or metadata.",
     "This thesis is an internal writing compass, not customer-facing copy.",
-    "Name the central human tension that can organize all nine chapters without reducing them to one repeated lesson.",
+    hasEnrichedSynthesis
+      ? "Name a light connective thread without reducing the chapters to one repeated mechanism, reflection-check-action sequence, or practical rule."
+      : "Name the central human tension that can organize all nine chapters without reducing them to one repeated lesson.",
     "Plan at least three dimensions: a central identity pattern, a relational or agency pattern, and a stabilizing resource or developmental capacity.",
     "Assign each major aspect one primary chapter and at most one brief secondary reference. A secondary reference must extend, not restate, its primary interpretation.",
     "Deep must add breadth: nourishment, belonging, joy, meaning, creativity, thriving conditions, decision-making, or contribution must receive real space alongside tension.",
@@ -2294,7 +2552,9 @@ function buildDeepThesisPrompt(request: AstrologyReportRequest, cards: ReportSec
     editorialRoleInstruction(request),
     canonicalIdentityInstruction(request),
     "Section planning notes:",
-    ...cards.map((card) => `- ${card.title}: capacities ${card.capacities.join(", ")}; risks ${card.risks.join(", ")}; tension ${card.tensions.join(", ")}; task ${card.developmentalTasks.join(", ")}.`)
+    ...cards.map((card) => card.hypothesis
+      ? `- ${card.title}: hypothesis ${card.hypothesis}${card.counterweight ? `; counterweight ${card.counterweight}` : ""}${card.claimBoundary ? `; boundary ${card.claimBoundary}` : ""}.`
+      : `- ${card.title}: capacities ${card.capacities.join(", ")}; risks ${card.risks.join(", ")}; tension ${card.tensions.join(", ")}; task ${card.developmentalTasks.join(", ")}.`)
   ].join("\n");
 }
 
@@ -2392,7 +2652,7 @@ function buildDeepSectionPrompt(input: {
   const { request, chartSignature, card, thesis, previousErrors } = input;
   const depth = deepSectionDepth[card.title];
   const sunPlacement = chartSignature.points.find((point) => point.body === "Sun");
-  const reportCards = buildReportSectionSignalCardsForRequest(request, reportHeadingsFor(request));
+  const reportCards = prosePlanningCards(buildReportSectionSignalCardsForRequest(request, reportHeadingsFor(request)));
   return [
     "You are writing one chapter of a premium Astra Deep Report from structured notes.",
     "Write only this chapter's body as plain Markdown. Astra supplies the chapter heading. Do not write any heading, other chapter, report title, evidence block, metadata, JSON, or planning commentary.",
@@ -2402,16 +2662,21 @@ function buildDeepSectionPrompt(input: {
     chartSignature.calculationMode === "signs-aspects-only"
       ? `Zodiac: ${chartSignature.zodiacMode}. Chart detail: signs and aspects only; do not mention houses, Rising, Ascendant, Midheaven, or angles.`
       : `Zodiac: ${chartSignature.zodiacMode}. Houses: ${chartSignature.houseSystem}.`,
-    `Private governing thesis: ${thesis}`,
-    "Use the thesis as a quiet through-line, not as a sentence to repeat.",
-    `This chapter must answer, rather than quote or announce, this distinct governing question: ${card.tensions.join("; ")}.`,
+    card.hypothesis ? `Chapter-specific synthesis: ${card.hypothesis}` : `Private governing thesis: ${thesis}`,
+    card.hypothesis ? "Develop this chapter's synthesis without importing another chapter's conclusion. Use the report thesis only as background, not as a repeated frame." : "Use the thesis as a quiet through-line, not as a sentence to repeat.",
+    card.hypothesis && card.counterweight ? `Counterweight to preserve: ${card.counterweight}` : "",
+    card.hypothesis && card.claimBoundary ? `Claim boundary: ${card.claimBoundary}` : "",
+    card.hypothesis ? "Give this chapter its own consequence or condition; do not force it into a move, fix, risk, or task conclusion." : `This chapter must answer, rather than quote or announce, this distinct governing question: ${card.tensions.join("; ")}.`,
     deepChapterFocusInstruction(request, card.title),
     ...astraPlainspokenVoiceContract,
     plainspokenParagraphRule(request, "chapter"),
-    ...astraInterpretiveContract,
+    ...interpretiveContractFor([card]),
     ...astraPsychologicalSafetyContract,
     `Chapter voice plan: ${voicePlanForSection(card.title)}`,
-    reportEvidenceOwnershipPlan(reportCards),
+    enrichedSynthesisVoicePlan(reportCards),
+    enrichedChapterOwnershipInstruction(card.title, reportCards),
+    enrichedProseBoundaryInstruction(request, card.title, reportCards),
+    reportEvidenceOwnershipPlan([card]),
     ...astraEvidenceContract,
     "Use at least two selected signals when available, including a section-specific secondary signal.",
     "Do not generalize this chapter into the whole report and do not repeat a generic warning or practice from another life domain.",
@@ -2429,11 +2694,57 @@ function buildDeepSectionPrompt(input: {
   ].filter(Boolean).join("\n");
 }
 
-function validateDeepSection(input: {
+function buildEnrichedCoreSectionPrompt(input: {
+  request: AstrologyReportRequest;
+  chartSignature: ChartSignature;
+  card: ReportSectionSignalCard;
+  previousErrors: string[];
+}) {
+  const { request, chartSignature, card, previousErrors } = input;
+  const depth = enrichedCoreSectionDepth(request, card.title);
+  return [
+    "You are writing one chapter of an Astra Core Report from a single structured section card.",
+    "Write only this chapter's body as plain Markdown. Astra supplies the heading. Do not write any heading, other chapter, report title, evidence block, metadata, JSON, or planning commentary.",
+    `Chapter: ${card.title}.`,
+    `Target length: ${depth.target} words. Hard minimum: ${depth.minimum}. Hard maximum: ${depth.maximum}.`,
+    `Subject: ${request.subjectName}`,
+    chartSignature.calculationMode === "signs-aspects-only"
+      ? `Zodiac: ${chartSignature.zodiacMode}. Chart detail: signs and aspects only; do not mention houses, Rising, Ascendant, Midheaven, or angles.`
+      : `Zodiac: ${chartSignature.zodiacMode}. Houses: ${chartSignature.houseSystem}.`,
+    `Chapter-specific synthesis: ${card.hypothesis ?? card.tensions.join("; ")}`,
+    card.counterweight ? `Counterweight to preserve: ${card.counterweight}` : "",
+    card.claimBoundary ? `Claim boundary: ${card.claimBoundary}` : "",
+    "Develop only this chapter's consequence. Do not introduce or summarize another chapter's mechanism, rule, or conclusion.",
+    canonicalIdentityBridgeInstruction(request),
+    deepChapterFocusInstruction(request, card.title),
+    ...astraPlainspokenVoiceContract,
+    plainspokenParagraphRule(request, "chapter"),
+    ...interpretiveContractFor([card]),
+    ...astraPsychologicalSafetyContract,
+    `Chapter voice plan: ${voicePlanForSection(card.title)}`,
+    enrichedSynthesisVoicePlan([card]),
+    enrichedChapterOwnershipInstruction(card.title, [card]),
+    enrichedProseBoundaryInstruction(request, card.title, [card]),
+    reportEvidenceOwnershipPlan([card]),
+    ...astraEvidenceContract,
+    "Use at least two selected signals when available, including a section-specific secondary signal.",
+    "Do not invent transits, progressions, current activation, seasonal timing, biography, or another person's inner state.",
+    card.title === "Integration"
+      ? "Integration editorial job: state values and decision criteria across domains. Do not re-teach Identity or repeat Work's allocation rule."
+      : "",
+    "Section signal card:",
+    sectionSignalCardBlock(card),
+    previousErrors.length ? "The previous version of this chapter failed. Rewrite only this chapter and correct every issue:" : "",
+    ...previousErrors.map((error) => `- ${error}`)
+  ].filter(Boolean).join("\n");
+}
+
+function validateSectionedReportSection(input: {
   text: string;
   request: AstrologyReportRequest;
   chartSignature: ChartSignature;
   card: ReportSectionSignalCard;
+  depth: { minimum: number; target: string; maximum: number };
 }) {
   const errors = validateRawModelText(input.text).map((message) => retryIssue("forbidden_fragment", message));
   let section: AstrologyReportSection;
@@ -2446,7 +2757,7 @@ function validateDeepSection(input: {
     errors.push(retryIssue("heading_mismatch", `Required heading is ## ${input.card.title}.`));
     return errors;
   }
-  const depth = deepSectionDepth[input.card.title];
+  const depth = input.depth;
   const words = wordCount(section.body);
   if (depth && words < depth.minimum) errors.push(retryIssue("below_minimum", `${input.card.title} must be at least ${depth.minimum} words; found ${words}.`));
   if (depth && words > depth.maximum) errors.push(retryIssue("above_maximum", `${input.card.title} must be at most ${depth.maximum} words; found ${words}.`));
@@ -2476,6 +2787,30 @@ function validateDeepSection(input: {
     errors.push(retryIssue("natal_timing", "Natal chapter must not imply current timing without dated evidence."));
   }
   return errors;
+}
+
+function validateDeepSection(input: {
+  text: string;
+  request: AstrologyReportRequest;
+  chartSignature: ChartSignature;
+  card: ReportSectionSignalCard;
+}) {
+  return validateSectionedReportSection({
+    ...input,
+    depth: deepSectionDepth[input.card.title] ?? { minimum: 275, target: "275-400", maximum: 435 }
+  });
+}
+
+function validateEnrichedCoreSection(input: {
+  text: string;
+  request: AstrologyReportRequest;
+  chartSignature: ChartSignature;
+  card: ReportSectionSignalCard;
+}) {
+  return validateSectionedReportSection({
+    ...input,
+    depth: enrichedCoreSectionDepth(input.request, input.card.title)
+  });
 }
 
 function deepSectionFromText(text: string, request: AstrologyReportRequest, title: string): AstrologyReportSection {
@@ -2574,6 +2909,52 @@ async function generateValidatedDeepSection(input: {
   );
 }
 
+async function generateValidatedEnrichedCoreSection(input: {
+  request: AstrologyReportRequest;
+  chartSignature: ChartSignature;
+  card: ReportSectionSignalCard;
+  writer: PromptModelWriter;
+}): Promise<DeepSectionGeneration> {
+  let previousErrors: string[] = [];
+  let usage: ModelUsage = {};
+  let latencyMs = 0;
+  const failures: ReportGenerationRetryFailure[] = [];
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    let response: ModelWriterResponse;
+    const attemptStartedAt = Date.now();
+    try {
+      response = await input.writer(buildEnrichedCoreSectionPrompt({ ...input, previousErrors }), 750);
+    } catch (error) {
+      const failureLatencyMs = Date.now() - attemptStartedAt;
+      const issues = [providerRetryIssue(error)];
+      failures.push(retryFailure(attempt, issues, failureLatencyMs));
+      latencyMs += failureLatencyMs;
+      previousErrors = issues.map((issue) => issue.message);
+      continue;
+    }
+    usage = mergeModelUsage(usage, response.usage);
+    latencyMs += response.latencyMs;
+    const errors = validateEnrichedCoreSection({ ...input, text: response.text });
+    if (!errors.length) {
+      return {
+        section: deepSectionFromText(response.text, input.request, input.card.title),
+        attemptCount: attempt,
+        usage,
+        finishReason: response.finishReason,
+        latencyMs,
+        failures
+      };
+    }
+    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage, response.finishReason, response.text));
+    previousErrors = errors.map((error) => error.message);
+  }
+  throw new DeepPartGenerationError(
+    `${input.card.title} failed validation after retries: ${previousErrors.join("; ")}`,
+    input.card.title,
+    { attemptCount: 3, usage, latencyMs, failures }
+  );
+}
+
 async function mapWithConcurrencySettled<T, R>(items: T[], concurrency: number, worker: (item: T, index: number) => Promise<R>) {
   const results = new Array<PromiseSettledResult<R>>(items.length);
   let nextIndex = 0;
@@ -2595,7 +2976,10 @@ async function mapWithConcurrencySettled<T, R>(items: T[], concurrency: number, 
 async function generateSectionedDeepDraft(input: ReportWriterInput, writer: PromptModelWriter) {
   const startedAt = Date.now();
   const headings = reportHeadingsFor(input.request);
-  const cards = buildReportSectionSignalCardsForRequest(input.request, headings);
+  const cards = prosePlanningCards(buildReportSectionSignalCardsForRequest(input.request, headings));
+  const writerCards = canonicalIdentityFromRequest(input.request)
+    ? cards.filter((card) => card.title !== "Identity")
+    : cards;
   let thesis: Awaited<ReturnType<typeof generateValidatedDeepThesis>>;
   try {
     thesis = await generateValidatedDeepThesis(input.request, cards, writer);
@@ -2609,8 +2993,9 @@ async function generateSectionedDeepDraft(input: ReportWriterInput, writer: Prom
       sections: []
     });
   }
-  const settledSections = await mapWithConcurrencySettled(cards, 3, async (card, index) => {
+  const settledSections = await mapWithConcurrencySettled(writerCards, 3, async (card) => {
     const generated = await generateValidatedDeepSection({ ...input, card, thesis: thesis.thesis, writer });
+    const index = headings.indexOf(card.title);
     return {
       ...generated,
       section: {
@@ -2641,18 +3026,13 @@ async function generateSectionedDeepDraft(input: ReportWriterInput, writer: Prom
       }
     );
   }
-  const canonicalIdentity = canonicalIdentityFromRequest(input.request);
-  const generatedSections = settledSections.map((result) => {
-    const generated = (result as PromiseFulfilledResult<DeepSectionGeneration>).value;
-    return canonicalIdentity && generated.section.title === "Identity"
-      ? { ...generated, section: { ...generated.section, body: canonicalIdentity } }
-      : generated;
-  });
+  const generatedSections = settledSections.map((result) => (result as PromiseFulfilledResult<DeepSectionGeneration>).value);
   const baseline = writeDeterministicCoreReport(input);
-  const identity = generatedSections.find((generated) => generated.section.title === "Identity")?.section.body ?? "";
+  const sections = assembleReportSections(input.request, generatedSections.map((generated) => generated.section));
+  const identity = sections.find((section) => section.title === "Identity")?.body ?? "";
   const draft: ReportDraft = {
     summary: summaryFromMarkdown(identity, baseline.summary ?? `${input.request.subjectName}'s Deep Report.`),
-    sections: generatedSections.map((generated) => generated.section),
+    sections,
     publicSignal: baseline.publicSignal
   };
   const finalErrors = validateModelDraft(input.request, draft, input.chartSignature);
@@ -2668,7 +3048,70 @@ async function generateSectionedDeepDraft(input: ReportWriterInput, writer: Prom
   };
 }
 
-function reportHeadingsFor(request: AstrologyReportRequest) {
+function usesSectionedEnrichedCoreGeneration(request: AstrologyReportRequest) {
+  if (!new Set<AstrologyReportRequest["reportType"]>(["core", "core_self", "chart_interpretation"]).has(request.reportType)) return false;
+  if (!canonicalIdentityFromRequest(request)) return false;
+  return prosePlanningCards(buildReportSectionSignalCardsForRequest(request, reportHeadingsFor(request))).some((card) => card.hypothesis);
+}
+
+async function generateSectionedEnrichedCoreDraft(input: ReportWriterInput, writer: PromptModelWriter) {
+  const startedAt = Date.now();
+  const headings = reportHeadingsFor(input.request);
+  const cards = prosePlanningCards(buildReportSectionSignalCardsForRequest(input.request, headings));
+  const writerCards = cards.filter((card) => card.title !== "Identity");
+  const settledSections = await mapWithConcurrencySettled(writerCards, 3, async (card) => {
+    const generated = await generateValidatedEnrichedCoreSection({ ...input, card, writer });
+    const index = headings.indexOf(card.title);
+    return {
+      ...generated,
+      section: {
+        ...generated.section,
+        id: sectionIdFromTitle(input.request.id, card.title, index),
+        emphasis: card.title === "Integration" ? "practice" : "supporting"
+      } satisfies AstrologyReportSection
+    };
+  });
+  const unexpectedFailure = settledSections.find((result) => result.status === "rejected" && !(result.reason instanceof DeepPartGenerationError));
+  if (unexpectedFailure?.status === "rejected") throw unexpectedFailure.reason;
+  const sectionParts = settledSections.map((result) => {
+    if (result.status === "fulfilled") return sectionPartMetadata(result.value);
+    const failure = result.reason as DeepPartGenerationError;
+    return { title: failure.title, ...failure.generation };
+  });
+  const failedSections = settledSections.filter((result): result is PromiseRejectedResult => result.status === "rejected");
+  if (failedSections.length) {
+    throw new SectionedCoreReportGenerationError(
+      failedSections.map((result) => (result.reason as DeepPartGenerationError).message).join("; "),
+      {
+        attemptCount: sectionParts.reduce((total, part) => total + part.attemptCount, 0),
+        usage: sectionParts.reduce((total, part) => mergeModelUsage(total, part.usage), {} as ModelUsage),
+        latencyMs: Date.now() - startedAt,
+        sections: sectionParts
+      }
+    );
+  }
+  const generatedSections = settledSections.map((result) => (result as PromiseFulfilledResult<DeepSectionGeneration>).value);
+  const baseline = writeDeterministicCoreReport(input);
+  const sections = assembleReportSections(input.request, generatedSections.map((generated) => generated.section));
+  const identity = sections.find((section) => section.title === "Identity")?.body ?? "";
+  const draft: ReportDraft = {
+    summary: summaryFromMarkdown(identity, baseline.summary ?? `${input.request.subjectName}'s Core Report.`),
+    sections,
+    publicSignal: baseline.publicSignal
+  };
+  const finalErrors = validateModelDraft(input.request, draft, input.chartSignature);
+  if (finalErrors.length) throw new Error(`Assembled Core Report failed validation: ${finalErrors.join("; ")}`);
+  const usage = generatedSections.reduce((total, part) => mergeModelUsage(total, part.usage), {} as ModelUsage);
+  return {
+    draft,
+    attemptCount: generatedSections.reduce((total, part) => total + part.attemptCount, 0),
+    usage,
+    latencyMs: Date.now() - startedAt,
+    sections: generatedSections
+  };
+}
+
+function reportHeadingsFor(request: AstrologyReportRequest): string[] {
   if (request.reportType === "identity") return [...personIdentityReportHeadings];
   if (request.reportType === "deep") return [...personDeepReportHeadings];
   if (request.reportType === "synastry") return [...synastryReportHeadings];
@@ -2706,6 +3149,9 @@ function validateRelationshipAndSafetyClaims(
     if (unverifiedOtherPersonStatePattern.test(text)) errors.push(`${section.title} claims unverified access to another person's thoughts, feelings, or needs.`);
     if (psychologicalLabelPattern.test(text)) errors.push(`${section.title} uses a psychological label instead of observable behavior.`);
     if (categoricalBehaviorPattern.test(text)) errors.push(`${section.title} turns an interpretive tendency into a categorical behavior claim.`);
+    if (!context.partnerPronouns && contextGenderedPartnerPronounPattern.test(text)) {
+      errors.push(`${section.title} uses a partner gender pronoun that was not supplied.`);
+    }
     const canonicalIdentityIsSupplied = section.title === "Identity" && Boolean(canonicalIdentityFromRequest(request));
     if (!canonicalIdentityIsSupplied && stockConclusionPattern.test(text)) {
       errors.push(`${section.title} uses a prohibited stock conclusion instead of its chapter-specific voice plan.`);
@@ -2715,9 +3161,6 @@ function validateRelationshipAndSafetyClaims(
     }
 
     if (section.title !== "Relationships" && section.title !== "Integration") continue;
-    if (!context.partnerPronouns && contextGenderedPartnerPronounPattern.test(text)) {
-      errors.push(`${section.title} uses a partner gender pronoun that was not supplied.`);
-    }
     if (context.status === "partnered" && context.condition === "unspecified" && context.intention !== "repair" &&
       (/\b(?:under strain|strained relationship|working on repair|relationship is strained|repairing the relationship|things are tense|current tension)\b/i.test(text) ||
         statusToConditionPattern.test(text))) {
@@ -3340,8 +3783,9 @@ async function buildDebugModelReportResult(
   const chartSignature = buildChartSignature(request);
   let draft: ReportDraft;
   let writerSummary: string;
-  let generation: Awaited<ReturnType<typeof parseValidatedModelDraft>> | Awaited<ReturnType<typeof generateSectionedDeepDraft>>;
+  let generation: Awaited<ReturnType<typeof parseValidatedModelDraft>> | Awaited<ReturnType<typeof generateSectionedDeepDraft>> | Awaited<ReturnType<typeof generateSectionedEnrichedCoreDraft>>;
   let sectionedGeneration: Awaited<ReturnType<typeof generateSectionedDeepDraft>> | null = null;
+  let sectionedCoreGeneration: Awaited<ReturnType<typeof generateSectionedEnrichedCoreDraft>> | null = null;
   try {
     if (config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER) {
       if (!config.openRouterApiKey || !config.openRouterBaseUrl) {
@@ -3362,6 +3806,12 @@ async function buildDebugModelReportResult(
           (prompt, maxOutputTokens) => writeOpenRouterModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
         );
         generation = sectionedGeneration;
+      } else if (usesSectionedEnrichedCoreGeneration(request)) {
+        sectionedCoreGeneration = await generateSectionedEnrichedCoreDraft(
+          writerInput,
+          (prompt, maxOutputTokens) => writeOpenRouterModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
+        );
+        generation = sectionedCoreGeneration;
       } else {
         generation = await parseValidatedModelDraft(
             writerInput,
@@ -3384,6 +3834,12 @@ async function buildDebugModelReportResult(
           (prompt, maxOutputTokens) => writeOpenAIModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
         );
         generation = sectionedGeneration;
+      } else if (usesSectionedEnrichedCoreGeneration(request)) {
+        sectionedCoreGeneration = await generateSectionedEnrichedCoreDraft(
+          writerInput,
+          (prompt, maxOutputTokens) => writeOpenAIModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
+        );
+        generation = sectionedCoreGeneration;
       } else {
         generation = await parseValidatedModelDraft(
             writerInput,
@@ -3409,6 +3865,27 @@ async function buildDebugModelReportResult(
         latencyMs: error.generation.latencyMs,
         orchestration: "sectioned-v1",
         thesis: partGenerationMetadata(error.generation.thesis),
+        sections: error.generation.sections.map((section) => ({
+          title: section.title,
+          ...partGenerationMetadata(section),
+          ...(section.acceptedText ? { acceptedText: section.acceptedText } : {})
+        }))
+      });
+    }
+    if (error instanceof SectionedCoreReportGenerationError) {
+      return buildReportModelCallFailedResult(request, error.message, {
+        writer: DEBUG_MODEL_REPORT_WRITER,
+        provider: config.reportModelProvider,
+        model: config.reportModel,
+        modelProfile: config.reportModelProfile,
+        ...(config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
+          ? { reasoningEffort: reportReasoningEffortForModel(config.reportModel) }
+          : {}),
+        promptVersion: ASTRA_REPORT_PROMPT_VERSION,
+        attemptCount: error.generation.attemptCount,
+        ...error.generation.usage,
+        latencyMs: error.generation.latencyMs,
+        orchestration: "sectioned-v1",
         sections: error.generation.sections.map((section) => ({
           title: section.title,
           ...partGenerationMetadata(section),
@@ -3461,6 +3938,15 @@ async function buildDebugModelReportResult(
             })),
             readability: reportReadabilityMetadata(draft.sections)
           }
+        : sectionedCoreGeneration
+          ? {
+              orchestration: "sectioned-v1" as const,
+              sections: sectionedCoreGeneration.sections.map((section) => ({
+                title: section.section.title,
+                ...partGenerationMetadata(section)
+              })),
+              readability: reportReadabilityMetadata(draft.sections)
+            }
         : {
             orchestration: "monolithic" as const,
             ...("failures" in generation && generation.failures.length ? { failures: generation.failures } : {})

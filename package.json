@@ -57,6 +57,7 @@
     "report:quality-bakeoff": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/run-report-model-quality-bakeoff.mts",
     "report:prompt-bakeoff": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/run-report-prompt-change-bakeoff.mts",
     "report:relationship-context-bakeoff": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/run-report-relationship-context-bakeoff.mts",
+    "report:semantic-synthesis-control": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/run-ally-semantic-synthesis-control.mts",
     "report:prompt-compare": "node --import tsx scripts/compare-report-prompt-bakeoff.mts",
     "report:ally-deep-bakeoff": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/run-ally-deep-model-bakeoff.mts",
     "report:compare-deep": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/create-and-compare-deep-report.mts",

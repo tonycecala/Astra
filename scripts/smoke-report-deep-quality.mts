@@ -5,6 +5,7 @@ import {
   ASTRA_REPORT_MODEL_ENV,
   ASTRA_REPORT_MODEL_PROFILE_ENV,
   ASTRA_REPORT_WRITER_ENV,
+  ASTRA_SEMANTIC_SYNTHESIS_VERSION,
   DEBUG_MODEL_REPORT_WRITER,
   LOCAL_CHART_ROUTINE_ENGINE,
   ASTRA_OPENROUTER_APP_NAME,
@@ -14,6 +15,8 @@ import {
   measureReportReadability
 } from "@astra/astrology";
 import { astrologyReportRequestSchema } from "@astra/contracts";
+
+assert.equal(ASTRA_SEMANTIC_SYNTHESIS_VERSION, "1.0.0");
 
 const headings = ["Identity", "Emotions", "Relationships", "Work", "Drive", "Gifts", "Blind Spots", "Growth", "Integration"];
 const request = astrologyReportRequestSchema.parse({
@@ -315,6 +318,15 @@ const categoricalMetadata = correctedCategorical.generationMetadata?.sections?.f
 assert.equal(categoricalMetadata?.attemptCount, 2);
 assert.match(categoricalMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /categorical behavior claim/);
 
+const genderedExampleProvider = sectionedProvider({
+  invalidFirst: { "Blind Spots": "She got quiet after you mentioned the schedule. That is an observation, but it should not become a conclusion about her motives." }
+});
+const correctedGenderedExample = await buildAstrologyReportResultAsync(openToConnectionRequest, { env, fetchImpl: genderedExampleProvider.fetchImpl });
+assert.equal(correctedGenderedExample.status, "completed");
+const genderedExampleMetadata = correctedGenderedExample.generationMetadata?.sections?.find((section) => section.title === "Blind Spots");
+assert.equal(genderedExampleMetadata?.attemptCount, 2);
+assert.match(genderedExampleMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /gender pronoun that was not supplied/);
+
 const stockClosingProvider = sectionedProvider({
   invalidFirst: { Work: "The task isn't to slow down. It's to choose one priority and finish it." }
 });
@@ -396,7 +408,7 @@ for (const [index, scenario] of relationshipSituationCases.entries()) {
   assert.match(scenarioProvider.prompts.get("Integration")?.[0] ?? "", /Integration editorial job:/);
 }
 
-const canonicalIdentity = prose("Identity", 400);
+const canonicalIdentity = `${prose("Identity", 400)} You can sit with a question longer when it matters. Sitting with uncertainty can reveal more than an instant answer.`;
 const canonicalProvider = sectionedProvider();
 const canonicalRequest = astrologyReportRequestSchema.parse({
   ...request,
@@ -408,8 +420,163 @@ const canonicalRequest = astrologyReportRequestSchema.parse({
 });
 const canonicalResult = await buildAstrologyReportResultAsync(canonicalRequest, { env, fetchImpl: canonicalProvider.fetchImpl });
 assert.equal(canonicalResult.status, "completed", canonicalResult.error);
-assert.equal(canonicalResult.sections.find((section) => section.title === "Identity")?.body, canonicalIdentity);
+assert.equal(
+  canonicalResult.sections.find((section) => section.title === "Identity")?.body,
+  canonicalIdentity
+    .replace("sit with a question", "consider a question")
+    .replace("Sitting with", "Considering")
+);
 assert.match(canonicalProvider.prompts.get("Thesis")?.[0] ?? "", /Canonical Identity contract:/);
+assert.equal(canonicalProvider.calls.get("Identity"), undefined);
+assert.equal(canonicalResult.generationMetadata?.sections?.some((section) => section.title === "Identity"), false);
+assert.equal(canonicalResult.generationMetadata?.attemptCount, 9);
+
+const synthesisNotes = [
+  {
+    label: "Emotions",
+    thesis: "Careful observation can help Tony understand feeling, provided analysis does not replace the feeling itself.",
+    counterweight: "Precision can support emotional honesty when it gives experience clear language.",
+    claimBoundary: "Do not diagnose withdrawal, suppression, or emotional history."
+  },
+  {
+    label: "Relationships",
+    thesis: "Closeness works best when independence is named instead of left for another person to guess.",
+    counterweight: "Freedom and care can reinforce each other when expectations stay visible.",
+    claimBoundary: "Do not infer a partner, relationship condition, or another person's motives."
+  },
+  {
+    label: "Work",
+    thesis: "Contribution becomes more durable when skill and visibility are allocated with care.",
+    counterweight: "Recognition can support craft when it follows a useful contribution.",
+    claimBoundary: "Do not invent a career history or workplace."
+  },
+  {
+    label: "Integration",
+    thesis: "Values become clearer when they identify what deserves protection, commitment, and attention.",
+    counterweight: "Values can guide a tradeoff without prescribing one correct choice.",
+    claimBoundary: "Do not turn a tendency into biography or a weekly assignment."
+  },
+  {
+    label: "Drive",
+    thesis: "Force becomes more dependable when its size matches the situation.",
+    counterweight: "Ambition remains an asset when it is not asked to carry every goal at once.",
+    claimBoundary: "Do not claim impulsivity, burnout, or a fixed pattern of overreach."
+  },
+  {
+    label: "Blind Spots",
+    thesis: "A quick impression is most useful as an observation before it becomes an interpretation.",
+    counterweight: "Pattern recognition remains useful when it stays open to new evidence.",
+    claimBoundary: "Do not claim access to another person's motives or inner state."
+  },
+  {
+    label: "Gifts",
+    thesis: "Warmth, originality, and practiced presence may become useful resources when those possibilities fit lived experience.",
+    counterweight: "These are capacities to explore, not evidence of an established social role or effect on other people.",
+    claimBoundary: "Use bounded language. Do not claim routine behavior, biography, reputation, group impact, or how others experience the reader."
+  },
+  {
+    label: "Growth",
+    thesis: "Growth means updating a stable self-concept without abandoning it.",
+    counterweight: "Consistency is a resource when it can include new information.",
+    claimBoundary: "Do not invent a wound, defense, or prior history."
+  }
+];
+const enrichedProvider = sectionedProvider();
+const enrichedRequest = astrologyReportRequestSchema.parse({
+  ...canonicalRequest,
+  id: "61111111-1111-4111-8111-000000000100",
+  context: { ...canonicalRequest.context, v1InterpretiveNotes: synthesisNotes }
+});
+const enrichedResult = await buildAstrologyReportResultAsync(enrichedRequest, { env, fetchImpl: enrichedProvider.fetchImpl });
+assert.equal(enrichedResult.status, "completed", enrichedResult.error);
+const enrichedRelationshipsPrompt = enrichedProvider.prompts.get("Relationships")?.[0] ?? "";
+assert.match(enrichedRelationshipsPrompt, /Primary hypothesis: Closeness works best/);
+assert.match(enrichedRelationshipsPrompt, /Counterweight: Freedom and care/);
+assert.match(enrichedRelationshipsPrompt, /Claim boundary: Do not infer a partner/);
+assert.doesNotMatch(enrichedRelationshipsPrompt, /Risks: filling gaps with assumptions/);
+assert.doesNotMatch(enrichedRelationshipsPrompt, /Developmental tasks: make relational needs explicit/);
+assert.match(enrichedRelationshipsPrompt, /Only Integration may connect multiple life domains/);
+assert.match(enrichedRelationshipsPrompt, /Do not use stock bridge phrases such as 'Put together,' 'Taken together,' 'This suggests,' or 'The pattern points.'/);
+assert.match(enrichedRelationshipsPrompt, /Do not use 'works differently,' 'this works differently,' or a similar explanatory pivot/);
+assert.match(enrichedRelationshipsPrompt, /Avoid stilted therapeutic phrasing such as 'sitting with' or 'sit with\.'/);
+assert.match(enrichedRelationshipsPrompt, /Identity alone owns private reflection/);
+assert.match(enrichedRelationshipsPrompt, /Work owns allocation and contribution/);
+assert.match(enrichedRelationshipsPrompt, /Integration owns values and decision criteria/);
+assert.match(enrichedProvider.prompts.get("Integration")?.[0] ?? "", /Chapter-specific synthesis: Values become clearer when they identify what deserves protection/);
+assert.match(enrichedProvider.prompts.get("Integration")?.[0] ?? "", /Integration ownership: stay with values and decision criteria/);
+const enrichedWorkPrompt = enrichedProvider.prompts.get("Work")?.[0] ?? "";
+const enrichedIntegrationPrompt = enrichedProvider.prompts.get("Integration")?.[0] ?? "";
+const enrichedWorkCard = enrichedWorkPrompt.split("Section signal card:")[1] ?? "";
+const enrichedIntegrationCard = enrichedIntegrationPrompt.split("Section signal card:")[1] ?? "";
+assert.doesNotMatch(enrichedWorkCard, /Sun in Gemini in the 12th house|Mercury in Gemini in the 12th house/i);
+assert.doesNotMatch(enrichedIntegrationCard, /Sun in Gemini in the 12th house|Moon in Virgo in the 3rd house|Mercury in Gemini/i);
+const enrichedDeepWorkCard = (enrichedProvider.prompts.get("Work")?.[0] ?? "").split("Section signal card:")[1] ?? "";
+const enrichedDeepEmotionsCard = (enrichedProvider.prompts.get("Emotions")?.[0] ?? "").split("Section signal card:")[1] ?? "";
+const enrichedDeepDriveCard = (enrichedProvider.prompts.get("Drive")?.[0] ?? "").split("Section signal card:")[1] ?? "";
+const enrichedDeepRelationshipsCard = (enrichedProvider.prompts.get("Relationships")?.[0] ?? "").split("Section signal card:")[1] ?? "";
+const enrichedDeepBlindSpotsCard = (enrichedProvider.prompts.get("Blind Spots")?.[0] ?? "").split("Section signal card:")[1] ?? "";
+const enrichedDeepGrowthCard = (enrichedProvider.prompts.get("Growth")?.[0] ?? "").split("Section signal card:")[1] ?? "";
+const enrichedDeepGiftsCard = (enrichedProvider.prompts.get("Gifts")?.[0] ?? "").split("Section signal card:")[1] ?? "";
+assert.doesNotMatch(enrichedDeepWorkCard, /Mars opposition Jupiter/i);
+assert.match(enrichedDeepEmotionsCard, /Moon in Virgo|Moon sextile Neptune/i);
+assert.doesNotMatch(enrichedDeepEmotionsCard, /Sun in Gemini|Mercury in Gemini/i);
+assert.doesNotMatch(enrichedDeepDriveCard, /Mercury sextile Uranus|2nd house emphasis|Mars square Neptune/i);
+assert.match(enrichedDeepDriveCard, /Mars opposition Jupiter|Mars in Leo/i);
+assert.match(enrichedDeepRelationshipsCard, /Mars square Neptune|Venus trine Uranus/i);
+assert.doesNotMatch(enrichedDeepRelationshipsCard, /Venus in Aries/i);
+assert.doesNotMatch(enrichedDeepBlindSpotsCard, /Virgo emphasis|Leo emphasis/i);
+assert.doesNotMatch(enrichedDeepGrowthCard, /Pluto opposition Chiron|Gemini emphasis/i);
+assert.doesNotMatch(enrichedDeepGrowthCard, /Saturn in Capricorn/i);
+assert.doesNotMatch(enrichedDeepGiftsCard, /Mercury sextile Uranus|Gemini emphasis|Virgo emphasis|Venus trine Uranus/i);
+assert.match(enrichedDeepGiftsCard, /Venus in Aries/i);
+assert.match(enrichedProvider.prompts.get("Blind Spots")?.[0] ?? "", /only chapter that may distinguish observation from interpretation/i);
+assert.match(enrichedProvider.prompts.get("Gifts")?.[0] ?? "", /usable capacity and the contribution it can make/i);
+assert.match(enrichedProvider.prompts.get("Gifts")?.[0] ?? "", /Present capacities as bounded possibilities/i);
+assert.match(enrichedProvider.prompts.get("Gifts")?.[0] ?? "", /not as established biography, reputation, routine behavior, or proven effect on other people/i);
+assert.match(enrichedProvider.prompts.get("Growth")?.[0] ?? "", /stable self-concept can take in new information/i);
+assert.equal(enrichedProvider.calls.get("Identity"), undefined);
+
+const enrichedStrainedProvider = sectionedProvider();
+const enrichedStrainedRequest = astrologyReportRequestSchema.parse({
+  ...enrichedRequest,
+  id: "61111111-1111-4111-8111-000000000102",
+  reportType: "core",
+  context: {
+    ...enrichedRequest.context,
+    relationshipContext: {
+      status: "unspecified",
+      condition: "strained",
+      structure: "unspecified",
+      intention: "unspecified",
+      recency: "unspecified",
+      partnerPronouns: null,
+      notes: null
+    }
+  }
+});
+const enrichedStrainedResult = await buildAstrologyReportResultAsync(enrichedStrainedRequest, { env, fetchImpl: enrichedStrainedProvider.fetchImpl });
+assert.equal(enrichedStrainedResult.status, "completed", enrichedStrainedResult.error);
+const enrichedStrainedRelationshipsPrompt = enrichedStrainedProvider.prompts.get("Relationships")?.[0] ?? "";
+assert.match(enrichedStrainedRelationshipsPrompt, /Safety is unknown. Do not directly advise disclosure, contact, confrontation, repair, or stating a need or boundary/i);
+assert.match(enrichedStrainedRelationshipsPrompt, /exact words "when safe and appropriate" in the same sentence/i);
+
+const enrichedCoreProvider = sectionedProvider();
+const enrichedCoreRequest = astrologyReportRequestSchema.parse({
+  ...enrichedRequest,
+  id: "61111111-1111-4111-8111-000000000101",
+  reportType: "core"
+});
+const enrichedCoreResult = await buildAstrologyReportResultAsync(enrichedCoreRequest, { env, fetchImpl: enrichedCoreProvider.fetchImpl });
+assert.equal(enrichedCoreResult.status, "completed", enrichedCoreResult.error);
+assert.equal(enrichedCoreResult.generationMetadata?.orchestration, "sectioned-v1");
+assert.equal(enrichedCoreResult.generationMetadata?.sections?.length, 3);
+assert.equal(enrichedCoreProvider.calls.get("Identity"), undefined);
+assert.equal(enrichedCoreProvider.calls.get("Thesis"), undefined);
+const enrichedCoreWorkPrompt = enrichedCoreProvider.prompts.get("Work")?.[0] ?? "";
+const enrichedCoreIntegrationPrompt = enrichedCoreProvider.prompts.get("Integration")?.[0] ?? "";
+assert.match(enrichedCoreWorkPrompt, /Canonical Identity bridge:/);
+assert.doesNotMatch(enrichedCoreWorkPrompt, /- Identity:|Sun in Gemini in the 12th house|Mercury in Gemini in the 12th house/i);
+assert.doesNotMatch(enrichedCoreIntegrationPrompt, /- Identity:|Sun in Gemini in the 12th house|Moon in Virgo in the 3rd house|Mercury in Gemini/i);
 
 const ownedEvidence = buildAstrologyReportSectionEvidence(request, [
   "Identity",
