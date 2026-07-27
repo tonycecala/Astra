@@ -12,6 +12,7 @@ output/
 .astra-email/
 .dev/
 *.tsbuildinfo
+next-env.d.ts
 .DS_Store
 
 # Composer quarry image binaries stay local/remote; commit metadata, not generated media.
