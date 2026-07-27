@@ -63,6 +63,36 @@ import {
   reportVoicePlan,
   voicePlanForSection
 } from "./report/promptPolicies";
+import {
+  buildDebugModelPrompt as buildDebugModelPromptFromContracts,
+  buildDeepSectionPrompt as buildDeepSectionPromptFromContracts,
+  buildDeepThesisPrompt as buildDeepThesisPromptFromContracts,
+  buildEnrichedCoreSectionPrompt as buildEnrichedCoreSectionPromptFromContracts,
+  familyDepthRules as promptBuilderFamilyDepthRules,
+  interpretiveContractFor as promptBuilderInterpretiveContractFor,
+  plainspokenParagraphRule as promptBuilderPlainspokenParagraphRule
+} from "./report/promptBuilderContracts";
+import {
+  monolithicRetryIssue as monolithicRetryIssueFromReport,
+  providerRetryIssue as providerRetryIssueFromReport,
+  retryFailure as retryFailureFromReport,
+  retryIssue as retryIssueFromReport
+} from "./report/retryClassification";
+import {
+  validateRawModelText as validateRawModelTextFromReport,
+  wordCount as wordCountFromReport
+} from "./report/proseValidation";
+import { writeOpenAIModelText as writeOpenAIModelTextFromAdapter } from "./report/openaiAdapter";
+import { writeOpenRouterModelText as writeOpenRouterModelTextFromAdapter } from "./report/openRouterAdapter";
+import { parseModelDraft as parseModelDraftFromReport } from "./report/draftParsing";
+import { sectionFromModelText } from "./report/sectionParsing";
+import { validateSectionedReportSection as validateSectionedReportSectionFromReport } from "./report/sectionValidation";
+import { retryModelPart } from "./report/retryOrchestration";
+import {
+  mergeProviderUsage,
+  maxModelOutputTokensFor as maxModelOutputTokensForProvider,
+  reportModelTimeoutMsFor as reportModelTimeoutMsForProvider
+} from "./report/providerUsage";
 
 export {
   ASTRA_PLAINSPOKEN_READING_GRADE_MAX,
@@ -332,38 +362,6 @@ export type AstrologyReportSectionEvidence = {
   }>;
 };
 
-type OpenAIResponse = {
-  output_text?: unknown;
-  output?: Array<{
-    content?: Array<{
-      text?: unknown;
-      type?: string;
-    }>;
-  }>;
-  usage?: {
-    input_tokens?: unknown;
-    output_tokens?: unknown;
-    total_tokens?: unknown;
-  };
-};
-
-type OpenAICompatibleChatResponse = {
-  choices?: Array<{
-    finish_reason?: unknown;
-    message?: {
-      content?: unknown;
-    };
-  }>;
-  usage?: {
-    prompt_tokens?: unknown;
-    completion_tokens?: unknown;
-    completion_tokens_details?: {
-      reasoning_tokens?: unknown;
-    };
-    total_tokens?: unknown;
-    cost?: unknown;
-  };
-};
 
 type ModelUsage = {
   inputTokens?: number;
@@ -2352,32 +2350,6 @@ function writeDeterministicCoreReport({ request, chartSignature }: ReportWriterI
   };
 }
 
-function extractOpenAIText(response: OpenAIResponse) {
-  if (typeof response.output_text === "string" && response.output_text.trim()) return cleanProviderControlText(response.output_text);
-
-  for (const item of response.output ?? []) {
-    for (const content of item.content ?? []) {
-      if (typeof content.text === "string" && content.text.trim()) return cleanProviderControlText(content.text);
-    }
-  }
-
-  throw new Error("OpenAI response did not include text output.");
-}
-
-function extractOpenAICompatibleChatText(response: OpenAICompatibleChatResponse) {
-  for (const choice of response.choices ?? []) {
-    const content = choice.message?.content;
-    if (typeof content === "string" && content.trim()) return cleanProviderControlText(content);
-  }
-
-  throw new Error("OpenAI-compatible chat response did not include text output.");
-}
-
-function cleanProviderControlText(text: string) {
-  return text
-    .replace(/\s*turn_off_thought\s*$/i, "")
-    .trim();
-}
 
 function sectionIdFromTitle(requestId: string, title: string, index: number) {
   const slug = title
@@ -2497,34 +2469,22 @@ function assembleReportSections(
 }
 
 function parseModelDraft(text: string, request: AstrologyReportRequest, chartSignature: ChartSignature): ReportDraft {
-  const baseline = writeDeterministicCoreReport({ request, chartSignature });
-  if (!baseline.publicSignal) {
-    throw new Error("Deterministic baseline did not include a public signal.");
-  }
-  const canonicalIdentity = canonicalIdentityFromRequest(request);
-  const writerHeadings = new Set<string>(writerHeadingsFor(request));
-  const generatedSections = markdownSectionsFromText(text, request).filter((section) => writerHeadings.has(section.title));
-  const sections = assembleReportSections(request, generatedSections);
-
-  return {
-    summary: summaryFromMarkdown(canonicalIdentity || text, baseline.summary ?? `${request.subjectName}'s report is grounded in the computed chart signature.`),
-    sections,
-    publicSignal: {
-      ...baseline.publicSignal,
-      provenanceSummary: `${baseline.publicSignal.provenanceSummary}, ${DEBUG_MODEL_REPORT_WRITER}`
-    }
-  };
+  return parseModelDraftFromReport(text, request, chartSignature, {
+    deterministicBaseline: writeDeterministicCoreReport,
+    canonicalIdentity: canonicalIdentityFromRequest,
+    writerHeadings: writerHeadingsFor,
+    markdownSections: markdownSectionsFromText,
+    assembleSections: assembleReportSections,
+    summaryFromMarkdown,
+    debugWriter: DEBUG_MODEL_REPORT_WRITER
+  });
 }
 
 const astraPlainspokenVoiceContract = reportRuleCatalog.voice.plainspoken;
 const astraInterpretiveContract = reportRuleCatalog.voice.interpretive;
 
 function interpretiveContractFor(cards: readonly ReportSectionSignalCard[]) {
-  if (!cards.some((card) => card.hypothesis)) return astraInterpretiveContract;
-  return astraInterpretiveContract.map((line) => line === "Build each section from chart factor to human pattern to its relevant tension or cost, then offer one section-specific useful response."
-    ? "Build each section from chart factor to human pattern. Use the curated hypothesis, counterweight, and claim boundary when supplied; do not force every chapter through a cost-and-response sequence."
-    : line
-  );
+  return promptBuilderInterpretiveContractFor(cards, astraInterpretiveContract);
 }
 
 const astraPsychologicalSafetyContract = reportRuleCatalog.safety;
@@ -2569,144 +2529,34 @@ const paidReportSectionDepth: Partial<Record<AstrologyReportRequest["reportType"
 };
 
 function plainspokenParagraphRule(request: AstrologyReportRequest, unit: "section" | "chapter") {
-  if (isWelcomeReportRequest(request)) {
-    return "Write the Identity section in exactly 3 short paragraphs. Give each paragraph one coherent move; do not deliver it as one wall of text.";
-  }
-  return `Write each ${unit} in 2 or 3 paragraphs. Give each paragraph one coherent move; do not deliver it as one wall of text.`;
+  return promptBuilderPlainspokenParagraphRule(request, unit, isWelcomeReportRequest);
 }
 
 function familyDepthRules(request: AstrologyReportRequest) {
-  if (isWelcomeReportRequest(request)) {
-    return [
-      "Welcome Report depth rules:",
-      "- Write 250-350 words total.",
-      "- Open with a clear, warm orientation to the reader's central pattern.",
-      "- End with one grounded next move."
-    ].join("\n");
-  }
-  if (request.reportType === "deep") {
-    return [
-      "Deep Report depth rules:",
-      "- Identity should be 400-500 words.",
-      "- Do not undershoot the Identity minimum; 350 words is a hard floor.",
-      "- Emotions, Relationships, and Work should each be 300-425 words.",
-      "- Drive, Gifts, Blind Spots, and Growth should each be 275-400 words.",
-      "- Integration should be 225-325 words.",
-      "- The complete Deep Report should be at least 2,625 words across its nine chapters.",
-      "- Identity must feel expanded beyond an Identity Report.",
-      "- Include fuller synthesis, chart ruler when relevant, and major identity aspects from the Identity card.",
-      "- Give each section its own governing question and section-specific secondary signal.",
-      "- Identity must not carry the report alone. The remaining eight sections must sustain premium interpretive depth."
-    ].join("\n");
-  }
-  const rules = paidReportSectionDepth[request.reportType];
-  if (!rules) return "Keep the report complete, specific, and readable for the selected report type.";
-  const family = request.reportType === "identity" ? "Identity" : request.reportType === "progressed" ? "Progressed" : request.reportType === "synastry" ? "Synastry" : "Core";
-  return [
-    `${family} Report depth rules:`,
-    ...Object.entries(rules).map(([section, depth]) => `- ${section}: target ${depth.target} words; remain between ${depth.minimum} and ${depth.maximum} words.`),
-    request.reportType === "core" || request.reportType === "core_self" || request.reportType === "chart_interpretation"
-      ? "- Core earns its value through four distinct chapters, not by turning Identity into a second report."
-      : ""
-  ].filter(Boolean).join("\n");
+  return promptBuilderFamilyDepthRules(request, isWelcomeReportRequest, paidReportSectionDepth);
 }
 
 function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: ChartSignature, previousErrors: string[] = []) {
-  const basis = reportBasisFor(request);
-  const headings = reportHeadingsFor(request);
-  const writerHeadings = writerHeadingsFor(request);
-  const sectionCards = buildReportSectionSignalCardsForRequest(request, headings);
-  const hasEnrichedSynthesis = sectionCards.some((card) => card.hypothesis);
-  const requiredHeadings = writerHeadings.map((heading) => `## ${heading}`).join("\n");
-  const sunPlacement = chartSignature.points.find((point) => point.body === "Sun");
-  return [
-    "You are writing an astrology reading from structured notes.",
-    "The notes are not prose.",
-    "Use the notes the way a human writer uses notes: understand them, synthesize them, then write fresh second-person prose.",
-    hasEnrichedSynthesis
-      ? "Use the supplied chapter hypotheses as the report plan. Do not invent a second governing thesis or make every chapter a variation of one lesson."
-      : "Before writing, infer one report-level governing thesis from the repeated signals, strongest placements, tensions, and developmental tasks.",
-    hasEnrichedSynthesis ? "Keep the chapters coherent through their distinct roles, not through a repeated sequence or conclusion." : "Do not print that thesis as a separate heading. Let it quietly organize every section.",
-    basis.type === "progressed"
-      ? `This is a secondary progressed report as of ${basis.asOfDate}. Interpret progressed placements and progressed-to-natal contacts, not generic natal traits.`
-      : basis.type === "synastry"
-        ? `This is a two-chart synastry report${basis.partner ? ` comparing ${basis.primary.subjectName} with ${basis.partner.subjectName}` : ""}. Interpret cross-chart contacts, not either person as a standalone natal profile.`
-        : "This is a natal person report.",
-    "Do not repeat note labels as public labels.",
-    "Do not say capacity, risk, developmental task, language domain, primary strain, or priority note in public prose.",
-    chartSignature.calculationMode === "signs-aspects-only"
-      ? "This is a signs-and-aspects-only chart. Do not mention houses, Rising, Ascendant, Midheaven, angles, or house-system effects."
-      : "Treat Zodiac and Houses as calculation inputs: the prose must reflect the resulting signs, house placements, and evidence, not merely name the selected settings.",
-    "Do not write JSON.",
-    "Write plain Markdown only.",
-    "",
-    `Write the generated chapters of a plain Markdown Astra report for ${request.subjectName}.`,
-    `Selected report depth: ${request.reportType}.`,
-    familyDepthRules(request),
-    "",
-    "Required structure:",
-    `# Astra Report - ${request.subjectName}`,
-    requiredHeadings,
-    "",
-    "Use the required headings exactly as written.",
-    canonicalIdentityFromRequest(request) ? "Do not write Identity. The application inserts the canonical Identity section after generation." : "",
-    'If Integration is selected, the heading must be exactly "## Integration"; do not rename it Right Now, Timing, or Current Chapter.',
-    "",
-    "Write only the prose body for each selected section.",
-    "Do not write Chart Evidence.",
-    "Do not write evidence bullets.",
-    "Do not write metadata.",
-    "Do not write debug text.",
-    "The application will render Chart Evidence deterministically after you return the prose.",
-    sunPlacement ? `For this chart, the required Sun opening phrase is either "${sunPlacement.sign} Sun" or "Sun in ${sunPlacement.sign}". Use one of those exact phrases in the first or second sentence of Identity.` : "",
-    "",
-    "Astra Voice Contract:",
-    ...astraPlainspokenVoiceContract,
-    plainspokenParagraphRule(request, "section"),
-    ...interpretiveContractFor(sectionCards),
-    ...astraPsychologicalSafetyContract,
-    reportVoicePlan(headings),
-    enrichedSynthesisVoicePlan(sectionCards),
-    reportEvidenceOwnershipPlan(sectionCards),
-    '- Avoid generic phrases such as "you are a natural communicator," "this aspect gifts you," "you may struggle," or "this placement indicates" unless rewritten into more specific language.',
-    "Speak directly to the reader using you and your. Never describe the report subject as a case or third-person label.",
-    "Keep second-person grammar clean: write you want, you understand, you adapt, and you believe; never write you wants, you understands, you adapts, or you believes.",
-    "",
-    ...astraEvidenceContract,
-    hasEnrichedSynthesis
-      ? "Make the sections feel like chapters of one chart by giving each its own consequence. Do not re-teach Identity's private reflection in Work or Integration."
-      : "Make the sections feel like chapters of one chart, not isolated mini-readings. Each section should deepen or complicate the governing thesis.",
-    writerHeadings.includes("Identity") ? "Identity opening rule: begin Identity from the Sun placement unless the Identity card has no Sun signal. The first or second sentence must include the exact phrase '[Sign] Sun' or 'Sun in [Sign]' using the Sun sign from the Identity card. Include Sun house or house-system nuance when present, then integrate Mercury/Sun relationship, chart ruler or Ascendant, and dominant identity aspects or themes. Do not make the Sun generic or treat it as standalone Sun-sign astrology." : "",
-    basis.type === "natal"
-      ? "Integration must synthesize enduring natal patterns into a practical way of working with the chart. It is not a forecast and must not claim a transit, progression, season, or unusual current activation."
-      : "Use timing language only from the supplied dated evidence.",
-    basis.type === "natal"
-      ? "Across every natal section, avoid forecast language such as this season, current activation, currently active, or unusually active. Present-day practical language is welcome; invented celestial timing is not."
-      : "",
-    editorialRoleInstruction(request),
-    canonicalIdentityInstruction(request),
-    headings.join("\n").includes("Relationships") || basis.type === "synastry" ? relationshipContextInstruction(request) : "",
-    "Do not include Generation Metadata. The application appends it after validation.",
-    previousErrors.length ? "The previous draft failed validation. Rewrite the full report and avoid these errors:" : "",
-    ...previousErrors.map((error) => `- ${error}`),
-    "",
-    "Report context:",
-    `- Subject: ${request.subjectName}`,
-    `- Report type: ${request.reportType}`,
-    `- Report basis: ${basis.type}`,
-    basis.asOfDate ? `- As of: ${basis.asOfDate}` : "",
-    request.question ? `- User query: ${request.question}` : "",
-    request.intent ? `- Intent: ${request.intent}` : "",
-    chartSignature.calculationMode === "signs-aspects-only"
-      ? "- Chart detail: signs and aspects only; houses and Rising omitted"
-      : `- House system: ${chartSignature.houseSystem}`,
-    `- Zodiac: ${chartSignature.zodiacMode}`,
-    "",
-    "Section signal cards:",
-    sectionCards.map(sectionSignalCardBlock).join("\n\n---\n\n"),
-    "",
-    "Do not copy these notes as prose. Use them the way a human writer uses notes: synthesize, choose the strongest pattern, and write fresh second-person report prose."
-  ].join("\n");
+  return buildDebugModelPromptFromContracts(request, chartSignature, previousErrors, {
+    basisFor: reportBasisFor,
+    headingsFor: reportHeadingsFor,
+    writerHeadingsFor: writerHeadingsFor,
+    cardsForRequest: buildReportSectionSignalCardsForRequest,
+    familyDepthRules,
+    canonicalIdentityFromRequest,
+    plainspokenContract: astraPlainspokenVoiceContract,
+    plainspokenParagraphRule,
+    interpretiveContractFor,
+    psychologicalSafetyContract: astraPsychologicalSafetyContract,
+    reportVoicePlan,
+    enrichedSynthesisVoicePlan,
+    reportEvidenceOwnershipPlan,
+    evidenceContract: astraEvidenceContract,
+    editorialRoleInstruction,
+    canonicalIdentityInstruction,
+    relationshipContextInstruction,
+    sectionSignalCardBlock
+  });
 }
 
 type PromptModelWriter = (prompt: string, maxOutputTokens: number) => Promise<ModelWriterResponse>;
@@ -2738,26 +2588,10 @@ function canonicalIdentityBridgeInstruction(request: AstrologyReportRequest) {
 }
 
 function buildDeepThesisPrompt(request: AstrologyReportRequest, cards: ReportSectionSignalCard[]) {
-  const hasEnrichedSynthesis = cards.some((card) => card.hypothesis);
-  return [
-    "You are planning one premium astrology report from structured section notes.",
-    "Return one private governing thesis. Aim for 35-75 words and never exceed 90 words. Use plain prose with no heading, bullets, JSON, or metadata.",
-    "This thesis is an internal writing compass, not customer-facing copy.",
-    hasEnrichedSynthesis
-      ? "Name a light connective thread without reducing the chapters to one repeated mechanism, reflection-check-action sequence, or practical rule."
-      : "Name the central human tension that can organize all nine chapters without reducing them to one repeated lesson.",
-    "Plan at least three dimensions: a central identity pattern, a relational or agency pattern, and a stabilizing resource or developmental capacity.",
-    "Assign each major aspect one primary chapter and at most one brief secondary reference. A secondary reference must extend, not restate, its primary interpretation.",
-    "Deep must add breadth: nourishment, belonging, joy, meaning, creativity, thriving conditions, decision-making, or contribution must receive real space alongside tension.",
-    "Do not mention planets, signs, houses, aspects, astrology, chart factors, or timing claims.",
-    `Subject: ${request.subjectName}`,
-    editorialRoleInstruction(request),
-    canonicalIdentityInstruction(request),
-    "Section planning notes:",
-    ...cards.map((card) => card.hypothesis
-      ? `- ${card.title}: hypothesis ${card.hypothesis}${card.counterweight ? `; counterweight ${card.counterweight}` : ""}${card.claimBoundary ? `; boundary ${card.claimBoundary}` : ""}.`
-      : `- ${card.title}: capacities ${card.capacities.join(", ")}; risks ${card.risks.join(", ")}; tension ${card.tensions.join(", ")}; task ${card.developmentalTasks.join(", ")}.`)
-  ].join("\n");
+  return buildDeepThesisPromptFromContracts(request, cards, {
+    editorialRoleInstruction,
+    canonicalIdentityInstruction
+  });
 }
 
 function normalizeDeepThesis(text: string) {
@@ -2783,22 +2617,11 @@ function validateDeepThesis(text: string) {
 }
 
 function retryIssue(code: ReportGenerationRetryReasonCode, message: string): ReportGenerationRetryIssue {
-  return { code, message };
+  return retryIssueFromReport(code, message);
 }
 
 function providerRetryIssue(error: unknown): ReportGenerationRetryIssue {
-  const message = error instanceof Error ? error.message : "Model provider request failed.";
-  if (/did not include (?:text )?output|did not include output text/i.test(message)) {
-    return retryIssue("provider_no_text", "Model provider response did not include usable text.");
-  }
-  if (/timeout|timed out|abort/i.test(message) || (error instanceof Error && error.name === "TimeoutError")) {
-    return retryIssue("provider_timeout", "Model provider request timed out.");
-  }
-  const detail = message.replace(/\s+/g, " ").trim().slice(0, 240);
-  return retryIssue(
-    "provider_error",
-    `Model provider request failed before Astra received a valid chapter.${detail ? ` Provider detail: ${detail}` : ""}`
-  );
+  return providerRetryIssueFromReport(error);
 }
 
 function reportReasoningEffortForModel(model: string) {
@@ -2813,14 +2636,7 @@ function retryFailure(
   finishReason?: string,
   rejectedText?: string
 ): ReportGenerationRetryFailure {
-  return {
-    attempt,
-    issues,
-    ...usage,
-    ...(finishReason ? { finishReason } : {}),
-    ...(rejectedText?.trim() ? { rejectedText } : {}),
-    latencyMs
-  };
+  return retryFailureFromReport(attempt, issues, latencyMs, usage, finishReason, rejectedText);
 }
 
 function partGenerationMetadata(part: ValidatedWriterPart) {
@@ -2851,49 +2667,23 @@ function buildDeepSectionPrompt(input: {
   thesis: string;
   previousErrors: string[];
 }) {
-  const { request, chartSignature, card, thesis, previousErrors } = input;
-  const depth = deepSectionDepth[card.title];
-  const sunPlacement = chartSignature.points.find((point) => point.body === "Sun");
-  const reportCards = prosePlanningCards(buildReportSectionSignalCardsForRequest(request, reportHeadingsFor(request)));
-  return [
-    "You are writing one chapter of a premium Astra Deep Report from structured notes.",
-    "Write only this chapter's body as plain Markdown. Astra supplies the chapter heading. Do not write any heading, other chapter, report title, evidence block, metadata, JSON, or planning commentary.",
-    `Chapter: ${card.title}.`,
-    `Target length: ${depth?.target ?? "275-400"} words. Hard minimum: ${depth?.minimum ?? 275}. Hard maximum: ${depth?.maximum ?? 435}.`,
-    `Subject: ${request.subjectName}`,
-    chartSignature.calculationMode === "signs-aspects-only"
-      ? `Zodiac: ${chartSignature.zodiacMode}. Chart detail: signs and aspects only; do not mention houses, Rising, Ascendant, Midheaven, or angles.`
-      : `Zodiac: ${chartSignature.zodiacMode}. Houses: ${chartSignature.houseSystem}.`,
-    card.hypothesis ? `Chapter-specific synthesis: ${card.hypothesis}` : `Private governing thesis: ${thesis}`,
-    card.hypothesis ? "Develop this chapter's synthesis without importing another chapter's conclusion. Use the report thesis only as background, not as a repeated frame." : "Use the thesis as a quiet through-line, not as a sentence to repeat.",
-    card.hypothesis && card.counterweight ? `Counterweight to preserve: ${card.counterweight}` : "",
-    card.hypothesis && card.claimBoundary ? `Claim boundary: ${card.claimBoundary}` : "",
-    card.hypothesis ? "Give this chapter its own consequence or condition; do not force it into a move, fix, risk, or task conclusion." : `This chapter must answer, rather than quote or announce, this distinct governing question: ${card.tensions.join("; ")}.`,
-    deepChapterFocusInstruction(request, card.title),
-    ...astraPlainspokenVoiceContract,
-    plainspokenParagraphRule(request, "chapter"),
-    ...interpretiveContractFor([card]),
-    ...astraPsychologicalSafetyContract,
-    `Chapter voice plan: ${voicePlanForSection(card.title)}`,
-    enrichedSynthesisVoicePlan(reportCards),
-    enrichedChapterOwnershipInstruction(card.title, reportCards),
-    enrichedProseBoundaryInstruction(request, card.title, reportCards),
-    reportEvidenceOwnershipPlan([card]),
-    ...astraEvidenceContract,
-    "Use at least two selected signals when available, including a section-specific secondary signal.",
-    "Do not generalize this chapter into the whole report and do not repeat a generic warning or practice from another life domain.",
-    "Do not invent transits, progressions, current activation, or seasonal timing.",
-    card.title === "Identity" && sunPlacement
-      ? `The first three sentences must include "${sunPlacement.sign} Sun" or "Sun in ${sunPlacement.sign}"${chartSignature.calculationMode === "signs-aspects-only" ? "." : " and integrate its house context."}`
-      : "",
-    card.title === "Integration"
-      ? "Synthesize enduring natal patterns into two or three cross-domain operating principles. This is not a second Growth chapter and not a forecast, and must not claim that anything is newly or currently activated."
-      : "",
-    "Section signal card:",
-    sectionSignalCardBlock(card),
-    previousErrors.length ? "The previous version of this chapter failed. Rewrite only this chapter and correct every issue:" : "",
-    ...previousErrors.map((error) => `- ${error}`)
-  ].filter(Boolean).join("\n");
+  return buildDeepSectionPromptFromContracts(input, {
+    depthForTitle: (title) => deepSectionDepth[title],
+    prosePlanningCards,
+    cardsForRequest: (request) => buildReportSectionSignalCardsForRequest(request, reportHeadingsFor(request)),
+    deepChapterFocusInstruction,
+    plainspokenContract: astraPlainspokenVoiceContract,
+    plainspokenParagraphRule,
+    interpretiveContractFor,
+    psychologicalSafetyContract: astraPsychologicalSafetyContract,
+    voicePlanForSection,
+    enrichedSynthesisVoicePlan,
+    enrichedChapterOwnershipInstruction,
+    enrichedProseBoundaryInstruction,
+    reportEvidenceOwnershipPlan,
+    evidenceContract: astraEvidenceContract,
+    sectionSignalCardBlock
+  });
 }
 
 function buildEnrichedCoreSectionPrompt(input: {
@@ -2902,43 +2692,22 @@ function buildEnrichedCoreSectionPrompt(input: {
   card: ReportSectionSignalCard;
   previousErrors: string[];
 }) {
-  const { request, chartSignature, card, previousErrors } = input;
-  const depth = enrichedCoreSectionDepth(request, card.title);
-  return [
-    "You are writing one chapter of an Astra Core Report from a single structured section card.",
-    "Write only this chapter's body as plain Markdown. Astra supplies the heading. Do not write any heading, other chapter, report title, evidence block, metadata, JSON, or planning commentary.",
-    `Chapter: ${card.title}.`,
-    `Target length: ${depth.target} words. Hard minimum: ${depth.minimum}. Hard maximum: ${depth.maximum}.`,
-    `Subject: ${request.subjectName}`,
-    chartSignature.calculationMode === "signs-aspects-only"
-      ? `Zodiac: ${chartSignature.zodiacMode}. Chart detail: signs and aspects only; do not mention houses, Rising, Ascendant, Midheaven, or angles.`
-      : `Zodiac: ${chartSignature.zodiacMode}. Houses: ${chartSignature.houseSystem}.`,
-    `Chapter-specific synthesis: ${card.hypothesis ?? card.tensions.join("; ")}`,
-    card.counterweight ? `Counterweight to preserve: ${card.counterweight}` : "",
-    card.claimBoundary ? `Claim boundary: ${card.claimBoundary}` : "",
-    "Develop only this chapter's consequence. Do not introduce or summarize another chapter's mechanism, rule, or conclusion.",
-    canonicalIdentityBridgeInstruction(request),
-    deepChapterFocusInstruction(request, card.title),
-    ...astraPlainspokenVoiceContract,
-    plainspokenParagraphRule(request, "chapter"),
-    ...interpretiveContractFor([card]),
-    ...astraPsychologicalSafetyContract,
-    `Chapter voice plan: ${voicePlanForSection(card.title)}`,
-    enrichedSynthesisVoicePlan([card]),
-    enrichedChapterOwnershipInstruction(card.title, [card]),
-    enrichedProseBoundaryInstruction(request, card.title, [card]),
-    reportEvidenceOwnershipPlan([card]),
-    ...astraEvidenceContract,
-    "Use at least two selected signals when available, including a section-specific secondary signal.",
-    "Do not invent transits, progressions, current activation, seasonal timing, biography, or another person's inner state.",
-    card.title === "Integration"
-      ? "Integration editorial job: state values and decision criteria across domains. Do not re-teach Identity or repeat Work's allocation rule."
-      : "",
-    "Section signal card:",
-    sectionSignalCardBlock(card),
-    previousErrors.length ? "The previous version of this chapter failed. Rewrite only this chapter and correct every issue:" : "",
-    ...previousErrors.map((error) => `- ${error}`)
-  ].filter(Boolean).join("\n");
+  return buildEnrichedCoreSectionPromptFromContracts(input, {
+    depthForTitle: (title) => enrichedCoreSectionDepth(input.request, title),
+    canonicalIdentityBridgeInstruction,
+    deepChapterFocusInstruction,
+    plainspokenContract: astraPlainspokenVoiceContract,
+    plainspokenParagraphRule,
+    interpretiveContractFor,
+    psychologicalSafetyContract: astraPsychologicalSafetyContract,
+    voicePlanForSection,
+    enrichedSynthesisVoicePlan,
+    enrichedChapterOwnershipInstruction,
+    enrichedProseBoundaryInstruction,
+    reportEvidenceOwnershipPlan,
+    evidenceContract: astraEvidenceContract,
+    sectionSignalCardBlock
+  });
 }
 
 function validateSectionedReportSection(input: {
@@ -2948,47 +2717,19 @@ function validateSectionedReportSection(input: {
   card: ReportSectionSignalCard;
   depth: { minimum: number; target: string; maximum: number };
 }) {
-  const errors = validateRawModelText(input.text).map((message) => retryIssue("forbidden_fragment", message));
-  let section: AstrologyReportSection;
-  try {
-    section = deepSectionFromText(input.text, input.request, input.card.title);
-  } catch (error) {
-    return [...errors, retryIssue("invalid_markdown", error instanceof Error ? error.message : "Chapter did not include valid Markdown prose.")];
-  }
-  if (section.title !== input.card.title) {
-    errors.push(retryIssue("heading_mismatch", `Required heading is ## ${input.card.title}.`));
-    return errors;
-  }
-  const depth = input.depth;
-  const words = wordCount(section.body);
-  if (depth && words < depth.minimum) errors.push(retryIssue("below_minimum", `${input.card.title} must be at least ${depth.minimum} words; found ${words}.`));
-  if (depth && words > depth.maximum) errors.push(retryIssue("above_maximum", `${input.card.title} must be at most ${depth.maximum} words; found ${words}.`));
-  const visibleText = `${section.title}\n${section.body}`;
-  for (const fragment of forbiddenReportFragments) {
-    if (visibleText.toLowerCase().includes(fragment.toLowerCase())) {
-      errors.push(retryIssue("forbidden_fragment", `Forbidden public fragment found: ${fragment}`));
-    }
-  }
-  if (thirdPersonSubjectLabelPattern.test(visibleText)) {
-    errors.push(retryIssue("third_person_subject", "Third-person subject label found; address the report subject as you or your."));
-  }
-  errors.push(...validateUnsupportedSectionClaims({ sections: [section] } as ReportDraft, [input.card]).map((message) =>
-    retryIssue(message.startsWith("Missing visible chart evidence") ? "evidence_mismatch" : "unsupported_claim", message)
-  ));
-  errors.push(...validateRelationshipAndSafetyClaims(input.request, [section]).map((message) =>
-    retryIssue("unsupported_claim", message)
-  ));
-  if (input.card.title === "Identity") {
-    const sun = input.chartSignature.points.find((point) => point.body === "Sun");
-    const firstThreeSentences = section.body.split(/(?<=[.!?])\s+/).slice(0, 3).join(" ");
-    if (sun && !new RegExp(`\\b(${sun.sign}\\s+Sun|Sun\\s+in\\s+${sun.sign})\\b`, "i").test(firstThreeSentences)) {
-      errors.push(retryIssue("identity_opening", `Identity opening must mention ${sun.sign} Sun or Sun in ${sun.sign} in the first three sentences.`));
-    }
-  }
-  if (reportBasisFor(input.request).type === "natal" && /\b(currently active|currently activated|unusually active|pressing closer than usual|this (?:current )?season)\b/i.test(section.body)) {
-    errors.push(retryIssue("natal_timing", "Natal chapter must not imply current timing without dated evidence."));
-  }
-  return errors;
+  return validateSectionedReportSectionFromReport({
+    text: input.text,
+    request: input.request,
+    title: input.card.title,
+    sunSign: input.chartSignature.points.find((point) => point.body === "Sun")?.sign,
+    depth: input.depth,
+    forbiddenFragments: forbiddenReportFragments,
+    thirdPersonSubjectLabelPattern,
+    isNatalBasis: reportBasisFor(input.request).type === "natal",
+    parseSection: () => deepSectionFromText(input.text, input.request, input.card.title),
+    validateUnsupportedClaims: (section) => validateUnsupportedSectionClaims({ sections: [section] } as ReportDraft, [input.card]),
+    validateRelationshipAndSafetyClaims: (sections) => validateRelationshipAndSafetyClaims(input.request, sections)
+  });
 }
 
 function validateDeepSection(input: {
@@ -3016,57 +2757,46 @@ function validateEnrichedCoreSection(input: {
 }
 
 function deepSectionFromText(text: string, request: AstrologyReportRequest, title: string): AstrologyReportSection {
-  if (/^##\s+/m.test(text)) {
-    const sections = markdownSectionsFromText(text, request);
-    if (sections.length !== 1) throw new Error(`Expected one chapter, found ${sections.length}.`);
-    return sections[0]!;
-  }
-  const body = normalizeReportVoice(
-    text
-      .replace(/^#\s+.+$/gm, "")
-      .replace(/\*\*Chart Evidence\*\*[\s\S]*$/i, "")
-      .replace(/^[-*]\s+/gm, "")
-      .trim()
-  );
-  if (!body) throw new Error("Model draft did not include chapter prose.");
-  return {
-    id: sectionIdFromTitle(request.id, title, 0),
+  return sectionFromModelText({
+    text,
+    request,
     title,
-    body,
-    emphasis: "supporting"
-  };
+    parseMarkdownSections: markdownSectionsFromText,
+    normalizeVoice: normalizeReportVoice,
+    sectionId: sectionIdFromTitle
+  });
 }
 
 async function generateValidatedDeepThesis(request: AstrologyReportRequest, cards: ReportSectionSignalCard[], writer: PromptModelWriter) {
-  let previousErrors: string[] = [];
-  let usage: ModelUsage = {};
-  let latencyMs = 0;
-  const failures: ReportGenerationRetryFailure[] = [];
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
-    const prompt = [buildDeepThesisPrompt(request, cards), ...previousErrors.map((error) => `Previous error: ${error}`)].join("\n");
-    let response: ModelWriterResponse;
-    const attemptStartedAt = Date.now();
-    try {
-      response = await writer(prompt, 180);
-    } catch (error) {
-      const failureLatencyMs = Date.now() - attemptStartedAt;
-      const issues = [providerRetryIssue(error)];
-      failures.push(retryFailure(attempt, issues, failureLatencyMs));
-      latencyMs += failureLatencyMs;
-      previousErrors = issues.map((issue) => issue.message);
-      continue;
-    }
-    usage = mergeModelUsage(usage, response.usage);
-    latencyMs += response.latencyMs;
-    const errors = validateDeepThesis(response.text);
-    if (!errors.length) return { thesis: normalizeDeepThesis(response.text), attemptCount: attempt, usage, finishReason: response.finishReason, latencyMs, failures };
-    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage, response.finishReason, response.text));
-    previousErrors = errors.map((error) => error.message);
+  const result = await retryModelPart<ModelUsage, ReportGenerationRetryIssue, ReportGenerationRetryFailure, ModelWriterResponse, string>({
+    initialUsage: {},
+    maxAttempts: 3,
+    write: (previousErrors) => writer(
+      [buildDeepThesisPrompt(request, cards), ...previousErrors.map((error) => `Previous error: ${error}`)].join("\n"),
+      180
+    ),
+    validate: (response) => validateDeepThesis(response.text),
+    value: (response) => normalizeDeepThesis(response.text),
+    mergeUsage: mergeModelUsage,
+    providerIssues: (error) => [providerRetryIssue(error)],
+    retryFailure: (attempt, issues, latencyMs, response) => response
+      ? retryFailure(attempt, issues, latencyMs, response.usage, response.finishReason, response.text)
+      : retryFailure(attempt, issues, latencyMs)
+  });
+  if (result.ok) {
+    return {
+      thesis: result.value,
+      attemptCount: result.state.attemptCount,
+      usage: result.state.usage,
+      finishReason: result.finishReason,
+      latencyMs: result.state.latencyMs,
+      failures: result.state.failures
+    };
   }
   throw new DeepPartGenerationError(
-    `Governing thesis failed validation after retries: ${previousErrors.join("; ")}`,
+    `Governing thesis failed validation after retries: ${result.state.previousErrors.join("; ")}`,
     "Governing thesis",
-    { attemptCount: 3, usage, latencyMs, failures }
+    result.state
   );
 }
 
@@ -3077,37 +2807,32 @@ async function generateValidatedDeepSection(input: {
   thesis: string;
   writer: PromptModelWriter;
 }): Promise<DeepSectionGeneration> {
-  let previousErrors: string[] = [];
-  let usage: ModelUsage = {};
-  let latencyMs = 0;
-  const failures: ReportGenerationRetryFailure[] = [];
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
-    let response: ModelWriterResponse;
-    const attemptStartedAt = Date.now();
-    try {
-      response = await input.writer(buildDeepSectionPrompt({ ...input, previousErrors }), 1400);
-    } catch (error) {
-      const failureLatencyMs = Date.now() - attemptStartedAt;
-      const issues = [providerRetryIssue(error)];
-      failures.push(retryFailure(attempt, issues, failureLatencyMs));
-      latencyMs += failureLatencyMs;
-      previousErrors = issues.map((issue) => issue.message);
-      continue;
-    }
-    usage = mergeModelUsage(usage, response.usage);
-    latencyMs += response.latencyMs;
-    const errors = validateDeepSection({ ...input, text: response.text });
-    if (!errors.length) {
-      const section = deepSectionFromText(response.text, input.request, input.card.title);
-      return { section, attemptCount: attempt, usage, finishReason: response.finishReason, latencyMs, failures };
-    }
-    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage, response.finishReason, response.text));
-    previousErrors = errors.map((error) => error.message);
+  const result = await retryModelPart<ModelUsage, ReportGenerationRetryIssue, ReportGenerationRetryFailure, ModelWriterResponse, AstrologyReportSection>({
+    initialUsage: {},
+    maxAttempts: 3,
+    write: (previousErrors) => input.writer(buildDeepSectionPrompt({ ...input, previousErrors }), 1400),
+    validate: (response) => validateDeepSection({ ...input, text: response.text }),
+    value: (response) => deepSectionFromText(response.text, input.request, input.card.title),
+    mergeUsage: mergeModelUsage,
+    providerIssues: (error) => [providerRetryIssue(error)],
+    retryFailure: (attempt, issues, latencyMs, response) => response
+      ? retryFailure(attempt, issues, latencyMs, response.usage, response.finishReason, response.text)
+      : retryFailure(attempt, issues, latencyMs)
+  });
+  if (result.ok) {
+    return {
+      section: result.value,
+      attemptCount: result.state.attemptCount,
+      usage: result.state.usage,
+      finishReason: result.finishReason,
+      latencyMs: result.state.latencyMs,
+      failures: result.state.failures
+    };
   }
   throw new DeepPartGenerationError(
-    `${input.card.title} failed validation after retries: ${previousErrors.join("; ")}`,
+    `${input.card.title} failed validation after retries: ${result.state.previousErrors.join("; ")}`,
     input.card.title,
-    { attemptCount: 3, usage, latencyMs, failures }
+    result.state
   );
 }
 
@@ -3117,43 +2842,32 @@ async function generateValidatedEnrichedCoreSection(input: {
   card: ReportSectionSignalCard;
   writer: PromptModelWriter;
 }): Promise<DeepSectionGeneration> {
-  let previousErrors: string[] = [];
-  let usage: ModelUsage = {};
-  let latencyMs = 0;
-  const failures: ReportGenerationRetryFailure[] = [];
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
-    let response: ModelWriterResponse;
-    const attemptStartedAt = Date.now();
-    try {
-      response = await input.writer(buildEnrichedCoreSectionPrompt({ ...input, previousErrors }), 750);
-    } catch (error) {
-      const failureLatencyMs = Date.now() - attemptStartedAt;
-      const issues = [providerRetryIssue(error)];
-      failures.push(retryFailure(attempt, issues, failureLatencyMs));
-      latencyMs += failureLatencyMs;
-      previousErrors = issues.map((issue) => issue.message);
-      continue;
-    }
-    usage = mergeModelUsage(usage, response.usage);
-    latencyMs += response.latencyMs;
-    const errors = validateEnrichedCoreSection({ ...input, text: response.text });
-    if (!errors.length) {
-      return {
-        section: deepSectionFromText(response.text, input.request, input.card.title),
-        attemptCount: attempt,
-        usage,
-        finishReason: response.finishReason,
-        latencyMs,
-        failures
-      };
-    }
-    failures.push(retryFailure(attempt, errors, response.latencyMs, response.usage, response.finishReason, response.text));
-    previousErrors = errors.map((error) => error.message);
+  const result = await retryModelPart<ModelUsage, ReportGenerationRetryIssue, ReportGenerationRetryFailure, ModelWriterResponse, AstrologyReportSection>({
+    initialUsage: {},
+    maxAttempts: 3,
+    write: (previousErrors) => input.writer(buildEnrichedCoreSectionPrompt({ ...input, previousErrors }), 750),
+    validate: (response) => validateEnrichedCoreSection({ ...input, text: response.text }),
+    value: (response) => deepSectionFromText(response.text, input.request, input.card.title),
+    mergeUsage: mergeModelUsage,
+    providerIssues: (error) => [providerRetryIssue(error)],
+    retryFailure: (attempt, issues, latencyMs, response) => response
+      ? retryFailure(attempt, issues, latencyMs, response.usage, response.finishReason, response.text)
+      : retryFailure(attempt, issues, latencyMs)
+  });
+  if (result.ok) {
+    return {
+      section: result.value,
+      attemptCount: result.state.attemptCount,
+      usage: result.state.usage,
+      finishReason: result.finishReason,
+      latencyMs: result.state.latencyMs,
+      failures: result.state.failures
+    };
   }
   throw new DeepPartGenerationError(
-    `${input.card.title} failed validation after retries: ${previousErrors.join("; ")}`,
+    `${input.card.title} failed validation after retries: ${result.state.previousErrors.join("; ")}`,
     input.card.title,
-    { attemptCount: 3, usage, latencyMs, failures }
+    result.state
   );
 }
 
@@ -3521,11 +3235,7 @@ function validateModelDraft(request: AstrologyReportRequest, draft: ReportDraft)
 }
 
 function validateRawModelText(text: string) {
-  const errors: string[] = [];
-  if (/\*\*Chart Evidence\*\*/i.test(text)) {
-    errors.push("Writer output must not include Chart Evidence; evidence is rendered deterministically.");
-  }
-  return errors;
+  return validateRawModelTextFromReport(text);
 }
 
 function reportReadabilityMetadata(sections: AstrologyReportSection[]) {
@@ -3786,46 +3496,19 @@ function validateUnsupportedSectionClaims(draft: ReportDraft, cards: ReportSecti
 }
 
 function wordCount(value: string | undefined) {
-  return String(value ?? "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean).length;
+  return wordCountFromReport(value);
 }
 
 function maxModelOutputTokensFor(request: AstrologyReportRequest) {
-  if (request.reportType === "deep") return 8000;
-  if (request.reportType === "core" || request.reportType === "core_self") return 4200;
-  if (request.reportType === "progressed" || request.reportType === "synastry") return 4200;
-  return 3200;
+  return maxModelOutputTokensForProvider(request.reportType);
 }
 
 function reportModelTimeoutMsFor(request: AstrologyReportRequest) {
-  return request.reportType === "deep" ? ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS : ASTRA_REPORT_MODEL_TIMEOUT_MS;
-}
-
-function nonnegativeNumber(value: unknown) {
-  return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : undefined;
-}
-
-function nonnegativeInteger(value: unknown) {
-  const number = nonnegativeNumber(value);
-  return number === undefined ? undefined : Math.round(number);
-}
-
-function addOptionalNumbers(left: number | undefined, right: number | undefined) {
-  if (left === undefined && right === undefined) return undefined;
-  return (left ?? 0) + (right ?? 0);
+  return reportModelTimeoutMsForProvider(request.reportType, ASTRA_REPORT_MODEL_TIMEOUT_MS, ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS);
 }
 
 function mergeModelUsage(left: ModelUsage, right: ModelUsage): ModelUsage {
-  const reasoningTokens = addOptionalNumbers(left.reasoningTokens, right.reasoningTokens);
-  return {
-    inputTokens: addOptionalNumbers(left.inputTokens, right.inputTokens),
-    outputTokens: addOptionalNumbers(left.outputTokens, right.outputTokens),
-    ...(reasoningTokens === undefined ? {} : { reasoningTokens }),
-    totalTokens: addOptionalNumbers(left.totalTokens, right.totalTokens),
-    estimatedSpend: addOptionalNumbers(left.estimatedSpend, right.estimatedSpend)
-  };
+  return mergeProviderUsage(left, right);
 }
 
 async function parseValidatedModelDraft(input: ReportWriterInput, writer: (previousErrors?: string[]) => Promise<ModelWriterResponse>) {
@@ -3864,15 +3547,7 @@ async function parseValidatedModelDraft(input: ReportWriterInput, writer: (previ
 }
 
 function monolithicRetryIssue(message: string): ReportGenerationRetryIssue {
-  if (/output limit|at most/i.test(message)) return retryIssue("above_maximum", message);
-  if (/at least/i.test(message)) return retryIssue("below_minimum", message);
-  if (/Missing required heading|Expected \d+ report sections/i.test(message)) return retryIssue("chapter_count", message);
-  if (/Third-person subject/i.test(message)) return retryIssue("third_person_subject", message);
-  if (/Unsupported astrology claim/i.test(message)) return retryIssue("unsupported_claim", message);
-  if (/Missing visible chart evidence/i.test(message)) return retryIssue("evidence_mismatch", message);
-  if (/Natal reports must not imply current timing/i.test(message)) return retryIssue("natal_timing", message);
-  if (/Forbidden public fragment/i.test(message)) return retryIssue("forbidden_fragment", message);
-  return retryIssue("invalid_markdown", message);
+  return monolithicRetryIssueFromReport(message);
 }
 
 async function writeOpenAIDebugModelReportText(
@@ -3897,35 +3572,14 @@ async function writeOpenAIModelText(
   config: Required<Pick<AstrologyReportGenerationConfig, "reportModel" | "openaiApiKey">>,
   fetchImpl: typeof fetch
 ): Promise<ModelWriterResponse> {
-  const startedAt = Date.now();
-  const response = await fetchImpl("https://api.openai.com/v1/responses", {
-    method: "POST",
-    signal: AbortSignal.timeout(reportModelTimeoutMsFor(request)),
-    headers: {
-      authorization: `Bearer ${config.openaiApiKey}`,
-      "content-type": "application/json"
-    },
-    body: JSON.stringify({
-      model: config.reportModel,
-      input: prompt,
-      max_output_tokens: maxOutputTokens
-    })
+  return writeOpenAIModelTextFromAdapter({
+    prompt,
+    model: config.reportModel,
+    apiKey: config.openaiApiKey,
+    maxOutputTokens,
+    timeoutMs: reportModelTimeoutMsFor(request),
+    fetchImpl
   });
-
-  const payload = (await response.json()) as OpenAIResponse & { error?: { message?: string } };
-  if (!response.ok) {
-    throw new Error(payload.error?.message || `OpenAI Responses API failed with ${response.status}.`);
-  }
-
-  return {
-    text: extractOpenAIText(payload),
-    usage: {
-      inputTokens: nonnegativeInteger(payload.usage?.input_tokens),
-      outputTokens: nonnegativeInteger(payload.usage?.output_tokens),
-      totalTokens: nonnegativeInteger(payload.usage?.total_tokens)
-    },
-    latencyMs: Date.now() - startedAt
-  };
 }
 
 async function writeOpenRouterDebugModelReportText(
@@ -3950,49 +3604,18 @@ async function writeOpenRouterModelText(
   config: Required<Pick<AstrologyReportGenerationConfig, "reportModel" | "openRouterApiKey" | "openRouterBaseUrl">>,
   fetchImpl: typeof fetch
 ): Promise<ModelWriterResponse> {
-  const baseUrl = config.openRouterBaseUrl.replace(/\/+$/, "");
-  const endpoint = baseUrl.endsWith("/chat/completions") ? baseUrl : `${baseUrl}/chat/completions`;
-  const startedAt = Date.now();
-  const response = await fetchImpl(endpoint, {
-    method: "POST",
-    signal: AbortSignal.timeout(reportModelTimeoutMsFor(request)),
-    headers: {
-      authorization: `Bearer ${config.openRouterApiKey}`,
-      "content-type": "application/json",
-      "http-referer": process.env.OPENROUTER_SITE_URL?.trim() || ASTRA_OPENROUTER_SITE_URL,
-      "x-title": process.env.OPENROUTER_APP_NAME?.trim() || ASTRA_OPENROUTER_APP_NAME
-    },
-    body: JSON.stringify({
-      model: config.reportModel,
-      messages: [
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      max_tokens: maxOutputTokens,
-      reasoning: { effort: reportReasoningEffortForModel(config.reportModel) },
-      temperature: 0.3
-    })
+  return writeOpenRouterModelTextFromAdapter({
+    prompt,
+    model: config.reportModel,
+    apiKey: config.openRouterApiKey,
+    baseUrl: config.openRouterBaseUrl,
+    maxOutputTokens,
+    timeoutMs: reportModelTimeoutMsFor(request),
+    reasoningEffort: reportReasoningEffortForModel(config.reportModel),
+    siteUrl: process.env.OPENROUTER_SITE_URL?.trim() || ASTRA_OPENROUTER_SITE_URL,
+    appName: process.env.OPENROUTER_APP_NAME?.trim() || ASTRA_OPENROUTER_APP_NAME,
+    fetchImpl
   });
-
-  const payload = (await response.json()) as OpenAICompatibleChatResponse & { error?: { message?: string } };
-  if (!response.ok) {
-    throw new Error(payload.error?.message || `OpenRouter chat completions API failed with ${response.status}.`);
-  }
-
-  return {
-    text: extractOpenAICompatibleChatText(payload),
-    usage: {
-      inputTokens: nonnegativeInteger(payload.usage?.prompt_tokens),
-      outputTokens: nonnegativeInteger(payload.usage?.completion_tokens),
-      reasoningTokens: nonnegativeInteger(payload.usage?.completion_tokens_details?.reasoning_tokens),
-      totalTokens: nonnegativeInteger(payload.usage?.total_tokens),
-      estimatedSpend: nonnegativeNumber(payload.usage?.cost)
-    },
-    finishReason: typeof payload.choices?.[0]?.finish_reason === "string" ? payload.choices[0].finish_reason : undefined,
-    latencyMs: Date.now() - startedAt
-  };
 }
 
 function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: ReportDraft): RecordAstrologyReportResult {

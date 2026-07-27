@@ -1,19 +1,30 @@
 ---
 title: Astra Report Engine Modularization Handoff
-status: active
+status: completed
 owner: Codex
 created: 2026-07-27
-branch: codex/astra-report-rule-catalog-v2
-base_commit: 37dd29b
+branch: codex/astra-report-engine-modularization
+base_commit: 5d9580f
+completed: 2026-07-27
 ---
 
 # Astra Report Engine Modularization Handoff
 
 ## Current state
 
-The worktree is clean on `codex/astra-report-rule-catalog-v2`.
+The unchanged public façade remains `packages/astrology/src/index.ts`. No model calls or customer report generations were made during this refactor. Pre-existing unrelated worktree changes were preserved.
 
-The unchanged public façade remains `packages/astrology/src/index.ts`. No model calls or customer report generations were made during this refactor.
+## Continuation status
+
+Completed on `codex/astra-report-engine-modularization` from `5d9580f`:
+
+- Prompt builders: `report/promptBuilderContracts.ts` owns the monolithic debug, Deep thesis/chapter, and enriched-Core prompt contracts.
+- Parsing and validation: `draftParsing.ts`, `sectionParsing.ts`, `proseValidation.ts`, and `sectionValidation.ts` own draft/section parsing and prose/section validation.
+- Provider and retry orchestration: `openaiAdapter.ts`, `openRouterAdapter.ts`, `providerResponse.ts`, `providerUsage.ts`, `retryClassification.ts`, and `retryOrchestration.ts` own transport, response handling, usage, retry classification, and the shared Deep/Core retry loop.
+
+The façade retains its public API and only composes existing dependencies into these internal modules. No prompt wording, report headings, output contracts, provider protocol, attempt count, retry metadata, concurrency, or deterministic behavior was changed.
+
+Verified after every completed extraction and again at closeout: astrology public-API and rule-catalog fingerprints; Semantic Synthesis V2 Phases 1–5; Deep-quality fake-provider coverage; lint; typecheck; production build; and `git diff --check`.
 
 ## Completed commits
 
@@ -43,14 +54,9 @@ All passed after `37dd29b`:
 
 The Deep-quality suite uses a fake provider and verifies section concurrency, retries, prompt contracts, and metadata without a live model call.
 
-## Next safe extractions
+## Completion evidence
 
-Proceed one subsystem at a time, with the same gates after each:
-
-1. Prompt builders: move the monolithic, Deep, and sectioned Core prompt assemblers behind internal modules while preserving exact text and ordering.
-2. Parsing and prose validation: move parsing, section validation, and retry classification behind internal modules; do not weaken or widen any detector.
-3. Provider and retry orchestration: move OpenAI/OpenRouter adapters and section-generation orchestration behind internal modules; preserve the existing concurrency and retry behavior.
-4. Finish with a small façade cleanup only after all behavior fingerprints still pass.
+All planned seams are extracted. The remaining `index.ts` functions are intentionally thin internal façade adapters or report-result composition; they preserve the unchanged `@astra/astrology` contract.
 
 ## Hard constraints
 

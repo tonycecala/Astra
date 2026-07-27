@@ -13,10 +13,10 @@
 | Chart normalization and structural facts | existing dedicated modules | Pure astrological calculation. |
 | Meaning-complex graph and views | existing dedicated modules | Evidence ranking and deterministic chapter assignment. |
 | Section evidence cards | `index.ts`, pending extraction | Converts selected complexes into writer-ready evidence. |
-| Prompt construction | `index.ts`, pending extraction | Combines immutable cards, rules, and report-family constraints. |
-| Prose validation | `index.ts`, pending extraction | Rejects unsupported or unsafe generated prose. |
+| Prompt construction | `report/promptBuilderContracts.ts` | Combines immutable cards, rules, and report-family constraints. |
+| Prose validation | `report/draftParsing.ts`, `sectionParsing.ts`, `proseValidation.ts`, `sectionValidation.ts` | Parses generated prose and rejects unsupported or unsafe output. |
 | Phase 5 evaluator | `scripts/lib`, pending shared detector extraction | Scores output and applies rollout thresholds. |
-| Provider and retry orchestration | `index.ts`, pending extraction | Calls configured model providers only when explicitly requested. |
+| Provider and retry orchestration | `report/openaiAdapter.ts`, `openRouterAdapter.ts`, `providerResponse.ts`, `providerUsage.ts`, `retryClassification.ts`, `retryOrchestration.ts` | Calls configured model providers only when explicitly requested and preserves retry metadata. |
 
 ## Invariants
 
@@ -31,9 +31,8 @@
 1. Relationship-context normalization.
 2. Prompt voice, safety, evidence, chapter-closing, and Phase 5 threshold policy into the schema-validated catalog.
 3. Relationship-context application, report-level voice planning, chapter-role ownership, evidence ownership, and focused safety boundaries into `report/promptPolicies.ts`.
+4. Prompt builders, parsing/prose validation, provider transport, and shared retry orchestration behind the unchanged façade.
 
 ## Next safe seams
 
-1. Shared prose detector registry used by production validation and Phase 5 evaluation.
-2. Prompt-builder modules.
-3. Report parsing, validation, and provider orchestration.
+1. Section evidence cards, only if a concrete ownership seam emerges.
