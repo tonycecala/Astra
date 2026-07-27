@@ -31,6 +31,10 @@ import {
   type RawLunarNodeInput,
   type RawNormalizedPointInput
 } from "./normalizedChartFacts";
+import {
+  deriveStructuralChartFacts,
+  type StructuralChartFacts
+} from "./structuralChartFacts";
 
 export {
   ASTRA_PLAINSPOKEN_READING_GRADE_MAX,
@@ -39,6 +43,7 @@ export {
   measureReportReadability
 } from "./readability";
 export * from "./normalizedChartFacts";
+export * from "./structuralChartFacts";
 
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER = "astra-astrology-report-adapter";
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION = "0.1.0";
@@ -1609,6 +1614,10 @@ export function buildAstrologyNormalizedChartFacts(input: AstrologyReportRequest
       sourceFactId: `${request.id}:house-cusp:${cusp.house}`
     }))
   });
+}
+
+export function buildAstrologyStructuralChartFacts(input: AstrologyReportRequest): StructuralChartFacts {
+  return deriveStructuralChartFacts(buildAstrologyNormalizedChartFacts(input));
 }
 
 function bodyDisplayName(bodyId: string) {

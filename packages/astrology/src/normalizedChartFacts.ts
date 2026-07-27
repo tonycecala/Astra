@@ -3,7 +3,7 @@ import type { ChartCalculationMode, ChartSettings } from "@astra/contracts";
 type ZodiacMode = ChartSettings["zodiacMode"];
 type HouseSystemMode = ChartSettings["houseSystem"];
 
-export const ASTRA_V2_DOCTRINE_VERSION = "2.0.0-phase-1";
+export const ASTRA_V2_DOCTRINE_VERSION = "2.0.0-phase-2";
 export const ASTRA_LUNAR_NODE_POLICY = "mean" as const;
 
 export const ASTRA_NATAL_ASPECT_RULES = {

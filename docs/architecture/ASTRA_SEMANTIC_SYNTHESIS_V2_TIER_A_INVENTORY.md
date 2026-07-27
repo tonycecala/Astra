@@ -1,11 +1,11 @@
 ---
 title: Astra Semantic Synthesis V2 Tier A Signal Inventory
-status: verified-phase-1
+status: verified-phase-2
 type: implementation-inventory
 project: Astra Clean Start
 created: 2026-07-26
 updated: 2026-07-26
-scope: Phase 0 and Phase 1
+scope: Phase 0 through Phase 2
 ---
 
 # Astra Semantic Synthesis V2 Tier A Signal Inventory
@@ -17,7 +17,7 @@ scope: Phase 0 and Phase 1
 - `absent`: deliberately not implemented yet.
 - `blocked`: the selected calculation source cannot provide trustworthy input.
 
-The baseline column describes Semantic Synthesis V1 before this phase. The Phase 1 column describes the verified state after this implementation.
+The baseline column describes Semantic Synthesis V1 before V2. The current-result column describes the verified state after Phase 2.
 
 ## Verified calculation-library capabilities
 
@@ -39,11 +39,11 @@ It does not directly provide:
 - ruler, dispositor, reception, distribution, lunar-phase, personalization, or configuration structures;
 - production-grade provenance objects.
 
-Phase 1 keeps the mean-node policy, derives aspect phase from deterministic next-day motion, and supplies the missing normalization and provenance. No new dependency was added.
+Phase 1 keeps the mean-node policy, derives aspect phase from deterministic next-day motion, and supplies normalization and provenance. Phase 2 derives the missing structural astrology from those facts without adding a dependency.
 
 ## Tier A inventory
 
-| Required signal | V1 baseline | Phase 1 result | Next owner |
+| Required signal | V1 baseline | Current result | Owner |
 |---|---|---|---|
 | Ascendant | partial | complete | Phase 1 |
 | Midheaven | partial | complete | Phase 1 |
@@ -51,24 +51,24 @@ Phase 1 keeps the mean-node policy, derives aspect phase from deterministic next
 | IC | absent | complete | Phase 1 |
 | Planet conjunctions to angles | partial | complete | Phase 1 |
 | Angular/succedent/cadent house class | absent | complete | Phase 1 |
-| Cusp proximity | absent | absent | Phase 2 |
+| Cusp proximity | absent | complete for Placidus; suppressed for Whole Sign | Phase 2 |
 | Full-mode eligibility gate for angles/houses/cusps | partial | complete | Phase 1 |
 | North Node and South Node pair | absent | complete | Phase 1 |
 | Explicit mean-node policy | absent | complete | Phase 0/1 |
 | Node sign | absent | complete | Phase 1 |
 | Node house when eligible | absent | complete | Phase 1 |
 | Tight node conjunction/opposition | absent | complete | Phase 1 |
-| Node ruler and dispositor pathways | absent | absent | Phase 2 |
+| Node ruler and dispositor pathways | absent | complete | Phase 2 |
 | Bounded node claim policy | absent | complete | Phase 0 |
-| Traditional sign rulers | partial | partial | Phase 2 |
-| Chart ruler | absent | absent | Phase 2 |
-| House rulers | absent | absent | Phase 2 |
-| Ruler-of-house-in-house paths | absent | absent | Phase 2 |
-| Planetary dispositors | absent | absent | Phase 2 |
-| Final dispositor | absent | absent | Phase 2 |
-| Mutual reception | absent | absent | Phase 2 |
-| Dispositor loops and chains | absent | absent | Phase 2 |
-| Labeled modern ruler affinity | absent | absent | Phase 2 |
+| Traditional sign rulers | partial | complete | Phase 2 |
+| Chart ruler | absent | complete in full mode | Phase 2 |
+| House rulers | absent | complete in full mode | Phase 2 |
+| Ruler-of-house-in-house paths | absent | complete in full mode | Phase 2 |
+| Planetary dispositors | absent | complete | Phase 2 |
+| Final dispositor | absent | complete with global/component scope | Phase 2 |
+| Mutual reception | absent | complete | Phase 2 |
+| Dispositor loops and chains | absent | complete | Phase 2 |
+| Labeled modern ruler affinity | absent | complete and separate from primary graph | Phase 2 |
 | Conjunction | complete | complete with metadata | Phase 1 |
 | Opposition | complete | complete with metadata | Phase 1 |
 | Square | complete | complete with metadata | Phase 1 |
@@ -79,31 +79,32 @@ Phase 1 keeps the mean-node policy, derives aspect phase from deterministic next
 | Tighter configuration orbs | absent | complete metadata | Phase 0/1 |
 | Applying/separating phase | absent | complete when motion exists | Phase 1 |
 | Luminary/personal/angle/node point kinds | partial | complete | Phase 1 |
-| Chart-ruler aspect importance | absent | absent | Phase 2 |
-| Outer-planet personalization | absent | absent | Phase 2 |
+| Chart-ruler aspect relevance | absent | complete as structural activation evidence; weighting pending | Phase 2/3 |
+| Outer-planet personalization | absent | complete | Phase 2 |
 | Duplicate-derived-importance collapse | partial | partial | Phase 3 |
-| Conjunction clusters | absent | absent | Phase 2 |
-| Stellia | absent | absent | Phase 2 |
-| T-square | absent | absent | Phase 2 |
-| Grand Cross | absent | absent | Phase 2 |
-| Grand Trine | absent | absent | Phase 2 |
-| Kite | absent | absent | Phase 2 |
-| Yod | absent | absent | Phase 2 |
-| Mystic Rectangle | absent | absent | Phase 2 |
-| Configuration participants/focal planet/orbs | absent | absent | Phase 2 |
-| Element emphasis/relative absence | partial | absent as V2 structure | Phase 2 |
-| Modality emphasis/relative absence | partial | absent as V2 structure | Phase 2 |
-| Polarity balance | absent | absent | Phase 2 |
-| Hemisphere emphasis | absent | absent | Phase 2 |
-| Quadrant emphasis | absent | absent | Phase 2 |
-| House-mode emphasis | absent | partial; point facts complete | Phase 2 |
+| Conjunction clusters | absent | complete | Phase 2 |
+| Stellia | absent | complete | Phase 2 |
+| T-square | absent | complete | Phase 2 |
+| Grand Cross | absent | complete | Phase 2 |
+| Grand Trine | absent | complete | Phase 2 |
+| Kite | absent | complete | Phase 2 |
+| Yod | absent | complete | Phase 2 |
+| Mystic Rectangle | absent | complete | Phase 2 |
+| Configuration participants/focal planet/orbs | absent | complete | Phase 2 |
+| Element emphasis/relative absence | partial | complete as counted structure | Phase 2 |
+| Modality emphasis/relative absence | partial | complete as counted structure | Phase 2 |
+| Polarity balance | absent | complete | Phase 2 |
+| Hemisphere emphasis | absent | complete in full mode | Phase 2 |
+| Quadrant emphasis | absent | complete in full mode | Phase 2 |
+| House-mode emphasis | absent | complete in full mode | Phase 2 |
 | Sun-Moon aspect | partial | complete as normalized aspect | Phase 1 |
-| Lunar phase | absent | absent | Phase 2 |
-| Luminary rulers/dispositors | absent | absent | Phase 2 |
+| Lunar phase | absent | complete | Phase 2 |
+| Luminary rulers/dispositors | absent | complete | Phase 2 |
 | Solar-lunar reinforcement/tension | partial | absent as V2 structure | Phase 3 |
-| Personalized outer planets | absent | absent | Phase 2 |
-| Personalized Chiron | absent | absent | Phase 2 |
-| Generational-context boundary | partial | complete policy; selection pending | Phase 0/2 |
+| Personalized outer planets | absent | complete | Phase 2 |
+| Personalized Chiron | absent | complete | Phase 2 |
+| Personalized lunar nodes | absent | complete | Phase 2 |
+| Generational-context boundary | partial | complete policy and activation selection | Phase 0/2 |
 | Planetary retrograde state | partial | complete | Phase 1 |
 | Retrograde interpretation boundary | absent | complete | Phase 0 |
 
@@ -114,12 +115,14 @@ No Tier A item is blocked by missing calculation provenance in Phase 1. True lun
 | Boundary | Responsibility |
 |---|---|
 | `packages/astrology/src/normalizedChartFacts.ts` | Phase 1 fact types, aspect rules, normalization, provenance, and signs-only omission |
-| `packages/astrology/src/index.ts` | Adapt current calculated horoscope output into normalized Phase 1 facts |
+| `packages/astrology/src/index.ts` | Adapt current calculated horoscope output into normalized and structural facts |
+| `packages/astrology/src/structuralChartFacts.ts` | Phase 2 rulership, geometry, distribution, lunar-phase, and personalization derivation |
 | `scripts/smoke-semantic-synthesis-v2-phase-1.mts` | Synthetic geometry, near-miss, provenance, deterministic, and calculation-mode gates |
+| `scripts/smoke-semantic-synthesis-v2-phase-2.mts` | Positive and near-miss fixtures for every Phase 2 rule plus actual-chart and leakage gates |
 | `docs/decisions/ASTRA_SEMANTIC_SYNTHESIS_V2_INTERPRETIVE_DOCTRINE.md` | Accepted astrological school and exact rule policies |
 | this inventory | Verified capability map and bounded next ownership |
 
-Phase 1 adds no package, route, database contract, public contract, UI, heading, prompt, prose pass, meaning complex, graph service, or external registry.
+Phases 1 and 2 add no package, route, database contract, public contract, UI, heading, prompt, prose pass, meaning complex, graph service, or external registry.
 
 ## Phase 1 gate evidence
 
@@ -142,4 +145,27 @@ Command:
 
 ```bash
 npm run test:semantic-synthesis-v2-phase-1
+```
+
+## Phase 2 gate evidence
+
+The focused Phase 2 gate proves:
+
+- traditional chart ruler, house rulers, ruler location, dispositors, terminating chains, loops, final dispositors, and mutual reception;
+- labeled modern affinities remain separate from traditional ruler edges;
+- ordinary and nodal angular-contact positives and outside-orb near misses;
+- Placidus cusp proximity, outside-orb rejection, and Whole Sign suppression;
+- exact positive and outside-configuration-orb fixtures for every locked configuration;
+- maximal stellium and connected conjunction-cluster rules;
+- element, modality, polarity, hemisphere, quadrant, and house-mode counts without Chiron/node/angle inflation;
+- all eight lunar phases and exact sector-boundary behavior;
+- positive and near-miss personalization for outer planets, Chiron, and nodes, including chart-ruler, angle, and node activators;
+- complete raw-fact provenance on every derived object;
+- total removal of chart ruler, house rulers, angular contacts, cusp proximity, house distributions, house-based stellia, and angle-based activation in `signs-aspects-only`;
+- deterministic structural output for identical inputs across the Tropical/Sidereal and Whole Sign/Placidus calculation matrix.
+
+Command:
+
+```bash
+npm run test:semantic-synthesis-v2-phase-2
 ```

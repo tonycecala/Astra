@@ -11,7 +11,8 @@ audience: Codex / engineering agents
 mission: Make Astra materially smarter astrologically by deriving and synthesizing professional-grade chart signals before revising report headings.
 phase_0_status: complete
 phase_1_status: complete
-next_phase: Phase 2
+phase_2_status: complete
+next_phase: Phase 3
 supersedes: ../ASTRA_WEIGHTED_CHART_SIGNAL_GRAPH_TODO.md
 depends_on:
   - ../../decisions/ASTRA_CHART_LOCATION_INTEGRITY_AND_SIGNAL_GRAPH.md
@@ -727,4 +728,44 @@ Verified outcomes:
 
 ```text
 Implement only Phase 2 of Astra Semantic Synthesis V2. Derive traditional chart ruler, house rulers, dispositors, chains, loops, final dispositors, mutual reception, angular contacts, cusp proximity, the locked major configurations, chart-wide distributions, lunar phase, and personal activation of outer planets, Chiron, and nodes from the Phase 1 normalized facts. Add synthetic positive and near-miss fixtures for every rule, retain complete raw-fact provenance, and preserve the signs-aspects-only leakage gate. Do not begin meaning complexes, report-view integration, heading changes, or prose tuning.
+```
+
+## Phase 2 Completion — 2026-07-26
+
+Phase 2 is complete on `codex/astra-semantic-synthesis-v2-phase-2`.
+
+Delivered:
+
+- structural derivation module: `packages/astrology/src/structuralChartFacts.ts`;
+- current-engine adapter: `buildAstrologyStructuralChartFacts`;
+- updated accepted Phase 2 policies in `docs/decisions/ASTRA_SEMANTIC_SYNTHESIS_V2_INTERPRETIVE_DOCTRINE.md`;
+- verified current Tier A inventory in `docs/architecture/ASTRA_SEMANTIC_SYNTHESIS_V2_TIER_A_INVENTORY.md`;
+- deterministic positive, outside-orb near-miss, actual-chart, provenance, and calculation-mode gate: `scripts/smoke-semantic-synthesis-v2-phase-2.mts`.
+
+Gate command:
+
+```bash
+npm run test:semantic-synthesis-v2-phase-2
+```
+
+Verified outcomes:
+
+- traditional chart ruler, house rulers, ruler location, dispositors, chains, loops, final dispositors, mutual reception, and separate modern affinities;
+- ordinary and nodal angular contacts plus Placidus-only cusp proximity;
+- conjunction clusters, maximal stellia, T-squares, Grand Crosses, Grand Trines, Kites, Yods, and Mystic Rectangles;
+- element, modality, polarity, hemisphere, quadrant, and house-mode distributions;
+- deterministic eight-sector lunar phase;
+- bounded personal activation for outer planets, Chiron, and lunar nodes;
+- raw-fact provenance on every derived fact;
+- no full-mode chart ruler, house ruler, angular contact, cusp, house distribution, house stellium, or angle activation evidence in `signs-aspects-only`;
+- no report generation, report-view integration, meaning complexes, headings, prompts, prose, routes, UI, or database contracts changed.
+
+### Later report-comparison constraint
+
+Phase 2 performs calculation tests only. When report integration is ready for human comparison, generate one Tony Deep report and compare it with a recent V1 Tony Deep report. Do not expand the first report comparison into a matrix.
+
+### Next bounded Phase 3 goal
+
+```text
+Implement only Phase 3 of Astra Semantic Synthesis V2. Build the typed in-memory meaning-complex network from Phase 1 normalized facts and Phase 2 structural facts. Add evidence-path expansion, independent-support counting, duplicate-origin collapse, counterevidence selection, transparent component scoring, confidence tiers, claim boundaries, and inspectable deterministic output. Prove that aliases cannot inflate confidence, contradictory evidence remains visible, and unpersonalized outer-planet, Chiron, or node evidence cannot anchor a strong complex. Preserve every calculation-mode leakage gate. Do not integrate report views, generate reports, change headings, or tune prose.
 ```

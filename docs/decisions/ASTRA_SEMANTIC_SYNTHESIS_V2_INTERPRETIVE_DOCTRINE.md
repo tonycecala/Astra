@@ -5,7 +5,7 @@ type: architecture-decision
 project: Astra Clean Start
 created: 2026-07-26
 updated: 2026-07-26
-decision_version: 2.0.0-phase-1
+decision_version: 2.0.0-phase-2
 scope: natal astrology
 ---
 
@@ -88,9 +88,62 @@ These definitions remove ambiguity before configuration code begins.
 - A near miss outside any required configuration orb is not the configuration.
 - Each configuration stores participants, focal or apex planet when applicable, exact aspect members, signs, eligible houses, orbs, basis, and provenance.
 
+## Phase 2 Structural Policies
+
+### Traditional rulership and dispositors
+
+- Primary rulers are: Mars for Aries, Venus for Taurus, Mercury for Gemini, Moon for Cancer, Sun for Leo, Mercury for Virgo, Venus for Libra, Mars for Scorpio, Jupiter for Sagittarius, Saturn for Capricorn, Saturn for Aquarius, and Jupiter for Pisces.
+- The chart ruler is the traditional ruler of the Ascendant sign and exists only in `full` mode.
+- A house ruler is the traditional ruler of the selected house cusp sign. Its pathway records the ruler's calculated house when eligible.
+- Every luminary, planet, Chiron point, and lunar node has a sign dispositor pathway. Angles do not.
+- A final dispositor is a planet in a sign it traditionally rules that terminates one or more dispositor chains. It is `global` only when every available chain terminates there.
+- A dispositor loop contains two or more planets and returns to an earlier participant without reaching a self-dispositor.
+- Mutual reception is the two-planet case in which each planet occupies a sign traditionally ruled by the other.
+- Pluto for Scorpio, Uranus for Aquarius, and Neptune for Pisces are stored only as labeled modern affinities. They never replace the primary traditional ruler edge.
+
+### Angular contacts and cusp proximity
+
+- Non-node conjunctions to calculated angles use the accepted 5-degree angle orb.
+- Mean lunar-node conjunctions to calculated angles use the tighter 3-degree node orb.
+- Because both ends of each angle axis are first-class points, a node opposition to one angle is represented once as a conjunction to the opposite angle.
+- Cusp proximity applies only to Placidus houses and uses a maximum distance of 3 degrees.
+- Cusp proximity qualifies a calculated house placement; it never replaces it.
+- Whole Sign houses do not create separate cusp-proximity facts.
+
+### Configuration participants
+
+- Luminaries and Sun-through-Pluto planets are eligible configuration participants.
+- Chiron, lunar nodes, and angles do not satisfy configuration or stellium participant counts.
+- A conjunction cluster is a connected component. Every connecting conjunction must pass the 6-degree configuration orb, but every participant need not conjunct every other participant.
+- When several stellium subsets qualify in the same sign or house, only the maximal qualifying set is retained.
+
+### Chart-wide distributions
+
+- Element, modality, and polarity counts use each luminary and Sun-through-Pluto planet once. Chiron, nodes, and angles do not alter the counts.
+- Positive polarity contains fire and air signs. Negative polarity contains earth and water signs.
+- Northern hemisphere contains houses 1 through 6; Southern contains houses 7 through 12.
+- Eastern hemisphere contains houses 10, 11, 12, 1, 2, and 3; Western contains houses 4 through 9.
+- Quadrants are houses 1–3, 4–6, 7–9, and 10–12.
+- House-mode counts use the accepted angular, succedent, and cadent classes.
+- A zero category is relative chart emphasis only. It does not establish a missing human capacity.
+
+### Lunar phase
+
+- Lunar phase uses directed Moon-minus-Sun elongation normalized to 0–360 degrees.
+- Eight 45-degree sectors are centered on New, First Quarter, Full, and Last Quarter and their intermediate phases.
+- Boundaries occur at 22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, and 337.5 degrees.
+
+### Personal activation
+
+- Outer planets and Chiron are personally activated by a tight approved aspect to a luminary, Mercury, Venus, Mars, a calculated angle, a lunar node, or the traditional chart ruler.
+- Lunar nodes are personally activated by a tight approved contact to a luminary, Mercury, Venus, Mars, a calculated angle, or the traditional chart ruler.
+- Interplanetary activation uses the tighter configuration orb for the aspect type.
+- Node contacts use 3 degrees. Angle contacts use 5 degrees, except node-to-angle contacts, which remain at 3 degrees.
+- A slower factor without qualifying activation remains available as generational or developmental context. It cannot anchor a strong categorical personal claim.
+
 ## Claim Boundary
 
-Phase 0 and Phase 1 create chart facts only. They do not change headings, report prose, semantic hypotheses, meaning complexes, or customer-visible controls. Relationship context cannot alter natal geometry.
+Phases 0 through 2 create chart and structural facts only. They do not change headings, report prose, semantic hypotheses, meaning complexes, or customer-visible controls. Relationship context cannot alter natal geometry.
 
 ## Supersession
 
