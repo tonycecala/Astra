@@ -47,6 +47,11 @@ import {
   type MeaningComplexReportView,
   type MeaningComplexReportViews
 } from "./meaningComplexReportViews";
+import {
+  normalizedRelationshipContextFromRequest,
+  recordValue
+} from "./report/relationshipContext";
+import { reportRuleCatalog } from "./report/rules/catalog";
 
 export {
   ASTRA_PLAINSPOKEN_READING_GRADE_MAX,
@@ -58,6 +63,12 @@ export * from "./normalizedChartFacts";
 export * from "./structuralChartFacts";
 export * from "./meaningComplexNetwork";
 export * from "./meaningComplexReportViews";
+export {
+  relationshipSituationKeys,
+  normalizedRelationshipContextFromRequest,
+  type NormalizedRelationshipContext,
+  type RelationshipSituation
+} from "./report/relationshipContext";
 
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER = "astra-astrology-report-adapter";
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION = "0.1.0";
@@ -93,74 +104,6 @@ function isWelcomeReportRequest(request: AstrologyReportRequest) {
     ? request.context
     : undefined;
   return request.reportType === "identity" && context?.modelPilot === "gemini-intro-identity";
-}
-
-// Legacy one-dimensional situations are retained only for the unambiguous
-// compatibility values. "nontraditional" was retired because it mixed
-// structure with qualitative assumptions that only explicit fields can supply.
-export const relationshipSituationKeys = ["single", "partnered", "strained", "separated", "unspecified"] as const;
-export type RelationshipSituation = (typeof relationshipSituationKeys)[number];
-
-const relationshipStatuses = ["single", "partnered", "separated", "unspecified"] as const;
-const relationshipConditions = ["stable", "evolving", "strained", "ending", "recovering", "unspecified"] as const;
-const relationshipStructures = [
-  "monogamous",
-  "consensually_nonmonogamous",
-  "polyamorous",
-  "open",
-  "long_distance",
-  "living_apart",
-  "queerplatonic",
-  "chosen_family_centered",
-  "other",
-  "unspecified"
-] as const;
-const relationshipIntentions = ["not_seeking", "open_to_connection", "dating", "deepen", "repair", "discern", "recover", "unspecified"] as const;
-const relationshipRecencies = ["recent", "established", "unspecified"] as const;
-
-export type NormalizedRelationshipContext = {
-  status: (typeof relationshipStatuses)[number];
-  condition: (typeof relationshipConditions)[number];
-  structure: (typeof relationshipStructures)[number];
-  intention: (typeof relationshipIntentions)[number];
-  recency: (typeof relationshipRecencies)[number];
-  partnerPronouns: string | null;
-  notes: string | null;
-};
-
-const unspecifiedRelationshipContext: NormalizedRelationshipContext = {
-  status: "unspecified",
-  condition: "unspecified",
-  structure: "unspecified",
-  intention: "unspecified",
-  recency: "unspecified",
-  partnerPronouns: null,
-  notes: null
-};
-
-function recordValue(value: unknown) {
-  return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : undefined;
-}
-
-function enumValue<const T extends readonly string[]>(value: unknown, allowed: T, fallback: T[number]) {
-  return typeof value === "string" && allowed.includes(value as T[number]) ? value as T[number] : fallback;
-}
-
-export function normalizedRelationshipContextFromRequest(
-  request: Pick<AstrologyReportRequest, "context">
-): NormalizedRelationshipContext {
-  const context = recordValue(request.context);
-  const relationship = recordValue(context?.relationshipContext);
-  if (!relationship) return { ...unspecifiedRelationshipContext };
-  return {
-    status: enumValue(relationship.status, relationshipStatuses, "unspecified"),
-    condition: enumValue(relationship.condition, relationshipConditions, "unspecified"),
-    structure: enumValue(relationship.structure, relationshipStructures, "unspecified"),
-    intention: enumValue(relationship.intention, relationshipIntentions, "unspecified"),
-    recency: enumValue(relationship.recency, relationshipRecencies, "unspecified"),
-    partnerPronouns: typeof relationship.partnerPronouns === "string" ? relationship.partnerPronouns.trim() || null : null,
-    notes: typeof relationship.notes === "string" ? relationship.notes.trim() || null : null
-  };
 }
 
 function canonicalIdentityFromRequest(request: Pick<AstrologyReportRequest, "context">) {
@@ -244,17 +187,7 @@ function editorialRoleInstruction(request: AstrologyReportRequest) {
   ].join("\n");
 }
 
-const sectionVoicePlans: Record<string, string> = {
-  Identity: "Close with a plain statement of what stays consistent for the reader; do not prescribe an action.",
-  Emotions: "Close by naming a condition that helps feelings become usable information; do not prescribe disclosure.",
-  Relationships: "Close with a bounded relational condition or question. Do not use move, fix, task, risk, or repair as the closing frame.",
-  Work: "Close with a prioritization rule that protects useful effort from scattered effort.",
-  Drive: "Close with a proportion or pacing principle, not a productivity assignment.",
-  Gifts: "Close by naming how a usable capacity supports contribution, connection, or expression. Do not turn it into a refinement or verification warning.",
-  "Blind Spots": "Close with the report's only verification question: separate observation from interpretation before acting on a first read.",
-  Growth: "Close by naming how a stable self-concept can update. Do not prescribe a deadline, confrontation, or verification practice.",
-  Integration: "Close with two or three operating principles stated as choices, not a small action, fix, task, risk, or weekly assignment."
-};
+const sectionVoicePlans = reportRuleCatalog.voice.sectionClosings;
 
 function voicePlanForSection(title: string) {
   return sectionVoicePlans[title] ?? "Use a distinct, natural closing that belongs only to this chapter.";
@@ -2729,35 +2662,8 @@ function parseModelDraft(text: string, request: AstrologyReportRequest, chartSig
   };
 }
 
-const astraPlainspokenVoiceContract = [
-  "VOICE MODE: PLAINSPOKEN",
-  "Target a 6th to 7th grade reading level, aiming near grade 6.5, without dumbing down the insight.",
-  "Write like a wise farmer: calm, direct, concrete, and spare. Say only what helps. Make the point clear without decoration.",
-  "Use familiar words and short sentence structures. Keep necessary astrology terms, then explain them simply.",
-  "Aim for 12 to 14 words per sentence on average. Keep most sentences between 8 and 16 words, and nearly all under 20.",
-  "Use one main idea per sentence. Break every stacked clause into two or more clean sentences.",
-  "Prefer concrete choices, actions, needs, time, work, and relationships over poetic or psychological shorthand.",
-  "Do not use vague figurative phrases such as 'lose your shape,' 'hold your center,' 'blur your edges,' 'room to breathe,' 'emotional weather,' 'live wire,' 'static,' or 'fog.' Name the plain meaning instead.",
-  "For example, replace 'closeness without losing your shape' with 'closeness without giving up your own plans, friends, or time.'",
-  "Say what happens, what it costs, and what can change. If a simpler sentence works, use it.",
-  "Sound warm and lived-in, never academic, clinical, ornate, mystical, or clever for its own sake.",
-  "Keep adult psychological nuance. Plain does not mean choppy or childish.",
-  "Avoid stilted therapeutic phrasing such as 'sitting with' or 'sit with.' Prefer considering, reflecting on, notice, or a plain concrete verb.",
-  "Open each section with a direct second-person statement using You or Your. Vary the sentence shape across sections. Do not begin with a question or stock setup such as 'Here's the question,' 'Here is the question,' or 'This section asks.'",
-  "Use words such as actually, real, really, and here's sparingly; do not turn them into a repeated voice tic.",
-  "Use needed astrology terms accurately, then explain their human meaning in ordinary language."
-];
-
-const astraInterpretiveContract = [
-  "Write as if the reader paid for a psychologically intelligent interpretation, not a horoscope column.",
-  "Translate chart factors into specific lived experience and observable patterns.",
-  "Prefer concrete psychological claims over abstract astrological description.",
-  "Build each section from chart factor to human pattern to its relevant tension or cost, then offer one section-specific useful response.",
-  "Include the relevant gift naturally, but do not force gift, cost, tension, and practice into a repeated checklist.",
-  "End with a useful resolution that belongs to this section. It may be a practical next step, a clear fact to notice, or a plain statement of the choice or tradeoff.",
-  "Avoid textbook astrology, stock spirituality, inflated certainty, generic coaching, and repeated evidence verbs.",
-  "When a signal appears in multiple sections, interpret a different consequence in each life domain instead of repeating its thesis or advice."
-];
+const astraPlainspokenVoiceContract = reportRuleCatalog.voice.plainspoken;
+const astraInterpretiveContract = reportRuleCatalog.voice.interpretive;
 
 function interpretiveContractFor(cards: readonly ReportSectionSignalCard[]) {
   if (!cards.some((card) => card.hypothesis)) return astraInterpretiveContract;
@@ -2767,37 +2673,8 @@ function interpretiveContractFor(cards: readonly ReportSectionSignalCard[]) {
   );
 }
 
-const astraPsychologicalSafetyContract = [
-  "This is reflective interpretation, not diagnosis, therapy, risk assessment, or factual knowledge about another person.",
-  "Frame tendencies as possibilities with words such as may, can, might, under stress, or if this fits. Use certainty only for supplied chart facts.",
-  "Hedging does not make an invented scenario supported. Stay one interpretive step from the selected evidence: name a possible tendency, tension, resource, or helpful condition without inventing a routine, recovery method, reputation, social effect, decision history, or life event.",
-  "Keep examples generic and conditional. Do not turn a silence, changed plan, number, limit, group mood, work response, or another person's reaction into a likely event in the reader's life.",
-  "Do not turn a chart tendency into invented biography. Never claim that the reader has probably lost a relationship, job, trust, opportunity, learned a wound early, compensated for an old injury, or already lived through a specific event.",
-  "Do not infer childhood, upbringing, family dynamics, household history, early-home memories, career history, or relationship history from a house, sign, aspect, or symbolic theme.",
-  "Describe observable behavior instead of labeling the reader with projection, control, avoidance, reactivity, self-sabotage, power struggle, emotional overcontrol, dissociation, or trauma.",
-  "Never invent a clinical condition, trauma history, attachment style or diagnosis, abuse dynamic, compulsion, unconscious motive, old wound, or another person's inner life.",
-  "When using an example involving another person, use someone or a neutral description unless partner pronouns were explicitly supplied. Do not add he, she, him, her, his, or hers.",
-  "Do not claim the reader can identify another person's wound, weak spot, pressure point, motive, capacity, mood, grief, need, or what will change them. Keep perception claims anchored to what the reader notices and can verify.",
-  "Do not claim that intuition, a slow planet, an aspect, or a house gives an accurate first read, privileged access to undercurrents, rapid certainty, wholesale personal change, or an established habit of self-correction.",
-  "Avoid categorical biography and behavior claims such as 'you act before you think,' 'you usually land right,' or 'you react first.' Use bounded possibility language unless stating a supplied chart fact.",
-  "Any recommendation involving direct conversation, disclosure, confrontation, boundaries, or repair must be conditional on it being safe and appropriate.",
-  "Do not imply that the reader must repair every relationship, that endurance is virtuous, or that astrology can decide whether a relationship continues.",
-  "Keep the report balanced: substantial resources and capacities, specific tensions, and proportionate applications. Gifts must not read like a disguised Blind Spots chapter.",
-  "Do not diminish the reader with phrases such as party trick, impressive but thin, charm stays shallow, applause before depth, or similar contemptuous formulations.",
-  "Avoid a visible rhetorical template. Across the report, use 'That's not a flaw,' 'The useful move,' 'The fix isn't,' and 'The task isn't' no more than once each, and avoid repeated not-X-but-Y constructions."
-];
-
-const astraEvidenceContract = [
-  "Treat the selected section signal cards as the complete factual boundary for the prose.",
-  "Mention only placements, houses, aspects, chart themes, and timing activations present in the relevant section card.",
-  "Use only the relationships explicitly stated in the card. Do not extend a rulership chain, configuration, dispositor sequence, aspect geometry, or house meaning beyond those stated facts.",
-  "Personal activation means natal relevance only. It never means current pressure, current activation, a present event, or unusual timing.",
-  "Do not narrate a generic dispositor chain. If a direct rulership or final dispositor is essential, state only the exact relationship present in this chapter card.",
-  "Counterevidence qualifies the primary hypothesis. Do not convert it into proof that the reader already has a skill, habit, accurate instinct, or corrective practice.",
-  "State selected aspects plainly. Do not state or discuss orb measurements, angular distance, tightness, closeness, exactness, intensity, or precision, even as a disclaimer.",
-  "Do not invent, infer, or import additional astrology facts, even when they would be plausible.",
-  "Do not include provider, model, prompt version, cached status, debug labels, or generation metadata in customer-facing prose."
-];
+const astraPsychologicalSafetyContract = reportRuleCatalog.safety;
+const astraEvidenceContract = reportRuleCatalog.evidence;
 
 type SectionDepthRule = { target: string; minimum: number; maximum: number };
 

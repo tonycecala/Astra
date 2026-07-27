@@ -1,9 +1,10 @@
 import { createHash } from "node:crypto";
+import { reportRuleCatalog } from "../../packages/astrology/src/report/rules/catalog";
 
 export const PHASE_5_EVALUATION_VERSION = "2.0.0-phase-5";
-export const PHASE_5_SEMANTIC_AVERAGE_MINIMUM = 2.6;
-export const PHASE_5_CONTEXT_SAFETY_MINIMUM = 2.8;
-export const PHASE_5_REPETITION_SCORE_MINIMUM = 2;
+export const PHASE_5_SEMANTIC_AVERAGE_MINIMUM = reportRuleCatalog.evaluation.semanticAverageMinimum;
+export const PHASE_5_CONTEXT_SAFETY_MINIMUM = reportRuleCatalog.evaluation.contextSafetyMinimum;
+export const PHASE_5_REPETITION_SCORE_MINIMUM = reportRuleCatalog.evaluation.repetitionScoreMinimum;
 
 export const phase5SemanticCategories = [
   "astrological_correctness",
