@@ -135,6 +135,35 @@ assert.ok(
   new Set(views.deep.chapters.map((chapter) => chapter.primaryComplexId)).size >= 6,
   "Deep must use a materially broader set of primary complexes than Core."
 );
+assert.equal(
+  new Set(
+    views.deep.chapters
+      .filter((chapter) => chapter.title !== "Identity")
+      .map((chapter) => chapter.primaryComplexId)
+  ).size,
+  views.deep.selectedComplexIds.length,
+  "Every selected Deep complex must own a distinct non-Identity chapter before any root is reused."
+);
+const deepPrimaryUseCounts = new Map<string, number>();
+for (const selection of views.deep.chapters.filter((chapter) => chapter.title !== "Identity")) {
+  deepPrimaryUseCounts.set(
+    selection.primaryComplexId,
+    (deepPrimaryUseCounts.get(selection.primaryComplexId) ?? 0) + 1
+  );
+}
+assert.ok(
+  [...deepPrimaryUseCounts.values()].filter((count) => count > 1).length <= 1,
+  "Deep may reuse at most one non-Identity primary under the seven-complex budget."
+);
+assert.notEqual(
+  views.deep.chapters.find((chapter) => chapter.title === "Blind Spots")?.primaryComplexId,
+  views.deep.chapters.find((chapter) => chapter.title === "Growth")?.primaryComplexId,
+  "Blind Spots and Growth must not share one primary complex."
+);
+assert.ok(
+  views.deep.chapters.find((chapter) => chapter.title === "Growth")?.primaryComplexId,
+  "The Deep budget must assign Growth deliberately instead of dropping its candidate by position."
+);
 assert.ok(
   views.deep.chapters
     .filter((chapter) => chapter.title !== "Identity")
@@ -283,6 +312,61 @@ assert.equal(selectMeaningComplexReportViews(emptyNetwork), null);
 
 const modernEvidence = buildAstrologyReportSectionEvidence(deepRequest, personHeadings.deep);
 assert.ok(modernEvidence.every((section) => section.evidenceBullets.length > 0));
+const modernAspectEvidence = modernEvidence
+  .flatMap((section) => section.evidenceBullets)
+  .find((bullet) =>
+    /\b(Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)\s+(conjunction|opposition|square|trine|sextile|quincunx)\s+(Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)\b/i.test(bullet.label) &&
+    /\baspect (conjunction|opposition|square|trine|sextile|quincunx)\b/i.test(bullet.meaning)
+  );
+assert.ok(
+  modernAspectEvidence,
+  "V2 evidence must retain a selected aspect relationship and its aspect mechanism."
+);
+assert.doesNotMatch(
+  modernAspectEvidence.meaning,
+  /\borb\b|\b\d+(?:\.\d+)?\s+degrees?\b/i,
+  "V2 prose evidence must omit editorially unnecessary orb measurements."
+);
+const fifthHouseMarsRuler = modernEvidence
+  .flatMap((section) => section.evidenceBullets)
+  .find((bullet) => bullet.label === "House 5 ruler mars");
+assert.ok(fifthHouseMarsRuler, "The fixture must expose its fifth-house ruler evidence.");
+assert.match(
+  fifthHouseMarsRuler.meaning,
+  /\bMars rules 5th house\b/,
+  "House-ruler evidence must identify the house being ruled."
+);
+assert.match(
+  fifthHouseMarsRuler.meaning,
+  /\bMars in 2nd house\b/,
+  "House-ruler evidence must retain the ruler planet's actual natal placement."
+);
+assert.doesNotMatch(
+  fifthHouseMarsRuler.meaning,
+  /\bHouse 5 ruler mars in 5th house\b/,
+  "The ruled house must never be serialized as the ruler planet's placement."
+);
+const evidenceOwners = new Map<string, string[]>();
+for (const section of modernEvidence.filter((candidate) => candidate.title !== "Identity")) {
+  for (const bullet of section.evidenceBullets) {
+    const owners = evidenceOwners.get(bullet.label) ?? [];
+    owners.push(section.title);
+    evidenceOwners.set(bullet.label, owners);
+  }
+}
+for (const [label, owners] of evidenceOwners) {
+  if (owners.length < 2) continue;
+  assert.ok(
+    owners.every((title) => {
+      const selection = views.deep.chapters.find((chapter) => chapter.title === title);
+      const complex = network.complexes.find((candidate) => candidate.id === selection?.primaryComplexId);
+      return complex?.seedNodeIds.some((nodeId) =>
+        network.nodes.find((node) => node.id === nodeId)?.label === label
+      );
+    }),
+    `Repeated evidence label "${label}" must be a primary root in every owning chapter.`
+  );
+}
 assert.notDeepEqual(
   modernEvidence.find((section) => section.title === "Emotions"),
   modernEvidence.find((section) => section.title === "Growth"),

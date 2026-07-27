@@ -1883,10 +1883,32 @@ function nodeFactsForSignal(
   const facts = [node.label];
   const sign = typeof node.attributes.sign === "string" ? node.attributes.sign : null;
   const house = typeof node.attributes.house === "number" ? node.attributes.house : null;
-  const orb = typeof node.attributes.orb === "number" ? node.attributes.orb : null;
-  if (sign) facts.push(sign);
-  if (house) facts.push(houseLabel(house));
-  if (orb !== null) facts.push(`orb ${orb} degrees`);
+  const houseRuler = node.type === "RulershipPath" && node.attributes.pathType === "house_ruler";
+  const rulerPointId = houseRuler && typeof node.attributes.rulerPointId === "string"
+    ? node.attributes.rulerPointId
+    : null;
+  const rulerHouse = houseRuler && typeof node.attributes.rulerHouse === "number"
+    ? node.attributes.rulerHouse
+    : null;
+  if (sign) {
+    facts.push(sign);
+    facts.push(`${node.label} in ${sign}`);
+  }
+  if (houseRuler && house && rulerPointId) {
+    const rulerLabel = titleCaseClaim(rulerPointId);
+    facts.push(`${rulerLabel} rules ${houseLabel(house)}`);
+    if (rulerHouse) facts.push(`${rulerLabel} in ${houseLabel(rulerHouse)}`);
+  } else if (house) {
+    facts.push(houseLabel(house));
+    facts.push(`${node.label} in ${houseLabel(house)}`);
+  }
+  if (node.type === "PersonalActivation") {
+    const targetPointId = typeof node.attributes.targetPointId === "string"
+      ? node.attributes.targetPointId
+      : null;
+    if (targetPointId) facts.push(`${titleCaseClaim(targetPointId)} has natal relevance`);
+    facts.push("natal relevance only");
+  }
   facts.push(readableTechnicalLabel(mechanism));
   return [...new Set(facts)];
 }
@@ -1898,7 +1920,10 @@ function complexAnchorSignal(
 ): ReportSectionSignalCard["chartSignals"][number] | null {
   const nodeById = new Map(network.nodes.map((node) => [node.id, node]));
   const seedNode = complex.seedNodeIds.map((id) => nodeById.get(id)).find(Boolean);
-  if (!seedNode) return null;
+  if (
+    !seedNode ||
+    (seedNode.type === "RulershipPath" && seedNode.attributes.pathType === "dispositor-chain")
+  ) return null;
   return {
     id: `v2_anchor_${complex.id}`,
     label: seedNode.label,
@@ -1913,7 +1938,10 @@ function evidenceSignal(
   network: MeaningComplexNetwork
 ): ReportSectionSignalCard["chartSignals"][number] | null {
   const terminal = network.nodes.find((node) => node.id === path.terminalNodeId);
-  if (!terminal) return null;
+  if (
+    !terminal ||
+    (terminal.type === "RulershipPath" && terminal.attributes.pathType === "dispositor-chain")
+  ) return null;
   return {
     id: `v2_evidence_${complex.id}_${path.id}`,
     label: terminal.label,
@@ -1932,28 +1960,15 @@ function evidencePathChapterFit(
   return terminal.domains.filter((domain) => selection.domainFocus.includes(domain)).length;
 }
 
-function counterweightForComplex(
-  complex: MeaningComplex,
-  network: MeaningComplexNetwork
-) {
-  const nodeById = new Map(network.nodes.map((node) => [node.id, node]));
-  const labels = complex.counterevidence
-    .slice()
-    .sort((left, right) => right.pathScore - left.pathScore || left.id.localeCompare(right.id))
-    .map((path) => nodeById.get(path.terminalNodeId)?.label)
-    .filter((label): label is string => Boolean(label))
-    .filter((label, index, all) => all.indexOf(label) === index)
-    .slice(0, 2);
-  return labels.length ? `Counterevidence retained: ${labels.join("; ")}.` : undefined;
-}
-
 function phase4Card(
   fallback: ReportSectionSignalCard,
   selection: MeaningComplexChapterSelection,
   view: MeaningComplexReportView,
   network: MeaningComplexNetwork,
   sharedRootUseIndex: number,
-  sharedRootUseCount: number
+  sharedRootUseCount: number,
+  primaryLabelOwners: Map<string, Set<string>>,
+  ownedSignalLabels: Set<string>
 ): ReportSectionSignalCard {
   const complexById = new Map(network.complexes.map((complex) => [complex.id, complex]));
   const primary = complexById.get(selection.primaryComplexId);
@@ -1976,17 +1991,43 @@ function phase4Card(
     : ordinaryPathLimit;
   const pathStart = sharedRoot ? sharedRootUseIndex * pathLimit : 0;
   const primarySignals = rankedPaths
-    .slice(pathStart, pathStart + pathLimit)
+    .slice(pathStart)
     .map((path) => evidenceSignal(primary, path, network))
-    .filter((signal): signal is ReportSectionSignalCard["chartSignals"][number] => Boolean(signal));
+    .filter((signal): signal is ReportSectionSignalCard["chartSignals"][number] => Boolean(signal))
+    .filter((signal) => {
+      const label = normalizeClaim(signal.label);
+      const reservedOwners = primaryLabelOwners.get(label);
+      return (!reservedOwners || reservedOwners.has(selection.title)) &&
+        !ownedSignalLabels.has(label);
+    })
+    .slice(0, pathLimit);
   const supportAnchors = supporting
     .map((complex, index) => complexAnchorSignal(complex, network, -index * 0.01))
-    .filter((signal): signal is ReportSectionSignalCard["chartSignals"][number] => Boolean(signal));
+    .filter((signal): signal is ReportSectionSignalCard["chartSignals"][number] => Boolean(signal))
+    .filter((signal) => {
+      const label = normalizeClaim(signal.label);
+      const reservedOwners = primaryLabelOwners.get(label);
+      return (!reservedOwners || reservedOwners.has(selection.title)) &&
+        !ownedSignalLabels.has(label);
+    });
   const primaryAnchor = complexAnchorSignal(primary, network);
+  const counterweightSignals = primary.counterevidence
+    .slice()
+    .sort((left, right) => right.pathScore - left.pathScore || left.id.localeCompare(right.id))
+    .map((path) => evidenceSignal(primary, path, network))
+    .filter((signal): signal is ReportSectionSignalCard["chartSignals"][number] => Boolean(signal))
+    .filter((signal) => {
+      const label = normalizeClaim(signal.label);
+      const reservedOwners = primaryLabelOwners.get(label);
+      return (!reservedOwners || reservedOwners.has(selection.title)) &&
+        !ownedSignalLabels.has(label);
+    })
+    .slice(0, 1);
   const chartSignals = [
     ...(primaryAnchor ? [primaryAnchor] : []),
     ...supportAnchors,
-    ...primarySignals
+    ...primarySignals,
+    ...counterweightSignals
   ].filter((signal, index, all) => all.findIndex((candidate) => candidate.label === signal.label) === index);
   const supportingMechanisms = supporting.map((complex) =>
     readableTechnicalLabel(complex.mechanism)
@@ -1994,7 +2035,9 @@ function phase4Card(
   const hypothesis = supportingMechanisms.length
     ? `${primary.hypothesis} Supporting identity structures: ${supportingMechanisms.join("; ")}.`
     : primary.hypothesis;
-  const counterweight = counterweightForComplex(primary, network);
+  const counterweight = counterweightSignals.length
+    ? `Counterevidence retained: ${counterweightSignals.map((signal) => signal.label).join("; ")}.`
+    : undefined;
   return {
     ...fallback,
     chartSignals,
@@ -2027,29 +2070,55 @@ function applyMeaningComplexViewToCards(
   const selectionByTitle = new Map(view.chapters.map((chapter) => [chapter.title, chapter]));
   const primaryUseCounts = new Map<string, number>();
   const primaryUseIndexes = new Map<string, number>();
+  const primaryLabelOwners = new Map<string, Set<string>>();
+  const complexById = new Map(network.complexes.map((complex) => [complex.id, complex]));
   for (const selection of view.chapters) {
     if (selection.title === "Identity") continue;
     primaryUseCounts.set(
       selection.primaryComplexId,
       (primaryUseCounts.get(selection.primaryComplexId) ?? 0) + 1
     );
+    const primary = complexById.get(selection.primaryComplexId);
+    const anchor = primary ? complexAnchorSignal(primary, network) : null;
+    if (anchor) {
+      const label = normalizeClaim(anchor.label);
+      const owners = primaryLabelOwners.get(label) ?? new Set<string>();
+      owners.add(selection.title);
+      primaryLabelOwners.set(label, owners);
+    }
   }
+  const ownedSignalLabels = new Set<string>();
   return cards.map((card) => {
     const selection = selectionByTitle.get(card.title as MeaningComplexChapterSelection["title"]);
     if (!selection) return card;
     if (selection.title === "Identity") {
-      return phase4Card(card, selection, view, network, 0, 1);
+      return phase4Card(
+        card,
+        selection,
+        view,
+        network,
+        0,
+        1,
+        new Map(),
+        new Set()
+      );
     }
     const useIndex = primaryUseIndexes.get(selection.primaryComplexId) ?? 0;
     primaryUseIndexes.set(selection.primaryComplexId, useIndex + 1);
-    return phase4Card(
+    const planned = phase4Card(
       card,
       selection,
       view,
       network,
       useIndex,
-      primaryUseCounts.get(selection.primaryComplexId) ?? 1
+      primaryUseCounts.get(selection.primaryComplexId) ?? 1,
+      primaryLabelOwners,
+      ownedSignalLabels
     );
+    for (const signal of planned.chartSignals) {
+      ownedSignalLabels.add(normalizeClaim(signal.label));
+    }
+    return planned;
   });
 }
 
@@ -2701,11 +2770,15 @@ function interpretiveContractFor(cards: readonly ReportSectionSignalCard[]) {
 const astraPsychologicalSafetyContract = [
   "This is reflective interpretation, not diagnosis, therapy, risk assessment, or factual knowledge about another person.",
   "Frame tendencies as possibilities with words such as may, can, might, under stress, or if this fits. Use certainty only for supplied chart facts.",
+  "Hedging does not make an invented scenario supported. Stay one interpretive step from the selected evidence: name a possible tendency, tension, resource, or helpful condition without inventing a routine, recovery method, reputation, social effect, decision history, or life event.",
+  "Keep examples generic and conditional. Do not turn a silence, changed plan, number, limit, group mood, work response, or another person's reaction into a likely event in the reader's life.",
   "Do not turn a chart tendency into invented biography. Never claim that the reader has probably lost a relationship, job, trust, opportunity, learned a wound early, compensated for an old injury, or already lived through a specific event.",
+  "Do not infer childhood, upbringing, family dynamics, household history, early-home memories, career history, or relationship history from a house, sign, aspect, or symbolic theme.",
   "Describe observable behavior instead of labeling the reader with projection, control, avoidance, reactivity, self-sabotage, power struggle, emotional overcontrol, dissociation, or trauma.",
   "Never invent a clinical condition, trauma history, attachment style or diagnosis, abuse dynamic, compulsion, unconscious motive, old wound, or another person's inner life.",
   "When using an example involving another person, use someone or a neutral description unless partner pronouns were explicitly supplied. Do not add he, she, him, her, his, or hers.",
   "Do not claim the reader can identify another person's wound, weak spot, pressure point, motive, capacity, mood, grief, need, or what will change them. Keep perception claims anchored to what the reader notices and can verify.",
+  "Do not claim that intuition, a slow planet, an aspect, or a house gives an accurate first read, privileged access to undercurrents, rapid certainty, wholesale personal change, or an established habit of self-correction.",
   "Avoid categorical biography and behavior claims such as 'you act before you think,' 'you usually land right,' or 'you react first.' Use bounded possibility language unless stating a supplied chart fact.",
   "Any recommendation involving direct conversation, disclosure, confrontation, boundaries, or repair must be conditional on it being safe and appropriate.",
   "Do not imply that the reader must repair every relationship, that endurance is virtuous, or that astrology can decide whether a relationship continues.",
@@ -2717,6 +2790,11 @@ const astraPsychologicalSafetyContract = [
 const astraEvidenceContract = [
   "Treat the selected section signal cards as the complete factual boundary for the prose.",
   "Mention only placements, houses, aspects, chart themes, and timing activations present in the relevant section card.",
+  "Use only the relationships explicitly stated in the card. Do not extend a rulership chain, configuration, dispositor sequence, aspect geometry, or house meaning beyond those stated facts.",
+  "Personal activation means natal relevance only. It never means current pressure, current activation, a present event, or unusual timing.",
+  "Do not narrate a generic dispositor chain. If a direct rulership or final dispositor is essential, state only the exact relationship present in this chapter card.",
+  "Counterevidence qualifies the primary hypothesis. Do not convert it into proof that the reader already has a skill, habit, accurate instinct, or corrective practice.",
+  "State selected aspects plainly. Do not state or discuss orb measurements, angular distance, tightness, closeness, exactness, intensity, or precision, even as a disclaimer.",
   "Do not invent, infer, or import additional astrology facts, even when they would be plausible.",
   "Do not include provider, model, prompt version, cached status, debug labels, or generation metadata in customer-facing prose."
 ];
@@ -3163,7 +3241,7 @@ function validateSectionedReportSection(input: {
   if (thirdPersonSubjectLabelPattern.test(visibleText)) {
     errors.push(retryIssue("third_person_subject", "Third-person subject label found; address the report subject as you or your."));
   }
-  errors.push(...validateUnsupportedSectionClaims({ sections: [section] } as ReportDraft, [input.card], input.chartSignature).map((message) =>
+  errors.push(...validateUnsupportedSectionClaims({ sections: [section] } as ReportDraft, [input.card]).map((message) =>
     retryIssue(message.startsWith("Missing visible chart evidence") ? "evidence_mismatch" : "unsupported_claim", message)
   ));
   errors.push(...validateRelationshipAndSafetyClaims(input.request, [section]).map((message) =>
@@ -3428,7 +3506,7 @@ async function generateSectionedDeepDraft(input: ReportWriterInput, writer: Prom
     sections,
     publicSignal: baseline.publicSignal
   };
-  const finalErrors = validateModelDraft(input.request, draft, input.chartSignature);
+  const finalErrors = validateModelDraft(input.request, draft);
   if (finalErrors.length) throw new Error(`Assembled Deep Report failed validation: ${finalErrors.join("; ")}`);
   const usage = [thesis, ...generatedSections].reduce((total, part) => mergeModelUsage(total, part.usage), {} as ModelUsage);
   return {
@@ -3492,7 +3570,7 @@ async function generateSectionedEnrichedCoreDraft(input: ReportWriterInput, writ
     sections,
     publicSignal: baseline.publicSignal
   };
-  const finalErrors = validateModelDraft(input.request, draft, input.chartSignature);
+  const finalErrors = validateModelDraft(input.request, draft);
   if (finalErrors.length) throw new Error(`Assembled Core Report failed validation: ${finalErrors.join("; ")}`);
   const usage = generatedSections.reduce((total, part) => mergeModelUsage(total, part.usage), {} as ModelUsage);
   return {
@@ -3517,15 +3595,31 @@ const contextGenderedPartnerPronounPattern = /\b(?:he|him|his|she|her|hers)\b/i;
 // actually recommends or initiates direct relationship action.
 const directRelationshipActionPattern = /\b(?:confront|(?:have|start|initiate) (?:a )?direct conversation|state (?:a|the|your) boundary|make a direct request|try to repair|repair (?:the relationship|this (?:relationship|connection)))\b/i;
 const safetyConditionPattern = /\b(?:when|if|where)\s+(?:(?:direct (?:conversation|engagement)|it)\s+(?:is|['’]s)\s+)?safe(?:\s+and\s+appropriate)?\b|\bsafe and appropriate\b/i;
-const inventedBiographyPattern = /\b(?:you(?:'|’)ve likely lived through|you have likely lived through|probably (?:lost|cost)|cost you (?:a relationship|a job|trust|an opportunity)|has cost you (?:relationships?|jobs?|trust|opportunities)|you learned early|learned to compensate|compensate rather than heal|old,? tender spot|oldest wound|never quite healed|damage is already done|not enough as you were)\b/i;
-const unverifiedPsychologicalHistoryPattern = /\b(?:old wound|early wound|wound from (?:childhood|the past|earlier life)|history taught you|learned (?:early|in childhood)|learned self-protection|learned to (?:hide|protect|defend|compensate)|defensive (?:reaction|pattern|strategy)|a defense you built|protection you developed)\b/i;
+const inventedBiographyPattern = /\b(?:you(?:'|’)ve likely lived through|you have likely lived through|probably (?:lost|cost)|cost you (?:a relationship|a job|trust|an opportunity)|has cost you (?:relationships?|jobs?|trust|opportunities)|you learned early|learned to compensate|compensate rather than heal|old,? tender spot|oldest wound|never quite healed|damage is already done|not enough as you were|growing up|in (?:your )?childhood|throughout your career|in past relationships|your early home life|early[- ]home memories?|what you remember about (?:your )?home|the emotional truth of (?:a|your|the) household|a family pattern)\b/i;
+const unverifiedPsychologicalHistoryPattern = /\b(?:old wound|early wound|wound from (?:childhood|the past|earlier life)|history taught you|learned (?:early|in childhood)|learned self-protection|learned to (?:hide|protect|defend|compensate)|defensive (?:reaction|pattern|strategy)|a defense you built|protection you developed|early (?:family|household|relationship) dynamics?)\b/i;
 const attachmentLabelPattern = /\battachment style\b/i;
 const unverifiedOtherPersonInsightPattern = /\b(?:another person(?:'s)?|other people(?:'s)?|someone(?:'s)?|a person(?:'s)?)\s+(?:wound|weak spot|pressure point|capacity|motive|mood|grief|need)\b|\b(?:see|sense|know|pick up on)\s+(?:what will change someone|a person(?:'s)? weak spot|the wound in (?:a person|someone)|someone(?:'s)? (?:mood|grief|need)|what someone else is going through|things other people have not said)\b|\bbefore (?:they|someone|other people) (?:say|know)\b/i;
-const unverifiedOtherPersonStatePattern = /\b(?:what|how)\s+(?:another person|someone else|they)\s+(?:want|wants|feel|feels|think|thinks|need|needs|intend|intends)\b|\b(?:another person|someone else|the other person)(?:'s|’s)\s+(?:imagination|inner life|unspoken feeling|unstated need)\b/i;
+const unverifiedOtherPersonStatePattern = /\b(?:what|how)\s+(?:another person|someone else|they)\s+(?:want|wants|feel|feels|think|thinks|need|needs|intend|intends)\b|\b(?:another person|someone else|the other person)(?:'s|’s)\s+(?:imagination|inner life|unspoken feeling|unstated need|reaction|response)\b|\b(?:people|others|those around you)\s+(?:lean in|trust you|rely on you|look to you|experience you as|see you as)\b|\b(?:someone|another person|the other person)\s+(?:is|seems|appears|may be)\s+(?:holding back|withdrawing|upset|afraid|uncertain)\b|\b(?:make|leave)\s+(?:someone|people|others)\s+feel\b|\bwhat\s+(?:someone|another person|people|others)\s+(?:receive|take away|feel|think|need)\b/i;
 const psychologicalLabelPattern = /\b(?:projection|avoidance|reactivity|self-sabotage|power struggle|emotional overcontrol|dissociation|trauma response)\b/i;
-const categoricalBehaviorPattern = /\b(?:you act before you think|you react before you think|your first read .* usually lands right|you (?:usually|always) (?:know|sense|see|read|react|act)|most of the time it works|you trust your first read)\b/i;
+const categoricalBehaviorPattern = /\b(?:you act before you think|you react before you think|your first read .* usually lands right|you (?:usually|always|never) (?:know|sense|see|read|react|act|withdraw|overcommit)|most of the time it works|you trust your first read|you are (?:the kind|the type|someone) who|your instinct is to)\b/i;
+const unsupportedScenarioPattern = /\b(?:replay(?:ing)? (?:a |the )?conversation|track(?:ing)? (?:texts?|replies)|returned favors?|daily chores?|walking it off|go(?:ing)? for a walk|need (?:real )?recovery time|intuition often proves right|settled (?:young|early)|old effort|past attempts?|older material|nothing is hidden from you|you clearly have)\b/i;
 const statusToConditionPattern = /\b(?:less as (?:a )?crisis|more as texture|not (?:a )?crisis|healthy relationship|stable relationship|secure relationship|settled relationship|relationship is (?:healthy|stable|secure|settled))\b/i;
 const stockConclusionPattern = /\b(?:the useful move(?: here)?|the fix|the task(?: worth naming)?|the risk|the practical move|the pattern worth watching)\b/i;
+const unnecessaryOrbPrecisionPattern = /\b(?:orb(?:\s+of)?|close and exact|(?:aspect|trine|square|opposition|sextile|conjunction|quincunx)\s+(?:is\s+)?exact|exact\s+(?:aspect|trine|square|opposition|sextile|conjunction|quincunx)|(?:under|within|nearly|less than)\s+(?:one|\d+(?:\.\d+)?)\s+degrees?|degrees?\s+(?:apart|from exact))\b|\b(?:aspect|conjunct(?:ion)?|oppos(?:es|ition)|squar(?:e|es)|trin(?:e|es)|sextil(?:e|es)|quincunx(?:es)?)\b[^.!?]{0,160}\b(?:angular distance|tightness|closeness|exactness|intensity|precision|measurement)\b|\b(?:angular distance|tightness|closeness|exactness|precision|measurement)\b[^.!?]{0,160}\b(?:aspect|conjunct(?:ion)?|oppos(?:es|ition)|squar(?:e|es)|trin(?:e|es)|sextil(?:e|es)|quincunx(?:es)?)\b/i;
+const impliedNatalActivationPattern = /\b(?:personal\s+)?activation\s+(?:means|shows|suggests).{0,80}\b(?:current|currently|now|pressing)\b|\bcurrently pressing\b|\bpressing on something close to you\b/i;
+const personalActivationQualitativeOverreachPattern = /\b(?:personal activation|natal relevance)\b[\s\S]{0,300}\b(?:unpredictab(?:ility|le)|inspir(?:ation|ed)|clarif(?:y|ies|ied|ying|ication)|destabili(?:ze|zes|zed|zing|zation)|current timing|currently|right now|this season|makes? you|means? you|shows? that you|you (?:tend to|usually|always|become|act|react))\b|\b(?:unpredictab(?:ility|le)|inspir(?:ation|ed)|clarif(?:y|ies|ied|ying|ication)|destabili(?:ze|zes|zed|zing|zation))\b[\s\S]{0,220}\b(?:personal activation|natal relevance)\b/i;
+const aspectChainInventionPattern = /\b(?:opposition|trine|square|sextile|conjunction|quincunx)\s+(?:links?|connects?)\s+(?:this|the|a)\s+.{0,50}\b(?:chain|rulership|dispositor)\b/i;
+const rulershipAsAspectPattern = /\b(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)\s+(?:is\s+)?disposed\s+by\s+(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)\s*,?\s+(?:which\s+is\s+)?(?:an?\s+)?(?:conjunction|opposition|square|trine|sextile|quincunx)\s+aspect\b/i;
+const genericDispositorChainNarrationPattern = /\bdispositor chains?\b|\b(?:rulership|dispositor)\s+(?:chain|sequence)\b|\b(?:the|this|a)\s+chain\s+(?:tracing|leading|running|ending|going)\s+(?:back\s+)?(?:to|through|from)\s+(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)\b/i;
+const privilegedPerceptionPattern = /\b(?:sharpens?|gives|offers|provides)\s+(?:you|your).{0,35}\b(?:read|sense)\s+(?:of|on)\s+(?:(?:hidden|social|group|unspoken)\s+){0,2}(?:undercurrents|signals|dynamics|people)\b|\b(?:sense|read|pick up on)\s+(?:(?:hidden|social|group|unspoken)\s+){1,2}(?:undercurrents|signals|dynamics)\b|\b(?:shapes?|influences?|guides?)\s+how\s+you\s+(?:read|sense)\s+(?:a\s+room|a\s+(?:friend\s+)?group|people|social\s+dynamics)\b|\bfirst impression\s+(?:can|may|might)?\s*(?:feel|seem)\s+(?:complete|convincing|certain|accurate)\b|\b(?:feeling|sense)\s+of\s+knowing\s+(?:can|may|might)?\s*(?:arrive|come)\s+(?:fast|quickly|immediately)\b/i;
+const categoricalCertaintyOrChangePattern = /\b(?:feel|feels|seem|seems)\s+(?:sure|certain)\s+(?:right away|fast|immediately)\b|\b(?:conclusion|assessment|belief).{0,30}\bsettled fast\b|\b(?:change|update).{0,20}\b(?:all at once|by a real overhaul|wholesale)\b|\b(?:you|that part of you)\s+already\s+(?:know|knows|has learned)\s+how\b/i;
+const explicitClaimNegationPattern = /\b(?:does not|doesn't|do not|don't|is not|isn't|are not|aren't|cannot|can't|never|no proof|not evidence|not confirmation|does nothing to prove|not that|not currently)\b/i;
+
+function hasAffirmedClaim(text: string, pattern: RegExp) {
+  return text
+    .split(/(?:[.!?;]|—|\bbut\b|\byet\b)+/i)
+    .some((clause) => pattern.test(clause) && !explicitClaimNegationPattern.test(clause));
+}
 
 function validateRelationshipAndSafetyClaims(
   request: AstrologyReportRequest,
@@ -3542,6 +3636,15 @@ function validateRelationshipAndSafetyClaims(
     if (unverifiedOtherPersonStatePattern.test(text)) errors.push(`${section.title} claims unverified access to another person's thoughts, feelings, or needs.`);
     if (psychologicalLabelPattern.test(text)) errors.push(`${section.title} uses a psychological label instead of observable behavior.`);
     if (categoricalBehaviorPattern.test(text)) errors.push(`${section.title} turns an interpretive tendency into a categorical behavior claim.`);
+    if (unsupportedScenarioPattern.test(text)) errors.push(`${section.title} invents a routine, recovery method, history, or categorical scenario beyond the selected evidence.`);
+    if (unnecessaryOrbPrecisionPattern.test(text)) errors.push(`${section.title} adds unnecessary orb precision instead of staying with the selected interpretive evidence.`);
+    if (impliedNatalActivationPattern.test(text)) errors.push(`${section.title} turns natal personal activation into unsupported current timing or pressure.`);
+    if (personalActivationQualitativeOverreachPattern.test(text)) errors.push(`${section.title} turns natal personal activation into unsupported qualities, effects, timing, or behavior.`);
+    if (aspectChainInventionPattern.test(text)) errors.push(`${section.title} rewrites a rulership or dispositor chain as an aspect.`);
+    if (rulershipAsAspectPattern.test(text)) errors.push(`${section.title} labels a rulership or dispositor relationship as an aspect.`);
+    if (genericDispositorChainNarrationPattern.test(text)) errors.push(`${section.title} narrates an unsupported generic dispositor chain.`);
+    if (hasAffirmedClaim(text, privilegedPerceptionPattern)) errors.push(`${section.title} turns symbolic evidence into privileged or accurate social perception.`);
+    if (categoricalCertaintyOrChangePattern.test(text)) errors.push(`${section.title} invents rapid certainty, wholesale change, or an established self-correction habit.`);
     if (!context.partnerPronouns && contextGenderedPartnerPronounPattern.test(text)) {
       errors.push(`${section.title} uses a partner gender pronoun that was not supplied.`);
     }
@@ -3590,7 +3693,7 @@ function validateRelationshipAndSafetyClaims(
   return [...new Set(errors)];
 }
 
-function validateModelDraft(request: AstrologyReportRequest, draft: ReportDraft, chartSignature: ChartSignature) {
+function validateModelDraft(request: AstrologyReportRequest, draft: ReportDraft) {
   const errors: string[] = [];
   const requiredHeadings = reportHeadingsFor(request);
   const sectionCards = buildReportSectionSignalCardsForRequest(request, requiredHeadings);
@@ -3680,7 +3783,7 @@ function validateModelDraft(request: AstrologyReportRequest, draft: ReportDraft,
     errors.push("Third-person subject label found; address the report subject as you or your.");
   }
 
-  errors.push(...validateUnsupportedSectionClaims(draft, sectionCards, chartSignature));
+  errors.push(...validateUnsupportedSectionClaims(draft, sectionCards));
   errors.push(...validateRelationshipAndSafetyClaims(request, draft.sections ?? []));
 
   return errors;
@@ -3771,7 +3874,7 @@ function signalClaimText(signal: ReportSectionSignalCard["chartSignals"][number]
   return [signal.label, ...signal.facts].join(" ");
 }
 
-function allowedClaimSet(cards: ReportSectionSignalCard[], chartSignature: ChartSignature) {
+function allowedClaimSet(cards: ReportSectionSignalCard[]) {
   const claims = new Set<string>();
   const add = (claim: string) => {
     const normalized = normalizeClaim(claim);
@@ -3780,11 +3883,6 @@ function allowedClaimSet(cards: ReportSectionSignalCard[], chartSignature: Chart
   const addAspect = (left: string, aspect: string, right: string) => {
     claims.add(aspectClaimKey(left, aspect, right));
   };
-
-  for (const point of [...chartSignature.points, ...(chartSignature.ascendant ? [chartSignature.ascendant] : [])]) {
-    add(`${point.body} in ${point.sign}`);
-    if (point.house) add(`${point.body} in ${compactHouseLabel(point.house)}`);
-  }
 
   for (const card of cards) {
     for (const signal of card.chartSignals) {
@@ -3799,7 +3897,7 @@ function allowedClaimSet(cards: ReportSectionSignalCard[], chartSignature: Chart
       for (const match of text.matchAll(new RegExp(`\\b(${reportClaimBodyNames.join("|")})\\s+in\\s+(?:the\\s+)?(\\d+)(?:st|nd|rd|th)?\\s+house\\b`, "gi"))) {
         add(`${match[1]} in ${compactHouseLabel(match[2])}`);
       }
-      for (const match of text.matchAll(new RegExp(`\\b(${reportClaimBodyNames.join("|")})\\s+(${aspectClaimNames.join("|")})\\s+(${reportClaimBodyNames.join("|")})\\b`, "gi"))) {
+      for (const match of text.matchAll(new RegExp(`\\b(${reportClaimBodyNames.join("|")})\\s+(${aspectClaimNames.join("|")})\\s+(?:to\\s+|with\\s+)?(${reportClaimBodyNames.join("|")})\\b`, "gi"))) {
         addAspect(match[1], match[2], match[3]);
       }
       for (const match of text.matchAll(new RegExp(`\\b(${zodiacSignNames.join("|")})\\s+emphasis\\b`, "gi"))) {
@@ -3832,8 +3930,20 @@ function mentionedClaimLabels(text: string) {
   for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})\\s+in\\s+(?:the\\s+)?(\\d+)(?:st|nd|rd|th)?\\s+house\\b`, "gi"))) {
     pushClaim(`${match[1]} in ${compactHouseLabel(match[2])}`);
   }
-  for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})\\s+(${aspectPattern})\\s+(${bodyPattern})\\b`, "gi"))) {
+  for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})\\s+(${aspectPattern})\\s+(?:to\\s+|with\\s+)?(${bodyPattern})\\b`, "gi"))) {
     pushClaim(`${match[1]} ${normalizeAspectClaim(match[2])} ${match[3]}`, aspectClaimKey(match[1], match[2], match[3]));
+  }
+  for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})(?:'s|’s)\\s+(${aspectPattern})\\s+(?:to\\s+|with\\s+)?(${bodyPattern})\\b`, "gi"))) {
+    pushClaim(`${match[1]} ${normalizeAspectClaim(match[2])} ${match[3]}`, aspectClaimKey(match[1], match[2], match[3]));
+  }
+  for (const match of text.matchAll(new RegExp(`\\b(${aspectPattern})\\s+between\\s+(${bodyPattern})\\s+and\\s+(${bodyPattern})\\b`, "gi"))) {
+    pushClaim(`${match[2]} ${normalizeAspectClaim(match[1])} ${match[3]}`, aspectClaimKey(match[2], match[1], match[3]));
+  }
+  for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})(?:\\s+(?:here|also)){0,2}\\s+(?:forms?|makes?|has)\\s+(?:an?\\s+)?(${aspectPattern})\\s+(?:to\\s+|with\\s+)?(${bodyPattern})(?:\\s+and\\s+(${bodyPattern}))?\\b`, "gi"))) {
+    pushClaim(`${match[1]} ${normalizeAspectClaim(match[2])} ${match[3]}`, aspectClaimKey(match[1], match[2], match[3]));
+    if (match[4]) {
+      pushClaim(`${match[1]} ${normalizeAspectClaim(match[2])} ${match[4]}`, aspectClaimKey(match[1], match[2], match[4]));
+    }
   }
   for (const match of text.matchAll(new RegExp(`\\b(${signPattern})\\s+emphasis\\b`, "gi"))) {
     pushClaim(`${titleCaseClaim(match[1])} emphasis`);
@@ -3843,6 +3953,56 @@ function mentionedClaimLabels(text: string) {
   }
 
   return claims;
+}
+
+function normalizedTechnicalRelation(left: string, relation: "disposed_by", right: string) {
+  return `${normalizeClaim(left)} ${relation} ${normalizeClaim(right)}`;
+}
+
+function supportedTechnicalRelations(card: ReportSectionSignalCard) {
+  const relations = new Set<string>();
+  const bodyPattern = reportClaimBodyNames.join("|");
+  for (const signal of card.chartSignals) {
+    const text = signalClaimText(signal);
+    for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})\\s+disposed\\s+by\\s+(${bodyPattern})\\b`, "gi"))) {
+      relations.add(normalizedTechnicalRelation(match[1]!, "disposed_by", match[2]!));
+    }
+    for (const match of text.matchAll(new RegExp(`\\bfinal[- ]dispositor\\s*:?\\s*(${bodyPattern})\\b`, "gi"))) {
+      relations.add(`final_dispositor ${normalizeClaim(match[1]!)}`);
+    }
+  }
+  return relations;
+}
+
+function mentionedTechnicalRelations(text: string) {
+  const relations: Array<{ label: string; key: string }> = [];
+  const bodyPattern = reportClaimBodyNames.join("|");
+  const add = (label: string, key: string) => {
+    if (!relations.some((relation) => relation.key === key)) relations.push({ label, key });
+  };
+  for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})(?:'s|’s)?\\s+dispositor\\s+(?:is|connects?\\s+through|runs?\\s+through)\\s+(${bodyPattern})\\b`, "gi"))) {
+    add(
+      `${match[1]} disposed by ${match[2]}`,
+      normalizedTechnicalRelation(match[1]!, "disposed_by", match[2]!)
+    );
+  }
+  for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})\\s+(?:is\\s+)?(?:ruled|disposed)\\s+by\\s+(${bodyPattern})\\b`, "gi"))) {
+    add(
+      `${match[1]} disposed by ${match[2]}`,
+      normalizedTechnicalRelation(match[1]!, "disposed_by", match[2]!)
+    );
+  }
+  for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})\\s+rules\\s+(${bodyPattern})\\b`, "gi"))) {
+    add(
+      `${match[2]} disposed by ${match[1]}`,
+      normalizedTechnicalRelation(match[2]!, "disposed_by", match[1]!)
+    );
+  }
+  for (const match of text.matchAll(new RegExp(`\\b(${bodyPattern})\\s+(?:sits|stands|acts|serves|is)\\s+(?:as\\s+)?(?:the\\s+)?final\\s+dispositor\\b|\\bfinal\\s+dispositor\\s+(?:is|in)\\s+(${bodyPattern})\\b`, "gi"))) {
+    const body = match[1] ?? match[2];
+    if (body) add(`${body} as final dispositor`, `final_dispositor ${normalizeClaim(body)}`);
+  }
+  return relations;
 }
 
 function sectionCardForTitle(cards: ReportSectionSignalCard[], title: string) {
@@ -3868,13 +4028,25 @@ function validateEvidenceCompleteness(draft: ReportDraft, cards: ReportSectionSi
   return errors;
 }
 
-function validateUnsupportedSectionClaims(draft: ReportDraft, cards: ReportSectionSignalCard[], chartSignature: ChartSignature) {
+function validateUnsupportedSectionClaims(draft: ReportDraft, cards: ReportSectionSignalCard[]) {
   const errors: string[] = [];
-  const allowedClaims = allowedClaimSet(cards, chartSignature);
   for (const section of draft.sections ?? []) {
+    const card = sectionCardForTitle(cards, section.title);
+    const allowedClaims = allowedClaimSet(card ? [card] : cards);
     for (const claim of mentionedClaimLabels(section.body)) {
       if (!allowedClaims.has(claim.key)) {
         errors.push(`Unsupported astrology claim in ${section.title}: ${claim.label} is not in the selected report evidence.`);
+      }
+    }
+    if (card) {
+      const supportedRelations = supportedTechnicalRelations(card);
+      for (const relation of mentionedTechnicalRelations(section.body)) {
+        if (!supportedRelations.has(relation.key)) {
+          errors.push(`Unsupported astrology relationship in ${section.title}: ${relation.label} is not stated in the selected chapter evidence.`);
+        }
+      }
+      if (card.meaningComplexIds?.length && genericDispositorChainNarrationPattern.test(section.body)) {
+        errors.push(`${section.title} narrates a generic dispositor chain instead of the chapter's selected human meaning.`);
       }
     }
   }
@@ -3938,7 +4110,7 @@ async function parseValidatedModelDraft(input: ReportWriterInput, writer: (previ
     const errors = [
       ...(response.finishReason === "length" ? ["Writer response reached its output limit; return a complete report within the requested scope."] : []),
       ...validateRawModelText(response.text),
-      ...validateModelDraft(input.request, draft, input.chartSignature)
+      ...validateModelDraft(input.request, draft)
     ];
     if (!errors.length) return { draft, attemptCount: attempt + 1, usage, latencyMs, failures };
     failures.push(retryFailure(

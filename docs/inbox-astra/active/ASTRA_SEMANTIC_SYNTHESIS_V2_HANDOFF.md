@@ -5,7 +5,7 @@ type: implementation-handoff
 project: Astra Clean Start
 author: Tony + Codex
 created: 2026-07-26
-updated: 2026-07-26
+updated: 2026-07-27
 priority: P0
 audience: Codex / engineering agents
 mission: Make Astra materially smarter astrologically by deriving and synthesizing professional-grade chart signals before revising report headings.
@@ -14,9 +14,9 @@ phase_1_status: complete
 phase_2_status: complete
 phase_3_status: complete
 phase_4_status: complete
-phase_5_status: complete-hold
-next_phase: Phase 5 remediation
-supersedes: ../ASTRA_WEIGHTED_CHART_SIGNAL_GRAPH_TODO.md
+phase_5_status: complete-hold-after-bounded-refinement
+next_phase: Product-owner review of Phase 5.1 HOLD
+supersedes: ../completed/ASTRA_WEIGHTED_CHART_SIGNAL_GRAPH_TODO.md
 depends_on:
   - ../../decisions/ASTRA_CHART_LOCATION_INTEGRITY_AND_SIGNAL_GRAPH.md
   - ../../decisions/ASTRA_SEMANTIC_SYNTHESIS_V1.md
@@ -896,3 +896,22 @@ Phase 6 remains blocked. V2 stays internal.
 ```text
 Implement only the Phase 5 remediation identified in docs/evaluations/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_EVALUATION.md. Preserve every Phase 0–5 deterministic gate, current headings, UI, routes, database contracts, and public contracts. Make generated prose a strict subset of each selected chapter evidence packet; block unsupported biography, categorical behavior, family-history inference, and another person's inner state; and revise Deep chapter ownership so repeated roots produce genuinely distinct mechanisms and conclusions or yield to stronger omitted candidates. Reuse the completed Phase 5 packet and Tony's existing Phase 4 report. Do not generate another Tony report and do not begin Phase 6. Rerun the non-Tony controls and produce a new GO, HOLD, or NO-GO decision only after all hard gates and semantic thresholds pass.
 ```
+
+## Phase 5.1 Bounded Deep-Quality Refinement — 2026-07-27
+
+The approved assignment and claim-boundary refinement is implemented and documented in:
+
+- `docs/evaluations/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_EVALUATION.md`;
+- `.astra-exports/semantic-synthesis-v2-phase-5/2026-07-27-phase-5-remediation-v10`.
+
+Decision: **HOLD**.
+
+The deterministic assignment planner met the seven-complex, single-reuse, distinct-evidence, and Blind-Spots-versus-Growth requirements. The bounded rollout gates did not pass:
+
+- Cheyenne Deep produced no accepted report after three unchanged attempts;
+- candidate semantic average was 2.22/3;
+- candidate context safety was 2.4/3;
+- Felicia Deep repetition was 1/3;
+- human review did not find the three new Deep controls materially better than V1.
+
+Tony remained a fully evaluated historical control and was not regenerated. Core, canonical Identity, headings, UI, routes, database contracts, and public contracts remained unchanged. Per the approved stop condition, no additional refinement and no Phase 6 presentation work began.

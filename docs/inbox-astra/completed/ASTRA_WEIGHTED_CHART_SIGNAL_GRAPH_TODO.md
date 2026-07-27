@@ -1,6 +1,6 @@
 ---
 title: Astra Weighted Chart Signal Graph
-status: active
+status: superseded
 type: future-implementation-brief
 project: Astra Clean Start
 author: Tony + Codex
@@ -9,9 +9,14 @@ priority: P2
 audience: Codex / engineering agents
 mission: Add inspectable multi-signal astrological synthesis using only trustworthy chart evidence.
 depends_on: ASTRA_CHART_LOCATION_INTEGRITY_AND_SIGNAL_GRAPH.md
+updated: 2026-07-26
+superseded_by: ../active/ASTRA_SEMANTIC_SYNTHESIS_V2_HANDOFF.md
+completion_evidence: Requirements were incorporated into the active Semantic Synthesis V2 implementation handoff.
 ---
 
 # Weighted Chart Signal Graph TODO
+
+> Superseded by [`ASTRA_SEMANTIC_SYNTHESIS_V2_HANDOFF.md`](../active/ASTRA_SEMANTIC_SYNTHESIS_V2_HANDOFF.md), which retains this brief's provenance and weighting requirements while expanding the implementation goal to missing astrological signals, derived configurations, meaning complexes, counterevidence, and distinct Core and Deep views.
 
 ## Goal
 

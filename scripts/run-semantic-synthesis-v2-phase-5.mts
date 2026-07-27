@@ -69,6 +69,7 @@ const generationApproved = process.argv.includes("--generate");
 const resume = process.argv.includes("--resume");
 const email = option("--email") || "astramaster@tony.io";
 const reportSubjects = csvOption("--subjects", "Felicia Weiss,Cheyenne Autumn,Marissa Yahil");
+const deepOnlySubjects = csvOption("--deep-only-subjects", "");
 const structuralSubjects = csvOption("--structural-controls", "Brandi McCulley,Rachel Ijames");
 const model = option("--model") || reportModelProfileModels.production[0];
 const evaluatorModel = option("--evaluator-model") || "openai/gpt-5.6-terra";
@@ -86,7 +87,7 @@ const subjectSetupFailures: Array<{ subject: string; error: string }> = [];
 if (process.argv.includes("--help")) {
   console.log("Run the private Semantic Synthesis V2 Phase 5 evaluation packet.");
   console.log("Required: --generate. Tony's existing control is reused; no Tony report is generated.");
-  console.log("Optional: --resume, --email, --subjects, --structural-controls, --model, --evaluator-model, --baseline, --output.");
+  console.log("Optional: --resume, --email, --subjects, --deep-only-subjects, --structural-controls, --model, --evaluator-model, --baseline, --output.");
   process.exit(0);
 }
 if (!generationApproved) throw new Error("Use --generate to approve non-Tony report and independent evaluator calls.");
@@ -99,6 +100,15 @@ if (!reportModelProfileModels.premium_bakeoff.includes(evaluatorModel as (typeof
 }
 if (reportSubjects.some((subject) => /^tony\b/i.test(subject))) {
   throw new Error("Tony cannot appear in --subjects. Phase 5 must reuse the existing Tony control.");
+}
+if (deepOnlySubjects.length && !resume) {
+  throw new Error("--deep-only-subjects requires --resume with a complete prior Phase 5 packet.");
+}
+if (deepOnlySubjects.some((subject) => !reportSubjects.includes(subject))) {
+  throw new Error("--deep-only-subjects must be a subset of --subjects.");
+}
+if (deepOnlySubjects.some((subject) => /^tony\b/i.test(subject))) {
+  throw new Error("Tony cannot appear in --deep-only-subjects.");
 }
 
 await createDirectories();
@@ -133,9 +143,16 @@ try {
   for (const source of reportSources) {
     let canonicalIdentity = "";
     if (resume) {
-      const savedCore = await savedV2Report(source.subjectName, "core");
-      canonicalIdentity = sectionBody(savedCore, "Identity");
-      console.error(`${source.subjectName}/identity: reused from saved Phase 5 Core`);
+      const savedCore = await trySavedV2Report(source.subjectName, "core");
+      const savedDeep = savedCore ? null : await trySavedV2Report(source.subjectName, "deep");
+      canonicalIdentity = savedCore
+        ? sectionBody(savedCore, "Identity")
+        : savedDeep
+          ? sectionBody(savedDeep, "Identity")
+          : "";
+      if (canonicalIdentity) {
+        console.error(`${source.subjectName}/identity: reused from saved Phase 5 ${savedCore ? "Core" : "Deep"}`);
+      }
     } else {
       console.error(`${source.subjectName}/identity: generating canonical Identity`);
       const identityResult = await generate(source, "identity", "", `${source.subjectName}/identity`);
@@ -153,15 +170,20 @@ try {
     const canonicalIdentityHash = sha256(canonicalIdentity);
 
     for (const family of ["core", "deep"] as const) {
-      console.error(`${source.subjectName}/${family}: ${resume ? "reusing saved V2" : "generating V2"}`);
+      const forceRegeneration = family === "deep" && deepOnlySubjects.includes(source.subjectName);
+      const saved = resume && !forceRegeneration
+        ? await trySavedV2Report(source.subjectName, family)
+        : null;
+      const expectedSectionCount = family === "core" ? 4 : 9;
+      const reusable = saved?.sections.length === expectedSectionCount ? saved : null;
+      console.error(`${source.subjectName}/${family}: ${reusable ? "reusing saved V2" : forceRegeneration ? "regenerating V2 Deep" : "generating V2"}`);
       const request = requestFor(source, family, canonicalIdentity, {
         zodiacMode: source.chartSettings.zodiacMode,
         houseSystem: source.chartSettings.houseSystem,
         calculationMode: "full"
       });
-      const result = resume
-        ? await savedV2Report(source.subjectName, family)
-        : await generateRequestWithRetries(request, `${source.subjectName}/${family}`);
+      const result = reusable ??
+        await generateRequestWithRetries(request, `${source.subjectName}/${family}`);
       const baseline = await baselineReport(source.subjectName, family);
       const evidence = evidencePacket(request, family);
       const deterministic = evaluateReportDeterministically(result, {
@@ -173,7 +195,7 @@ try {
       const comparison = compareReports(baseline, result);
       generated.push({ subject: source.subjectName, family, result, baseline, evidence, deterministic, comparison });
 
-      if (!resume) {
+      if (!reusable) {
         await writePrivate(join(outputDir, "reports", `${slug(source.subjectName)}-${family}-v1.md`), reportMarkdown(source.subjectName, family, baseline, "V1 control"));
         await writePrivate(join(outputDir, "reports", `${slug(source.subjectName)}-${family}-v2.md`), reportMarkdown(source.subjectName, family, result, "V2 Phase 5 control"));
       }
@@ -194,7 +216,8 @@ try {
     key: "tony/deep",
     family: "deep",
     canonicalIdentityHash: sha256(sectionBody(tonyResult, "Identity")),
-    contextIsUnspecified: true
+    contextIsUnspecified: true,
+    historicalControl: true
   });
   const tonyComparison = compareReports(tonyBaseline, tonyResult);
   await writePrivate(join(outputDir, "reports", "tony-deep-v1.md"), reportMarkdown("Tony Cecala", "deep", tonyBaseline, "V1 recovered control"));
@@ -243,7 +266,9 @@ try {
     throw new Error(`Evaluator coverage failed: ${[...semanticErrors, ...repetitionErrors].join("; ")}`);
   }
 
-  const semanticGate = evaluateSemanticGate(semanticEvaluations, repetitionEvaluations);
+  const semanticGate = evaluateSemanticGate(semanticEvaluations, repetitionEvaluations, {
+    historicalKeys: ["tony/deep"]
+  });
   const deterministicIssues = [
     ...subjectSetupFailures.map((failure) => `${failure.subject}/identity: ${failure.error}`),
     ...generated.flatMap((control) => control.deterministic.hardGateIssues.map((issue) => `${slug(control.subject)}/${control.family}: ${issue}`)),
@@ -264,6 +289,7 @@ try {
     model,
     evaluatorModel,
     reportSubjects,
+    deepOnlySubjects,
     structuralSubjects,
     trustedChartSubjects: [tonySource.subjectName, ...reportSubjects, ...structuralSubjects],
     generatedReportCount: generated.length,
@@ -513,6 +539,12 @@ function evidencePacket(request: AstrologyReportRequest, family: "core" | "deep"
   const views = buildAstrologyMeaningComplexReportViews(request);
   if (!views) throw new Error(`${request.subjectName}/${family} produced no meaning-complex views.`);
   const view = views[family];
+  const chapterEvidence = buildAstrologyReportSectionEvidence(
+    request,
+    family === "core"
+      ? ["Identity", "Relationships", "Work", "Integration"]
+      : ["Identity", "Emotions", "Relationships", "Work", "Drive", "Gifts", "Blind Spots", "Growth", "Integration"]
+  );
   const selectedIds = new Set([...view.canonicalIdentityComplexIds, ...view.selectedComplexIds]);
   const selectedComplexes = [...selectedIds].map((id) => {
     const complex = network.complexes.find((candidate) => candidate.id === id);
@@ -542,6 +574,7 @@ function evidencePacket(request: AstrologyReportRequest, family: "core" | "deep"
     canonicalIdentityComplexIds: view.canonicalIdentityComplexIds,
     selectedComplexIds: view.selectedComplexIds,
     chapters: view.chapters,
+    chapterEvidence,
     selectedComplexes,
     omittedCandidates,
     networkAudit: network.audit
@@ -556,6 +589,7 @@ function evaluatorEvidencePacket(packet: ReturnType<typeof evidencePacket>) {
     canonicalIdentityComplexIds: packet.canonicalIdentityComplexIds,
     selectedComplexIds: packet.selectedComplexIds,
     chapters: packet.chapters,
+    chapterEvidence: packet.chapterEvidence,
     selectedComplexes: packet.selectedComplexes.map((complex) => ({
       id: complex.id,
       mechanism: complex.mechanism,
@@ -626,6 +660,14 @@ async function savedV2Report(subject: string, family: "core" | "deep") {
   return markdownReport(`${slug(subject)}-${family}-v2-resume`, content);
 }
 
+async function trySavedV2Report(subject: string, family: "core" | "deep") {
+  try {
+    return await savedV2Report(subject, family);
+  } catch {
+    return null;
+  }
+}
+
 function completedReportFromBundle(bundle: PortableBundle, requestId: string): ReportResult {
   const result = bundle.data.reportResults.find((candidate) => candidate.requestId === requestId);
   if (!result || result.status !== "completed") throw new Error(`Completed report ${requestId} is not available.`);
@@ -679,9 +721,10 @@ async function evaluatePairSemantically(controls: GeneratedControl[]) {
   ].join("\n\n");
   const parsed = parseJson(await openRouterJson(evaluatorModel, prompt, 18_000)) as { evaluations?: Phase5SemanticEvaluation[] };
   const expected = controls.map((control) => `${slug(control.subject)}/${control.family}`);
-  const errors = validateSemanticEvaluation(expected, parsed.evaluations ?? []);
+  const normalized = normalizeSemanticEvaluationKeys(parsed.evaluations ?? [], expected);
+  const errors = validateSemanticEvaluation(expected, normalized);
   if (errors.length) throw new Error(`Semantic evaluator invalid for ${controls[0]?.subject}: ${errors.join("; ")}`);
-  return parsed.evaluations!;
+  return normalized;
 }
 
 async function evaluateTonySemantically(
@@ -693,6 +736,8 @@ async function evaluateTonySemantically(
     evaluatorSystemPrompt(),
     "Evaluate only the existing Tony Phase 4 Deep report. It was generated before the final shared-root evidence partition was applied; do not pretend otherwise.",
     "No Tony report was regenerated for Phase 5.",
+    "Tony is a fixed historical control. Its current chapterEvidence shows the newer ownership plan for comparison, not the exact prose boundary that existed when this report was generated.",
+    "Evaluate Tony's report against the selected complexes and provenance available in the completed Phase 5 baseline packet. Do not assign a failure merely because the later chapter partition would now route a supported root elsewhere.",
     "",
     "=== tony/deep ===",
     "CURRENT PHASE 4 EVIDENCE PACKET:",
@@ -703,9 +748,10 @@ async function evaluateTonySemantically(
     resultMarkdown(baseline)
   ].join("\n\n");
   const parsed = parseJson(await openRouterJson(evaluatorModel, prompt, 18_000)) as { evaluations?: Phase5SemanticEvaluation[] };
-  const errors = validateSemanticEvaluation(["tony/deep"], parsed.evaluations ?? []);
+  const normalized = normalizeSemanticEvaluationKeys(parsed.evaluations ?? [], ["tony/deep"]);
+  const errors = validateSemanticEvaluation(["tony/deep"], normalized);
   if (errors.length) throw new Error(`Tony semantic evaluator invalid: ${errors.join("; ")}`);
-  return parsed.evaluations!;
+  return normalized;
 }
 
 async function evaluateRepetition(control: GeneratedControl) {
@@ -722,9 +768,29 @@ async function evaluateRepetition(control: GeneratedControl) {
       .join("\n\n")
   ].join("\n");
   const parsed = parseJson(await openRouterJson(evaluatorModel, prompt, 7_000)) as Phase5RepetitionEvaluation;
-  const errors = validateRepetitionEvaluation([`${slug(control.subject)}/deep`], [parsed]);
+  parsed.key = `${slug(control.subject)}/deep`;
+  const errors = validateRepetitionEvaluation([parsed.key], [parsed]);
   if (errors.length) throw new Error(`Repetition evaluator invalid for ${control.subject}: ${errors.join("; ")}`);
   return parsed;
+}
+
+function normalizeSemanticEvaluationKeys(
+  evaluations: Phase5SemanticEvaluation[],
+  expectedKeys: string[]
+) {
+  if (evaluations.length !== expectedKeys.length) return evaluations;
+  const remaining = new Set(expectedKeys);
+  return evaluations.map((evaluation, index) => {
+    if (remaining.has(evaluation.key)) {
+      remaining.delete(evaluation.key);
+      return evaluation;
+    }
+    const family = evaluation.key.split("/").at(-1);
+    const familyMatch = [...remaining].find((key) => key.endsWith(`/${family}`));
+    const key = familyMatch ?? [...remaining][0] ?? expectedKeys[index]!;
+    remaining.delete(key);
+    return { ...evaluation, key };
+  });
 }
 
 function evaluatorSystemPrompt() {
@@ -735,10 +801,13 @@ function evaluatorSystemPrompt() {
     "Astrological correctness means prose follows the supplied complexes, support paths, counterevidence, claim boundaries, and provenance.",
     "Importance means the selected structures deserve the chapter jobs and stronger omitted candidates are not obviously preferable.",
     "Genuine synthesis means the report combines multiple supported chart facts instead of listing or dumping technical astrology.",
+    "The chapterEvidence array is the exact prose boundary for each chapter. Full complex support paths document provenance but do not authorize the prose to import every connected node.",
     "Specificity must come from chart evidence, never invented biography, categorical behavior, or another person's inner state.",
     "Dimensionality rewards resources, tensions, conditions, and counterevidence rather than one master problem.",
     "Context safety forbids inferred relationship status, condition, structure, intention, recency, history, or another person's motives.",
     "Semantic repetition judges repeated mechanisms and conclusions across chapters, not word overlap.",
+    "Canonical Identity reuse across Core and Deep is required. Do not count the identical Identity chapter against tier differentiation or semantic repetition.",
+    "Core complexes may remain present in Deep, but Deep must add distinct chapter mechanisms, consequences, and breadth beyond the canonical foundation.",
     "Return strict JSON only:",
     '{"evaluations":[{"key":"subject/family","scores":{"astrological_correctness":0,"importance":0,"genuine_synthesis":0,"specificity":0,"dimensionality":0,"tone":0,"usefulness":0,"tier_differentiation":0,"context_safety":0,"semantic_repetition":0},"rationales":{"astrological_correctness":"one sentence","importance":"one sentence","genuine_synthesis":"one sentence","specificity":"one sentence","dimensionality":"one sentence","tone":"one sentence","usefulness":"one sentence","tier_differentiation":"one sentence","context_safety":"one sentence","semantic_repetition":"one sentence"},"offendingExcerpts":{}}]}'
   ].join("\n");

@@ -1132,6 +1132,9 @@ function mayExpandFrom(node: SemanticNode) {
 }
 
 function mechanismForPath(nodes: SemanticNode[], terminal: SemanticNode) {
+  if (terminal.type === "RulershipPath") {
+    return `rulership_${String(terminal.attributes.pathType)}`;
+  }
   const aspect = [...nodes].reverse().find((node) => node.type === "Aspect");
   if (aspect) return `aspect_${String(aspect.attributes.aspectType)}`;
   if (terminal.type === "Configuration") {
@@ -1139,9 +1142,6 @@ function mechanismForPath(nodes: SemanticNode[], terminal: SemanticNode) {
   }
   if (terminal.type === "Distribution") {
     return `distribution_${String(terminal.attributes.dimension)}`;
-  }
-  if (terminal.type === "RulershipPath") {
-    return `rulership_${String(terminal.attributes.pathType)}`;
   }
   if (terminal.type === "PersonalActivation") return "personal_activation";
   if (terminal.type === "LunarPhase") return "lunar_phase";
@@ -1553,15 +1553,30 @@ function claimBoundaryFor(
     pieces.push(
       "This factor may supply generational or developmental context only; it cannot establish categorical personality, biography, events, motives, or another person's inner state."
     );
+  } else if (slowerPointIds.has(pointId)) {
+    pieces.push(
+      "Personal activation marks natal relevance only. Treat it as symbolic importance within the selected life area, keep personal claims conditional, and ground conclusions in observable information rather than timing or established abilities."
+    );
   } else if (seedNode.type === "LunarNode") {
     pieces.push(
       "The node may describe developmental direction or familiar tendencies; it cannot establish fate, past lives, categorical biography, events, motives, or another person's inner state."
+    );
+  } else if (seedNode.type === "LunarPhase") {
+    pieces.push(
+      "The lunar phase describes a relationship between the Sun and Moon; it cannot establish a routine, reaction history, or fixed emotional behavior."
+    );
+  } else if (seedNode.type === "RulershipPath") {
+    pieces.push(
+      "The rulership path states only the exact directional relationship in the evidence; it cannot be rewritten as an aspect or causal event."
     );
   } else {
     pieces.push(
       "This complex describes a supported natal tendency, not categorical behavior, biography, events, motives, or another person's inner state."
     );
   }
+  pieces.push(
+    "Counterevidence can qualify this interpretation; it cannot prove an established skill, habit, accuracy, or self-correction."
+  );
   if (facts.calculationMode === "signs-aspects-only") {
     pieces.push("It makes no claims about houses, angles, cusps, or life-area emphasis.");
   }

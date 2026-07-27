@@ -10,19 +10,19 @@
   "ranked_files": [
     {
       "file": "packages/astrology/src/index.ts",
-      "weight": 1983.14,
+      "weight": 2972.09,
       "bucket": "other",
-      "estimated_tokens": 32095,
-      "lines": 3128,
-      "symbols": 468,
+      "estimated_tokens": 52654,
+      "lines": 4528,
+      "symbols": 701,
       "symbol_type_counts": {
-        "class": 4,
-        "constant": 299,
-        "function": 116,
-        "type": 49
+        "class": 5,
+        "constant": 458,
+        "function": 174,
+        "type": 64
       },
       "dependency_in": 0,
-      "dependency_out": 0,
+      "dependency_out": 4,
       "route_count": 0
     },
     {
@@ -39,6 +39,38 @@
       },
       "dependency_in": 1,
       "dependency_out": 2,
+      "route_count": 0
+    },
+    {
+      "file": "packages/astrology/src/meaningComplexNetwork.ts",
+      "weight": 918.2,
+      "bucket": "other",
+      "estimated_tokens": 15495,
+      "lines": 1913,
+      "symbols": 233,
+      "symbol_type_counts": {
+        "constant": 164,
+        "function": 47,
+        "type": 22
+      },
+      "dependency_in": 1,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "packages/astrology/src/structuralChartFacts.ts",
+      "weight": 798.22,
+      "bucket": "other",
+      "estimated_tokens": 12000,
+      "lines": 1426,
+      "symbols": 206,
+      "symbol_type_counts": {
+        "constant": 140,
+        "function": 40,
+        "type": 26
+      },
+      "dependency_in": 1,
+      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -125,6 +157,22 @@
       "route_count": 0
     },
     {
+      "file": "packages/astrology/src/meaningComplexReportViews.ts",
+      "weight": 392.3,
+      "bucket": "other",
+      "estimated_tokens": 4580,
+      "lines": 534,
+      "symbols": 99,
+      "symbol_type_counts": {
+        "constant": 74,
+        "function": 19,
+        "type": 6
+      },
+      "dependency_in": 1,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
       "weight": 324.24,
       "bucket": "other",
@@ -137,6 +185,22 @@
         "type": 1
       },
       "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "packages/astrology/src/normalizedChartFacts.ts",
+      "weight": 289.31,
+      "bucket": "other",
+      "estimated_tokens": 3967,
+      "lines": 464,
+      "symbols": 77,
+      "symbol_type_counts": {
+        "constant": 45,
+        "function": 14,
+        "type": 18
+      },
+      "dependency_in": 1,
       "dependency_out": 0,
       "route_count": 0
     },
@@ -155,6 +219,22 @@
       },
       "dependency_in": 2,
       "dependency_out": 7,
+      "route_count": 0
+    },
+    {
+      "file": "scripts/lib/semantic-synthesis-v2-evaluation.ts",
+      "weight": 267.31,
+      "bucket": "other",
+      "estimated_tokens": 4184,
+      "lines": 299,
+      "symbols": 69,
+      "symbol_type_counts": {
+        "constant": 53,
+        "function": 12,
+        "type": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -226,6 +306,21 @@
       "dependency_in": 0,
       "dependency_out": 2,
       "route_count": 3
+    },
+    {
+      "file": "docs/inbox-astra/active/ASTRA_SEMANTIC_SYNTHESIS_V2_HANDOFF.md",
+      "weight": 213.23,
+      "bucket": "other",
+      "estimated_tokens": 10084,
+      "lines": 918,
+      "symbols": 70,
+      "symbol_type_counts": {
+        "heading": 69,
+        "type": 1
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
     },
     {
       "file": "apps/astra-web/app/allies/page.tsx",
@@ -993,6 +1088,20 @@
       "route_count": 0
     },
     {
+      "file": "docs/decisions/ASTRA_SEMANTIC_SYNTHESIS_V2_INTERPRETIVE_DOCTRINE.md",
+      "weight": 82.32,
+      "bucket": "other",
+      "estimated_tokens": 3553,
+      "lines": 228,
+      "symbols": 26,
+      "symbol_type_counts": {
+        "heading": 26
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/composer-web/app/api/cards/publish/route.ts",
       "weight": 81.88,
       "bucket": "app/api",
@@ -1497,6 +1606,20 @@
       },
       "dependency_in": 1,
       "dependency_out": 1,
+      "route_count": 0
+    },
+    {
+      "file": "docs/evaluations/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_EVALUATION.md",
+      "weight": 52.35,
+      "bucket": "other",
+      "estimated_tokens": 2330,
+      "lines": 195,
+      "symbols": 16,
+      "symbol_type_counts": {
+        "heading": 16
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -2631,6 +2754,20 @@
       "route_count": 0
     },
     {
+      "file": "docs/architecture/ASTRA_SEMANTIC_SYNTHESIS_V2_TIER_A_INVENTORY.md",
+      "weight": 31.33,
+      "bucket": "other",
+      "estimated_tokens": 2942,
+      "lines": 219,
+      "symbols": 9,
+      "symbol_type_counts": {
+        "heading": 9
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "docs/architecture/clean-start-foundation.md",
       "weight": 31.31,
       "bucket": "other",
@@ -3101,6 +3238,34 @@
       "route_count": 0
     },
     {
+      "file": "apps/composer-web/PROJECT.md",
+      "weight": 24.95,
+      "bucket": "other",
+      "estimated_tokens": 304,
+      "lines": 44,
+      "symbols": 7,
+      "symbol_type_counts": {
+        "heading": 7
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "PROJECT.md",
+      "weight": 24.94,
+      "bucket": "other",
+      "estimated_tokens": 279,
+      "lines": 43,
+      "symbols": 7,
+      "symbol_type_counts": {
+        "heading": 7
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "akashic/imports/astra-product-design-pattern-library/source-library/README.md",
       "weight": 24.42,
       "bucket": "akashic",
@@ -3158,11 +3323,25 @@
       "route_count": 0
     },
     {
-      "file": "docs/inbox-astra/ASTRA_WEIGHTED_CHART_SIGNAL_GRAPH_TODO.md",
-      "weight": 22.03,
+      "file": "docs/inbox-astra/active/ASTRA_PARALLEL_REPORT_GENERATION_TODO.md",
+      "weight": 22.25,
       "bucket": "other",
-      "estimated_tokens": 782,
-      "lines": 53,
+      "estimated_tokens": 1020,
+      "lines": 69,
+      "symbols": 6,
+      "symbol_type_counts": {
+        "heading": 6
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "docs/inbox-astra/completed/ASTRA_WEIGHTED_CHART_SIGNAL_GRAPH_TODO.md",
+      "weight": 22.1,
+      "bucket": "other",
+      "estimated_tokens": 918,
+      "lines": 58,
       "symbols": 6,
       "symbol_type_counts": {
         "heading": 6
@@ -3512,6 +3691,48 @@
       "route_count": 0
     },
     {
+      "file": "apps/astra-web/test-results/foundation-routes-clean-st-c8a56-eates-a-free-Welcome-Report-desktop/error-context.md",
+      "weight": 19.28,
+      "bucket": "other",
+      "estimated_tokens": 5729,
+      "lines": 392,
+      "symbols": 5,
+      "symbol_type_counts": {
+        "heading": 5
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "apps/astra-web/test-results/foundation-routes-clean-st-c8a56-eates-a-free-Welcome-Report-mobile/error-context.md",
+      "weight": 19.28,
+      "bucket": "other",
+      "estimated_tokens": 5567,
+      "lines": 380,
+      "symbols": 5,
+      "symbol_type_counts": {
+        "heading": 5
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "apps/astra-web/test-results/foundation-routes-clean-st-c8a56-eates-a-free-Welcome-Report-tablet/error-context.md",
+      "weight": 19.28,
+      "bucket": "other",
+      "estimated_tokens": 5703,
+      "lines": 392,
+      "symbols": 5,
+      "symbol_type_counts": {
+        "heading": 5
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/composer-web/src/voices/registry.ts",
       "weight": 19.15,
       "bucket": "other",
@@ -3852,6 +4073,20 @@
       "route_count": 0
     },
     {
+      "file": "docs/decisions/ASTRA_SEMANTIC_SYNTHESIS_V1.md",
+      "weight": 16,
+      "bucket": "other",
+      "estimated_tokens": 644,
+      "lines": 50,
+      "symbols": 4,
+      "symbol_type_counts": {
+        "heading": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "docs/architecture/BOUNDARIES.md",
       "weight": 15.8,
       "bucket": "other",
@@ -4104,10 +4339,10 @@
     },
     {
       "file": "package.json",
-      "weight": 9.36,
+      "weight": 9.35,
       "bucket": "manifest",
-      "estimated_tokens": 2233,
-      "lines": 123,
+      "estimated_tokens": 2491,
+      "lines": 131,
       "symbols": 0,
       "symbol_type_counts": {},
       "dependency_in": 0,
@@ -5166,9 +5401,9 @@
     },
     {
       "file": "apps/composer-web/next-env.d.ts",
-      "weight": 2.53,
+      "weight": 2.52,
       "bucket": "other",
-      "estimated_tokens": 62,
+      "estimated_tokens": 63,
       "lines": 7,
       "symbols": 0,
       "symbol_type_counts": {},
@@ -5229,26 +5464,26 @@
     {
       "name": "top-weighted",
       "budget_tokens": 32000,
-      "estimated_tokens": 32095,
+      "estimated_tokens": 52654,
       "file_count": 1,
-      "symbol_count": 468,
+      "symbol_count": 701,
       "files": [
         {
           "rank": 1,
           "file": "packages/astrology/src/index.ts",
-          "weight": 1983.14,
+          "weight": 2972.09,
           "bucket": "other",
-          "estimated_tokens": 32095,
-          "lines": 3128,
-          "symbols": 468,
+          "estimated_tokens": 52654,
+          "lines": 4528,
+          "symbols": 701,
           "symbol_type_counts": {
-            "class": 4,
-            "constant": 299,
-            "function": 116,
-            "type": 49
+            "class": 5,
+            "constant": 458,
+            "function": 174,
+            "type": 64
           },
           "dependency_in": 0,
-          "dependency_out": 0,
+          "dependency_out": 4,
           "route_count": 0
         }
       ]
@@ -5256,26 +5491,26 @@
     {
       "name": "top-weighted",
       "budget_tokens": 64000,
-      "estimated_tokens": 70003,
-      "file_count": 4,
-      "symbol_count": 995,
+      "estimated_tokens": 71989,
+      "file_count": 2,
+      "symbol_count": 916,
       "files": [
         {
           "rank": 1,
           "file": "packages/astrology/src/index.ts",
-          "weight": 1983.14,
+          "weight": 2972.09,
           "bucket": "other",
-          "estimated_tokens": 32095,
-          "lines": 3128,
-          "symbols": 468,
+          "estimated_tokens": 52654,
+          "lines": 4528,
+          "symbols": 701,
           "symbol_type_counts": {
-            "class": 4,
-            "constant": 299,
-            "function": 116,
-            "type": 49
+            "class": 5,
+            "constant": 458,
+            "function": 174,
+            "type": 64
           },
           "dependency_in": 0,
-          "dependency_out": 0,
+          "dependency_out": 4,
           "route_count": 0
         },
         {
@@ -5293,40 +5528,6 @@
           },
           "dependency_in": 1,
           "dependency_out": 2,
-          "route_count": 0
-        },
-        {
-          "rank": 3,
-          "file": "apps/composer-web/lib/cardLibrary.ts",
-          "weight": 585.24,
-          "bucket": "other",
-          "estimated_tokens": 8636,
-          "lines": 954,
-          "symbols": 135,
-          "symbol_type_counts": {
-            "constant": 86,
-            "function": 30,
-            "type": 19
-          },
-          "dependency_in": 16,
-          "dependency_out": 13,
-          "route_count": 0
-        },
-        {
-          "rank": 4,
-          "file": "packages/contracts/src/index.ts",
-          "weight": 487.23,
-          "bucket": "other",
-          "estimated_tokens": 9937,
-          "lines": 1047,
-          "symbols": 177,
-          "symbol_type_counts": {
-            "constant": 99,
-            "function": 5,
-            "type": 73
-          },
-          "dependency_in": 0,
-          "dependency_out": 0,
           "route_count": 0
         }
       ]
@@ -5334,26 +5535,26 @@
     {
       "name": "top-weighted",
       "budget_tokens": 128000,
-      "estimated_tokens": 129535,
-      "file_count": 15,
-      "symbol_count": 1652,
+      "estimated_tokens": 129243,
+      "file_count": 7,
+      "symbol_count": 1772,
       "files": [
         {
           "rank": 1,
           "file": "packages/astrology/src/index.ts",
-          "weight": 1983.14,
+          "weight": 2972.09,
           "bucket": "other",
-          "estimated_tokens": 32095,
-          "lines": 3128,
-          "symbols": 468,
+          "estimated_tokens": 52654,
+          "lines": 4528,
+          "symbols": 701,
           "symbol_type_counts": {
-            "class": 4,
-            "constant": 299,
-            "function": 116,
-            "type": 49
+            "class": 5,
+            "constant": 458,
+            "function": 174,
+            "type": 64
           },
           "dependency_in": 0,
-          "dependency_out": 0,
+          "dependency_out": 4,
           "route_count": 0
         },
         {
@@ -5375,6 +5576,40 @@
         },
         {
           "rank": 3,
+          "file": "packages/astrology/src/meaningComplexNetwork.ts",
+          "weight": 918.2,
+          "bucket": "other",
+          "estimated_tokens": 15495,
+          "lines": 1913,
+          "symbols": 233,
+          "symbol_type_counts": {
+            "constant": 164,
+            "function": 47,
+            "type": 22
+          },
+          "dependency_in": 1,
+          "dependency_out": 0,
+          "route_count": 0
+        },
+        {
+          "rank": 4,
+          "file": "packages/astrology/src/structuralChartFacts.ts",
+          "weight": 798.22,
+          "bucket": "other",
+          "estimated_tokens": 12000,
+          "lines": 1426,
+          "symbols": 206,
+          "symbol_type_counts": {
+            "constant": 140,
+            "function": 40,
+            "type": 26
+          },
+          "dependency_in": 1,
+          "dependency_out": 0,
+          "route_count": 0
+        },
+        {
+          "rank": 5,
           "file": "apps/composer-web/lib/cardLibrary.ts",
           "weight": 585.24,
           "bucket": "other",
@@ -5391,7 +5626,7 @@
           "route_count": 0
         },
         {
-          "rank": 4,
+          "rank": 6,
           "file": "packages/contracts/src/index.ts",
           "weight": 487.23,
           "bucket": "other",
@@ -5408,7 +5643,7 @@
           "route_count": 0
         },
         {
-          "rank": 5,
+          "rank": 7,
           "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
           "weight": 487.22,
           "bucket": "other",
@@ -5424,194 +5659,13 @@
           "dependency_in": 2,
           "dependency_out": 5,
           "route_count": 0
-        },
-        {
-          "rank": 6,
-          "file": "apps/astra-web/app/admin/page.tsx",
-          "weight": 481.22,
-          "bucket": "other",
-          "estimated_tokens": 11012,
-          "lines": 1009,
-          "symbols": 100,
-          "symbol_type_counts": {
-            "component": 1,
-            "constant": 63,
-            "function": 34,
-            "type": 2
-          },
-          "dependency_in": 0,
-          "dependency_out": 2,
-          "route_count": 0
-        },
-        {
-          "rank": 7,
-          "file": "apps/composer-web/components/CardWorkspace.tsx",
-          "weight": 457.24,
-          "bucket": "other",
-          "estimated_tokens": 9273,
-          "lines": 922,
-          "symbols": 91,
-          "symbol_type_counts": {
-            "component": 3,
-            "constant": 42,
-            "function": 33,
-            "type": 13
-          },
-          "dependency_in": 3,
-          "dependency_out": 1,
-          "route_count": 0
-        },
-        {
-          "rank": 8,
-          "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-          "weight": 324.24,
-          "bucket": "other",
-          "estimated_tokens": 9337,
-          "lines": 690,
-          "symbols": 87,
-          "symbol_type_counts": {
-            "constant": 74,
-            "function": 12,
-            "type": 1
-          },
-          "dependency_in": 0,
-          "dependency_out": 0,
-          "route_count": 0
-        },
-        {
-          "rank": 9,
-          "file": "apps/astra-web/components/ReportReader.tsx",
-          "weight": 268.32,
-          "bucket": "other",
-          "estimated_tokens": 3378,
-          "lines": 310,
-          "symbols": 50,
-          "symbol_type_counts": {
-            "component": 2,
-            "constant": 29,
-            "function": 18,
-            "type": 1
-          },
-          "dependency_in": 2,
-          "dependency_out": 7,
-          "route_count": 0
-        },
-        {
-          "rank": 10,
-          "file": "apps/astra-web/app/api/reports/route.ts",
-          "weight": 248.37,
-          "bucket": "app/api",
-          "estimated_tokens": 2020,
-          "lines": 194,
-          "symbols": 36,
-          "symbol_type_counts": {
-            "component": 2,
-            "constant": 21,
-            "function": 8,
-            "route_handler": 2,
-            "type": 3
-          },
-          "dependency_in": 0,
-          "dependency_out": 2,
-          "route_count": 2
-        },
-        {
-          "rank": 11,
-          "file": "apps/astra-web/app/library/page.tsx",
-          "weight": 234.33,
-          "bucket": "other",
-          "estimated_tokens": 3073,
-          "lines": 324,
-          "symbols": 43,
-          "symbol_type_counts": {
-            "component": 5,
-            "constant": 22,
-            "function": 13,
-            "type": 3
-          },
-          "dependency_in": 0,
-          "dependency_out": 4,
-          "route_count": 0
-        },
-        {
-          "rank": 12,
-          "file": "apps/astra-web/components/FullChartWheel.tsx",
-          "weight": 228.32,
-          "bucket": "other",
-          "estimated_tokens": 3362,
-          "lines": 285,
-          "symbols": 52,
-          "symbol_type_counts": {
-            "component": 1,
-            "constant": 37,
-            "function": 12,
-            "type": 2
-          },
-          "dependency_in": 1,
-          "dependency_out": 1,
-          "route_count": 0
-        },
-        {
-          "rank": 13,
-          "file": "apps/composer-web/app/api/cards/queue-draft/route.ts",
-          "weight": 227.38,
-          "bucket": "app/api",
-          "estimated_tokens": 679,
-          "lines": 77,
-          "symbols": 22,
-          "symbol_type_counts": {
-            "component": 3,
-            "constant": 12,
-            "function": 3,
-            "route_handler": 3,
-            "type": 1
-          },
-          "dependency_in": 0,
-          "dependency_out": 2,
-          "route_count": 3
-        },
-        {
-          "rank": 14,
-          "file": "apps/astra-web/app/allies/page.tsx",
-          "weight": 174.33,
-          "bucket": "other",
-          "estimated_tokens": 3196,
-          "lines": 295,
-          "symbols": 38,
-          "symbol_type_counts": {
-            "component": 3,
-            "constant": 28,
-            "function": 6,
-            "type": 1
-          },
-          "dependency_in": 0,
-          "dependency_out": 6,
-          "route_count": 0
-        },
-        {
-          "rank": 15,
-          "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
-          "weight": 172.33,
-          "bucket": "other",
-          "estimated_tokens": 3016,
-          "lines": 321,
-          "symbols": 33,
-          "symbol_type_counts": {
-            "component": 1,
-            "constant": 18,
-            "function": 12,
-            "type": 2
-          },
-          "dependency_in": 1,
-          "dependency_out": 2,
-          "route_count": 0
         }
       ]
     }
   ],
   "coverage": {
-    "files": 363,
-    "symbols": 4161,
-    "total_estimated_tokens": 996977
+    "files": 379,
+    "symbols": 5238,
+    "total_estimated_tokens": 1096312
   }
 }

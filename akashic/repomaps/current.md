@@ -4,10 +4,10 @@ type: "repomap"
 description: "Current repository map for agent onboarding and code navigation."
 status: "current"
 project: "akashic"
-date: "2026-07-20"
-created: "2026-07-20"
-updated: "2026-07-20"
-timestamp: "2026-07-20"
+date: "2026-07-27"
+created: "2026-07-27"
+updated: "2026-07-27"
+timestamp: "2026-07-27"
 okf_version: "0.1"
 tags: ["repomap", "onboarding"]
 related: []
@@ -23,16 +23,17 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `996977`
+- Estimated token footprint: `1096312`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
-- Package scripts expose: `alpha:promote-admin`, `alpha:verify-report-continuity`, `build`, `check`, `check:alpha-env`, `check:boundaries`, `check:composer-alpha-env`, `check:no-supabase`, `composer:dev`, `composer:logs`, `composer:restart`, `composer:status`, `composer:stop`, `composer:up`, `data:export-user`, `data:import-user`, `data:repair-birth-places`, `db:generate`, `db:migrate`, `db:reset:local`, `db:seed`, `db:seed:private-card`, `dev`, `dev:restart`, `dev:status`, `dev:stop`, `dev:up`, `lint`, `overview:chart-flow`, `overview:light`, `report:ally-deep-bakeoff`, `report:audit-deep-cohort`, `report:bakeoff`, `report:compare-deep`, `report:prompt-bakeoff`, `report:prompt-compare`, `report:quality-bakeoff`, `start`, `stripe:fulfill-latest`, `test`, `test:ally-api`, `test:astrology-engine`, `test:auth-code`, `test:auth-profile-concurrency`, `test:birth-date-time-sheet`, `test:chart-boundary`, `test:chart-maker`, `test:chart-request-api`, `test:composer-availability-api`, `test:composer-card-detail`, `test:composer-card-queue-api`, `test:composer-course-ux`, `test:composer-hosted-boundary`, `test:composer-ingest-api`, `test:composer-onboarding-cards`, `test:composer-onboarding-mobile`, `test:composer-operator-workflow`, `test:composer-private-feed-api`, `test:composer-public-preview`, `test:composer-quarry`, `test:composer-selection-api`, `test:composer-stream`, `test:e2e`, `test:email-config`, `test:place-search-api`, `test:place-search-provider`, `test:private-feed`, `test:report-api`, `test:report-basis-contracts`, `test:report-deep-quality`, `test:report-display-title`, `test:report-families`, `test:report-model-strategy`, `test:report-paragraphs`, `test:report-settings-quality`, `test:stripe-checkout`, `test:stripe-webhook`, `test:tony-deep-sonnet`, `test:user-data-portability`, `typecheck`.
+- Package scripts expose: `alpha:promote-admin`, `alpha:verify-report-continuity`, `build`, `check`, `check:alpha-env`, `check:boundaries`, `check:composer-alpha-env`, `check:no-supabase`, `composer:dev`, `composer:logs`, `composer:restart`, `composer:status`, `composer:stop`, `composer:up`, `data:export-user`, `data:import-user`, `data:repair-birth-places`, `db:generate`, `db:migrate`, `db:reset:local`, `db:seed`, `db:seed:private-card`, `dev`, `dev:restart`, `dev:status`, `dev:stop`, `dev:up`, `lint`, `overview:chart-flow`, `overview:light`, `report:ally-deep-bakeoff`, `report:audit-deep-cohort`, `report:bakeoff`, `report:compare-deep`, `report:prompt-bakeoff`, `report:prompt-compare`, `report:quality-bakeoff`, `report:relationship-context-bakeoff`, `report:semantic-synthesis-control`, `report:semantic-synthesis-v2-phase-5`, `start`, `stripe:fulfill-latest`, `test`, `test:ally-api`, `test:astrology-engine`, `test:auth-code`, `test:auth-profile-concurrency`, `test:birth-date-time-sheet`, `test:chart-boundary`, `test:chart-maker`, `test:chart-request-api`, `test:composer-availability-api`, `test:composer-card-detail`, `test:composer-card-queue-api`, `test:composer-course-ux`, `test:composer-hosted-boundary`, `test:composer-ingest-api`, `test:composer-onboarding-cards`, `test:composer-onboarding-mobile`, `test:composer-operator-workflow`, `test:composer-private-feed-api`, `test:composer-public-preview`, `test:composer-quarry`, `test:composer-selection-api`, `test:composer-stream`, `test:e2e`, `test:email-config`, `test:place-search-api`, `test:place-search-provider`, `test:private-feed`, `test:report-api`, `test:report-basis-contracts`, `test:report-deep-quality`, `test:report-display-title`, `test:report-families`, `test:report-model-strategy`, `test:report-paragraphs`, `test:report-settings-quality`, `test:semantic-synthesis-v2-phase-1`, `test:semantic-synthesis-v2-phase-2`, `test:semantic-synthesis-v2-phase-3`, `test:semantic-synthesis-v2-phase-4`, `test:semantic-synthesis-v2-phase-5`, `test:stripe-checkout`, `test:stripe-webhook`, `test:tony-deep-sonnet`, `test:user-data-portability`, `typecheck`.
 
 ## Directory Structure
 ```txt
 AGENTS.md
 ASTRA_CLEAN_START_INAUGURAL_CHARTER.md
+PROJECT.md
 README.md
 akashic/
 apps/
@@ -93,21 +94,21 @@ tsconfig.json
 3. Akashic artifacts preserve durable repo knowledge.
 
 ## Critical Files
-- `packages/astrology/src/index.ts` - weight 1983.14, ~32095 tokens, 468 symbols, in:0/out:0
+- `packages/astrology/src/index.ts` - weight 2972.09, ~52654 tokens, 701 symbols, in:0/out:4
 - `packages/db/src/repositories.ts` - weight 1020.18, ~19335 tokens, 215 symbols, in:1/out:2
+- `packages/astrology/src/meaningComplexNetwork.ts` - weight 918.2, ~15495 tokens, 233 symbols, in:1/out:0
+- `packages/astrology/src/structuralChartFacts.ts` - weight 798.22, ~12000 tokens, 206 symbols, in:1/out:0
 - `apps/composer-web/lib/cardLibrary.ts` - weight 585.24, ~8636 tokens, 135 symbols, in:16/out:13
 - `packages/contracts/src/index.ts` - weight 487.23, ~9937 tokens, 177 symbols, in:0/out:0
 - `apps/astra-web/components/BirthOnboardingPanel.tsx` - weight 487.22, ~11186 tokens, 105 symbols, in:2/out:5
 - `apps/astra-web/app/admin/page.tsx` - weight 481.22, ~11012 tokens, 100 symbols, in:0/out:2
 - `apps/composer-web/components/CardWorkspace.tsx` - weight 457.24, ~9273 tokens, 91 symbols, in:3/out:1
+- `packages/astrology/src/meaningComplexReportViews.ts` - weight 392.3, ~4580 tokens, 99 symbols, in:1/out:0
 - `apps/astra-web/e2e/foundation-routes.spec.ts` - weight 324.24, ~9337 tokens, 87 symbols, in:0/out:0
+- `packages/astrology/src/normalizedChartFacts.ts` - weight 289.31, ~3967 tokens, 77 symbols, in:1/out:0
 - `apps/astra-web/components/ReportReader.tsx` - weight 268.32, ~3378 tokens, 50 symbols, in:2/out:7
+- `scripts/lib/semantic-synthesis-v2-evaluation.ts` - weight 267.31, ~4184 tokens, 69 symbols, in:0/out:0
 - `apps/astra-web/app/api/reports/route.ts` - weight 248.37, ~2020 tokens, 36 symbols, in:0/out:2
-- `apps/astra-web/app/library/page.tsx` - weight 234.33, ~3073 tokens, 43 symbols, in:0/out:4
-- `apps/astra-web/components/FullChartWheel.tsx` - weight 228.32, ~3362 tokens, 52 symbols, in:1/out:1
-- `apps/composer-web/app/api/cards/queue-draft/route.ts` - weight 227.38, ~679 tokens, 22 symbols, in:0/out:2
-- `apps/astra-web/app/allies/page.tsx` - weight 174.33, ~3196 tokens, 38 symbols, in:0/out:6
-- `apps/astra-web/components/BirthDateTimeSheet.tsx` - weight 172.33, ~3016 tokens, 33 symbols, in:1/out:2
 
 ## Critical Routes
 - `POST /api/admin/replay-report` in `apps/astra-web/app/api/admin/replay-report/route.ts:15`
@@ -152,9 +153,9 @@ tsconfig.json
 - `GET /api/status` in `apps/composer-web/app/api/status/route.ts:4`
 
 ## Pareto Profiles
-- `32000` tokens -> 1 files, 468 symbols, ~32095 estimated tokens.
-- `64000` tokens -> 4 files, 995 symbols, ~70003 estimated tokens.
-- `128000` tokens -> 15 files, 1652 symbols, ~129535 estimated tokens.
+- `32000` tokens -> 1 files, 701 symbols, ~52654 estimated tokens.
+- `64000` tokens -> 2 files, 916 symbols, ~71989 estimated tokens.
+- `128000` tokens -> 7 files, 1772 symbols, ~129243 estimated tokens.
 
 ## Data Model
 Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.
@@ -167,16 +168,16 @@ This is a Next.js app. Confirm the production build with the repo's build script
 ## Known Risks
 - `packages/astrology/src/index.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `packages/db/src/repositories.ts` needs extra care because it is large or touches auth/data/schema concerns.
+- `packages/astrology/src/meaningComplexNetwork.ts` needs extra care because it is large or touches auth/data/schema concerns.
+- `packages/astrology/src/structuralChartFacts.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `apps/composer-web/lib/cardLibrary.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `packages/contracts/src/index.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `apps/astra-web/components/BirthOnboardingPanel.tsx` needs extra care because it is large or touches auth/data/schema concerns.
 - `apps/astra-web/app/admin/page.tsx` needs extra care because it is large or touches auth/data/schema concerns.
 - `apps/composer-web/components/CardWorkspace.tsx` needs extra care because it is large or touches auth/data/schema concerns.
+- `packages/astrology/src/meaningComplexReportViews.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `apps/astra-web/e2e/foundation-routes.spec.ts` needs extra care because it is large or touches auth/data/schema concerns.
-- `apps/astra-web/components/ReportReader.tsx` needs extra care because it is large or touches auth/data/schema concerns.
-- `apps/astra-web/app/library/page.tsx` needs extra care because it is large or touches auth/data/schema concerns.
-- `apps/astra-web/components/FullChartWheel.tsx` needs extra care because it is large or touches auth/data/schema concerns.
-- `apps/astra-web/app/allies/page.tsx` needs extra care because it is large or touches auth/data/schema concerns.
+- `packages/astrology/src/normalizedChartFacts.ts` needs extra care because it is large or touches auth/data/schema concerns.
 
 ## Current Priorities
 - Honor this repo's own AGENTS.md, ADRs, REPOMAP, and local Akashic artifacts before applying central guidance.
@@ -186,4 +187,4 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - Treat auth as a first-class product concern and verify the repo's documented local auth flow.
 - Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 363 local files in `/Users/tony/Documents/Projects/Astra`.
+Generated from 379 local files in `/Users/tony/Documents/Projects/Astra`.

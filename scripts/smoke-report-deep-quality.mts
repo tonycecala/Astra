@@ -318,6 +318,68 @@ const categoricalMetadata = correctedCategorical.generationMetadata?.sections?.f
 assert.equal(categoricalMetadata?.attemptCount, 2);
 assert.match(categoricalMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /categorical behavior claim/);
 
+const boundedInterpretationProvider = sectionedProvider({
+  invalidFirst: {
+    Growth: "A personal activation means this is currently pressing on something close to you. An opposition links this lunar dispositor chain to Chiron. This gives you a sharp read of hidden group undercurrents. That part of you already knows how to correct the first conclusion."
+  }
+});
+const correctedBoundedInterpretation = await buildAstrologyReportResultAsync(request, { env, fetchImpl: boundedInterpretationProvider.fetchImpl });
+assert.equal(correctedBoundedInterpretation.status, "completed");
+const boundedInterpretationMetadata = correctedBoundedInterpretation.generationMetadata?.sections?.find((section) => section.title === "Growth");
+assert.equal(boundedInterpretationMetadata?.attemptCount, 2);
+const boundedInterpretationIssues = boundedInterpretationMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "";
+assert.match(boundedInterpretationIssues, /unsupported current timing or pressure/);
+assert.match(boundedInterpretationIssues, /rewrites a rulership or dispositor chain as an aspect/);
+assert.match(boundedInterpretationIssues, /privileged or accurate social perception/);
+assert.match(boundedInterpretationIssues, /rapid certainty, wholesale change, or an established self-correction habit/);
+
+const unsupportedRulershipProvider = sectionedProvider({
+  invalidFirst: { Work: "Mars is ruled by Venus, so every work decision returns to Venus." }
+});
+const correctedUnsupportedRulership = await buildAstrologyReportResultAsync(request, { env, fetchImpl: unsupportedRulershipProvider.fetchImpl });
+assert.equal(correctedUnsupportedRulership.status, "completed");
+const unsupportedRulershipMetadata = correctedUnsupportedRulership.generationMetadata?.sections?.find((section) => section.title === "Work");
+assert.equal(unsupportedRulershipMetadata?.attemptCount, 2);
+assert.match(unsupportedRulershipMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /Unsupported astrology relationship/);
+
+const naturalLanguageAspectProvider = sectionedProvider({
+  invalidFirst: { Work: "Moon opposition to Mercury makes this work pattern more complicated." }
+});
+const correctedNaturalLanguageAspect = await buildAstrologyReportResultAsync(request, { env, fetchImpl: naturalLanguageAspectProvider.fetchImpl });
+assert.equal(correctedNaturalLanguageAspect.status, "completed");
+const naturalLanguageAspectMetadata = correctedNaturalLanguageAspect.generationMetadata?.sections?.find((section) => section.title === "Work");
+assert.equal(naturalLanguageAspectMetadata?.attemptCount, 2);
+assert.match(naturalLanguageAspectMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /Unsupported astrology claim/);
+
+const compoundAspectProvider = sectionedProvider({
+  invalidFirst: { Work: "Moon also forms a conjunction with Uranus and Neptune, which changes this work pattern." }
+});
+const correctedCompoundAspect = await buildAstrologyReportResultAsync(request, { env, fetchImpl: compoundAspectProvider.fetchImpl });
+assert.equal(correctedCompoundAspect.status, "completed");
+const compoundAspectMetadata = correctedCompoundAspect.generationMetadata?.sections?.find((section) => section.title === "Work");
+assert.equal(compoundAspectMetadata?.attemptCount, 2);
+assert.match(compoundAspectMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /Unsupported astrology claim/);
+
+const chapterScopedEvidence = buildAstrologyReportSectionEvidence(request, headings);
+const workEvidenceText = chapterScopedEvidence
+  .find((section) => section.title === "Work")
+  ?.evidenceBullets.map((evidence) => `${evidence.label}; ${evidence.meaning}`).join(" ") ?? "";
+const foreignPlacement = chapterScopedEvidence
+  .filter((section) => section.title !== "Work")
+  .flatMap((section) => section.evidenceBullets)
+  .map((evidence) => `${evidence.label}; ${evidence.meaning}`.match(/\b(Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)\s+in\s+(Aries|Taurus|Gemini|Cancer|Leo|Virgo|Libra|Scorpio|Sagittarius|Capricorn|Aquarius|Pisces)\b/i)?.[0])
+  .filter((claim): claim is string => Boolean(claim))
+  .find((claim) => !workEvidenceText.toLowerCase().includes(claim.toLowerCase()));
+assert.ok(foreignPlacement, "fixture must expose a placement owned outside Work");
+const crossChapterClaimProvider = sectionedProvider({
+  invalidFirst: { Work: `${foreignPlacement} also defines how you approach work.` }
+});
+const correctedCrossChapterClaim = await buildAstrologyReportResultAsync(request, { env, fetchImpl: crossChapterClaimProvider.fetchImpl });
+assert.equal(correctedCrossChapterClaim.status, "completed");
+const crossChapterClaimMetadata = correctedCrossChapterClaim.generationMetadata?.sections?.find((section) => section.title === "Work");
+assert.equal(crossChapterClaimMetadata?.attemptCount, 2);
+assert.match(crossChapterClaimMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /Unsupported astrology claim/);
+
 const genderedExampleProvider = sectionedProvider({
   invalidFirst: { "Blind Spots": "She got quiet after you mentioned the schedule. That is an observation, but it should not become a conclusion about her motives." }
 });
