@@ -12,7 +12,8 @@ mission: Make Astra materially smarter astrologically by deriving and synthesizi
 phase_0_status: complete
 phase_1_status: complete
 phase_2_status: complete
-next_phase: Phase 3
+phase_3_status: complete
+next_phase: Phase 4
 supersedes: ../ASTRA_WEIGHTED_CHART_SIGNAL_GRAPH_TODO.md
 depends_on:
   - ../../decisions/ASTRA_CHART_LOCATION_INTEGRITY_AND_SIGNAL_GRAPH.md
@@ -768,4 +769,45 @@ Phase 2 performs calculation tests only. When report integration is ready for hu
 
 ```text
 Implement only Phase 3 of Astra Semantic Synthesis V2. Build the typed in-memory meaning-complex network from Phase 1 normalized facts and Phase 2 structural facts. Add evidence-path expansion, independent-support counting, duplicate-origin collapse, counterevidence selection, transparent component scoring, confidence tiers, claim boundaries, and inspectable deterministic output. Prove that aliases cannot inflate confidence, contradictory evidence remains visible, and unpersonalized outer-planet, Chiron, or node evidence cannot anchor a strong complex. Preserve every calculation-mode leakage gate. Do not integrate report views, generate reports, change headings, or tune prose.
+```
+
+## Phase 3 Completion — 2026-07-26
+
+Phase 3 is complete on `codex/astra-semantic-synthesis-v2-phase-3`.
+
+Delivered:
+
+- typed in-memory semantic graph and meaning-complex engine: `packages/astrology/src/meaningComplexNetwork.ts`;
+- current-engine adapter: `buildAstrologyMeaningComplexNetwork`;
+- accepted Phase 3 evidence, scoring, confidence, and claim-boundary policies in `docs/decisions/ASTRA_SEMANTIC_SYNTHESIS_V2_INTERPRETIVE_DOCTRINE.md`;
+- verified Tier A inventory in `docs/architecture/ASTRA_SEMANTIC_SYNTHESIS_V2_TIER_A_INVENTORY.md`;
+- deterministic graph, alias, contradiction, confidence, provenance, actual-chart, and calculation-mode gate: `scripts/smoke-semantic-synthesis-v2-phase-3.mts`.
+
+Gate command:
+
+```bash
+npm run test:semantic-synthesis-v2-phase-3
+```
+
+Verified outcomes:
+
+- required typed nodes and edges with complete raw-fact provenance;
+- evidence expansion bounded to three edges;
+- duplicate-origin aliases collapse and cannot inflate confidence or score;
+- independent support requires distinct raw-fact origins;
+- materially contradictory evidence remains visible and weakens confidence;
+- every complex exposes all accepted scoring components, confidence reasons, reductions, qualifiers, and a claim boundary;
+- unpersonalized outer planets, Chiron, and nodes cannot anchor strong personal complexes;
+- identical chart facts and settings produce deterministic output;
+- signs-only networks contain no house, angle, cusp, house-ruler, or life-area evidence;
+- no report generation, report-view integration, enriched-card changes, headings, prompts, prose, routes, UI, database contracts, or packages changed.
+
+### Later report-comparison constraint
+
+Phase 3 remains an internal evidence-engine change. During Phase 4 human comparison, generate only one Tony Deep report and compare it with a recent V1 Tony Deep report. Do not expand the first report comparison into a matrix.
+
+### Next bounded Phase 4 goal
+
+```text
+Implement only Phase 4 of Astra Semantic Synthesis V2. Select one canonical Identity view and distinct Core and Deep views from the Phase 3 meaning complexes, then adapt those selections into the existing enriched signal-card path. Preserve ordinary-report fallbacks, relationship-context safety, current routes, database and public contracts, and UI. Prove that V1 reports remain unchanged when V2 complexes are absent, Core and Deep use the same chart truth at materially different depth, and relationship context changes application without changing canonical Identity. Do not change headings or tune prose. After deterministic integration gates pass, generate only one Tony Deep report for human comparison with the recent V1 Tony Deep report; do not run a report matrix.
 ```

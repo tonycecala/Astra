@@ -35,6 +35,10 @@ import {
   deriveStructuralChartFacts,
   type StructuralChartFacts
 } from "./structuralChartFacts";
+import {
+  buildMeaningComplexNetwork,
+  type MeaningComplexNetwork
+} from "./meaningComplexNetwork";
 
 export {
   ASTRA_PLAINSPOKEN_READING_GRADE_MAX,
@@ -44,6 +48,7 @@ export {
 } from "./readability";
 export * from "./normalizedChartFacts";
 export * from "./structuralChartFacts";
+export * from "./meaningComplexNetwork";
 
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER = "astra-astrology-report-adapter";
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION = "0.1.0";
@@ -1618,6 +1623,14 @@ export function buildAstrologyNormalizedChartFacts(input: AstrologyReportRequest
 
 export function buildAstrologyStructuralChartFacts(input: AstrologyReportRequest): StructuralChartFacts {
   return deriveStructuralChartFacts(buildAstrologyNormalizedChartFacts(input));
+}
+
+export function buildAstrologyMeaningComplexNetwork(input: AstrologyReportRequest): MeaningComplexNetwork {
+  const normalizedFacts = buildAstrologyNormalizedChartFacts(input);
+  return buildMeaningComplexNetwork(
+    normalizedFacts,
+    deriveStructuralChartFacts(normalizedFacts)
+  );
 }
 
 function bodyDisplayName(bodyId: string) {

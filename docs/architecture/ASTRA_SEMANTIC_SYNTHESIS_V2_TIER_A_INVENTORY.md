@@ -1,11 +1,11 @@
 ---
 title: Astra Semantic Synthesis V2 Tier A Signal Inventory
-status: verified-phase-2
+status: verified-phase-3
 type: implementation-inventory
 project: Astra Clean Start
 created: 2026-07-26
 updated: 2026-07-26
-scope: Phase 0 through Phase 2
+scope: Phase 0 through Phase 3
 ---
 
 # Astra Semantic Synthesis V2 Tier A Signal Inventory
@@ -17,7 +17,7 @@ scope: Phase 0 through Phase 2
 - `absent`: deliberately not implemented yet.
 - `blocked`: the selected calculation source cannot provide trustworthy input.
 
-The baseline column describes Semantic Synthesis V1 before V2. The current-result column describes the verified state after Phase 2.
+The baseline column describes Semantic Synthesis V1 before V2. The current-result column describes the verified state after Phase 3.
 
 ## Verified calculation-library capabilities
 
@@ -79,9 +79,9 @@ Phase 1 keeps the mean-node policy, derives aspect phase from deterministic next
 | Tighter configuration orbs | absent | complete metadata | Phase 0/1 |
 | Applying/separating phase | absent | complete when motion exists | Phase 1 |
 | Luminary/personal/angle/node point kinds | partial | complete | Phase 1 |
-| Chart-ruler aspect relevance | absent | complete as structural activation evidence; weighting pending | Phase 2/3 |
+| Chart-ruler aspect relevance | absent | complete with transparent component weighting | Phase 2/3 |
 | Outer-planet personalization | absent | complete | Phase 2 |
-| Duplicate-derived-importance collapse | partial | partial | Phase 3 |
+| Duplicate-derived-importance collapse | partial | complete with raw-origin alias collapse | Phase 3 |
 | Conjunction clusters | absent | complete | Phase 2 |
 | Stellia | absent | complete | Phase 2 |
 | T-square | absent | complete | Phase 2 |
@@ -100,7 +100,7 @@ Phase 1 keeps the mean-node policy, derives aspect phase from deterministic next
 | Sun-Moon aspect | partial | complete as normalized aspect | Phase 1 |
 | Lunar phase | absent | complete | Phase 2 |
 | Luminary rulers/dispositors | absent | complete | Phase 2 |
-| Solar-lunar reinforcement/tension | partial | absent as V2 structure | Phase 3 |
+| Solar-lunar reinforcement/tension | partial | complete as typed support/counterevidence paths | Phase 3 |
 | Personalized outer planets | absent | complete | Phase 2 |
 | Personalized Chiron | absent | complete | Phase 2 |
 | Personalized lunar nodes | absent | complete | Phase 2 |
@@ -117,12 +117,14 @@ No Tier A item is blocked by missing calculation provenance in Phase 1. True lun
 | `packages/astrology/src/normalizedChartFacts.ts` | Phase 1 fact types, aspect rules, normalization, provenance, and signs-only omission |
 | `packages/astrology/src/index.ts` | Adapt current calculated horoscope output into normalized and structural facts |
 | `packages/astrology/src/structuralChartFacts.ts` | Phase 2 rulership, geometry, distribution, lunar-phase, and personalization derivation |
+| `packages/astrology/src/meaningComplexNetwork.ts` | Phase 3 typed graph, evidence paths, origin collapse, scoring, confidence, counterevidence, and claim boundaries |
 | `scripts/smoke-semantic-synthesis-v2-phase-1.mts` | Synthetic geometry, near-miss, provenance, deterministic, and calculation-mode gates |
 | `scripts/smoke-semantic-synthesis-v2-phase-2.mts` | Positive and near-miss fixtures for every Phase 2 rule plus actual-chart and leakage gates |
+| `scripts/smoke-semantic-synthesis-v2-phase-3.mts` | Graph, alias, contradiction, confidence, provenance, determinism, actual-chart, and leakage gates |
 | `docs/decisions/ASTRA_SEMANTIC_SYNTHESIS_V2_INTERPRETIVE_DOCTRINE.md` | Accepted astrological school and exact rule policies |
 | this inventory | Verified capability map and bounded next ownership |
 
-Phases 1 and 2 add no package, route, database contract, public contract, UI, heading, prompt, prose pass, meaning complex, graph service, or external registry.
+Phases 1 through 3 add no package, route, database contract, public contract, UI, heading, prompt, prose pass, graph service, or external registry.
 
 ## Phase 1 gate evidence
 
@@ -168,4 +170,27 @@ Command:
 
 ```bash
 npm run test:semantic-synthesis-v2-phase-2
+```
+
+## Phase 3 gate evidence
+
+The focused Phase 3 gate proves:
+
+- required typed nodes and edges exist in an inspectable in-memory network;
+- evidence expansion never exceeds three typed edges;
+- every node, edge, path, and complex retains raw-fact provenance;
+- identical facts and settings produce byte-equivalent structured output;
+- aliases sharing one raw origin collapse and cannot raise confidence or score;
+- independent support uses non-overlapping raw-fact origins;
+- contradictory evidence remains visible and reduces confidence;
+- every score exposes all accepted positive and weakening components;
+- `strong` confidence always has at least three independent support paths;
+- unpersonalized outer planets and Chiron are suppressed as complex seeds while a personally activated node remains eligible;
+- signs-only output contains no angle, house, cusp, house-ruler, or life-area evidence;
+- the current Tony control chart passes deterministic full and signs-only construction without report generation.
+
+Command:
+
+```bash
+npm run test:semantic-synthesis-v2-phase-3
 ```

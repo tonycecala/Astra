@@ -5,7 +5,7 @@ type: architecture-decision
 project: Astra Clean Start
 created: 2026-07-26
 updated: 2026-07-26
-decision_version: 2.0.0-phase-2
+decision_version: 2.0.0-phase-3
 scope: natal astrology
 ---
 
@@ -141,9 +141,52 @@ These definitions remove ambiguity before configuration code begins.
 - Node contacts use 3 degrees. Angle contacts use 5 degrees, except node-to-angle contacts, which remain at 3 degrees.
 - A slower factor without qualifying activation remains available as generational or developmental context. It cannot anchor a strong categorical personal claim.
 
+## Phase 3 Meaning-Complex Policies
+
+### Typed paths and evidence independence
+
+- Meaning complexes are built in memory from Phase 1 normalized facts and Phase 2 structural facts.
+- Evidence expansion follows typed astrological edges only and stops after three edges.
+- Signs, houses, and cusps qualify style or life area. They do not independently prove behavior.
+- Evidence paths that resolve to the same raw-fact origin and role collapse into one path. Their aliases remain inspectable.
+- Independent support requires non-overlapping raw-fact origins after removing the seed fact itself. Repeated labels, configuration membership, angular-contact labels, and other derivations of one raw fact cannot inflate confidence.
+- A complex requires at least two supported origins. `strong` confidence requires at least three independent support paths and the accepted score threshold.
+- Challenging aspects remain explicit counterevidence. They qualify or reduce confidence instead of disappearing into a single clean thesis.
+
+### Transparent scoring
+
+Each complex stores normalized component scores for structural importance, aspect precision, angularity, chart-ruler relevance, luminary or personal-planet relevance, configuration role, independent reinforcement, life-domain relevance, contextual activation, counterevidence strength, generational weakness, derivation distance, and semantic redundancy.
+
+The accepted weights are:
+
+| Component | Weight |
+|---|---:|
+| Structural importance | 0.16 |
+| Aspect precision | 0.08 |
+| Angularity | 0.08 |
+| Chart-ruler relevance | 0.10 |
+| Luminary/personal relevance | 0.12 |
+| Configuration role | 0.10 |
+| Independent reinforcement | 0.14 |
+| Life-domain relevance | 0.06 |
+| Contextual activation | 0.06 |
+| Counterevidence strength | -0.06 |
+| Generational weakness | -0.10 |
+| Derivation distance | -0.06 |
+| Semantic redundancy | -0.08 |
+
+The total is inspectable and bounded from zero to one. Confidence also applies explicit structural gates, so a numeric total alone cannot create `strong` confidence.
+
+### Claim boundaries
+
+- Meaning complexes describe supported natal tendencies, not categorical behavior, invented biography, events, motives, or another person's inner state.
+- Unpersonalized outer planets, Chiron, and lunar nodes may qualify context but cannot seed a strong personal complex.
+- Reduced calculation mode makes no claims from houses, angles, cusps, house rulers, or life-area emphasis.
+- Phase 3 hypotheses are technical internal summaries. They are not customer prose and do not change report headings, prompts, or views.
+
 ## Claim Boundary
 
-Phases 0 through 2 create chart and structural facts only. They do not change headings, report prose, semantic hypotheses, meaning complexes, or customer-visible controls. Relationship context cannot alter natal geometry.
+Phases 0 through 3 create chart facts, structural facts, and inspectable internal meaning complexes only. They do not change headings, report prose, prompts, report views, or customer-visible controls. Relationship context cannot alter natal geometry.
 
 ## Supersession
 
