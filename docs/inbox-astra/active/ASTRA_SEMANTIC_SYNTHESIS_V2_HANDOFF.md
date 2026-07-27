@@ -13,7 +13,8 @@ phase_0_status: complete
 phase_1_status: complete
 phase_2_status: complete
 phase_3_status: complete
-next_phase: Phase 4
+phase_4_status: complete
+next_phase: Phase 5
 supersedes: ../ASTRA_WEIGHTED_CHART_SIGNAL_GRAPH_TODO.md
 depends_on:
   - ../../decisions/ASTRA_CHART_LOCATION_INTEGRITY_AND_SIGNAL_GRAPH.md
@@ -810,4 +811,54 @@ Phase 3 remains an internal evidence-engine change. During Phase 4 human compari
 
 ```text
 Implement only Phase 4 of Astra Semantic Synthesis V2. Select one canonical Identity view and distinct Core and Deep views from the Phase 3 meaning complexes, then adapt those selections into the existing enriched signal-card path. Preserve ordinary-report fallbacks, relationship-context safety, current routes, database and public contracts, and UI. Prove that V1 reports remain unchanged when V2 complexes are absent, Core and Deep use the same chart truth at materially different depth, and relationship context changes application without changing canonical Identity. Do not change headings or tune prose. After deterministic integration gates pass, generate only one Tony Deep report for human comparison with the recent V1 Tony Deep report; do not run a report matrix.
+```
+
+## Phase 4 Completion — 2026-07-26
+
+Phase 4 is complete on `codex/astra-semantic-synthesis-v2-phase-4`.
+
+Delivered:
+
+- deterministic report-view selection: `packages/astrology/src/meaningComplexReportViews.ts`;
+- V2-to-enriched-card adaptation inside the existing astrology report path;
+- exact V1 fallback for requests that do not receive V2 complexes;
+- canonical Identity reuse across Identity, Core, Deep, and relationship contexts;
+- distinct Core and Deep complex budgets with shared-root chapter ownership;
+- deterministic Phase 4 gate: `scripts/smoke-semantic-synthesis-v2-phase-4.mts`;
+- one Tony Deep comparison packet: `.astra-exports/comparisons/2026-07-26-semantic-synthesis-v2-phase-4-tony-deep.md`.
+
+Gate command:
+
+```bash
+npm run test:semantic-synthesis-v2-phase-4
+```
+
+Verified outcomes:
+
+- Core selects three distinct non-Identity complexes;
+- Deep retains those complexes and expands to seven;
+- every selected Deep complex performs a visible chapter job;
+- canonical Identity evidence is byte-identical across tiers and context fixtures;
+- relationship context continues to change application instructions without changing natal selection;
+- legacy requests preserve the recorded V1 evidence cards exactly;
+- signs-only report cards contain no house, angle, cusp, or house-ruler evidence;
+- no report headings, prose-style rules, routes, UI, database contracts, public contracts, or packages changed.
+
+### Single Tony Deep comparison
+
+Only one Tony Deep report was generated, request `d9c6c4d2-f8d7-4a0f-9dba-eedc28be8044`, and compared with V1 report `2efc0045-d902-4303-b881-bccd684ae76a`.
+
+- V1: 3,072 words; V2: 3,149 words.
+- Chapter distinctness: 82.2% to 83.4%.
+- Repeated sentences: 0% in both.
+- Chart references per 1,000 words: 24.7 to 32.1.
+- Production-writer cost: $0.1835.
+- Generation time: 64 seconds.
+
+Human inspection found that the V2 report was materially more chart-specific, while repeated shared roots initially gave Emotions/Growth and Work/Blind Spots overlapping evidence. Phase 4 then partitioned evidence for repeated roots and attached a distinct interpretive job to each chapter. Per the one-report constraint, no second Tony report was generated.
+
+### Next bounded Phase 5 goal
+
+```text
+Implement only Phase 5 of Astra Semantic Synthesis V2: evaluation and internal rollout evidence. Retain every Phase 0–4 deterministic gate. Build the synthetic and trusted-chart control suite, evaluator packet, and human-review packet with selected complexes, support paths, counterevidence, omitted candidates, V1 comparison, and the existing cross-chapter semantic-repetition metric. Use the completed single Tony Phase 4 report as the Tony control; do not generate a Tony matrix or another Tony report. Evaluate astrological correctness, importance, synthesis, specificity, dimensionality, tone, usefulness, Core/Deep distinction, fallbacks, context safety, and semantic repetition. Produce one explicit GO, HOLD, or NO-GO decision. Do not change headings, UI, routes, database or public contracts, or prose style.
 ```

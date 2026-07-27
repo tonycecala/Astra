@@ -16,7 +16,7 @@ import {
 } from "@astra/astrology";
 import { astrologyReportRequestSchema } from "@astra/contracts";
 
-assert.equal(ASTRA_SEMANTIC_SYNTHESIS_VERSION, "1.0.0");
+assert.equal(ASTRA_SEMANTIC_SYNTHESIS_VERSION, "2.0.0-phase-4");
 
 const headings = ["Identity", "Emotions", "Relationships", "Work", "Drive", "Gifts", "Blind Spots", "Growth", "Integration"];
 const request = astrologyReportRequestSchema.parse({

@@ -5,7 +5,7 @@ type: architecture-decision
 project: Astra Clean Start
 created: 2026-07-26
 updated: 2026-07-26
-decision_version: 2.0.0-phase-3
+decision_version: 2.0.0-phase-4
 scope: natal astrology
 ---
 
@@ -184,9 +184,34 @@ The total is inspectable and bounded from zero to one. Confidence also applies e
 - Reduced calculation mode makes no claims from houses, angles, cusps, house rulers, or life-area emphasis.
 - Phase 3 hypotheses are technical internal summaries. They are not customer prose and do not change report headings, prompts, or views.
 
+## Phase 4 Report-View Policies
+
+### Canonical Identity
+
+- Canonical Identity selection is deterministic and independent of relationship context and report tier.
+- The canonical view includes the Sun and Moon when supported complexes exist, then the strongest eligible chart-ruler, Ascendant, identity configuration, or identity-domain structure, up to four complexes.
+- Identity uses the same primary complex, supporting complexes, and evidence budget in Identity, Core, and Deep.
+- Relationship status, condition, structure, intention, recency, pronouns, notes, question, and intent do not change canonical Identity evidence.
+
+### Core and Deep
+
+- Core selects three distinct non-Identity complexes: one primary complex each for Relationships, Work, and Integration.
+- Deep retains every Core complex and expands to between five and seven selected complexes.
+- Every selected Deep complex must perform at least one visible chapter job.
+- A shared root may organize more than one Deep chapter only when each use has a distinct interpretive job.
+- Evidence paths for repeated roots are partitioned by chapter and ranked by the chapter's domain. The same evidence packet may not be repeated under two headings.
+- The model receives selected cards, not the complete semantic graph.
+
+### Integration and fallback boundary
+
+- V2 view selection is applied only to schema-version-2 natal requests with an explicit calculation mode and at least one meaning complex.
+- Legacy natal requests, requests without V2 complexes, Progressed reports, and Synastry reports retain the existing V1 card path unchanged.
+- Phase 4 adapts selections through the existing optional `hypothesis`, `counterweight`, and `claimBoundary` card fields.
+- Phase 4 adds no route, database contract, public contract, package, UI dependency, heading, or prose-style rule.
+
 ## Claim Boundary
 
-Phases 0 through 3 create chart facts, structural facts, and inspectable internal meaning complexes only. They do not change headings, report prose, prompts, report views, or customer-visible controls. Relationship context cannot alter natal geometry.
+Phases 0 through 4 create chart facts, structural facts, inspectable meaning complexes, and deterministic internal report views. They do not change headings, prose style, routes, database contracts, public contracts, or customer-visible controls. Relationship context cannot alter natal geometry or canonical Identity selection.
 
 ## Supersession
 

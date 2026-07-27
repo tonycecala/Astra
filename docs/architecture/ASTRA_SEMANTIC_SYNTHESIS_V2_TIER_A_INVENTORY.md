@@ -1,11 +1,11 @@
 ---
 title: Astra Semantic Synthesis V2 Tier A Signal Inventory
-status: verified-phase-3
+status: verified-phase-4
 type: implementation-inventory
 project: Astra Clean Start
 created: 2026-07-26
 updated: 2026-07-26
-scope: Phase 0 through Phase 3
+scope: Phase 0 through Phase 4
 ---
 
 # Astra Semantic Synthesis V2 Tier A Signal Inventory
@@ -17,7 +17,7 @@ scope: Phase 0 through Phase 3
 - `absent`: deliberately not implemented yet.
 - `blocked`: the selected calculation source cannot provide trustworthy input.
 
-The baseline column describes Semantic Synthesis V1 before V2. The current-result column describes the verified state after Phase 3.
+The baseline column describes Semantic Synthesis V1 before V2. The current-result column describes the verified state after Phase 4.
 
 ## Verified calculation-library capabilities
 
@@ -118,13 +118,15 @@ No Tier A item is blocked by missing calculation provenance in Phase 1. True lun
 | `packages/astrology/src/index.ts` | Adapt current calculated horoscope output into normalized and structural facts |
 | `packages/astrology/src/structuralChartFacts.ts` | Phase 2 rulership, geometry, distribution, lunar-phase, and personalization derivation |
 | `packages/astrology/src/meaningComplexNetwork.ts` | Phase 3 typed graph, evidence paths, origin collapse, scoring, confidence, counterevidence, and claim boundaries |
+| `packages/astrology/src/meaningComplexReportViews.ts` | Phase 4 canonical Identity and distinct Core/Deep view selection |
 | `scripts/smoke-semantic-synthesis-v2-phase-1.mts` | Synthetic geometry, near-miss, provenance, deterministic, and calculation-mode gates |
 | `scripts/smoke-semantic-synthesis-v2-phase-2.mts` | Positive and near-miss fixtures for every Phase 2 rule plus actual-chart and leakage gates |
 | `scripts/smoke-semantic-synthesis-v2-phase-3.mts` | Graph, alias, contradiction, confidence, provenance, determinism, actual-chart, and leakage gates |
+| `scripts/smoke-semantic-synthesis-v2-phase-4.mts` | Canonical Identity, Core/Deep depth, V1 fallback, context stability, card adaptation, determinism, and leakage gates |
 | `docs/decisions/ASTRA_SEMANTIC_SYNTHESIS_V2_INTERPRETIVE_DOCTRINE.md` | Accepted astrological school and exact rule policies |
 | this inventory | Verified capability map and bounded next ownership |
 
-Phases 1 through 3 add no package, route, database contract, public contract, UI, heading, prompt, prose pass, graph service, or external registry.
+Phases 1 through 4 add no package, route, database contract, public contract, UI, heading, prompt, prose pass, graph service, or external registry.
 
 ## Phase 1 gate evidence
 
@@ -193,4 +195,24 @@ Command:
 
 ```bash
 npm run test:semantic-synthesis-v2-phase-3
+```
+
+## Phase 4 gate evidence
+
+The focused Phase 4 gate proves:
+
+- canonical Identity selection is deterministic and identical across Identity, Core, Deep, and relationship contexts;
+- canonical Identity contains supported Sun and Moon complexes and no more than four complexes;
+- Core has three distinct non-Identity primary complexes;
+- Deep retains all Core complexes, expands to five through seven complexes, and gives every selected complex a visible chapter job;
+- shared roots have distinct chapter jobs and non-identical evidence packets;
+- schema-version-2 natal reports consume meaning-complex evidence through the existing enriched-card path;
+- legacy requests without V2 complexes retain an exact V1 evidence-card fixture;
+- signs-only report cards contain no house, angle, or cusp evidence;
+- no heading, route, database contract, public contract, package, or UI changes are required.
+
+Command:
+
+```bash
+npm run test:semantic-synthesis-v2-phase-4
 ```

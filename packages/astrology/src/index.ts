@@ -37,8 +37,16 @@ import {
 } from "./structuralChartFacts";
 import {
   buildMeaningComplexNetwork,
+  type EvidencePath,
+  type MeaningComplex,
   type MeaningComplexNetwork
 } from "./meaningComplexNetwork";
+import {
+  selectMeaningComplexReportViews,
+  type MeaningComplexChapterSelection,
+  type MeaningComplexReportView,
+  type MeaningComplexReportViews
+} from "./meaningComplexReportViews";
 
 export {
   ASTRA_PLAINSPOKEN_READING_GRADE_MAX,
@@ -49,6 +57,7 @@ export {
 export * from "./normalizedChartFacts";
 export * from "./structuralChartFacts";
 export * from "./meaningComplexNetwork";
+export * from "./meaningComplexReportViews";
 
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER = "astra-astrology-report-adapter";
 export const ASTRA_ASTROLOGY_REPORT_ADAPTER_VERSION = "0.1.0";
@@ -73,7 +82,7 @@ export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
-export const ASTRA_SEMANTIC_SYNTHESIS_VERSION = "1.0.0";
+export const ASTRA_SEMANTIC_SYNTHESIS_VERSION = "2.0.0-phase-4";
 export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-semantic-synthesis-v1";
 export const GEMINI_INTRO_IDENTITY_REPORT_MODEL = "google/gemini-3.5-flash";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
@@ -524,6 +533,8 @@ type ReportSectionSignalCard = {
   hypothesis?: string;
   counterweight?: string;
   claimBoundary?: string;
+  /** Internal Phase 4 selection trace. It is never serialized into a public report contract. */
+  meaningComplexIds?: string[];
 };
 
 export type AstrologyReportSectionEvidence = {
@@ -1633,6 +1644,12 @@ export function buildAstrologyMeaningComplexNetwork(input: AstrologyReportReques
   );
 }
 
+export function buildAstrologyMeaningComplexReportViews(
+  input: AstrologyReportRequest
+): MeaningComplexReportViews | null {
+  return selectMeaningComplexReportViews(buildAstrologyMeaningComplexNetwork(input));
+}
+
 function bodyDisplayName(bodyId: string) {
   return bodyDisplayNames[bodyId] ?? bodyId;
 }
@@ -1823,6 +1840,219 @@ function enrichSectionSignalCards(
   return cards.map((card) => ({ ...card, ...(notes.get(card.title) ?? {}) }));
 }
 
+function meaningComplexViewForRequest(
+  request: AstrologyReportRequest,
+  network: MeaningComplexNetwork
+): MeaningComplexReportView | null {
+  const views = selectMeaningComplexReportViews(network);
+  if (!views) return null;
+  if (request.reportType === "identity") return views.identity;
+  if (request.reportType === "deep") return views.deep;
+  if (
+    request.reportType === "core" ||
+    request.reportType === "core_self" ||
+    request.reportType === "chart_interpretation"
+  ) {
+    return views.core;
+  }
+  return null;
+}
+
+function meaningComplexNetworkForReportRequest(
+  request: AstrologyReportRequest
+): MeaningComplexNetwork | null {
+  if (
+    request.reportBasis?.schemaVersion !== 2 ||
+    request.reportBasis.type !== "natal" ||
+    request.reportBasis.primary.calculationMode === undefined
+  ) {
+    return null;
+  }
+  const network = buildAstrologyMeaningComplexNetwork(request);
+  return network.complexes.length ? network : null;
+}
+
+function readableTechnicalLabel(value: string) {
+  return value.replaceAll("_", " ").replace(/\s+/g, " ").trim();
+}
+
+function nodeFactsForSignal(
+  node: MeaningComplexNetwork["nodes"][number],
+  mechanism: string
+) {
+  const facts = [node.label];
+  const sign = typeof node.attributes.sign === "string" ? node.attributes.sign : null;
+  const house = typeof node.attributes.house === "number" ? node.attributes.house : null;
+  const orb = typeof node.attributes.orb === "number" ? node.attributes.orb : null;
+  if (sign) facts.push(sign);
+  if (house) facts.push(houseLabel(house));
+  if (orb !== null) facts.push(`orb ${orb} degrees`);
+  facts.push(readableTechnicalLabel(mechanism));
+  return [...new Set(facts)];
+}
+
+function complexAnchorSignal(
+  complex: MeaningComplex,
+  network: MeaningComplexNetwork,
+  priorityAdjustment = 0
+): ReportSectionSignalCard["chartSignals"][number] | null {
+  const nodeById = new Map(network.nodes.map((node) => [node.id, node]));
+  const seedNode = complex.seedNodeIds.map((id) => nodeById.get(id)).find(Boolean);
+  if (!seedNode) return null;
+  return {
+    id: `v2_anchor_${complex.id}`,
+    label: seedNode.label,
+    facts: nodeFactsForSignal(seedNode, complex.mechanism),
+    priority: Number(Math.max(0.2, Math.min(1, complex.score.total + 0.25 + priorityAdjustment)).toFixed(4))
+  };
+}
+
+function evidenceSignal(
+  complex: MeaningComplex,
+  path: EvidencePath,
+  network: MeaningComplexNetwork
+): ReportSectionSignalCard["chartSignals"][number] | null {
+  const terminal = network.nodes.find((node) => node.id === path.terminalNodeId);
+  if (!terminal) return null;
+  return {
+    id: `v2_evidence_${complex.id}_${path.id}`,
+    label: terminal.label,
+    facts: nodeFactsForSignal(terminal, path.mechanism),
+    priority: Number(Math.max(0.2, Math.min(1, path.pathScore)).toFixed(4))
+  };
+}
+
+function evidencePathChapterFit(
+  path: EvidencePath,
+  selection: MeaningComplexChapterSelection,
+  network: MeaningComplexNetwork
+) {
+  const terminal = network.nodes.find((node) => node.id === path.terminalNodeId);
+  if (!terminal) return 0;
+  return terminal.domains.filter((domain) => selection.domainFocus.includes(domain)).length;
+}
+
+function counterweightForComplex(
+  complex: MeaningComplex,
+  network: MeaningComplexNetwork
+) {
+  const nodeById = new Map(network.nodes.map((node) => [node.id, node]));
+  const labels = complex.counterevidence
+    .slice()
+    .sort((left, right) => right.pathScore - left.pathScore || left.id.localeCompare(right.id))
+    .map((path) => nodeById.get(path.terminalNodeId)?.label)
+    .filter((label): label is string => Boolean(label))
+    .filter((label, index, all) => all.indexOf(label) === index)
+    .slice(0, 2);
+  return labels.length ? `Counterevidence retained: ${labels.join("; ")}.` : undefined;
+}
+
+function phase4Card(
+  fallback: ReportSectionSignalCard,
+  selection: MeaningComplexChapterSelection,
+  view: MeaningComplexReportView,
+  network: MeaningComplexNetwork,
+  sharedRootUseIndex: number,
+  sharedRootUseCount: number
+): ReportSectionSignalCard {
+  const complexById = new Map(network.complexes.map((complex) => [complex.id, complex]));
+  const primary = complexById.get(selection.primaryComplexId);
+  if (!primary) return fallback;
+  const supporting = selection.supportingComplexIds
+    .map((id) => complexById.get(id))
+    .filter((complex): complex is MeaningComplex => Boolean(complex));
+  const sharedRoot = sharedRootUseCount > 1;
+  const rankedPaths = primary.supportPaths
+    .slice()
+    .sort((left, right) =>
+      evidencePathChapterFit(right, selection, network) -
+        evidencePathChapterFit(left, selection, network) ||
+      right.pathScore - left.pathScore ||
+      left.id.localeCompare(right.id)
+    );
+  const ordinaryPathLimit = selection.title === "Identity" ? 3 : view.view === "deep" ? 4 : 3;
+  const pathLimit = sharedRoot
+    ? Math.max(1, Math.min(ordinaryPathLimit, Math.floor(rankedPaths.length / sharedRootUseCount)))
+    : ordinaryPathLimit;
+  const pathStart = sharedRoot ? sharedRootUseIndex * pathLimit : 0;
+  const primarySignals = rankedPaths
+    .slice(pathStart, pathStart + pathLimit)
+    .map((path) => evidenceSignal(primary, path, network))
+    .filter((signal): signal is ReportSectionSignalCard["chartSignals"][number] => Boolean(signal));
+  const supportAnchors = supporting
+    .map((complex, index) => complexAnchorSignal(complex, network, -index * 0.01))
+    .filter((signal): signal is ReportSectionSignalCard["chartSignals"][number] => Boolean(signal));
+  const primaryAnchor = complexAnchorSignal(primary, network);
+  const chartSignals = [
+    ...(primaryAnchor ? [primaryAnchor] : []),
+    ...supportAnchors,
+    ...primarySignals
+  ].filter((signal, index, all) => all.findIndex((candidate) => candidate.label === signal.label) === index);
+  const supportingMechanisms = supporting.map((complex) =>
+    readableTechnicalLabel(complex.mechanism)
+  );
+  const hypothesis = supportingMechanisms.length
+    ? `${primary.hypothesis} Supporting identity structures: ${supportingMechanisms.join("; ")}.`
+    : primary.hypothesis;
+  const counterweight = counterweightForComplex(primary, network);
+  return {
+    ...fallback,
+    chartSignals,
+    evidenceBullets: chartSignals.map((signal) => ({
+      label: signal.label,
+      meaning: signal.facts.join("; ")
+    })),
+    hypothesis: [
+      hypothesis,
+      `Chapter application: ${selection.interpretiveJob}.`,
+      ...(sharedRoot
+        ? ["This complex is a shared root; develop only this chapter application and do not restate its application elsewhere."]
+        : [])
+    ].join(" "),
+    ...(counterweight ? { counterweight } : {}),
+    claimBoundary: primary.claimBoundary,
+    meaningComplexIds: [
+      primary.id,
+      ...supporting.map((complex) => complex.id)
+    ]
+  };
+}
+
+function applyMeaningComplexViewToCards(
+  cards: ReportSectionSignalCard[],
+  network: MeaningComplexNetwork | null,
+  view: MeaningComplexReportView | null
+) {
+  if (!network || !view) return cards;
+  const selectionByTitle = new Map(view.chapters.map((chapter) => [chapter.title, chapter]));
+  const primaryUseCounts = new Map<string, number>();
+  const primaryUseIndexes = new Map<string, number>();
+  for (const selection of view.chapters) {
+    if (selection.title === "Identity") continue;
+    primaryUseCounts.set(
+      selection.primaryComplexId,
+      (primaryUseCounts.get(selection.primaryComplexId) ?? 0) + 1
+    );
+  }
+  return cards.map((card) => {
+    const selection = selectionByTitle.get(card.title as MeaningComplexChapterSelection["title"]);
+    if (!selection) return card;
+    if (selection.title === "Identity") {
+      return phase4Card(card, selection, view, network, 0, 1);
+    }
+    const useIndex = primaryUseIndexes.get(selection.primaryComplexId) ?? 0;
+    primaryUseIndexes.set(selection.primaryComplexId, useIndex + 1);
+    return phase4Card(
+      card,
+      selection,
+      view,
+      network,
+      useIndex,
+      primaryUseCounts.get(selection.primaryComplexId) ?? 1
+    );
+  });
+}
+
 /**
  * Enriched cards are curated chapter briefs, not a request to repeat every
  * relevant signal in every chapter. Keep Identity's private-reflection
@@ -1831,6 +2061,7 @@ function enrichSectionSignalCards(
  */
 function prosePlanningCard(card: ReportSectionSignalCard): ReportSectionSignalCard {
   if (!card.hypothesis) return card;
+  if (card.meaningComplexIds?.length) return card;
   const signalKind = (signal: ReportSectionSignalCard["chartSignals"][number]) => signal.id.split("_")[0] ?? "";
   const signalBodies = (signal: ReportSectionSignalCard["chartSignals"][number]) => {
     const parts = signal.id.split("_");
@@ -2117,7 +2348,13 @@ function buildReportSectionSignalCardsForRequest(request: AstrologyReportRequest
     : context.basis.type === "synastry"
       ? synastryReportSectionSignalCards(context, headings)
       : buildReportSectionSignalCards(context.primary, headings, enrichedSelectionLimit);
-  return enrichSectionSignalCards(request, cards);
+  const enriched = enrichSectionSignalCards(request, cards);
+  const network = meaningComplexNetworkForReportRequest(request);
+  return applyMeaningComplexViewToCards(
+    enriched,
+    network,
+    network ? meaningComplexViewForRequest(request, network) : null
+  );
 }
 
 export function buildAstrologyReportSectionEvidence(input: AstrologyReportRequest, headings: readonly string[]): AstrologyReportSectionEvidence[] {
