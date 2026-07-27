@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { reportRuleCatalog } from "../../packages/astrology/src/report/rules/catalog";
+import { hasAffirmedClaim, reportDetectors } from "../../packages/astrology/src/report/rules/detectors";
 
 export const PHASE_5_EVALUATION_VERSION = "2.0.0-phase-5";
 export const PHASE_5_SEMANTIC_AVERAGE_MINIMUM = reportRuleCatalog.evaluation.semanticAverageMinimum;
@@ -47,28 +48,21 @@ const stopwords = new Set([
   "this", "through", "under", "very", "what", "when", "where", "which", "while", "with", "would", "your", "youre"
 ]);
 
-const inventedBiographyPattern = /\b(?:you(?:'|’)ve likely lived through|you have likely lived through|you learned early|learned to compensate|old,? tender spot|oldest wound|never quite healed|damage is already done|not enough as you were|growing up|in (?:your )?childhood|throughout your career|in past relationships|your early home life|early[- ]home memories?|what you remember about (?:your )?home|the emotional truth of (?:a|your|the) household|a family pattern|old wound|defensive (?:reaction|pattern|strategy))\b/i;
-const categoricalBehaviorPattern = /\b(?:you act before you think|you react before you think|you (?:always|usually|never) (?:know|sense|see|read|react|act|withdraw|overcommit)|your first read .* usually lands right|most of the time it works|you trust your first read|you are (?:the kind|the type|someone) who|your instinct is to)\b/i;
-const unsupportedScenarioPattern = /\b(?:replay(?:ing)? (?:a |the )?conversation|track(?:ing)? (?:texts?|replies)|returned favors?|daily chores?|walking it off|go(?:ing)? for a walk|need (?:real )?recovery time|intuition often proves right|settled (?:young|early)|old effort|past attempts?|older material|nothing is hidden from you|you clearly have)\b/i;
-const otherPersonInnerLifePattern = /\b(?:another person(?:'s)?|other people(?:'s)?|someone(?:'s)?|a person(?:'s)?)\s+(?:wound|weak spot|pressure point|motive|mood|grief|need|fear|intention|reaction|response)\b|\b(?:see|sense|know|pick up on)\s+(?:what will change someone|someone(?:'s)? (?:mood|grief|need|fear|intention)|what someone else is going through|things other people have not said)\b|\bbefore (?:they|someone|other people) (?:say|know)\b|\b(?:people|others|those around you)\s+(?:lean in|trust you|rely on you|look to you|experience you as|see you as)\b|\b(?:someone|another person|the other person)\s+(?:is|seems|appears|may be)\s+(?:holding back|withdrawing|upset|afraid|uncertain)\b|\b(?:make|leave)\s+(?:someone|people|others)\s+feel\b|\bwhat\s+(?:someone|another person|people|others)\s+(?:receive|take away|feel|think|need)\b/i;
-const contextInferencePattern = /\b(?:your partner|your relationship is|your dating life|as you date|your breakup|recently separated|non[- ]?monogam(?:y|ous)|polyam(?:ory|orous)|open relationship|multiple partners?)\b/i;
-const unsafeClinicalPattern = /\b(?:diagnosis|disorder|trauma response|abuse dynamic|coercion|infidelity|unsafe consent)\b/i;
-const signsOnlyLeakagePattern = /\b(?:house|ascendant|descendant|midheaven|imum coeli|cusp|house ruler)\b/i;
-const unnecessaryOrbPrecisionPattern = /\b(?:orb(?:\s+of)?|close and exact|(?:aspect|trine|square|opposition|sextile|conjunction|quincunx)\s+(?:is\s+)?exact|exact\s+(?:aspect|trine|square|opposition|sextile|conjunction|quincunx)|(?:under|within|nearly|less than)\s+(?:one|\d+(?:\.\d+)?)\s+degrees?|degrees?\s+(?:apart|from exact))\b|\b(?:aspect|conjunct(?:ion)?|oppos(?:es|ition)|squar(?:e|es)|trin(?:e|es)|sextil(?:e|es)|quincunx(?:es)?)\b[^.!?]{0,160}\b(?:angular distance|tightness|closeness|exactness|intensity|precision|measurement)\b|\b(?:angular distance|tightness|closeness|exactness|precision|measurement)\b[^.!?]{0,160}\b(?:aspect|conjunct(?:ion)?|oppos(?:es|ition)|squar(?:e|es)|trin(?:e|es)|sextil(?:e|es)|quincunx(?:es)?)\b/i;
-const impliedNatalActivationPattern = /\b(?:personal\s+)?activation\s+(?:means|shows|suggests).{0,80}\b(?:current|currently|now|pressing)\b|\bcurrently pressing\b|\bpressing on something close to you\b/i;
-const personalActivationQualitativeOverreachPattern = /\b(?:personal activation|natal relevance)\b[\s\S]{0,300}\b(?:unpredictab(?:ility|le)|inspir(?:ation|ed)|clarif(?:y|ies|ied|ying|ication)|destabili(?:ze|zes|zed|zing|zation)|current timing|currently|right now|this season|makes? you|means? you|shows? that you|you (?:tend to|usually|always|become|act|react))\b|\b(?:unpredictab(?:ility|le)|inspir(?:ation|ed)|clarif(?:y|ies|ied|ying|ication)|destabili(?:ze|zes|zed|zing|zation))\b[\s\S]{0,220}\b(?:personal activation|natal relevance)\b/i;
-const aspectChainInventionPattern = /\b(?:opposition|trine|square|sextile|conjunction|quincunx)\s+(?:links?|connects?)\s+(?:this|the|a)\s+.{0,50}\b(?:chain|rulership|dispositor)\b/i;
-const rulershipAsAspectPattern = /\b(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)\s+(?:is\s+)?disposed\s+by\s+(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)\s*,?\s+(?:which\s+is\s+)?(?:an?\s+)?(?:conjunction|opposition|square|trine|sextile|quincunx)\s+aspect\b/i;
-const genericDispositorChainPattern = /\bdispositor chains?\b|\b(?:rulership|dispositor)\s+(?:chain|sequence)\b|\b(?:the|this|a)\s+chain\s+(?:tracing|leading|running|ending|going)\s+(?:back\s+)?(?:to|through|from)\s+(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)\b/i;
-const privilegedPerceptionPattern = /\b(?:sharpens?|gives|offers|provides)\s+(?:you|your).{0,35}\b(?:read|sense)\s+(?:of|on)\s+(?:(?:hidden|social|group|unspoken)\s+){0,2}(?:undercurrents|signals|dynamics|people)\b|\b(?:sense|read|pick up on)\s+(?:(?:hidden|social|group|unspoken)\s+){1,2}(?:undercurrents|signals|dynamics)\b|\b(?:shapes?|influences?|guides?)\s+how\s+you\s+(?:read|sense)\s+(?:a\s+room|a\s+(?:friend\s+)?group|people|social\s+dynamics)\b|\bfirst impression\s+(?:can|may|might)?\s*(?:feel|seem)\s+(?:complete|convincing|certain|accurate)\b|\b(?:feeling|sense)\s+of\s+knowing\s+(?:can|may|might)?\s*(?:arrive|come)\s+(?:fast|quickly|immediately)\b/i;
-const categoricalCertaintyOrChangePattern = /\b(?:feel|feels|seem|seems)\s+(?:sure|certain)\s+(?:right away|fast|immediately)\b|\b(?:conclusion|assessment|belief).{0,30}\bsettled fast\b|\b(?:change|update).{0,20}\b(?:all at once|by a real overhaul|wholesale)\b|\b(?:you|that part of you)\s+already\s+(?:know|knows|has learned)\s+how\b/i;
-const explicitClaimNegationPattern = /\b(?:does not|doesn't|do not|don't|is not|isn't|are not|aren't|cannot|can't|never|no proof|not evidence|not confirmation|does nothing to prove|not that|not currently)\b/i;
-
-function hasAffirmedClaim(text: string, pattern: RegExp) {
-  return text
-    .split(/(?:[.!?;]|—|\bbut\b|\byet\b)+/i)
-    .some((clause) => pattern.test(clause) && !explicitClaimNegationPattern.test(clause));
-}
+const inventedBiographyPattern = reportDetectors.inventedBiography;
+const categoricalBehaviorPattern = reportDetectors.categoricalBehavior;
+const unsupportedScenarioPattern = reportDetectors.unsupportedScenario;
+const otherPersonInnerLifePattern = reportDetectors.otherPersonInnerLife;
+const contextInferencePattern = reportDetectors.contextInference;
+const unsafeClinicalPattern = reportDetectors.unsafeClinical;
+const signsOnlyLeakagePattern = reportDetectors.signsOnlyLeakage;
+const unnecessaryOrbPrecisionPattern = reportDetectors.unnecessaryOrbPrecision;
+const impliedNatalActivationPattern = reportDetectors.impliedNatalActivation;
+const personalActivationQualitativeOverreachPattern = reportDetectors.personalActivationQualitativeOverreach;
+const aspectChainInventionPattern = reportDetectors.aspectChainInvention;
+const rulershipAsAspectPattern = reportDetectors.rulershipAsAspect;
+const genericDispositorChainPattern = reportDetectors.genericDispositorChain;
+const privilegedPerceptionPattern = reportDetectors.privilegedPerception;
+const categoricalCertaintyOrChangePattern = reportDetectors.categoricalCertaintyOrChange;
 
 export function evaluateReportDeterministically(
   result: ReportLike,

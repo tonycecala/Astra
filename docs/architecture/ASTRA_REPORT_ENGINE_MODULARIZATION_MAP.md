@@ -9,7 +9,7 @@
 | Responsibility | Current or target owner | Boundary |
 | --- | --- | --- |
 | Relationship-context normalization | `report/relationshipContext.ts` | Converts untrusted request context to typed, neutral fields. |
-| Editable prompt and evaluation policy | `rules/report-policies.json` + `report/rules/catalog.ts` | Static, schema-validated editorial data. |
+| Editable prompt and evaluation policy | `rules/report-policies.json` + `report/rules/catalog.ts` + `report/promptPolicies.ts` | Static, schema-validated editorial data with context-aware assembly. |
 | Chart normalization and structural facts | existing dedicated modules | Pure astrological calculation. |
 | Meaning-complex graph and views | existing dedicated modules | Evidence ranking and deterministic chapter assignment. |
 | Section evidence cards | `index.ts`, pending extraction | Converts selected complexes into writer-ready evidence. |
@@ -30,6 +30,7 @@
 
 1. Relationship-context normalization.
 2. Prompt voice, safety, evidence, chapter-closing, and Phase 5 threshold policy into the schema-validated catalog.
+3. Relationship-context application, report-level voice planning, chapter-role ownership, evidence ownership, and focused safety boundaries into `report/promptPolicies.ts`.
 
 ## Next safe seams
 
