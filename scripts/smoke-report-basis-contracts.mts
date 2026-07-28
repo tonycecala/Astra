@@ -1,7 +1,9 @@
 import {
   createAstrologyReportRequestSchema,
-  reportChartBasisSnapshotSchema
+  reportChartBasisSnapshotSchema,
+  type ReportChartSourceSnapshot
 } from "@astra/contracts";
+import { synastryBasisForPerspective } from "../apps/astra-web/lib/synastryPerspective";
 
 const chartSettings = { zodiacMode: "tropical", houseSystem: "whole-sign" } as const;
 
@@ -22,6 +24,33 @@ if (missingSettings.success) {
   throw new Error("New report requests must provide Zodiac and Houses explicitly.");
 }
 
+const reciprocalCreate = createAstrologyReportRequestSchema.parse({
+  chartRequestId: "chart_primary",
+  reportType: "synastry",
+  reportBasis: {
+    type: "synastry",
+    chartSettings,
+    partnerChartRequestId: "chart_comparison",
+    perspective: "comparison"
+  }
+});
+if (reciprocalCreate.reportBasis.type !== "synastry" || reciprocalCreate.reportBasis.perspective !== "comparison") {
+  throw new Error("Synastry must accept an explicit comparison-reader perspective.");
+}
+
+const defaultPerspectiveCreate = createAstrologyReportRequestSchema.parse({
+  chartRequestId: "chart_primary",
+  reportType: "synastry",
+  reportBasis: {
+    type: "synastry",
+    chartSettings,
+    partnerChartRequestId: "chart_comparison"
+  }
+});
+if (defaultPerspectiveCreate.reportBasis.type !== "synastry" || defaultPerspectiveCreate.reportBasis.perspective !== "primary") {
+  throw new Error("Existing Synastry requests must keep the original primary-reader default.");
+}
+
 const source = {
   chartRequestId: "chart_primary",
   subjectType: "self",
@@ -34,6 +63,17 @@ const source = {
     birthTimeKnown: true
   }
 } as const;
+
+const comparison: ReportChartSourceSnapshot = {
+  ...source,
+  chartRequestId: "chart_comparison",
+  subjectType: "ally",
+  subjectName: "Comparison"
+};
+const reciprocalBasis = synastryBasisForPerspective({ primary: source, comparison, perspective: "comparison" });
+if (reciprocalBasis.primary.chartRequestId !== comparison.chartRequestId || reciprocalBasis.comparison.chartRequestId !== source.chartRequestId) {
+  throw new Error("Comparison-reader Synastry must swap the persisted report basis without changing either chart.");
+}
 
 const progressedWithoutDate = reportChartBasisSnapshotSchema.safeParse({
   schemaVersion: 1,

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-import { formatReportParagraphs } from "../apps/astra-web/lib/report-paragraphs";
+import { formatReportParagraphs, stripTrailingMarkdownRule } from "../apps/astra-web/lib/report-paragraphs";
 
 const sixParagraphs = [
   "First idea stays first.",
@@ -22,5 +22,8 @@ assert.equal(split.replace(/\n\n/g, " "), oneParagraph);
 const twoParagraphs = "You know what matters.\n\nYou act on it.";
 assert.equal(formatReportParagraphs(twoParagraphs), twoParagraphs);
 assert.equal(formatReportParagraphs("  You   keep   the meaning.  "), "You keep the meaning.");
+assert.equal(stripTrailingMarkdownRule("The chapter closes here. ---"), "The chapter closes here.");
+assert.equal(stripTrailingMarkdownRule("The chapter closes here.\n\n---"), "The chapter closes here.");
+assert.equal(stripTrailingMarkdownRule("A mid-chapter --- marker stays in the sentence."), "A mid-chapter --- marker stays in the sentence.");
 
 console.log("Report prose preserves meaning while rendering in at most three balanced paragraphs.");

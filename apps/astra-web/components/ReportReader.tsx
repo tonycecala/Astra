@@ -5,7 +5,7 @@ import { buildAstrologyChartSnapshot, buildAstrologyReportSectionEvidence } from
 import type { AstrologyReportRequest, AstrologyReportResult } from "@astra/contracts";
 import { ui } from "../lib/i18n";
 import { deepChapterSubtitles } from "../lib/report-deep-presentation";
-import { formatReportParagraphs } from "../lib/report-paragraphs";
+import { formatReportParagraphs, stripTrailingMarkdownRule } from "../lib/report-paragraphs";
 import { reportDisplayTitle, reportFamilyLabel } from "../lib/report-display";
 import { ReportChartPlate } from "./ReportChartPlate";
 import { ReportFeedbackForm } from "./ReportFeedbackForm";
@@ -34,6 +34,7 @@ export function ReportReader({
   const reportMarkdown = reportMarkdownFrom(report, request, title, subject.name, evidenceByTitle, sectionSubtitles);
   const sectionMarkdown = reportSectionsMarkdownFrom(report, request, evidenceByTitle);
   const chartSnapshot = buildReportChartSnapshot(request);
+  const reviewNotes = report.generationMetadata?.reviewNotes ?? [];
 
   return (
     <section className="reportReaderShell" aria-label={shared ? ui.library.sharedReportLabel : ui.library.selectedReportLabel}>
@@ -92,6 +93,13 @@ export function ReportReader({
 
       <article className="reportReaderDocument">
         <ReportChartPlate request={request} chart={chartSnapshot} />
+        {reviewNotes.length ? (
+          <details className="reportReviewNotes">
+            <summary>{ui.library.reportReviewNotesTitle} · {ui.library.reportReviewNotesCount(reviewNotes.length)}</summary>
+            <p>{ui.library.reportReviewNotesDescription}</p>
+            <ul>{reviewNotes.map((note, index) => <li key={`${note.code}-${index}`}>{note.message}</li>)}</ul>
+          </details>
+        ) : null}
         {debug ? <ReportDebugDetails report={report} request={request} /> : null}
         {report.sections.length ? (
           <ReportMarkdown markdown={sectionMarkdown} evidenceByTitle={evidenceByTitle} sectionSubtitles={sectionSubtitles} />
@@ -244,7 +252,7 @@ const legacyCustomerCopyPatterns = [
 
 function customerFacingReportBody(body: string) {
   const cleaned = legacyCustomerCopyPatterns.reduce((value, pattern) => value.replace(pattern, ""), body);
-  return formatReportParagraphs(cleaned);
+  return stripTrailingMarkdownRule(formatReportParagraphs(cleaned));
 }
 
 function reportMarkdownFrom(

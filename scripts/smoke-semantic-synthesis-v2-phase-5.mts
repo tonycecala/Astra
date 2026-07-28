@@ -174,17 +174,29 @@ assert.equal(evaluateReportDeterministically(orbPrecisionFailure, {
   historicalControl: true
 }).hardGateIssues.includes("unnecessary orb precision"), false);
 
-const orbDisclaimerFailure = report("deep", {
+const orbMetaphorPass = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Drive"
+    ? { ...section, body: "Your Moon opposition to their Sun can land at exactly the wrong angle. The contact has intensity, but no numerical orb or exactness claim is being made." }
+    : section)
+});
+assert.equal(evaluateReportDeterministically(orbMetaphorPass, {
+  key: "orb-metaphor/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("unnecessary orb precision"), false);
+
+const orbDisclaimerPass = report("deep", {
   sections: deep.sections.map((section) => section.title === "Gifts"
     ? { ...section, body: "Uranus conjunct Neptune is present, without any claim about its intensity or precision." }
     : section)
 });
-assert.ok(evaluateReportDeterministically(orbDisclaimerFailure, {
+assert.equal(evaluateReportDeterministically(orbDisclaimerPass, {
   key: "orb-disclaimer/deep",
   family: "deep",
   canonicalIdentityHash: identityHash,
   contextIsUnspecified: true
-}).hardGateIssues.includes("unnecessary orb precision"));
+}).hardGateIssues.includes("unnecessary orb precision"), false);
 
 const genericDispositorChainFailure = report("deep", {
   sections: deep.sections.map((section) => section.title === "Gifts"

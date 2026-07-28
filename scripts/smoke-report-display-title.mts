@@ -62,6 +62,22 @@ if (reportDisplayName(synastryRequest) !== "Tony Cecala + Brandi McCulley") {
   throw new Error("Synastry display names must include both people.");
 }
 
+const synastryBasis = synastryRequest.reportBasis;
+if (!synastryBasis?.partner) {
+  throw new Error("Synastry display fixtures require both persisted chart sources.");
+}
+const reciprocalSynastryRequest = {
+  ...synastryRequest,
+  reportBasis: {
+    ...synastryBasis,
+    primary: synastryBasis.partner,
+    partner: synastryBasis.primary
+  }
+} as AstrologyReportRequest;
+if (reportDisplayTitle(reciprocalSynastryRequest, "Brandi McCulley — Synastry Report") !== "Brandi McCulley + Tony Cecala — Synastry Report") {
+  throw new Error("A reciprocal Synastry reading must retain the selected reader first in its separate saved title.");
+}
+
 const legacySynastryRequest = {
   reportType: "synastry",
   subjectName: "Tony Cecala + Cheyenne Autumn",

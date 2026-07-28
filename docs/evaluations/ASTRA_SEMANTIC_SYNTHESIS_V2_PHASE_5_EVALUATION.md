@@ -1,7 +1,7 @@
 ---
 title: Astra Semantic Synthesis V2 Phase 5 Evaluation
 status: complete
-decision: HOLD
+decision: practical-go-phase-5.1
 type: evaluation
 project: Astra Clean Start
 created: 2026-07-26
@@ -12,11 +12,14 @@ evaluation_version: 2.0.0-phase-5
 
 # Astra Semantic Synthesis V2 Phase 5 Evaluation
 
-## Decision
+## Original Phase 5 decision (historical)
 
 **HOLD.**
 
 The deterministic architecture and independent repetition gate pass. The report-writing path improves materially but remains below the semantic and context-safety thresholds. Phase 6 heading and presentation work remains separate and was not started.
+
+The later Phase 5.1 practical GO is the current baseline; the rejected Phase
+5.2 experiment did not replace it.
 
 ## Evaluated controls
 
@@ -1268,3 +1271,36 @@ no longer send an orphaned Core report to the pair evaluator. Deterministic
 fixtures cover both incomplete rejection and complete-pair acceptance.
 
 No Phase 6 work was started.
+
+## Appendix: Synastry V2 Alpha follow-through — 2026-07-27
+
+Decision: **completed; this does not reopen Phase 5.2.**
+
+Synastry now applies the Phase 5.1 lesson at the packet boundary while
+preserving the prior connection-first editorial contract. Its private packet
+selects two or three named interaspects per fixed chapter, retains
+chapter-specific ownership and a pair-level time-certainty boundary, and keeps
+raw degrees, orb values, natal placements, graph traversal, provenance, and
+mechanical claim markers out of the writer input. The public prose is again
+anchored in a warm, reciprocal connection rather than a generic Sun-sign
+comparison.
+
+Alpha policy is intentionally practical: after one provider attempt, a
+parseable report that passes genuine factual, privacy, and relationship-safety
+checks is retained. Non-blocking review findings are recorded in private
+generation metadata and shown as an Alpha review note; they do not cause
+automatic prose retries or discard otherwise useful work. Numeric orb claims
+remain checked, while symbolic intensity is not misclassified as a precision
+claim.
+
+The same report can now be requested from either participant's perspective.
+The reciprocal reading swaps the stored report basis and writer address while
+leaving the interaspect calculation and fixed headings unchanged, so it is a
+separate saved report rather than an overwrite. Terminal writer `---` markers
+are discarded before rendering, avoiding both raw dashes and duplicate visual
+rules. Deterministic catalog/API, report-basis, report-paragraph, engine,
+quality, lint, typecheck, build, diff, and rendered-browser checks passed.
+
+The complete durable scope, policy, validation record, and next operator action
+are in `docs/inbox-astra/completed/ASTRA_SYNASTRY_V2_ALPHA_HANDOFF.md` and
+`docs/architecture/ASTRA_SYNASTRY_V2.md`.

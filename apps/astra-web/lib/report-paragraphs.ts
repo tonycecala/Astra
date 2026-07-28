@@ -13,6 +13,11 @@ export function formatReportParagraphs(value: string) {
   return balancedGroups(paragraphs, 3).map((group) => group.join(" ")).join("\n\n");
 }
 
+/** Report sections own their headings and evidence boundary, so a writer's terminal rule is redundant. */
+export function stripTrailingMarkdownRule(value: string) {
+  return value.replace(/(?:\s|^)---\s*$/, "").trimEnd();
+}
+
 function splitSingleParagraph(paragraph: string) {
   const sentences = paragraph
     .split(/(?<=[.!?])\s+(?=[A-Z0-9"'*])/)

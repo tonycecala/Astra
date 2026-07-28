@@ -163,7 +163,7 @@ const completed = await buildAstrologyReportResultAsync(request, {
 });
 assert.equal(completed.status, "completed");
 assert.equal(completed.generationMetadata?.orchestration, "sectioned-v1");
-assert.equal(completed.generationMetadata?.attemptCount, 12);
+assert.equal(completed.generationMetadata?.attemptCount, 10);
 assert.equal(completed.generationMetadata?.reasoningEffort, "none");
 assert.equal(completed.generationMetadata?.reasoningTokens, 0);
 assert.equal(completed.generationMetadata?.thesis?.attemptCount, 1);
@@ -172,31 +172,24 @@ assert.equal(completed.generationMetadata?.readability?.algorithm, "flesch-kinca
 assert.equal(completed.generationMetadata?.readability?.targetGradeMin, 6);
 assert.equal(completed.generationMetadata?.readability?.targetGradeMax, 7);
 assert.equal(completed.generationMetadata?.readability?.sections.length, 9);
-assert.ok((completed.generationMetadata?.readability?.overall.wordCount ?? 0) >= 2625);
-assert.equal(completed.generationMetadata?.sections?.find((section) => section.title === "Emotions")?.attemptCount, 2);
+assert.ok((completed.generationMetadata?.readability?.overall.wordCount ?? 0) >= 2300);
+assert.equal(completed.generationMetadata?.sections?.find((section) => section.title === "Emotions")?.attemptCount, 1);
 const emotionsMetadata = completed.generationMetadata?.sections?.find((section) => section.title === "Emotions");
-assert.equal(emotionsMetadata?.failures?.length, 1);
-assert.equal(emotionsMetadata?.failures?.[0]?.attempt, 1);
-assert.equal(emotionsMetadata?.failures?.[0]?.issues[0]?.code, "below_minimum");
-assert.match(emotionsMetadata?.failures?.[0]?.issues[0]?.message ?? "", /must be at least 300 words/);
-assert.equal(emotionsMetadata?.failures?.[0]?.inputTokens, 1);
-assert.equal(emotionsMetadata?.failures?.[0]?.reasoningTokens, 0);
-assert.equal(emotionsMetadata?.failures?.[0]?.finishReason, "stop");
-assert.ok((emotionsMetadata?.failures?.[0]?.latencyMs ?? -1) >= 0);
-assert.match(emotionsMetadata?.failures?.[0]?.rejectedText ?? "", /^Emotions asks/);
-assert.equal("text" in (emotionsMetadata?.failures?.[0] ?? {}), false);
+assert.deepEqual(emotionsMetadata?.failures, []);
+assert.equal(emotionsMetadata?.reviewNotes?.[0]?.code, "below_minimum");
+assert.match(emotionsMetadata?.reviewNotes?.[0]?.message ?? "", /must be at least 300 words/);
 const workMetadata = completed.generationMetadata?.sections?.find((section) => section.title === "Work");
-assert.equal(workMetadata?.failures?.length, 1);
+assert.equal(workMetadata?.attemptCount, 1);
 assert.equal(workMetadata?.failures?.[0]?.issues[0]?.code, "provider_no_text");
-assert.equal(workMetadata?.failures?.[0]?.inputTokens, undefined);
+assert.equal(workMetadata?.reviewNotes?.[0]?.code, "provider_no_text");
 assert.deepEqual(completed.generationMetadata?.thesis?.failures, []);
 assert.equal(provider.calls.get("Thesis"), 1);
-assert.equal(provider.calls.get("Emotions"), 2);
-assert.equal(provider.calls.get("Work"), 2);
+assert.equal(provider.calls.get("Emotions"), 1);
+assert.equal(provider.calls.get("Work"), 1);
 for (const title of headings.filter((heading) => heading !== "Emotions" && heading !== "Work")) assert.equal(provider.calls.get(title), 1);
 assert.equal(provider.maxActive(), 3);
-assert.match(provider.prompts.get("Emotions")?.[1] ?? "", /must be at least 300 words/);
-assert.doesNotMatch(provider.prompts.get("Work")?.[1] ?? "", /## Emotions/);
+assert.ok(completed.generationMetadata?.reviewNotes?.some((note) => note.code === "below_minimum"));
+assert.ok(completed.generationMetadata?.reviewNotes?.some((note) => note.code === "provider_no_text"));
 assert.match(provider.prompts.get("Integration")?.[0] ?? "", /not a forecast/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /VOICE MODE: PLAINSPOKEN/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Astra supplies the chapter heading/);
@@ -249,33 +242,16 @@ for (const model of ["google/gemini-2.5-flash-lite", "moonshotai/kimi-k2.5"]) {
 }
 
 const timingProvider = sectionedProvider({ timingFailure: true });
-const falseTiming = await buildAstrologyReportResultAsync(request, { env, fetchImpl: timingProvider.fetchImpl });
-assert.equal(falseTiming.status, "failed");
-assert.ok(falseTiming.generationMetadata?.sections?.some((section) => section.acceptedText?.length));
-assert.match(falseTiming.error ?? "", /must not imply current timing|must not imply current timing without dated evidence|must not imply current timing/);
-assert.equal(falseTiming.generationMetadata?.orchestration, "sectioned-v1");
-assert.equal(falseTiming.generationMetadata?.attemptCount, 12);
-assert.equal(falseTiming.generationMetadata?.sections?.length, 9);
-const failedIntegration = falseTiming.generationMetadata?.sections?.find((section) => section.title === "Integration");
-assert.equal(failedIntegration?.attemptCount, 3);
-assert.equal(failedIntegration?.failures?.length, 3);
-assert.deepEqual(failedIntegration?.failures?.map((failure) => failure.issues[0]?.code), ["natal_timing", "natal_timing", "natal_timing"]);
-assert.ok(failedIntegration?.failures?.every((failure) => /This natal pattern is currently active/.test(failure.rejectedText ?? "")));
-assert.doesNotMatch(JSON.stringify(falseTiming.sections), /This natal pattern is currently active/);
-assert.ok((falseTiming.generationMetadata?.estimatedSpend ?? -1) >= 0);
-assert.equal(timingProvider.calls.get("Integration"), 3);
+const retainedTiming = await buildAstrologyReportResultAsync(request, { env, fetchImpl: timingProvider.fetchImpl });
+assert.equal(retainedTiming.status, "completed");
+assert.equal(retainedTiming.generationMetadata?.attemptCount, 10);
+const retainedIntegration = retainedTiming.generationMetadata?.sections?.find((section) => section.title === "Integration");
+assert.equal(retainedIntegration?.attemptCount, 1);
+assert.equal(retainedIntegration?.reviewNotes?.[0]?.code, "natal_timing");
+assert.match(retainedTiming.sections.find((section) => section.title === "Integration")?.body ?? "", /This natal pattern is currently active/);
+assert.ok((retainedTiming.generationMetadata?.estimatedSpend ?? -1) >= 0);
+assert.equal(timingProvider.calls.get("Integration"), 1);
 for (const title of headings.filter((heading) => heading !== "Integration")) assert.equal(timingProvider.calls.get(title), 1);
-
-const subjectLabelProvider = sectionedProvider({ thirdPersonFailure: true });
-const correctedSubjectLabel = await buildAstrologyReportResultAsync(request, { env, fetchImpl: subjectLabelProvider.fetchImpl });
-assert.equal(correctedSubjectLabel.status, "completed");
-assert.equal(correctedSubjectLabel.generationMetadata?.attemptCount, 11);
-const relationshipMetadata = correctedSubjectLabel.generationMetadata?.sections?.find((section) => section.title === "Relationships");
-assert.equal(relationshipMetadata?.attemptCount, 2);
-assert.equal(relationshipMetadata?.failures?.[0]?.issues[0]?.code, "third_person_subject");
-assert.match(relationshipMetadata?.failures?.[0]?.rejectedText ?? "", /This person tends to hide/);
-assert.match(subjectLabelProvider.prompts.get("Relationships")?.[1] ?? "", /address the report subject as you or your/);
-assert.match(correctedSubjectLabel.sections.find((section) => section.title === "Relationships")?.body ?? "", /The person you choose/);
 
 const unsafeRelationshipProvider = sectionedProvider({ unsafeRelationshipFirst: true });
 const strainedSafetyRequest = astrologyReportRequestSchema.parse({
@@ -283,12 +259,12 @@ const strainedSafetyRequest = astrologyReportRequestSchema.parse({
   id: "61111111-1111-4111-8111-000000000076",
   context: { relationshipContext: { status: "unspecified", condition: "strained", structure: "unspecified", intention: "discern", recency: "unspecified", partnerPronouns: null, notes: null } }
 });
-const correctedUnsafeRelationship = await buildAstrologyReportResultAsync(strainedSafetyRequest, { env, fetchImpl: unsafeRelationshipProvider.fetchImpl });
-assert.equal(correctedUnsafeRelationship.status, "completed");
-const unsafeRelationshipMetadata = correctedUnsafeRelationship.generationMetadata?.sections?.find((section) => section.title === "Relationships");
-assert.equal(unsafeRelationshipMetadata?.attemptCount, 2);
-assert.match(unsafeRelationshipMetadata?.failures?.[0]?.issues[0]?.message ?? "", /without saying it is conditional on safety/);
-assert.doesNotMatch(correctedUnsafeRelationship.sections.find((section) => section.title === "Relationships")?.body ?? "", /confront them/);
+const retainedUnsafeRelationship = await buildAstrologyReportResultAsync(strainedSafetyRequest, { env, fetchImpl: unsafeRelationshipProvider.fetchImpl });
+assert.equal(retainedUnsafeRelationship.status, "completed");
+const unsafeRelationshipMetadata = retainedUnsafeRelationship.generationMetadata?.sections?.find((section) => section.title === "Relationships");
+assert.equal(unsafeRelationshipMetadata?.attemptCount, 1);
+assert.ok(unsafeRelationshipMetadata?.reviewNotes?.some((note) => /conditional on safety/.test(note.message)));
+assert.match(retainedUnsafeRelationship.sections.find((section) => section.title === "Relationships")?.body ?? "", /confront them/);
 
 const structureOtherRequest = astrologyReportRequestSchema.parse({
   ...request,
@@ -301,8 +277,8 @@ const correctedStructureOther = sectionedProvider({
 const structureOtherResult = await buildAstrologyReportResultAsync(structureOtherRequest, { env, fetchImpl: correctedStructureOther.fetchImpl });
 assert.equal(structureOtherResult.status, "completed");
 const structureOtherMetadata = structureOtherResult.generationMetadata?.sections?.find((section) => section.title === "Relationships");
-assert.equal(structureOtherMetadata?.attemptCount, 2);
-assert.match(structureOtherMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /specific quality or type from structure other|reader biography|another person's vulnerabilities/);
+assert.equal(structureOtherMetadata?.attemptCount, 1);
+assert.match(structureOtherMetadata?.reviewNotes?.map((issue) => issue.message).join(" ") ?? "", /specific quality or type from structure other|reader biography|another person's vulnerabilities/);
 
 const openToConnectionRequest = astrologyReportRequestSchema.parse({
   ...request,
@@ -315,8 +291,8 @@ const correctedOpenToConnection = sectionedProvider({
 const openToConnectionResult = await buildAstrologyReportResultAsync(openToConnectionRequest, { env, fetchImpl: correctedOpenToConnection.fetchImpl });
 assert.equal(openToConnectionResult.status, "completed");
 const openToConnectionMetadata = openToConnectionResult.generationMetadata?.sections?.find((section) => section.title === "Relationships");
-assert.equal(openToConnectionMetadata?.attemptCount, 2);
-assert.match(openToConnectionMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /turns openness into active dating or an undefined structure/);
+assert.equal(openToConnectionMetadata?.attemptCount, 1);
+assert.match(openToConnectionMetadata?.reviewNotes?.map((issue) => issue.message).join(" ") ?? "", /turns openness into active dating or an undefined structure/);
 
 const partneredConditionRequest = astrologyReportRequestSchema.parse({
   ...request,
@@ -329,8 +305,8 @@ const correctedPartneredCondition = sectionedProvider({
 const partneredConditionResult = await buildAstrologyReportResultAsync(partneredConditionRequest, { env, fetchImpl: correctedPartneredCondition.fetchImpl });
 assert.equal(partneredConditionResult.status, "completed");
 const partneredConditionMetadata = partneredConditionResult.generationMetadata?.sections?.find((section) => section.title === "Relationships");
-assert.equal(partneredConditionMetadata?.attemptCount, 2);
-assert.match(partneredConditionMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /qualitative relationship condition from partnered status/);
+assert.equal(partneredConditionMetadata?.attemptCount, 1);
+assert.match(partneredConditionMetadata?.reviewNotes?.map((issue) => issue.message).join(" ") ?? "", /qualitative relationship condition from partnered status/);
 
 const categoricalProvider = sectionedProvider({
   invalidFirst: { "Blind Spots": "You act before you think, and most of the time it works. The useful move is to trust your first read." }
@@ -338,8 +314,8 @@ const categoricalProvider = sectionedProvider({
 const correctedCategorical = await buildAstrologyReportResultAsync(request, { env, fetchImpl: categoricalProvider.fetchImpl });
 assert.equal(correctedCategorical.status, "completed");
 const categoricalMetadata = correctedCategorical.generationMetadata?.sections?.find((section) => section.title === "Blind Spots");
-assert.equal(categoricalMetadata?.attemptCount, 2);
-assert.match(categoricalMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /categorical behavior claim/);
+assert.equal(categoricalMetadata?.attemptCount, 1);
+assert.match(categoricalMetadata?.reviewNotes?.map((issue) => issue.message).join(" ") ?? "", /categorical behavior claim/);
 
 const boundedInterpretationProvider = sectionedProvider({
   invalidFirst: {
@@ -349,8 +325,8 @@ const boundedInterpretationProvider = sectionedProvider({
 const correctedBoundedInterpretation = await buildAstrologyReportResultAsync(request, { env, fetchImpl: boundedInterpretationProvider.fetchImpl });
 assert.equal(correctedBoundedInterpretation.status, "completed");
 const boundedInterpretationMetadata = correctedBoundedInterpretation.generationMetadata?.sections?.find((section) => section.title === "Growth");
-assert.equal(boundedInterpretationMetadata?.attemptCount, 2);
-const boundedInterpretationIssues = boundedInterpretationMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "";
+assert.equal(boundedInterpretationMetadata?.attemptCount, 1);
+const boundedInterpretationIssues = boundedInterpretationMetadata?.reviewNotes?.map((issue) => issue.message).join(" ") ?? "";
 assert.match(boundedInterpretationIssues, /unsupported current timing or pressure/);
 assert.match(boundedInterpretationIssues, /rewrites a rulership or dispositor chain as an aspect/);
 assert.match(boundedInterpretationIssues, /privileged or accurate social perception/);
@@ -362,8 +338,8 @@ const unsupportedRulershipProvider = sectionedProvider({
 const correctedUnsupportedRulership = await buildAstrologyReportResultAsync(request, { env, fetchImpl: unsupportedRulershipProvider.fetchImpl });
 assert.equal(correctedUnsupportedRulership.status, "completed");
 const unsupportedRulershipMetadata = correctedUnsupportedRulership.generationMetadata?.sections?.find((section) => section.title === "Work");
-assert.equal(unsupportedRulershipMetadata?.attemptCount, 2);
-assert.match(unsupportedRulershipMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /Unsupported astrology relationship/);
+assert.equal(unsupportedRulershipMetadata?.attemptCount, 1);
+assert.match(unsupportedRulershipMetadata?.reviewNotes?.map((issue) => issue.message).join(" ") ?? "", /Unsupported astrology relationship/);
 
 const naturalLanguageAspectProvider = sectionedProvider({
   invalidFirst: { Work: "Moon opposition to Mercury makes this work pattern more complicated." }
@@ -371,8 +347,8 @@ const naturalLanguageAspectProvider = sectionedProvider({
 const correctedNaturalLanguageAspect = await buildAstrologyReportResultAsync(request, { env, fetchImpl: naturalLanguageAspectProvider.fetchImpl });
 assert.equal(correctedNaturalLanguageAspect.status, "completed");
 const naturalLanguageAspectMetadata = correctedNaturalLanguageAspect.generationMetadata?.sections?.find((section) => section.title === "Work");
-assert.equal(naturalLanguageAspectMetadata?.attemptCount, 2);
-assert.match(naturalLanguageAspectMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /Unsupported astrology claim/);
+assert.equal(naturalLanguageAspectMetadata?.attemptCount, 1);
+assert.match(naturalLanguageAspectMetadata?.reviewNotes?.map((issue) => issue.message).join(" ") ?? "", /Unsupported astrology claim/);
 
 const compoundAspectProvider = sectionedProvider({
   invalidFirst: { Work: "Moon also forms a conjunction with Uranus and Neptune, which changes this work pattern." }
@@ -380,8 +356,8 @@ const compoundAspectProvider = sectionedProvider({
 const correctedCompoundAspect = await buildAstrologyReportResultAsync(request, { env, fetchImpl: compoundAspectProvider.fetchImpl });
 assert.equal(correctedCompoundAspect.status, "completed");
 const compoundAspectMetadata = correctedCompoundAspect.generationMetadata?.sections?.find((section) => section.title === "Work");
-assert.equal(compoundAspectMetadata?.attemptCount, 2);
-assert.match(compoundAspectMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /Unsupported astrology claim/);
+assert.equal(compoundAspectMetadata?.attemptCount, 1);
+assert.match(compoundAspectMetadata?.reviewNotes?.map((issue) => issue.message).join(" ") ?? "", /Unsupported astrology claim/);
 
 const chapterScopedEvidence = buildAstrologyReportSectionEvidence(request, headings);
 const workEvidenceText = chapterScopedEvidence
@@ -400,17 +376,18 @@ const crossChapterClaimProvider = sectionedProvider({
 const correctedCrossChapterClaim = await buildAstrologyReportResultAsync(request, { env, fetchImpl: crossChapterClaimProvider.fetchImpl });
 assert.equal(correctedCrossChapterClaim.status, "completed");
 const crossChapterClaimMetadata = correctedCrossChapterClaim.generationMetadata?.sections?.find((section) => section.title === "Work");
-assert.equal(crossChapterClaimMetadata?.attemptCount, 2);
-assert.match(crossChapterClaimMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /Unsupported astrology claim/);
+assert.equal(crossChapterClaimMetadata?.attemptCount, 1);
+assert.match(crossChapterClaimMetadata?.reviewNotes?.map((issue) => issue.message).join(" ") ?? "", /Unsupported astrology claim/);
 
-const genderedExampleProvider = sectionedProvider({
+const naturalPronounExampleProvider = sectionedProvider({
   invalidFirst: { "Blind Spots": "She got quiet after you mentioned the schedule. That is an observation, but it should not become a conclusion about her motives." }
 });
-const correctedGenderedExample = await buildAstrologyReportResultAsync(openToConnectionRequest, { env, fetchImpl: genderedExampleProvider.fetchImpl });
-assert.equal(correctedGenderedExample.status, "completed");
-const genderedExampleMetadata = correctedGenderedExample.generationMetadata?.sections?.find((section) => section.title === "Blind Spots");
-assert.equal(genderedExampleMetadata?.attemptCount, 2);
-assert.match(genderedExampleMetadata?.failures?.[0]?.issues.map((issue) => issue.message).join(" ") ?? "", /gender pronoun that was not supplied/);
+const acceptedNaturalPronounExample = await buildAstrologyReportResultAsync(openToConnectionRequest, { env, fetchImpl: naturalPronounExampleProvider.fetchImpl });
+assert.equal(acceptedNaturalPronounExample.status, "completed");
+const naturalPronounExampleMetadata = acceptedNaturalPronounExample.generationMetadata?.sections?.find((section) => section.title === "Blind Spots");
+assert.equal(naturalPronounExampleMetadata?.attemptCount, 1);
+assert.deepEqual(naturalPronounExampleMetadata?.failures, []);
+assert.match(acceptedNaturalPronounExample.sections.find((section) => section.title === "Blind Spots")?.body ?? "", /She got quiet after you mentioned the schedule/);
 
 const stockClosingProvider = sectionedProvider({
   invalidFirst: { Work: "The task isn't to slow down. It's to choose one priority and finish it." }
@@ -932,4 +909,4 @@ const denseReading = measureReportReadability("Interpersonal differentiation req
 assert.ok(simpleReading.fleschKincaidGrade < denseReading.fleschKincaidGrade);
 assert.ok(simpleReading.fleschReadingEase > denseReading.fleschReadingEase);
 
-console.log("Sectioned Deep Report concurrency, retry, retained prose, Plainspoken readability, depth, metadata, and natal timing checks passed.");
+console.log("Sectioned Deep Report single-attempt retention, review-note, Plainspoken readability, depth, metadata, and natal timing checks passed.");

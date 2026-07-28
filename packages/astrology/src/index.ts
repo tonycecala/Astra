@@ -221,7 +221,7 @@ export const reportModelProfileModels: Record<ReportModelProfile, string[]> = {
   smoke: ["openai/gpt-5.6-luna"],
   debug: ["anthropic/claude-haiku-4.5"],
   debug_alt: ["google/gemini-3.5-flash"],
-  production: ["anthropic/claude-sonnet-5", "google/gemini-3.5-flash"],
+  production: ["anthropic/claude-sonnet-5", "anthropic/claude-sonnet-4.6", "google/gemini-3.5-flash"],
   premium_bakeoff: [
     "anthropic/claude-sonnet-5",
     "openai/gpt-5.6-terra",
@@ -399,6 +399,7 @@ type ValidatedWriterPart = {
   finishReason?: string;
   latencyMs: number;
   failures: ReportGenerationRetryFailure[];
+  reviewNotes: ReportGenerationRetryIssue[];
 };
 
 type DeepSectionGeneration = ValidatedWriterPart & {
@@ -438,13 +439,6 @@ class SectionedCoreReportGenerationError extends Error {
   constructor(message: string, readonly generation: SectionedCoreFailureGeneration) {
     super(message);
     this.name = "SectionedCoreReportGenerationError";
-  }
-}
-
-class MonolithicReportGenerationError extends Error {
-  constructor(message: string, readonly generation: ValidatedWriterPart) {
-    super(message);
-    this.name = "MonolithicReportGenerationError";
   }
 }
 
@@ -856,6 +850,16 @@ export function resolveAstrologyReportGenerationConfigForRequest(
   const modelPilot = request.context && typeof request.context === "object" && !Array.isArray(request.context)
     ? request.context.modelPilot
     : undefined;
+  if (request.reportType === "synastry" &&
+    config.reportWriter === DEBUG_MODEL_REPORT_WRITER &&
+    config.reportModelProfile === "production" &&
+    !env[ASTRA_REPORT_MODEL_ENV]?.trim()) {
+    return {
+      ...config,
+      reportModelProvider: OPENROUTER_REPORT_MODEL_PROVIDER,
+      reportModel: "anthropic/claude-sonnet-4.6"
+    };
+  }
   if (request.reportType !== "identity" || modelPilot !== "gemini-intro-identity" || config.reportWriter !== DEBUG_MODEL_REPORT_WRITER) return config;
 
   return {
@@ -2190,7 +2194,11 @@ function crossChartSignals(
   left: ChartSignature,
   right: ChartSignature,
   labels: { left: string; right: string },
-  idPrefix: string
+  idPrefix: string,
+  selectionForContact: (source: string, target: string, aspect: string, orb: number) => Pick<RawReportSignal, "priority" | "sections"> = (source, target, _aspect, orb) => ({
+    priority: Number(Math.max(0.25, 1 - orb / 10).toFixed(3)),
+    sections: sectionsForAspect(source, target)
+  })
 ): RawReportSignal[] {
   const signals: RawReportSignal[] = [];
   for (const leftPoint of left.points) {
@@ -2199,6 +2207,7 @@ function crossChartSignals(
       if (!match) continue;
       const leftBody = bodyIdFor(leftPoint.body);
       const rightBody = bodyIdFor(rightPoint.body);
+      const selection = selectionForContact(leftBody, rightBody, match.type, match.orb);
       signals.push({
         id: `${idPrefix}_${leftBody}_${match.type}_${rightBody}`,
         label: `${labels.left} ${bodyDisplayName(leftBody)} ${match.type} ${labels.right} ${bodyDisplayName(rightBody)}`,
@@ -2208,12 +2217,49 @@ function crossChartSignals(
           `${rightPoint.degree} degrees ${rightPoint.sign}`,
           `orb ${match.orb} degrees`
         ],
-        priority: Number(Math.max(0.25, 1 - match.orb / 10).toFixed(3)),
-        sections: sectionsForAspect(leftBody, rightBody)
+        priority: selection.priority,
+        sections: selection.sections
       });
     }
   }
   return signals;
+}
+
+function synastryContactSelection(source: string, target: string, aspect: string, orb: number) {
+  const bodies = new Set([source, target]);
+  const has = (...names: string[]) => names.some((name) => bodies.has(name));
+  const harmonious = aspect === "sextile" || aspect === "trine";
+  const connective = harmonious || aspect === "conjunction";
+  const tensionBearing = aspect === "square" || aspect === "opposition" || aspect === "quincunx" ||
+    (aspect === "conjunction" && has("mars") && has("saturn", "pluto", "chiron"));
+  const basePriority = Math.max(0.25, 1 - orb / 10);
+
+  // Synastry has four editorial jobs, not the natal report's section map.  Assign
+  // each interaspect to one job so the writer can build a relationship narrative
+  // instead of letting the closest pressure contact leak into every chapter.
+  if (tensionBearing) {
+    return { priority: Number((basePriority + 1).toFixed(3)), sections: ["Friction"] };
+  }
+  if (connective && has("saturn") && has("moon", "venus", "sun")) {
+    return { priority: Number((basePriority + 0.75).toFixed(3)), sections: ["Stability"] };
+  }
+  if (connective && has("moon") && has("mercury")) {
+    return { priority: Number((basePriority + 0.7).toFixed(3)), sections: ["Communication"] };
+  }
+  if (connective && has("mercury") && !has("mars")) {
+    return { priority: Number((basePriority + 0.55).toFixed(3)), sections: ["Communication"] };
+  }
+  if (connective && has("moon", "sun", "venus", "mars", "mercury")) {
+    const reciprocalBonus = has("moon") && has("sun") ? 0.8 : has("venus", "mars") ? 0.7 : has("mercury", "mars") ? 0.6 : 0.5;
+    return { priority: Number((basePriority + reciprocalBonus).toFixed(3)), sections: ["Attraction"] };
+  }
+  if (has("saturn", "venus", "moon")) {
+    return { priority: Number((basePriority + 0.35).toFixed(3)), sections: ["Stability"] };
+  }
+  if (has("mercury", "moon")) {
+    return { priority: Number((basePriority + 0.3).toFixed(3)), sections: ["Communication"] };
+  }
+  return { priority: Number(basePriority.toFixed(3)), sections: ["Attraction"] };
 }
 
 function progressedReportSectionSignalCards(context: BasisChartContext, headings: readonly string[]) {
@@ -2241,14 +2287,20 @@ function progressedReportSectionSignalCards(context: BasisChartContext, headings
 
 function synastryReportSectionSignalCards(context: BasisChartContext, headings: readonly string[]) {
   if (!context.partner || !context.basis.partner) return buildReportSectionSignalCards(context.primary, headings);
-  const primaryName = context.basis.primary.subjectName;
-  const partnerName = context.basis.partner.subjectName;
-  const rawSignals = crossChartSignals(context.primary, context.partner, { left: primaryName, right: partnerName }, "synastry");
+  const primaryName = context.basis.primary.subjectName.trim().split(/\s+/)[0] || context.basis.primary.subjectName;
+  const partnerName = context.basis.partner.subjectName.trim().split(/\s+/)[0] || context.basis.partner.subjectName;
+  const rawSignals = crossChartSignals(
+    context.primary,
+    context.partner,
+    { left: primaryName, right: partnerName },
+    "synastry",
+    synastryContactSelection
+  );
   rawSignals.push({
     id: "synastry_sun_pair",
     label: `${primaryName} ${context.primary.sun.sign} Sun with ${partnerName} ${context.partner.sun.sign} Sun`,
     facts: [`Sun in ${context.primary.sun.sign}`, `Sun in ${context.partner.sun.sign}`, "two-chart Sun comparison"],
-    priority: 0.95,
+    priority: 0.1,
     sections: [...synastryReportHeadings]
   });
   const bothBirthTimesKnown = context.basis.primary.birthData.birthTimeKnown !== false &&
@@ -2573,10 +2625,10 @@ const paidReportSectionDepth: Partial<Record<AstrologyReportRequest["reportType"
     Integration: { target: "150-225", minimum: 140, maximum: 260 }
   },
   synastry: {
-    Attraction: { target: "200-275", minimum: 175, maximum: 315 },
-    Friction: { target: "200-275", minimum: 175, maximum: 315 },
-    Communication: { target: "200-275", minimum: 175, maximum: 315 },
-    Stability: { target: "200-275", minimum: 175, maximum: 315 }
+    Attraction: { target: "450-650", minimum: 350, maximum: 750 },
+    Friction: { target: "450-650", minimum: 350, maximum: 750 },
+    Communication: { target: "450-650", minimum: 350, maximum: 750 },
+    Stability: { target: "450-650", minimum: 350, maximum: 750 }
   }
 };
 
@@ -2697,7 +2749,8 @@ function partGenerationMetadata(part: ValidatedWriterPart) {
     ...part.usage,
     ...(part.finishReason ? { finishReason: part.finishReason } : {}),
     latencyMs: part.latencyMs,
-    failures: part.failures
+    failures: part.failures,
+    ...(part.reviewNotes.length ? { reviewNotes: part.reviewNotes } : {})
   };
 }
 
@@ -2708,7 +2761,8 @@ function sectionPartMetadata(part: DeepSectionGeneration): DeepSectionPartMetada
     attemptCount: part.attemptCount,
     usage: part.usage,
     latencyMs: part.latencyMs,
-    failures: part.failures
+    failures: part.failures,
+    reviewNotes: part.reviewNotes
   };
 }
 
@@ -2826,7 +2880,7 @@ function deepSectionFromText(text: string, request: AstrologyReportRequest, titl
 async function generateValidatedDeepThesis(request: AstrologyReportRequest, cards: ReportSectionSignalCard[], writer: PromptModelWriter) {
   const result = await retryModelPart<ModelUsage, ReportGenerationRetryIssue, ReportGenerationRetryFailure, ModelWriterResponse, string>({
     initialUsage: {},
-    maxAttempts: 3,
+    maxAttempts: 1,
     write: (previousErrors) => writer(
       [buildDeepThesisPrompt(request, cards), ...previousErrors.map((error) => `Previous error: ${error}`)].join("\n"),
       180
@@ -2835,6 +2889,7 @@ async function generateValidatedDeepThesis(request: AstrologyReportRequest, card
     value: (response) => normalizeDeepThesis(response.text),
     mergeUsage: mergeModelUsage,
     providerIssues: (error) => [providerRetryIssue(error)],
+    retainValidationIssues: true,
     retryFailure: (attempt, issues, latencyMs, response) => response
       ? retryFailure(attempt, issues, latencyMs, response.usage, response.finishReason, response.text)
       : retryFailure(attempt, issues, latencyMs)
@@ -2846,14 +2901,18 @@ async function generateValidatedDeepThesis(request: AstrologyReportRequest, card
       usage: result.state.usage,
       finishReason: result.finishReason,
       latencyMs: result.state.latencyMs,
-      failures: result.state.failures
+      failures: result.state.failures,
+      reviewNotes: result.state.reviewNotes as ReportGenerationRetryIssue[]
     };
   }
-  throw new DeepPartGenerationError(
-    `Governing thesis failed validation after retries: ${result.state.previousErrors.join("; ")}`,
-    "Governing thesis",
-    result.state
-  );
+  return {
+    thesis: "Let each chapter stay with its selected evidence and distinct practical question, while allowing the complete report to develop one coherent human picture.",
+    attemptCount: result.state.attemptCount,
+    usage: result.state.usage,
+    latencyMs: result.state.latencyMs,
+    failures: result.state.failures,
+    reviewNotes: result.state.failures.flatMap((failure) => failure.issues)
+  };
 }
 
 async function generateValidatedDeepSection(input: {
@@ -2865,16 +2924,28 @@ async function generateValidatedDeepSection(input: {
 }): Promise<DeepSectionGeneration> {
   const result = await retryModelPart<ModelUsage, ReportGenerationRetryIssue, ReportGenerationRetryFailure, ModelWriterResponse, AstrologyReportSection>({
     initialUsage: {},
-    maxAttempts: 3,
+    maxAttempts: 1,
     write: (previousErrors) => input.writer(buildDeepSectionPrompt({ ...input, previousErrors }), 1400),
     validate: (response) => validateDeepSection({ ...input, text: response.text }),
-    value: (response) => deepSectionFromText(
-      auditWriterClaimMarkers(response.text, input.card).prose,
-      input.request,
-      input.card.title
-    ),
+    value: (response) => {
+      try {
+        return deepSectionFromText(
+          auditWriterClaimMarkers(response.text, input.card).prose,
+          input.request,
+          input.card.title
+        );
+      } catch {
+        return writeDeterministicCoreReport(input).sections.find((section) => section.title === input.card.title) ?? {
+          id: sectionIdFromTitle(input.request.id, input.card.title, 0),
+          title: input.card.title,
+          body: "Astra could not preserve this model chapter, so it retained the deterministic chart reading instead.",
+          emphasis: "supporting" as const
+        };
+      }
+    },
     mergeUsage: mergeModelUsage,
     providerIssues: (error) => [providerRetryIssue(error)],
+    retainValidationIssues: true,
     retryFailure: (attempt, issues, latencyMs, response) => response
       ? retryFailure(attempt, issues, latencyMs, response.usage, response.finishReason, response.text)
       : retryFailure(attempt, issues, latencyMs)
@@ -2886,14 +2957,23 @@ async function generateValidatedDeepSection(input: {
       usage: result.state.usage,
       finishReason: result.finishReason,
       latencyMs: result.state.latencyMs,
-      failures: result.state.failures
+      failures: result.state.failures,
+      reviewNotes: result.state.reviewNotes as ReportGenerationRetryIssue[]
     };
   }
-  throw new DeepPartGenerationError(
-    `${input.card.title} failed validation after retries: ${result.state.previousErrors.join("; ")}`,
-    input.card.title,
-    result.state
-  );
+  return {
+    section: writeDeterministicCoreReport(input).sections.find((section) => section.title === input.card.title) ?? {
+      id: sectionIdFromTitle(input.request.id, input.card.title, 0),
+      title: input.card.title,
+      body: "Astra retained the deterministic chart reading because the model did not return usable chapter prose.",
+      emphasis: "supporting"
+    },
+    attemptCount: result.state.attemptCount,
+    usage: result.state.usage,
+    latencyMs: result.state.latencyMs,
+    failures: result.state.failures,
+    reviewNotes: result.state.failures.flatMap((failure) => failure.issues)
+  };
 }
 
 async function generateValidatedEnrichedCoreSection(input: {
@@ -2904,16 +2984,28 @@ async function generateValidatedEnrichedCoreSection(input: {
 }): Promise<DeepSectionGeneration> {
   const result = await retryModelPart<ModelUsage, ReportGenerationRetryIssue, ReportGenerationRetryFailure, ModelWriterResponse, AstrologyReportSection>({
     initialUsage: {},
-    maxAttempts: 3,
+    maxAttempts: 1,
     write: (previousErrors) => input.writer(buildEnrichedCoreSectionPrompt({ ...input, previousErrors }), 750),
     validate: (response) => validateEnrichedCoreSection({ ...input, text: response.text }),
-    value: (response) => deepSectionFromText(
-      auditWriterClaimMarkers(response.text, input.card).prose,
-      input.request,
-      input.card.title
-    ),
+    value: (response) => {
+      try {
+        return deepSectionFromText(
+          auditWriterClaimMarkers(response.text, input.card).prose,
+          input.request,
+          input.card.title
+        );
+      } catch {
+        return writeDeterministicCoreReport(input).sections.find((section) => section.title === input.card.title) ?? {
+          id: sectionIdFromTitle(input.request.id, input.card.title, 0),
+          title: input.card.title,
+          body: "Astra could not preserve this model chapter, so it retained the deterministic chart reading instead.",
+          emphasis: "supporting" as const
+        };
+      }
+    },
     mergeUsage: mergeModelUsage,
     providerIssues: (error) => [providerRetryIssue(error)],
+    retainValidationIssues: true,
     retryFailure: (attempt, issues, latencyMs, response) => response
       ? retryFailure(attempt, issues, latencyMs, response.usage, response.finishReason, response.text)
       : retryFailure(attempt, issues, latencyMs)
@@ -2925,14 +3017,23 @@ async function generateValidatedEnrichedCoreSection(input: {
       usage: result.state.usage,
       finishReason: result.finishReason,
       latencyMs: result.state.latencyMs,
-      failures: result.state.failures
+      failures: result.state.failures,
+      reviewNotes: result.state.reviewNotes as ReportGenerationRetryIssue[]
     };
   }
-  throw new DeepPartGenerationError(
-    `${input.card.title} failed validation after retries: ${result.state.previousErrors.join("; ")}`,
-    input.card.title,
-    result.state
-  );
+  return {
+    section: writeDeterministicCoreReport(input).sections.find((section) => section.title === input.card.title) ?? {
+      id: sectionIdFromTitle(input.request.id, input.card.title, 0),
+      title: input.card.title,
+      body: "Astra retained the deterministic chart reading because the model did not return usable chapter prose.",
+      emphasis: "supporting"
+    },
+    attemptCount: result.state.attemptCount,
+    usage: result.state.usage,
+    latencyMs: result.state.latencyMs,
+    failures: result.state.failures,
+    reviewNotes: result.state.failures.flatMap((failure) => failure.issues)
+  };
 }
 
 async function mapWithConcurrencySettled<T, R>(items: T[], concurrency: number, worker: (item: T, index: number) => Promise<R>) {
@@ -3015,8 +3116,7 @@ async function generateSectionedDeepDraft(input: ReportWriterInput, writer: Prom
     sections,
     publicSignal: baseline.publicSignal
   };
-  const finalErrors = validateModelDraft(input.request, draft);
-  if (finalErrors.length) throw new Error(`Assembled Deep Report failed validation: ${finalErrors.join("; ")}`);
+  const finalReviewNotes = validateModelDraft(input.request, draft).map(monolithicRetryIssue);
   const usage = [thesis, ...generatedSections].reduce((total, part) => mergeModelUsage(total, part.usage), {} as ModelUsage);
   return {
     draft,
@@ -3024,7 +3124,8 @@ async function generateSectionedDeepDraft(input: ReportWriterInput, writer: Prom
     usage,
     latencyMs: Date.now() - startedAt,
     thesis,
-    sections: generatedSections
+    sections: generatedSections,
+    reviewNotes: uniqueReviewNotes([...thesis.reviewNotes, ...generatedSections.flatMap((section) => section.reviewNotes), ...finalReviewNotes])
   };
 }
 
@@ -3079,15 +3180,15 @@ async function generateSectionedEnrichedCoreDraft(input: ReportWriterInput, writ
     sections,
     publicSignal: baseline.publicSignal
   };
-  const finalErrors = validateModelDraft(input.request, draft);
-  if (finalErrors.length) throw new Error(`Assembled Core Report failed validation: ${finalErrors.join("; ")}`);
+  const finalReviewNotes = validateModelDraft(input.request, draft).map(monolithicRetryIssue);
   const usage = generatedSections.reduce((total, part) => mergeModelUsage(total, part.usage), {} as ModelUsage);
   return {
     draft,
     attemptCount: generatedSections.reduce((total, part) => total + part.attemptCount, 0),
     usage,
     latencyMs: Date.now() - startedAt,
-    sections: generatedSections
+    sections: generatedSections,
+    reviewNotes: uniqueReviewNotes([...generatedSections.flatMap((section) => section.reviewNotes), ...finalReviewNotes])
   };
 }
 
@@ -3099,7 +3200,6 @@ function reportHeadingsFor(request: AstrologyReportRequest): string[] {
   return [...personCoreReportHeadings];
 }
 
-const contextGenderedPartnerPronounPattern = /\b(?:he|him|his|she|her|hers)\b/i;
 // "Mutual repair" can be an analytic distinction.  Only flag language that
 // actually recommends or initiates direct relationship action.
 const directRelationshipActionPattern = /\b(?:confront|(?:have|start|initiate) (?:a )?direct conversation|state (?:a|the|your) boundary|make a direct request|try to repair|repair (?:the relationship|this (?:relationship|connection)))\b/i;
@@ -3114,7 +3214,7 @@ const categoricalBehaviorPattern = /\b(?:you act before you think|you react befo
 const unsupportedScenarioPattern = /\b(?:replay(?:ing)? (?:a |the )?conversation|track(?:ing)? (?:texts?|replies)|returned favors?|daily chores?|walking it off|go(?:ing)? for a walk|need (?:real )?recovery time|intuition often proves right|settled (?:young|early)|old effort|past attempts?|older material|nothing is hidden from you|you clearly have|regulate closeness now|preference for demonstrating care|being someone who is simply there)\b/i;
 const statusToConditionPattern = /\b(?:less as (?:a )?crisis|more as texture|not (?:a )?crisis|healthy relationship|stable relationship|secure relationship|settled relationship|relationship is (?:healthy|stable|secure|settled))\b/i;
 const stockConclusionPattern = /\b(?:the useful move(?: here)?|the fix|the task(?: worth naming)?|the risk|the practical move|the pattern worth watching)\b/i;
-const unnecessaryOrbPrecisionPattern = /\b(?:orb(?:\s+of)?|close and exact|(?:aspect|trine|square|opposition|sextile|conjunction|quincunx)\s+(?:is\s+)?exact|exact\s+(?:aspect|trine|square|opposition|sextile|conjunction|quincunx)|(?:under|within|nearly|less than)\s+(?:one|\d+(?:\.\d+)?)\s+degrees?|degrees?\s+(?:apart|from exact))\b|\b(?:aspect|conjunct(?:ion)?|oppos(?:es|ition)|squar(?:e|es)|trin(?:e|es)|sextil(?:e|es)|quincunx(?:es)?)\b[^.!?]{0,160}\b(?:angular distance|tightness|closeness|exactness|intensity|precision|measurement)\b|\b(?:angular distance|tightness|closeness|exactness|precision|measurement)\b[^.!?]{0,160}\b(?:aspect|conjunct(?:ion)?|oppos(?:es|ition)|squar(?:e|es)|trin(?:e|es)|sextil(?:e|es)|quincunx(?:es)?)\b/i;
+const unnecessaryOrbPrecisionPattern = /\b(?:orb(?:\s+of)?\s*(?:\d+(?:\.\d+)?|one|two|three|four|five|six|seven|eight|nine|ten)\s*(?:degrees?|°)?|close and exact|(?:aspect|trine|square|opposition|sextile|conjunction|quincunx)\s+(?:is\s+)?exact|exact\s+(?:aspect|trine|square|opposition|sextile|conjunction|quincunx)|(?:under|within|nearly|less than)\s+(?:one|\d+(?:\.\d+)?)\s+degrees?|\d+(?:\.\d+)?\s+degrees?\s+(?:apart|from exact))\b/i;
 const impliedNatalActivationPattern = /\b(?:personal\s+)?activation\s+(?:means|shows|suggests).{0,80}\b(?:current|currently|now|pressing)\b|\bcurrently pressing\b|\bpressing on something close to you\b/i;
 const personalActivationQualitativeOverreachPattern = /\b(?:personal activation|natal relevance)\b[\s\S]{0,300}\b(?:unpredictab(?:ility|le)|inspir(?:ation|ed)|clarif(?:y|ies|ied|ying|ication)|destabili(?:ze|zes|zed|zing|zation)|current timing|currently|right now|this season|makes? you|means? you|shows? that you|you (?:tend to|usually|always|become|act|react))\b|\b(?:unpredictab(?:ility|le)|inspir(?:ation|ed)|clarif(?:y|ies|ied|ying|ication)|destabili(?:ze|zes|zed|zing|zation))\b[\s\S]{0,220}\b(?:personal activation|natal relevance)\b/i;
 const aspectChainInventionPattern = /\b(?:opposition|trine|square|sextile|conjunction|quincunx)\s+(?:links?|connects?)\s+(?:this|the|a)\s+.{0,50}\b(?:chain|rulership|dispositor)\b/i;
@@ -3156,9 +3256,6 @@ function validateRelationshipAndSafetyClaims(
     if (categoricalCertaintyOrChangePattern.test(text)) errors.push(`${section.title} invents rapid certainty, wholesale change, or an established self-correction habit.`);
     if (section.title === "Drive" && reportDetectors.driveWorkAllocationRepetition.test(text)) {
       errors.push("Drive repeats Work's task-importance or allocation conclusion instead of owning force and pacing.");
-    }
-    if (!context.partnerPronouns && contextGenderedPartnerPronounPattern.test(text)) {
-      errors.push(`${section.title} uses a partner gender pronoun that was not supplied.`);
     }
     const canonicalIdentityIsSupplied = section.title === "Identity" && Boolean(canonicalIdentityFromRequest(request));
     if (!canonicalIdentityIsSupplied && stockConclusionPattern.test(text)) {
@@ -3579,42 +3676,35 @@ function mergeModelUsage(left: ModelUsage, right: ModelUsage): ModelUsage {
 }
 
 async function parseValidatedModelDraft(input: ReportWriterInput, writer: (previousErrors?: string[]) => Promise<ModelWriterResponse>) {
-  let previousErrors: string[] = [];
-  let usage: ModelUsage = {};
-  let latencyMs = 0;
-  const failures: ReportGenerationRetryFailure[] = [];
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    const response = await writer(previousErrors);
-    usage = mergeModelUsage(usage, response.usage);
-    latencyMs += response.latencyMs;
-    const draft = parseModelDraft(response.text, input.request, input.chartSignature);
-    const errors = [
-      ...(response.finishReason === "length" ? ["Writer response reached its output limit; return a complete report within the requested scope."] : []),
-      ...validateRawModelText(response.text),
-      ...validateModelDraft(input.request, draft)
-    ];
-    if (!errors.length) return { draft, attemptCount: attempt + 1, usage, latencyMs, failures };
-    failures.push(retryFailure(
-      attempt + 1,
-      errors.map(monolithicRetryIssue),
-      response.latencyMs,
-      response.usage,
-      response.finishReason,
-      response.text
-    ));
-    previousErrors = errors;
-  }
-
-  throw new MonolithicReportGenerationError(`Model draft failed validation after retries: ${previousErrors.join("; ")}`, {
-    attemptCount: failures.length,
-    usage,
-    latencyMs,
-    failures
-  });
+  const response = await writer();
+  const draft = parseModelDraft(response.text, input.request, input.chartSignature);
+  const reviewNotes = [
+    ...(response.finishReason === "length" ? ["Writer response reached its output limit; return a complete report within the requested scope."] : []),
+    ...validateRawModelText(response.text),
+    ...validateModelDraft(input.request, draft)
+  ].map(monolithicRetryIssue);
+  return {
+    draft,
+    attemptCount: 1,
+    usage: mergeModelUsage({}, response.usage),
+    latencyMs: response.latencyMs,
+    failures: [],
+    reviewNotes
+  };
 }
 
 function monolithicRetryIssue(message: string): ReportGenerationRetryIssue {
   return monolithicRetryIssueFromReport(message);
+}
+
+function uniqueReviewNotes(notes: ReportGenerationRetryIssue[]) {
+  const seen = new Set<string>();
+  return notes.filter((note) => {
+    const key = `${note.code}:${note.message}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 async function writeOpenAIDebugModelReportText(
@@ -3879,23 +3969,6 @@ async function buildDebugModelReportResult(
         }))
       });
     }
-    if (error instanceof MonolithicReportGenerationError) {
-      return buildReportModelCallFailedResult(request, error.message, {
-        writer: DEBUG_MODEL_REPORT_WRITER,
-        provider: config.reportModelProvider,
-        model: config.reportModel,
-        modelProfile: config.reportModelProfile,
-        ...(config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
-          ? { reasoningEffort: reportReasoningEffortForModel(config.reportModel) }
-          : {}),
-        promptVersion: ASTRA_REPORT_PROMPT_VERSION,
-        attemptCount: error.generation.attemptCount,
-        ...error.generation.usage,
-        latencyMs: error.generation.latencyMs,
-        orchestration: "monolithic",
-        failures: error.generation.failures
-      });
-    }
     return buildReportModelCallFailedResult(request, error instanceof Error ? error.message : "Unknown model writer error.");
   }
   const result = buildLocalChartRoutineResult(request, draft);
@@ -3922,20 +3995,23 @@ async function buildDebugModelReportResult(
               title: section.section.title,
               ...partGenerationMetadata(section)
             })),
+            ...(sectionedGeneration.reviewNotes.length ? { reviewNotes: sectionedGeneration.reviewNotes } : {}),
             readability: reportReadabilityMetadata(draft.sections)
           }
         : sectionedCoreGeneration
           ? {
               orchestration: "sectioned-v1" as const,
-              sections: sectionedCoreGeneration.sections.map((section) => ({
-                title: section.section.title,
-                ...partGenerationMetadata(section)
-              })),
-              readability: reportReadabilityMetadata(draft.sections)
+            sections: sectionedCoreGeneration.sections.map((section) => ({
+              title: section.section.title,
+              ...partGenerationMetadata(section)
+            })),
+            ...(sectionedCoreGeneration.reviewNotes.length ? { reviewNotes: sectionedCoreGeneration.reviewNotes } : {}),
+            readability: reportReadabilityMetadata(draft.sections)
             }
         : {
             orchestration: "monolithic" as const,
-            ...("failures" in generation && generation.failures.length ? { failures: generation.failures } : {})
+            ...("failures" in generation && generation.failures.length ? { failures: generation.failures } : {}),
+            ...("reviewNotes" in generation && generation.reviewNotes.length ? { reviewNotes: generation.reviewNotes } : {})
           })
     },
     provenance: [

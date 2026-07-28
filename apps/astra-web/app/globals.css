@@ -1602,6 +1602,32 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   background: color-mix(in srgb, var(--soft) 84%, transparent);
 }
 
+.reportReviewNotes {
+  margin: 4px 0 18px;
+  border: 1px solid color-mix(in srgb, var(--gold) 20%, var(--line));
+  border-radius: 8px;
+  padding: 11px 14px;
+  background: color-mix(in srgb, var(--soft) 84%, transparent);
+}
+
+.reportReviewNotes summary {
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.reportReviewNotes p,
+.reportReviewNotes ul {
+  margin: 12px 0 0;
+}
+
+.reportReviewNotes ul {
+  padding-left: 18px;
+}
+
 .reportDebugDetails summary {
   color: var(--gold);
   cursor: pointer;
@@ -2121,6 +2147,12 @@ html[data-astra-theme="dark"] .reportReaderDocument {
 
 .reportMarkdown p {
   margin: 0 0 16px;
+}
+
+.reportMarkdown hr {
+  margin: 26px 0;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--gold) 28%, var(--line));
 }
 
 .reportMarkdown ul {

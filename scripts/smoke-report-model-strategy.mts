@@ -174,14 +174,51 @@ const progressedPrompt = await completedPromptFor(progressedRequest, { "Current 
 assert.match(progressedPrompt, /Current Chapter: target 225-300 words; remain between 200 and 340 words/);
 assert.match(progressedPrompt, /Integration: target 150-225 words; remain between 140 and 260 words/);
 
-const synastryPrompt = await completedPromptFor(synastryRequest, { Attraction: 225, Friction: 225, Communication: 225, Stability: 225 });
-assert.match(synastryPrompt, /Attraction: target 200-275 words; remain between 175 and 315 words/);
-assert.match(synastryPrompt, /Stability: target 200-275 words; remain between 175 and 315 words/);
+const synastryPrompt = await completedPromptFor(synastryRequest, { Attraction: 550, Friction: 550, Communication: 550, Stability: 550 });
+assert.match(synastryPrompt, /Astra Synastry V1 Voice Contract:/);
+assert.match(synastryPrompt, /premium-prose|literary intelligence|literary intelligence/i);
+assert.match(synastryPrompt, /Open Attraction from its first selected contact/);
+assert.match(synastryPrompt, /Prefer Prompt's first name when natural, and use ordinary pronouns/);
+assert.match(synastryPrompt, /Selected cross-chart contacts:/);
+assert.match(synastryPrompt, /Model (?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron) (?:conjunct|opposition|square|trine|sextile|quincunx) Prompt/i);
+assert.match(synastryPrompt, /aim for 450-650 words/i);
+assert.match(synastryPrompt, /Do not add house overlays, angles, nodes, composites, Davison charts/);
+assert.doesNotMatch(synastryPrompt, /VOICE MODE: PLAINSPOKEN/);
+assert.doesNotMatch(synastryPrompt, /Write like a wise farmer/);
+assert.doesNotMatch(synastryPrompt, /Relationship-content rules:/);
+const synastryWriterPacket = synastryPrompt.split("Section signal cards:")[1] ?? "";
+function contactsForSynastryChapter(title: string) {
+  const match = synastryWriterPacket.match(new RegExp(`## ${title}\\n\\nSelected cross-chart contacts:\\n([\\s\\S]*?)(?:\\n\\n---|$)`));
+  return (match?.[1] ?? "").split("\n").filter((line) => line.startsWith("- "));
+}
+const attractionContacts = contactsForSynastryChapter("Attraction");
+const frictionContacts = contactsForSynastryChapter("Friction");
+const communicationContacts = contactsForSynastryChapter("Communication");
+const stabilityContacts = contactsForSynastryChapter("Stability");
+assert.ok(attractionContacts.length >= 2);
+assert.ok(frictionContacts.length >= 1);
+assert.ok(communicationContacts.length >= 1);
+assert.ok(stabilityContacts.length >= 1);
+assert.match(attractionContacts[0] ?? "", /(?:sextile|trine|conjunct)/i);
+assert.doesNotMatch(attractionContacts[0] ?? "", /(?:square|opposition|quincunx)/i);
+assert.ok(frictionContacts.every((contact) => /(?:square|opposition|quincunx|Mars conjunct .*?(?:Saturn|Pluto|Chiron)|(?:Saturn|Pluto|Chiron) conjunct .*?Mars)/i.test(contact)));
+assert.ok(communicationContacts.every((contact) => /(?:Moon|Mercury)/i.test(contact)));
+assert.ok(stabilityContacts.every((contact) => /(?:Moon|Venus|Saturn)/i.test(contact)));
+for (const contact of [...attractionContacts, ...frictionContacts, ...communicationContacts, ...stabilityContacts]) {
+  const appearances = [attractionContacts, frictionContacts, communicationContacts, stabilityContacts]
+    .filter((chapterContacts) => chapterContacts.includes(contact)).length;
+  assert.equal(appearances, 1, `${contact} must have one synastry chapter owner`);
+}
+assert.doesNotMatch(synastryWriterPacket, /\borb\b/i);
+assert.doesNotMatch(synastryWriterPacket, /\bdegrees?\b/i);
+assert.doesNotMatch(synastryWriterPacket, /\b(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron) in (?:Aries|Taurus|Gemini|Cancer|Leo|Virgo|Libra|Scorpio|Sagittarius|Capricorn|Aquarius|Pisces)\b/i);
+assert.doesNotMatch(synastryWriterPacket, /Claim policy:|Capacities:|Risks:|Tensions:|Developmental tasks:/);
 
 const undersizedCore = await modelResultFor(coreRequest, Object.fromEntries(buildAstrologyReportResult(coreRequest).sections.map((section) => [section.title, 100])));
-assert.equal(undersizedCore.result.status, "failed");
-assert.match(undersizedCore.result.error ?? "", /Identity must be at least 325 words/);
-assert.match(undersizedCore.result.error ?? "", /Integration must be at least 150 words/);
+assert.equal(undersizedCore.result.status, "completed");
+assert.equal(undersizedCore.result.generationMetadata?.attemptCount, 1);
+assert.ok(undersizedCore.result.generationMetadata?.reviewNotes?.some((note) => /Identity must be at least 325 words/.test(note.message)));
+assert.ok(undersizedCore.result.generationMetadata?.reviewNotes?.some((note) => /Integration must be at least 150 words/.test(note.message)));
 
 const truncatedResult = await buildAstrologyReportResultAsync(request, {
     env: {
@@ -197,13 +234,10 @@ const truncatedResult = await buildAstrologyReportResultAsync(request, {
       usage: { prompt_tokens: 1200, completion_tokens: 600, total_tokens: 1800, cost: 0.042 }
     }), { status: 200, headers: { "content-type": "application/json" } })
   });
-assert.equal(truncatedResult.status, "failed");
-assert.match(truncatedResult.error ?? "", /Writer response reached its output limit/);
-assert.equal(truncatedResult.generationMetadata?.attemptCount, 3);
-assert.equal(truncatedResult.generationMetadata?.failures?.length, 3);
-assert.match(truncatedResult.generationMetadata?.failures?.[0]?.rejectedText ?? "", /## Identity/);
-assert.equal(truncatedResult.generationMetadata?.failures?.[0]?.issues[0]?.code, "above_maximum");
-assert.deepEqual(reportModelProfileModels.production, ["anthropic/claude-sonnet-5", "google/gemini-3.5-flash"]);
+assert.equal(truncatedResult.status, "completed");
+assert.equal(truncatedResult.generationMetadata?.attemptCount, 1);
+assert.ok(truncatedResult.generationMetadata?.reviewNotes?.some((note) => note.code === "above_maximum" && /output limit/.test(note.message)));
+assert.deepEqual(reportModelProfileModels.production, ["anthropic/claude-sonnet-5", "anthropic/claude-sonnet-4.6", "google/gemini-3.5-flash"]);
 assert.deepEqual(
   resolveAstrologyReportGenerationConfig({
     [ASTRA_REPORT_MODEL_PROFILE_ENV]: "production"
@@ -247,6 +281,16 @@ assert.equal(
     }
   ).reportModel,
   "anthropic/claude-sonnet-5"
+);
+assert.equal(
+  resolveAstrologyReportGenerationConfigForRequest(
+    synastryRequest,
+    {
+      [ASTRA_REPORT_WRITER_ENV]: DEBUG_MODEL_REPORT_WRITER,
+      [ASTRA_REPORT_MODEL_PROFILE_ENV]: "production"
+    }
+  ).reportModel,
+  "anthropic/claude-sonnet-4.6"
 );
 assert.ok(reportModelProfileModels.premium_bakeoff.includes("openai/gpt-5.6-sol"));
 assert.ok(reportModelProfileModels.premium_bakeoff.includes("anthropic/claude-opus-4.8"));

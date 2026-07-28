@@ -280,6 +280,7 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
           role={profile.role}
           starBalance={profile.starBalance}
           initialRequests={allyChartRequests}
+          synastryComparisonRequests={chartRequests}
           initialReportRequests={allyReportRequests}
           initialReportResults={allyReportResults}
           initialBirthData={selectedOnboardingChart?.birthData}

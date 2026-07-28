@@ -10,7 +10,8 @@ import {
   AstrologyReportResult,
   ChartBirthData,
   ChartMakerRequest,
-  OrderableAstrologyReportType
+  OrderableAstrologyReportType,
+  type SynastryPerspective
 } from "@astra/contracts";
 import { displayTimezone } from "../lib/display";
 import { ui } from "../lib/i18n";
@@ -85,6 +86,7 @@ type BirthOnboardingPanelProps = {
   role?: string;
   starBalance?: number;
   initialRequests: ChartMakerRequest[];
+  synastryComparisonRequests?: ChartMakerRequest[];
   initialReportRequests: AstrologyReportRequest[];
   initialReportResults: AstrologyReportResult[];
   subjectType?: "self" | "ally";
@@ -105,6 +107,7 @@ type FormState = {
   zodiacMode: ZodiacMode;
   houseSystem: HouseSystemMode;
   synastryPartnerChartRequestId: string;
+  synastryPerspective: SynastryPerspective;
   progressedAsOfDate: string;
   date: string;
   time: string;
@@ -141,6 +144,7 @@ const defaultForm = (
   zodiacMode: "tropical",
   houseSystem: "whole-sign",
   synastryPartnerChartRequestId: "",
+  synastryPerspective: "primary",
   progressedAsOfDate: localDateOnly(),
   date: chartRequest?.birthData.date ?? birthData?.date ?? "",
   time: chartRequest?.birthData.time ?? birthData?.time ?? "",
@@ -283,6 +287,7 @@ export function BirthOnboardingPanel({
   role = "customer",
   starBalance = 0,
   initialRequests,
+  synastryComparisonRequests,
   initialReportRequests,
   initialReportResults = [],
   subjectType = "self",
@@ -314,12 +319,12 @@ export function BirthOnboardingPanel({
   const isAlly = subjectType === "ally";
   const isAdmin = role === "admin";
   const synastryChartOptions = useMemo(
-    () => requests.filter((request) =>
+    () => (synastryComparisonRequests ?? requests).filter((request) =>
       request.birthData.date &&
       request.id !== selectedExistingChartRequestId &&
       (isAdmin || chartSubjectType(request) !== subjectType)
     ),
-    [isAdmin, requests, selectedExistingChartRequestId, subjectType]
+    [isAdmin, requests, selectedExistingChartRequestId, subjectType, synastryComparisonRequests]
   );
   const availableReportTypes = REPORT_PRODUCT_ORDER;
   const panelCopy = isAlly ? ui.allies.wizard : ui.self;
@@ -344,13 +349,23 @@ export function BirthOnboardingPanel({
     () => synastryChartOptions.find((request) => request.id === form.synastryPartnerChartRequestId),
     [form.synastryPartnerChartRequestId, synastryChartOptions]
   );
+  const synastryPrimaryName = existingChartRequest?.subjectName ?? form.subjectName;
+  const synastryReaderName = form.synastryPerspective === "comparison"
+    ? synastryPartner?.subjectName
+    : synastryPrimaryName;
+  const synastryComparisonName = form.synastryPerspective === "comparison"
+    ? synastryPrimaryName
+    : synastryPartner?.subjectName;
+  const reviewSubjectName = !isFirstSelfChart && form.reportType === "synastry"
+    ? synastryReaderName
+    : form.subjectName;
   const previewBirthData = isExistingChartLocked && existingChartRequest
     ? existingChartRequest.birthData
     : birthDataFor(form);
   const hasHouseCalculation = chartCalculationModeForBirthData(previewBirthData) === "full";
   const reviewRows = useMemo(
     () => [
-      [ui.self.onboardingReviewName, form.subjectName || ui.self.onboardingReviewMissing],
+      [ui.self.onboardingReviewName, reviewSubjectName || ui.self.onboardingReviewMissing],
       [ui.self.onboardingReviewReportType, reportTypeLabel(selectedReportType, isFirstSelfChart)],
       [ui.self.reportConfirmBasis, reportBasisLabel(selectedReportType)],
       [ui.self.zodiacModeLabel, ui.self.zodiacModes[form.zodiacMode]],
@@ -359,12 +374,15 @@ export function BirthOnboardingPanel({
         ? ([[ui.self.progressedAsOfLabel, form.progressedAsOfDate]] as const)
         : []),
       ...(!isFirstSelfChart && form.reportType === "synastry"
-        ? ([[ui.self.onboardingReviewSynastryPartner, synastryPartner?.subjectName ?? ui.self.onboardingReviewMissing]] as const)
+        ? ([
+            [ui.self.onboardingReviewSynastryReader, synastryReaderName ?? ui.self.onboardingReviewMissing],
+            [ui.self.onboardingReviewSynastryPartner, synastryComparisonName ?? ui.self.onboardingReviewMissing]
+          ] as const)
         : []),
       [ui.self.reportConfirmCost, ui.stars.reportCost(selectedReportCost)],
       [ui.self.reportConfirmBalance, ui.stars.balance(starBalance)]
     ],
-    [form, hasHouseCalculation, isFirstSelfChart, selectedReportCost, selectedReportType, starBalance, synastryPartner]
+    [form, hasHouseCalculation, isFirstSelfChart, reviewSubjectName, selectedReportCost, selectedReportType, starBalance, synastryComparisonName, synastryReaderName]
   );
   const chartRequestsBySubjectId = useMemo(() => {
     const indexed = new Map<string, ChartMakerRequest>();
@@ -413,7 +431,8 @@ export function BirthOnboardingPanel({
     setForm((current) => ({
       ...current,
       reportType,
-      synastryPartnerChartRequestId: reportType === "synastry" ? current.synastryPartnerChartRequestId : ""
+      synastryPartnerChartRequestId: reportType === "synastry" ? current.synastryPartnerChartRequestId : "",
+      synastryPerspective: reportType === "synastry" ? current.synastryPerspective : "primary"
     }));
     setIsConfirmingReport(false);
     setMessage("");
@@ -598,7 +617,12 @@ export function BirthOnboardingPanel({
       const reportBasis = basisType === "progressed"
         ? { type: basisType, chartSettings, asOfDate: form.progressedAsOfDate }
         : basisType === "synastry"
-          ? { type: basisType, chartSettings, partnerChartRequestId: form.synastryPartnerChartRequestId }
+          ? {
+              type: basisType,
+              chartSettings,
+              partnerChartRequestId: form.synastryPartnerChartRequestId,
+              perspective: form.synastryPerspective
+            }
           : { type: basisType, chartSettings };
       const reportPayload = await requestJson<{ request: AstrologyReportRequest }>("/api/reports", {
         method: "POST",
@@ -899,21 +923,49 @@ export function BirthOnboardingPanel({
                 </label>
               ) : null}
               {!isFirstSelfChart && form.reportType === "synastry" ? (
-                <label>
-                  <span>{ui.self.synastryPartnerLabel}</span>
-                  <select
-                    value={form.synastryPartnerChartRequestId}
-                    onChange={(event) => updateField("synastryPartnerChartRequestId", event.target.value)}
-                  >
-                    <option value="">{ui.self.synastryPartnerPlaceholder}</option>
-                    {synastryChartOptions.map((request) => (
-                      <option key={request.id} value={request.id}>
-                        {request.subjectName} · {request.birthData.date}
-                      </option>
-                    ))}
-                  </select>
-                  {!synastryChartOptions.length ? <small className={styles.fieldHint}>{ui.self.synastryPartnerEmpty}</small> : null}
-                </label>
+                <>
+                  <label>
+                    <span>{ui.self.synastryPartnerLabel}</span>
+                    <select
+                      value={form.synastryPartnerChartRequestId}
+                      onChange={(event) => updateField("synastryPartnerChartRequestId", event.target.value)}
+                    >
+                      <option value="">{ui.self.synastryPartnerPlaceholder}</option>
+                      {synastryChartOptions.map((request) => (
+                        <option key={request.id} value={request.id}>
+                          {request.subjectName} · {request.birthData.date}
+                        </option>
+                      ))}
+                    </select>
+                    {!synastryChartOptions.length ? <small className={styles.fieldHint}>{ui.self.synastryPartnerEmpty}</small> : null}
+                  </label>
+                  {synastryPartner ? (
+                    <fieldset className={styles.optionGroup}>
+                      <legend>{ui.self.synastryPerspectiveLabel}</legend>
+                      <div className={styles.radioOptionRow} role="radiogroup" aria-label={ui.self.synastryPerspectiveLabel}>
+                        <label className={styles.radioOption}>
+                          <input
+                            checked={form.synastryPerspective === "primary"}
+                            name="synastryPerspective"
+                            onChange={() => updateField("synastryPerspective", "primary")}
+                            type="radio"
+                          />
+                          <span>{ui.self.synastryPerspectivePrimary(synastryPrimaryName)}</span>
+                        </label>
+                        <label className={styles.radioOption}>
+                          <input
+                            checked={form.synastryPerspective === "comparison"}
+                            name="synastryPerspective"
+                            onChange={() => updateField("synastryPerspective", "comparison")}
+                            type="radio"
+                          />
+                          <span>{ui.self.synastryPerspectiveComparison(synastryPartner.subjectName)}</span>
+                        </label>
+                      </div>
+                      <small className={styles.fieldHint}>{ui.self.synastryPerspectiveHint}</small>
+                    </fieldset>
+                  ) : null}
+                </>
               ) : null}
             </div>
           ) : null}

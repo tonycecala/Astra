@@ -556,6 +556,7 @@ export const astrologyReportTypeSchema = z.enum([
 ]);
 export const orderableAstrologyReportTypeSchema = z.enum(["identity", "core", "deep", "progressed", "synastry"]);
 export const reportBasisTypeSchema = z.enum(["natal", "progressed", "synastry"]);
+export const synastryPerspectiveSchema = z.enum(["primary", "comparison"]);
 export const reportChartSourceSnapshotSchema = z.object({
   chartRequestId: idSchema,
   subjectType: chartSubjectTypeSchema,
@@ -577,7 +578,8 @@ export const reportChartBasisInputSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("synastry"),
     chartSettings: explicitChartSettingsSchema,
-    partnerChartRequestId: idSchema
+    partnerChartRequestId: idSchema,
+    perspective: synastryPerspectiveSchema.default("primary")
   })
 ]);
 export const reportChartBasisSnapshotSchema = z
@@ -707,6 +709,7 @@ const reportGenerationPartMetadataSchema = z.object({
   finishReason: z.string().min(1).optional(),
   latencyMs: z.number().int().nonnegative(),
   acceptedText: z.string().min(1).optional(),
+  reviewNotes: z.array(reportGenerationRetryIssueSchema).optional(),
   failures: z.array(reportGenerationRetryFailureSchema).optional()
 });
 
@@ -725,6 +728,7 @@ export const reportGenerationMetadataSchema = z.object({
   reasoningEffort: z.enum(["none", "minimal", "low", "medium", "high", "xhigh", "max"]).optional(),
   latencyMs: z.number().int().nonnegative().optional(),
   orchestration: z.enum(["monolithic", "sectioned-v1"]).optional(),
+  reviewNotes: z.array(reportGenerationRetryIssueSchema).optional(),
   failures: z.array(reportGenerationRetryFailureSchema).optional(),
   thesis: reportGenerationPartMetadataSchema.optional(),
   sections: z.array(reportGenerationPartMetadataSchema.extend({ title: z.string().min(1) })).optional(),
@@ -1004,6 +1008,7 @@ export type AstrologyReportStatus = z.infer<typeof astrologyReportStatusSchema>;
 export type AstrologyReportType = z.infer<typeof astrologyReportTypeSchema>;
 export type OrderableAstrologyReportType = z.infer<typeof orderableAstrologyReportTypeSchema>;
 export type ReportBasisType = z.infer<typeof reportBasisTypeSchema>;
+export type SynastryPerspective = z.infer<typeof synastryPerspectiveSchema>;
 export type ReportChartSourceSnapshot = z.infer<typeof reportChartSourceSnapshotSchema>;
 export type ReportChartBasisInput = z.infer<typeof reportChartBasisInputSchema>;
 export type ReportChartBasisSnapshot = z.infer<typeof reportChartBasisSnapshotSchema>;

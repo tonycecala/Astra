@@ -260,7 +260,7 @@ const synastryRequest = astrologyReportRequestSchema.parse({
 });
 const synastryEvidence = buildAstrologyReportSectionEvidence(synastryRequest, ["Attraction", "Communication"]);
 const synastryLabels = synastryEvidence.flatMap((section) => section.evidenceBullets.map((bullet) => bullet.label));
-if (!synastryLabels.some((label) => label.includes("Tony C") && label.includes("Partner"))) {
+if (!synastryLabels.some((label) => label.includes("Tony") && label.includes("Partner"))) {
   throw new Error(`Synastry must contain two-chart evidence. Got: ${synastryLabels.join(" | ")}`);
 }
 if (synastryLabels.some((label) => /Moon|Ascendant|house/i.test(label))) {
@@ -431,11 +431,11 @@ const unsupportedClaimDebugModel = await buildAstrologyReportResultAsync(reportR
   env: debugModelEnv,
   fetchImpl: unsupportedClaimFetch
 });
-if (unsupportedClaimDebugModel.status !== "failed" || !unsupportedClaimDebugModel.error?.includes("Sun in Pisces")) {
-  throw new Error("Debug model writer must reject unsupported astrology claims before saving a report.");
+if (unsupportedClaimDebugModel.status !== "completed") {
+  throw new Error("Alpha model reports with a parseable unsupported claim must be retained for review.");
 }
-if (unsupportedClaimDebugModel.publicSignal) {
-  throw new Error("Unsupported model claims must not expose a public signal.");
+if (!unsupportedClaimDebugModel.generationMetadata?.reviewNotes?.some((note) => note.message.includes("Sun in Pisces"))) {
+  throw new Error("Retained alpha reports must record unsupported astrology claims as review notes.");
 }
 
 if (previousEngine === undefined) {

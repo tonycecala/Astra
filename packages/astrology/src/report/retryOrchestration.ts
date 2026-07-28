@@ -5,12 +5,13 @@ export type RetryableModelResponse<TUsage> = {
   latencyMs: number;
 };
 
-export type RetryPartState<TUsage, TFailure> = {
+export type RetryPartState<TUsage, TFailure, TIssue extends { message: string }> = {
   attemptCount: number;
   usage: TUsage;
   latencyMs: number;
   failures: TFailure[];
   previousErrors: string[];
+  reviewNotes: TIssue[];
 };
 
 export async function retryModelPart<
@@ -28,7 +29,8 @@ export async function retryModelPart<
   mergeUsage: (left: TUsage, right: TUsage) => TUsage;
   providerIssues: (error: unknown) => TIssue[];
   retryFailure: (attempt: number, issues: TIssue[], latencyMs: number, response?: TResponse) => TFailure;
-}): Promise<{ ok: true; value: TValue; finishReason: string | undefined; state: RetryPartState<TUsage, TFailure> } | { ok: false; state: RetryPartState<TUsage, TFailure> }> {
+  retainValidationIssues?: boolean;
+}): Promise<{ ok: true; value: TValue; finishReason: string | undefined; state: RetryPartState<TUsage, TFailure, TIssue> } | { ok: false; state: RetryPartState<TUsage, TFailure, TIssue> }> {
   let previousErrors: string[] = [];
   let usage = input.initialUsage;
   let latencyMs = 0;
@@ -50,12 +52,12 @@ export async function retryModelPart<
     usage = input.mergeUsage(usage, response.usage);
     latencyMs += response.latencyMs;
     const issues = input.validate(response);
-    if (!issues.length) {
+    if (!issues.length || input.retainValidationIssues) {
       return {
         ok: true,
         value: input.value(response),
         finishReason: response.finishReason,
-        state: { attemptCount: attempt, usage, latencyMs, failures, previousErrors }
+        state: { attemptCount: attempt, usage, latencyMs, failures, previousErrors, reviewNotes: issues }
       };
     }
     failures.push(input.retryFailure(attempt, issues, response.latencyMs, response));
@@ -64,6 +66,6 @@ export async function retryModelPart<
 
   return {
     ok: false,
-    state: { attemptCount: input.maxAttempts, usage, latencyMs, failures, previousErrors }
+    state: { attemptCount: input.maxAttempts, usage, latencyMs, failures, previousErrors, reviewNotes: [] }
   };
 }

@@ -10,6 +10,7 @@ import {
 import { db, getUserChartMakerRequest, listUserAstrologyReportRequests, listUserChartMakerRequests, purchaseAstrologyReportRequest } from "@astra/db";
 import { getAstraAuthContext } from "../../../lib/auth/profile";
 import { reportProductFor } from "../../../lib/reportCatalog";
+import { synastryBasisForPerspective } from "../../../lib/synastryPerspective";
 
 function unauthorized() {
   return NextResponse.json({ error: "AUTH_REQUIRED" }, { status: 401 });
@@ -104,8 +105,9 @@ export async function POST(request: Request) {
   });
   if (!primaryChart) return invalidBasis("The source chart was not found for this account.");
 
-  const primary = sourceSnapshot(primaryChart, profile.userId);
+  let primary = sourceSnapshot(primaryChart, profile.userId);
   let partner: ReportChartSourceSnapshot | undefined;
+  let readerChart = primaryChart;
   const introIdentity = parsed.data.introIdentity === true;
   if (introIdentity) {
     const [ownedCharts, existingReports] = await Promise.all([
@@ -137,10 +139,18 @@ export async function POST(request: Request) {
       userId: profile.userId
     });
     if (!partnerChart) return invalidBasis("The comparison chart was not found for this account.");
-    partner = sourceSnapshot(partnerChart, profile.userId);
-    if (profile.role !== "admin" && !chartPairAllowedForCustomer(primary, partner)) {
+    const comparison = sourceSnapshot(partnerChart, profile.userId);
+    if (profile.role !== "admin" && !chartPairAllowedForCustomer(primary, comparison)) {
       return invalidBasis("Synastry is available between Self and an Ally.");
     }
+    const ordered = synastryBasisForPerspective({
+      primary,
+      comparison,
+      perspective: parsed.data.reportBasis.perspective
+    });
+    primary = ordered.primary;
+    partner = ordered.comparison;
+    readerChart = parsed.data.reportBasis.perspective === "comparison" ? partnerChart : primaryChart;
   }
 
   const reportBasis: ReportChartBasisSnapshot = {
@@ -152,7 +162,7 @@ export async function POST(request: Request) {
     ...(parsed.data.reportBasis.type === "progressed" ? { asOfDate: parsed.data.reportBasis.asOfDate } : {})
   };
   const context = {
-    ...(primaryChart.context ?? {}),
+    ...(readerChart.context ?? {}),
     chartSettings: reportBasis.chartSettings,
     ...(introIdentity ? { modelPilot: "gemini-intro-identity" } : {}),
     ...(partner
@@ -178,7 +188,7 @@ export async function POST(request: Request) {
       question: parsed.data.question,
       intent: parsed.data.intent,
       context,
-      source: primaryChart.source,
+      source: readerChart.source,
       costCredits: introIdentity ? 0 : product.costStars,
       reportBasis,
       bypassCreditDebit: profile.role === "admin"
