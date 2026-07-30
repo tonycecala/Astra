@@ -5,8 +5,11 @@ import { db, listUserAstrologyReportRequests, listUserFeedItems, readFoundationS
 import { fetchComposerAvailability } from "./composer-selection";
 import { ui } from "./i18n";
 import { buildPublicComposerPreview, PUBLIC_COMPOSER_SAMPLE_COUNT } from "./public-composer-preview";
-import { reconcileCompletedReportJourneyItems } from "./journey-producers";
-import { retireLegacyWelcomeJourneyItems } from "./journey-producers";
+import {
+  reconcileCompletedReportJourneyItems,
+  retireLegacyComposerOnboardingJourneyItems,
+  retireLegacyWelcomeJourneyItems
+} from "./journey-producers";
 import { CHART_ARRIVAL_REASON } from "./chart-arrival";
 import { JOURNEY_UP_NEXT_PREVIEW_LIMIT, reportJourneySubtitle } from "./journey-policy";
 
@@ -51,7 +54,6 @@ function primaryActionFor(item: UserFeedItem): JourneyStep["primaryAction"] {
 
 function provenanceFor(item: UserFeedItem) {
   if (item.reasonCode === "explicit_report_signal_publish") return ui.journey.provenance.report;
-  if (item.reasonCode.includes("onboarding")) return ui.journey.provenance.onboarding;
   if (item.feedKind === "ally") return ui.journey.provenance.ally;
   if (item.feedKind === "gift") return ui.journey.provenance.gift;
   return ui.journey.provenance.privateJourney;
@@ -81,7 +83,11 @@ function stepFromFeedItem(item: UserFeedItem, requestsById: Map<string, Astrolog
 }
 
 export async function getJourneyViewModel(userId: string, options: { userRole?: string } = {}): Promise<JourneyViewModel> {
-  await Promise.all([reconcileCompletedReportJourneyItems(userId, options), retireLegacyWelcomeJourneyItems(userId)]);
+  await Promise.all([
+    reconcileCompletedReportJourneyItems(userId, options),
+    retireLegacyWelcomeJourneyItems(userId),
+    retireLegacyComposerOnboardingJourneyItems(userId)
+  ]);
   const [available, saved, requests] = await Promise.all([
     listUserFeedItems(db, { userId, state: "available", limit: 50 }),
     listUserFeedItems(db, { userId, state: "saved", limit: 50 }),

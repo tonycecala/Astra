@@ -60,7 +60,6 @@ export const ui = {
     completedNotice: "Step completed.",
     provenance: {
       report: "This recent report is ready in your private Library. Journey is bringing it forward once so you can decide what comes next.",
-      onboarding: "This is part of the private welcome sequence created for your Astra account.",
       ally: "This step connects to an Ally saved in your private Astra.",
       gift: "This step connects to a Gift in your private Astra.",
       privateJourney: "This step was placed in your private Journey from Astra's approved guidance library."
@@ -97,11 +96,6 @@ export const ui = {
         eyebrow: "Preview mode",
         title: "A public sample, not your private Journey",
         body: "Astra is showing its small local public sample. Your personal Journey appears after sign-in and remains private."
-      },
-      private_empty: {
-        eyebrow: "First private run",
-        title: "Composer will generate your onboarding cards",
-        body: "Astra will not copy public fallback cards into your private feed. Your first private Journey cards arrive from the Composer onboarding workflow."
       },
       private_ready: {
         eyebrow: "Private feed",

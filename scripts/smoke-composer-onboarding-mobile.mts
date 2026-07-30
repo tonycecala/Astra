@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { chromium } from "@playwright/test";
 import { eq } from "drizzle-orm";
 import { prepareComposerOnboardingCardsBatch } from "../apps/composer-web/src/index";
-import { closeDatabaseConnection, db, sourceCards, user, userFeedItems } from "@astra/db";
+import { closeDatabaseConnection, db, listUserFeedItems, sourceCards, user, userFeedItems } from "@astra/db";
 
 type JsonObject = Record<string, unknown>;
 
@@ -142,9 +142,7 @@ let targetUserId = "";
 
 try {
   await page.goto(`${appBaseUrl}/journey`);
-  await page.locator(".status-strip").getByText("Public fallback").waitFor();
-  await page.locator(".status-strip").getByText("12 cards").waitFor();
-  await page.locator(".stream-card-open").filter({ hasText: "Cleopatra: image" }).waitFor();
+  await page.getByRole("heading", { name: "Sign in to Astra" }).waitFor();
   if (await page.getByText("Welcome to Astra").count()) {
     throw new Error("Mobile signed-out Journey leaked Composer onboarding cards.");
   }
@@ -161,8 +159,7 @@ try {
   targetUserId = await findUserIdByEmail(email);
 
   await page.goto(`${appBaseUrl}/journey`);
-  await page.locator(".status-strip").getByText("Private journey").waitFor();
-  await page.getByText("Composer will generate your onboarding cards").waitFor();
+  await page.getByRole("heading", { name: "Your Journey is clear" }).waitFor();
   if (await page.getByText("Cleopatra: image, strategy, and survival").count()) {
     throw new Error("Mobile signed-in first-run Journey copied public preview cards.");
   }
@@ -170,13 +167,17 @@ try {
 
   const batch = await postOnboardingBatch(targetUserId);
   await page.reload();
-  await page.locator(".status-strip").getByText("Private journey").waitFor();
-  await page.locator(".status-strip").getByText("5 cards").waitFor();
-  await page.locator(".stream-card-open").filter({ hasText: "Welcome to Astra" }).waitFor();
-  if (await page.locator(".status-strip").getByText("Public fallback").count()) {
-    throw new Error("Mobile signed-in Journey showed public fallback after Composer onboarding publish.");
+  await page.getByRole("heading", { name: "Your Journey is clear" }).waitFor();
+  if (await page.getByText("Welcome to Astra").count()) {
+    throw new Error("Mobile signed-in Journey rendered a retired legacy onboarding card.");
   }
-  await assertNoOverflow(page, "Mobile signed-in Composer onboarding Journey");
+  const retired = await listUserFeedItems(db, { userId: targetUserId, state: "seen", limit: 20 });
+  for (const card of batch.cards) {
+    if (!retired.items.some((item) => item.id === card.feedItem.id)) {
+      throw new Error(`Mobile Journey did not retire legacy onboarding card: ${card.feedItem.title}`);
+    }
+  }
+  await assertNoOverflow(page, "Mobile signed-in Journey after legacy onboarding publish");
 
   if (errors.length) throw new Error(`Mobile Composer onboarding browser errors: ${errors.join(" | ")}`);
 

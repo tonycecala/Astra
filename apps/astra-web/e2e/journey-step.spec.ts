@@ -1,6 +1,14 @@
 import { expect, type BrowserContext, test } from "@playwright/test";
 import { randomUUID } from "node:crypto";
-import { appUserProfiles, createUserFeedItem, db, userFeedItems } from "@astra/db";
+import {
+  appUserProfiles,
+  astrologyReportRequests,
+  astrologyReportResults,
+  createUserFeedItem,
+  db,
+  listUserFeedItems,
+  userFeedItems
+} from "@astra/db";
 import { eq } from "drizzle-orm";
 
 type JsonObject = Record<string, unknown>;
@@ -78,13 +86,19 @@ test("JourneyStep is private, durable, recoverable, and responsive", async ({ br
   const suffix = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const emailA = `journey-a-${suffix}@example.com`;
   const emailB = `journey-b-${suffix}@example.com`;
+  const emailC = `journey-customer-${suffix}@example.com`;
+  const adminEmail = `journey-admin-${suffix}@example.com`;
   const contextA = await browser.newContext({ baseURL: "http://localhost:3011" });
   const contextB = await browser.newContext({ baseURL: "http://localhost:3011" });
+  const contextC = await browser.newContext({ baseURL: "http://localhost:3011" });
+  const adminContext = await browser.newContext({ baseURL: "http://localhost:3011" });
   const pageA = await signIn(contextA, emailA);
   const pageB = await signIn(contextB, emailB);
+  const pageC = await signIn(contextC, emailC);
+  const adminPage = await signIn(adminContext, adminEmail);
   const consoleErrors: string[] = [];
   const pageErrors: string[] = [];
-  for (const page of [pageA, pageB]) {
+  for (const page of [pageA, pageB, pageC, adminPage]) {
     page.on("console", (message) => {
       if (message.type() === "error" && !message.text().startsWith("Failed to load resource:")) consoleErrors.push(message.text());
     });
@@ -92,8 +106,12 @@ test("JourneyStep is private, durable, recoverable, and responsive", async ({ br
   }
   const userA = await userIdFor(emailA);
   const userB = await userIdFor(emailB);
+  const userC = await userIdFor(emailC);
+  const adminUserId = await userIdFor(adminEmail);
   await db.update(appUserProfiles).set({ onboardingStatus: "complete", updatedAt: new Date() }).where(eq(appUserProfiles.userId, userA));
   await db.update(appUserProfiles).set({ onboardingStatus: "complete", updatedAt: new Date() }).where(eq(appUserProfiles.userId, userB));
+  await db.update(appUserProfiles).set({ onboardingStatus: "complete", updatedAt: new Date() }).where(eq(appUserProfiles.userId, userC));
+  await db.update(appUserProfiles).set({ role: "admin", onboardingStatus: "complete", updatedAt: new Date() }).where(eq(appUserProfiles.userId, adminUserId));
   await seedStep(userA, { rank: 600, title: "A private current step", kind: "artifact" });
   const orphanSignal = await seedStep(userA, { rank: 550, title: "Obsolete imported report signal", kind: "report_signal" });
   await seedStep(userA, { rank: 500, title: "A private next step" });
@@ -156,8 +174,117 @@ test("JourneyStep is private, durable, recoverable, and responsive", async ({ br
   await expect(pageB.getByRole("button", { name: "Undo" })).toBeVisible();
   await expect(pageB.getByRole("link", { name: "Begin with your Self" })).toHaveAttribute("href", "/self");
 
+  const customerReports = Array.from({ length: 5 }, (_, index) => {
+    const requestId = randomUUID();
+    const reportType = ["identity", "core", "deep", "progressed", "synastry"][index];
+    const subjectName = `Customer Subject ${index + 1}`;
+    const createdAt = new Date(Date.now() - index * 60_000);
+    return { requestId, reportType, subjectName, createdAt };
+  });
+  await db.insert(astrologyReportRequests).values(customerReports.map((report) => ({
+    id: report.requestId,
+    userId: userC,
+    reportType: report.reportType,
+    subjectName: report.subjectName,
+    birthData: { date: "1990-01-01" },
+    source: "self",
+    boundary: "private",
+    status: "completed",
+    costCredits: 0,
+    createdAt: report.createdAt,
+    updatedAt: report.createdAt
+  })));
+  await db.insert(astrologyReportResults).values(customerReports.map((report) => ({
+    id: randomUUID(),
+    requestId: report.requestId,
+    userId: userC,
+    engine: "journey-customer-fixture",
+    engineVersion: "1",
+    status: "completed",
+    summary: `${report.subjectName} private report summary.`,
+    sections: [],
+    provenance: [],
+    publicSignal: {
+      reportId: report.requestId,
+      requestId: report.requestId,
+      reportType: report.reportType,
+      headline: `${report.subjectName} — Report`,
+      summary: `${report.subjectName} has a recent private report ready in Library.`,
+      tone: "grounded",
+      boundary: "public_signal",
+      provenanceSummary: "debug-model-writer must remain internal"
+    },
+    createdAt: report.createdAt
+  })));
+
+  await pageC.goto("/journey");
+  await expect(pageC.locator("article.astraPublishedCard")).toHaveCount(1);
+  await expect(pageC.getByRole("complementary", { name: "Upcoming Journey steps" }).getByRole("listitem")).toHaveCount(2);
+  await expect(pageC.getByText("debug-model-writer must remain internal")).toHaveCount(0);
+  const customerJourney = await listUserFeedItems(db, { userId: userC, state: "available", limit: 20 });
+  expect(customerJourney.items.filter((item) => item.feedKind === "report_signal")).toHaveLength(3);
+
+  await pageC.goto("/library");
+  await expect(pageC.locator(".library-report-card")).toHaveCount(5);
+  for (const report of customerReports) {
+    await expect(pageC.getByRole("heading", { name: report.subjectName })).toBeVisible();
+  }
+  const persistedCustomerResults = await db.select({ id: astrologyReportResults.id }).from(astrologyReportResults).where(eq(astrologyReportResults.userId, userC));
+  expect(persistedCustomerResults).toHaveLength(5);
+
+  const adminReports = Array.from({ length: 15 }, (_, index) => {
+    const requestId = randomUUID();
+    const createdAt = new Date(Date.now() - index * 60_000);
+    return { requestId, subjectName: `Admin Throwaway ${index + 1}`, createdAt };
+  });
+  await db.insert(astrologyReportRequests).values(adminReports.map((report) => ({
+    id: report.requestId,
+    userId: adminUserId,
+    reportType: "identity",
+    subjectName: report.subjectName,
+    birthData: { date: "1990-01-01" },
+    source: "self",
+    boundary: "private",
+    status: "completed",
+    costCredits: 0,
+    createdAt: report.createdAt,
+    updatedAt: report.createdAt
+  })));
+  await db.insert(astrologyReportResults).values(adminReports.map((report) => ({
+    id: randomUUID(),
+    requestId: report.requestId,
+    userId: adminUserId,
+    engine: "journey-admin-fixture",
+    engineVersion: "1",
+    status: "completed",
+    summary: `${report.subjectName} private report summary.`,
+    sections: [],
+    provenance: [],
+    publicSignal: {
+      reportId: report.requestId,
+      requestId: report.requestId,
+      reportType: "identity",
+      headline: `${report.subjectName} — Report`,
+      summary: `${report.subjectName} has a recent private report ready in Library.`,
+      tone: "grounded",
+      boundary: "public_signal",
+      provenanceSummary: "admin test output"
+    },
+    createdAt: report.createdAt
+  })));
+
+  await adminPage.goto("/journey");
+  await expect(adminPage.getByRole("heading", { name: "Your Journey is clear" })).toBeVisible();
+  const adminJourney = await listUserFeedItems(db, { userId: adminUserId, state: "available", limit: 20 });
+  expect(adminJourney.items.filter((item) => item.feedKind === "report_signal")).toHaveLength(0);
+
+  await adminPage.goto("/library");
+  await expect(adminPage.locator(".library-report-card")).toHaveCount(15);
+  const persistedAdminResults = await db.select({ id: astrologyReportResults.id }).from(astrologyReportResults).where(eq(astrologyReportResults.userId, adminUserId));
+  expect(persistedAdminResults).toHaveLength(15);
+
   expect(pageErrors).toEqual([]);
   expect(consoleErrors).toEqual([]);
 
-  await Promise.all([contextA.close(), contextB.close()]);
+  await Promise.all([contextA.close(), contextB.close(), contextC.close(), adminContext.close()]);
 });

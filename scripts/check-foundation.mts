@@ -350,7 +350,7 @@ if (!journeyModel.includes("listUserFeedItems") || !journeyModel.includes("getPu
   throw new Error("Journey view model must split authenticated private feed reads from public fallback content.");
 }
 if (journeyModel.includes("private_projection_from_public_source") || journeyModel.includes("seedPrivateFeedFromPublicFallback")) {
-  throw new Error("Signed-in first-run Journey must wait for Composer onboarding cards instead of copying public fallback cards.");
+  throw new Error("Signed-in Journey must remain private instead of copying public fallback cards.");
 }
 if (
   !reportSignalPublishRoute.includes("ensureReportJourneyItem") ||

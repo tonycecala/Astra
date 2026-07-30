@@ -204,10 +204,10 @@ try {
 
   const firstRunPrivateHtml = await requestText(`${appBaseUrl}/journey`);
   if (
-    !firstRunPrivateHtml.includes("Private journey") ||
-    !firstRunPrivateHtml.includes("Composer will generate your onboarding cards")
+    !firstRunPrivateHtml.includes("Your private, ordered place") ||
+    !firstRunPrivateHtml.includes("Your Journey is clear")
   ) {
-    throw new Error("Signed-in first-run Journey did not show the Composer onboarding state before publish.");
+    throw new Error("Signed-in first-run Journey did not show the clear private state.");
   }
   if (firstRunPrivateHtml.includes("Public fallback")) {
     throw new Error("Signed-in first-run Journey must not masquerade as public fallback.");
@@ -284,8 +284,8 @@ try {
 
   const privateHtml = await requestText(`${appBaseUrl}/journey`);
   if (
-    !privateHtml.includes("Private journey") ||
-    !privateHtml.includes("Composer is shaping this Journey") ||
+    !privateHtml.includes("Your private, ordered place") ||
+    !privateHtml.includes("Current step") ||
     !privateHtml.includes(publish.write.feedItem.title)
   ) {
     throw new Error("Signed-in Journey did not render the operator-published private card.");

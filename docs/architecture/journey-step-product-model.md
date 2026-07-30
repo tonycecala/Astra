@@ -25,7 +25,8 @@ Every read and mutation is scoped by both `userId` and feed-item ID. Journey nev
 
 ## Producer integration
 
-- Opening Journey for a profile whose onboarding status is still pending asks Composer to publish its deterministic private onboarding batch. Astra marks onboarding complete only after the full batch persists; a Composer outage leaves the profile pending so the next Journey visit retries without blocking auth, Self, Library, or report APIs.
+- Chart Arrival is Astra's onboarding success moment. Journey does not seed a second welcome or setup checklist.
+- Opening Journey idempotently retires the five legacy Composer onboarding cards, including saved copies. Their Astria-era Stream, Portrait, and constellation language is preserved only in Composer's historical/operator workflow and is no longer projected automatically into Astra.
 - Successful report generation makes the report eligible for a curated, deterministic user-owned `report_signal` item; it does not guarantee a permanent Journey entry.
 - A report signal qualifies only when the completed report is no more than 30 days old, has a matching private request, is not imported, legacy, preview/test data, or an unsupported report family, and is the newest report for its chart target and report type.
 - Customer accounts may receive those curated report signals. Admin accounts receive no automatic report signals because their high-volume report runs are operational/test output; admin reports remain intact in Library.
@@ -38,7 +39,7 @@ Every read and mutation is scoped by both `userId` and feed-item ID. Journey nev
 
 ## Product states and pattern acceptance
 
-The rendered states are signed-out illustration, loading, private empty, one step, multiple ordered steps, saved steps, action failure, Composer delay with safe retry, and database failure. The implementation follows `01-time-to-value.md` (real onboarding value reaches Journey), `05-progressive-disclosure.md` (queue secondary to the current step), `20-fail-safe.md` (producer retries preserve user state), and `36-trust-building.md` (user-scoped projections and report provenance). No forbidden or adversarial pattern is used.
+The rendered states are signed-out illustration, loading, private empty, one step, multiple ordered steps, saved steps, action failure, and database failure. The implementation follows `01-time-to-value.md` (Chart Arrival owns onboarding value), `05-progressive-disclosure.md` (queue secondary to the current step), `20-fail-safe.md` (producer retries preserve user state), and `36-trust-building.md` (user-scoped projections and report provenance). No forbidden or adversarial pattern is used.
 
 The analytics contract documents `journey_step_opened`, `journey_step_completed`, `journey_step_saved`, `journey_step_dismissed`, and `journey_step_restored`. Runtime emission remains N/A because Astra has no active client analytics transport. The durable database state remains the source of truth; no silent telemetry sink was invented.
 

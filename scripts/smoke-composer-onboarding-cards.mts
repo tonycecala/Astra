@@ -255,8 +255,14 @@ try {
   }
 
   const privateHtml = await requestText(`${appBaseUrl}/journey`);
-  if (!privateHtml.includes("Your private, ordered place") || !privateHtml.includes("Current step") || !privateHtml.includes("Welcome to Astra")) {
-    throw new Error("Signed-in Journey did not render the Composer onboarding cards.");
+  if (!privateHtml.includes("Your private, ordered place") || !privateHtml.includes("Your Journey is clear") || privateHtml.includes("Welcome to Astra")) {
+    throw new Error("Signed-in Journey did not retire the legacy Composer onboarding cards.");
+  }
+  const retiredFeed = await listUserFeedItems(db, { userId: targetUserA, state: "seen", limit: 20 });
+  for (const card of prepared.batch.cards) {
+    if (!retiredFeed.items.some((item) => item.id === card.feedItem.id)) {
+      throw new Error(`Journey did not retire legacy onboarding card: ${card.feedItem.title}`);
+    }
   }
 } finally {
   const prepared = prepareComposerOnboardingCardsBatch({

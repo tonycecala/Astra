@@ -449,12 +449,10 @@ test.describe("clean-start routes", () => {
     expect(prematureChartRequests).toBe(0);
 
     await page.goto("/journey");
-    await expect(page.locator("article.astraPublishedCard .astraPublishedCardTitle")).toHaveText("Welcome to Astra");
-    await expect(page.getByText("This is part of the private welcome sequence created for your Astra account.")).toBeHidden();
-    await page.getByText("Why this now?").click();
-    await expect(page.getByText("This is part of the private welcome sequence created for your Astra account.")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Your Journey is clear" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Begin with your Self" })).toHaveAttribute("href", "/self");
     const onboardingFeed = await listUserFeedItems(db, { userId: onboardingUserId, state: "available", limit: 20 });
-    expect(onboardingFeed.items.filter((item) => item.reasonCode === "composer_onboarding_card")).toHaveLength(5);
+    expect(onboardingFeed.items.filter((item) => item.reasonCode === "composer_onboarding_card")).toHaveLength(0);
 
     await page.goto("/self#self-birth-onboarding");
     await expect(page.getByText("Step 1 of 3: Your name")).toBeVisible();

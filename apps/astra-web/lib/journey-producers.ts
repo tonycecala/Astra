@@ -6,45 +6,15 @@ import {
   getUserAstrologyReportResult,
   getUserFeedItemById,
   listAvailableUserReportSignalsForRepair,
+  listUserFeedItems,
   listUserAstrologyReportRequests,
   listUserAstrologyReportResults,
-  markAuthUserOnboardingComplete,
   retireAvailableUserFeedItems,
   updateUserFeedItemState
 } from "@astra/db";
 import { persistComposerPrivateFeedWrite } from "./composer-private-feed";
 import { curateReportSignals, reportJourneySubtitle } from "./journey-policy";
 import { isWelcomeReport } from "./report-display";
-
-function clean(value: string | undefined) {
-  return value?.trim().replace(/^['"]|['"]$/g, "") || "";
-}
-
-function composerBaseUrl() {
-  const configured = clean(process.env.COMPOSER_APP_BASE_URL) || clean(process.env.COMPOSER_APP_SMOKE_BASE_URL);
-  if (configured) return configured;
-  if (process.env.VERCEL_ENV) throw new Error("COMPOSER_APP_BASE_URL is required for hosted Astra deployments.");
-  return "http://localhost:3012";
-}
-
-export async function ensureComposerOnboardingJourney(input: { onboardingStatus: string; userId: string }) {
-  if (input.onboardingStatus === "complete") return { created: false } as const;
-  const internalToken = clean(process.env.ASTRA_INTERNAL_API_TOKEN);
-  if (!internalToken) throw new Error("ASTRA_INTERNAL_API_TOKEN is required to publish Journey onboarding cards.");
-
-  const response = await fetch(new URL("/api/onboarding/publish", composerBaseUrl()), {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-astra-internal-token": internalToken },
-    body: JSON.stringify({ targetUserId: input.userId, batchId: `automatic_onboarding:${input.userId}` }),
-    cache: "no-store",
-    signal: AbortSignal.timeout(8_000)
-  });
-  const body = await response.json().catch(() => ({})) as { ok?: boolean; error?: string };
-  if (!response.ok || !body.ok) throw new Error(body.error ?? `COMPOSER_ONBOARDING_FAILED_${response.status}`);
-
-  await markAuthUserOnboardingComplete(db, input.userId);
-  return { created: true } as const;
-}
 
 function reportSignalWrite(result: AstrologyReportResult, request: AstrologyReportRequest): ComposerPrivateFeedWrite {
   if (result.status !== "completed" || !result.publicSignal) throw new Error("ASTROLOGY_REPORT_PUBLIC_SIGNAL_NOT_READY");
@@ -143,4 +113,16 @@ export async function retireLegacyWelcomeJourneyItems(userId: string) {
       await updateUserFeedItemState(db, { userId, feedItemId, action: "complete" });
     }
   }));
+}
+
+export async function retireLegacyComposerOnboardingJourneyItems(userId: string) {
+  const [available, saved] = await Promise.all([
+    listUserFeedItems(db, { userId, state: "available", limit: 100 }),
+    listUserFeedItems(db, { userId, state: "saved", limit: 100 })
+  ]);
+  const legacyItems = [...available.items, ...saved.items].filter((item) => item.reasonCode === "composer_onboarding_card");
+  await Promise.all(legacyItems.map((item) => (
+    updateUserFeedItemState(db, { userId, feedItemId: item.id, action: "complete" })
+  )));
+  return { retired: legacyItems.length };
 }
