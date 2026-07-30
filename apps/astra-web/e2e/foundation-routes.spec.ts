@@ -442,10 +442,10 @@ test.describe("clean-start routes", () => {
       if (request.method() === "POST" && new URL(request.url()).pathname === "/api/chart-requests") prematureChartRequests += 1;
     });
     await page.goto("/self?start=report#self-birth-onboarding");
-    await expect(page.getByText("Step 3 of 3: Arrival")).toBeVisible();
-    await page.getByRole("button", { name: "Reveal My Chart", exact: true }).click();
     await expect(page.getByText("Step 2 of 3: Birth details")).toBeVisible();
     await expect(page.getByText("Choose a real birth date before continuing.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Next", exact: true })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Reveal My Chart", exact: true })).toHaveCount(0);
     expect(prematureChartRequests).toBe(0);
 
     await page.goto("/journey");

@@ -314,14 +314,25 @@ export function BirthOnboardingPanel({
   const initialChartRequest = initialChartRequestId
     ? initialRequests.find((request) => request.id === initialChartRequestId)
     : undefined;
-  const [form, setForm] = useState<FormState>(() => defaultForm(displayName, initialBirthData, initialChartRequest, initialSubjectName));
+  const initialForm = defaultForm(displayName, initialBirthData, initialChartRequest, initialSubjectName);
+  const requestedInitialStep = initialChartRequest ? initialStep ?? "report" : initialStep ?? "subject";
+  const initialActiveStep = (() => {
+    if (!chartArrivalEligible || requestedInitialStep !== "report") return requestedInitialStep;
+    if (!optional(initialForm.subjectName)) return "subject";
+    return isValidDateOnly(initialForm.date) ? "report" : "birth_details";
+  })();
+  const [form, setForm] = useState<FormState>(initialForm);
   const [allies, setAllies] = useState(initialAllies);
-  const [activeStep, setActiveStep] = useState<Step>(() => (initialChartRequest ? initialStep ?? "report" : initialStep ?? "subject"));
+  const [activeStep, setActiveStep] = useState<Step>(initialActiveStep);
   const [selectedExistingChartRequestId, setSelectedExistingChartRequestId] = useState(initialChartRequest?.id ?? "");
   const [requests, setRequests] = useState(initialRequests);
   const [reportRequests, setReportRequests] = useState(initialReportRequests);
   const [, setReportResults] = useState(initialReportResults);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(
+    requestedInitialStep === "report" && initialActiveStep === "birth_details"
+      ? ui.self.birthMomentDateRequired
+      : ""
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmissionComplete, setIsSubmissionComplete] = useState(false);
   const [isConfirmingReport, setIsConfirmingReport] = useState(false);
