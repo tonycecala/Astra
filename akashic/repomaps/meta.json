@@ -1136,8 +1136,8 @@
       "file": "apps/astra-web/e2e/journey-step.spec.ts",
       "weight": 91.33,
       "bucket": "other",
-      "estimated_tokens": 3148,
-      "lines": 240,
+      "estimated_tokens": 3160,
+      "lines": 242,
       "symbols": 27,
       "symbol_type_counts": {
         "constant": 26,
@@ -4000,10 +4000,10 @@
     },
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
-      "weight": 20.69,
+      "weight": 20.73,
       "bucket": "akashic",
-      "estimated_tokens": 341,
-      "lines": 33,
+      "estimated_tokens": 389,
+      "lines": 35,
       "symbols": 5,
       "symbol_type_counts": {
         "heading": 5
@@ -4544,6 +4544,20 @@
       "bucket": "akashic",
       "estimated_tokens": 455,
       "lines": 29,
+      "symbols": 4,
+      "symbol_type_counts": {
+        "heading": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
+      "weight": 17.5,
+      "bucket": "akashic",
+      "estimated_tokens": 172,
+      "lines": 25,
       "symbols": 4,
       "symbol_type_counts": {
         "heading": 4
@@ -6341,8 +6355,8 @@
     }
   ],
   "coverage": {
-    "files": 421,
-    "symbols": 5858,
-    "total_estimated_tokens": 1135078
+    "files": 422,
+    "symbols": 5862,
+    "total_estimated_tokens": 1135310
   }
 }

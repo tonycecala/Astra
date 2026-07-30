@@ -92,11 +92,13 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private next step");
   await expect(pageA.getByText("A private current step")).toBeVisible();
   await pageA.getByRole("button", { name: "Restore" }).click();
+  await pageA.reload();
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
 
   await pageA.getByRole("button", { name: "Dismiss" }).click();
   await expect(pageA.getByText("Step dismissed.")).toBeVisible();
   await pageA.getByRole("button", { name: "Undo" }).click();
+  await pageA.reload();
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
 
   const currentActionUrl = "**/api/journey/items/**";

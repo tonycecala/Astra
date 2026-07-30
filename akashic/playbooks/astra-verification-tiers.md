@@ -30,3 +30,5 @@ Prove the real OTP contract once. Reuse Better Auth-signed test sessions for pro
 ## Review
 
 Record the selected tier and why in closeout. If a relevant tier was omitted, state the boundary evidence that made it unnecessary.
+
+For durable state transitions, first prove the action acknowledgement, then reload before asserting the persisted result. Do not make release acceptance depend on client revalidation timing.

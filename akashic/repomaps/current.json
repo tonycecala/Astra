@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-07-30T14:21:28.306Z",
+  "generated_at": "2026-07-30T16:04:09.355Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 421,
-  "total_symbols": 5858,
-  "total_estimated_tokens": 1135078,
+  "files_indexed": 422,
+  "total_symbols": 5862,
+  "total_estimated_tokens": 1135310,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -22201,9 +22201,9 @@
     {
       "file": "apps/astra-web/e2e/journey-step.spec.ts",
       "lang": "typescript",
-      "size": 12595,
-      "lines": 240,
-      "estimated_tokens": 3148,
+      "size": 12643,
+      "lines": 242,
+      "estimated_tokens": 3160,
       "symbols": [
         {
           "name": "seedStep",
@@ -22277,67 +22277,67 @@
         },
         {
           "name": "currentActionUrl",
-          "line": 102,
+          "line": 104,
           "type": "constant"
         },
         {
           "name": "customerReports",
-          "line": 126,
-          "type": "constant"
-        },
-        {
-          "name": "requestId",
-          "line": 127,
-          "type": "constant"
-        },
-        {
-          "name": "reportType",
           "line": 128,
           "type": "constant"
         },
         {
-          "name": "subjectName",
+          "name": "requestId",
           "line": 129,
           "type": "constant"
         },
         {
-          "name": "createdAt",
+          "name": "reportType",
           "line": 130,
           "type": "constant"
         },
         {
-          "name": "customerJourney",
-          "line": 173,
-          "type": "constant"
-        },
-        {
-          "name": "persistedCustomerResults",
-          "line": 181,
-          "type": "constant"
-        },
-        {
-          "name": "adminReports",
-          "line": 184,
-          "type": "constant"
-        },
-        {
-          "name": "requestId",
-          "line": 185,
+          "name": "subjectName",
+          "line": 131,
           "type": "constant"
         },
         {
           "name": "createdAt",
+          "line": 132,
+          "type": "constant"
+        },
+        {
+          "name": "customerJourney",
+          "line": 175,
+          "type": "constant"
+        },
+        {
+          "name": "persistedCustomerResults",
+          "line": 183,
+          "type": "constant"
+        },
+        {
+          "name": "adminReports",
           "line": 186,
           "type": "constant"
         },
         {
+          "name": "requestId",
+          "line": 187,
+          "type": "constant"
+        },
+        {
+          "name": "createdAt",
+          "line": 188,
+          "type": "constant"
+        },
+        {
           "name": "adminJourney",
-          "line": 227,
+          "line": 229,
           "type": "constant"
         },
         {
           "name": "persistedAdminResults",
-          "line": 232,
+          "line": 234,
           "type": "constant"
         }
       ],
@@ -35504,9 +35504,9 @@
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
       "lang": "markdown",
-      "size": 1363,
-      "lines": 33,
-      "estimated_tokens": 341,
+      "size": 1555,
+      "lines": 35,
+      "estimated_tokens": 389,
       "symbols": [
         {
           "name": "Astra Verification Tiers",
@@ -35547,7 +35547,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 20.69,
+      "importance_weight": 20.73,
       "importance_bucket": "akashic"
     },
     {
@@ -37258,6 +37258,49 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 17.55,
+      "importance_bucket": "akashic"
+    },
+    {
+      "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
+      "lang": "markdown",
+      "size": 686,
+      "lines": 25,
+      "estimated_tokens": 172,
+      "symbols": [
+        {
+          "name": "Browser action acknowledgement is not persisted-state proof",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "What Happened",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Why It Happened",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "How To Avoid It",
+          "line": 23,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Browser action acknowledgement is not persisted-state proof",
+        "What Happened",
+        "Why It Happened",
+        "How To Avoid It"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 17.5,
       "importance_bucket": "akashic"
     },
     {
@@ -41797,7 +41840,7 @@
     "adminJourney": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 227,
+        "line": 229,
         "type": "constant"
       }
     ],
@@ -41818,7 +41861,7 @@
     "adminReports": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 184,
+        "line": 186,
         "type": "constant"
       }
     ],
@@ -46192,6 +46235,13 @@
       {
         "file": "docs/operations/alpha-vercel-launch.md",
         "line": 74,
+        "type": "heading"
+      }
+    ],
+    "Browser action acknowledgement is not persisted-state proof": [
+      {
+        "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
+        "line": 15,
         "type": "heading"
       }
     ],
@@ -51362,12 +51412,12 @@
     "createdAt": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 130,
+        "line": 132,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 186,
+        "line": 188,
         "type": "constant"
       },
       {
@@ -51789,7 +51839,7 @@
     "currentActionUrl": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 102,
+        "line": 104,
         "type": "constant"
       }
     ],
@@ -51914,14 +51964,14 @@
     "customerJourney": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 173,
+        "line": 175,
         "type": "constant"
       }
     ],
     "customerReports": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 126,
+        "line": 128,
         "type": "constant"
       }
     ],
@@ -56788,6 +56838,11 @@
       {
         "file": "akashic/templates/warning-template.md",
         "line": 18,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
+        "line": 23,
         "type": "heading"
       },
       {
@@ -63206,14 +63261,14 @@
     "persistedAdminResults": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 232,
+        "line": 234,
         "type": "constant"
       }
     ],
     "persistedCustomerResults": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 181,
+        "line": 183,
         "type": "constant"
       }
     ],
@@ -68177,7 +68232,7 @@
     "reportType": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 128,
+        "line": 130,
         "type": "constant"
       }
     ],
@@ -68486,12 +68541,12 @@
       },
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 127,
+        "line": 129,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 185,
+        "line": 187,
         "type": "constant"
       },
       {
@@ -73322,7 +73377,7 @@
     "subjectName": [
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
-        "line": 129,
+        "line": 131,
         "type": "constant"
       },
       {
@@ -76479,6 +76534,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
         "file": "akashic/warnings/browser-bridge-networkidle-wait-is-not-reliable.md",
         "line": 11,
         "type": "heading"
@@ -76601,6 +76661,11 @@
       {
         "file": "akashic/templates/warning-template.md",
         "line": 15,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
+        "line": 20,
         "type": "heading"
       },
       {
@@ -78448,8 +78513,8 @@
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
         "weight": 91.33,
         "bucket": "other",
-        "estimated_tokens": 3148,
-        "lines": 240,
+        "estimated_tokens": 3160,
+        "lines": 242,
         "symbols": 27,
         "symbol_type_counts": {
           "constant": 26,
@@ -81312,10 +81377,10 @@
       },
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "weight": 20.69,
+        "weight": 20.73,
         "bucket": "akashic",
-        "estimated_tokens": 341,
-        "lines": 33,
+        "estimated_tokens": 389,
+        "lines": 35,
         "symbols": 5,
         "symbol_type_counts": {
           "heading": 5
@@ -81856,6 +81921,20 @@
         "bucket": "akashic",
         "estimated_tokens": 455,
         "lines": 29,
+        "symbols": 4,
+        "symbol_type_counts": {
+          "heading": 4
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
+        "weight": 17.5,
+        "bucket": "akashic",
+        "estimated_tokens": 172,
+        "lines": 25,
         "symbols": 4,
         "symbol_type_counts": {
           "heading": 4
@@ -83653,9 +83732,9 @@
       }
     ],
     "coverage": {
-      "files": 421,
-      "symbols": 5858,
-      "total_estimated_tokens": 1135078
+      "files": 422,
+      "symbols": 5862,
+      "total_estimated_tokens": 1135310
     }
   }
 }
