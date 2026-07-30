@@ -7,9 +7,10 @@ import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
 import { PageHeader } from "../../components/PageHeader";
 import { SelfTabAvatar } from "../../components/SelfTabAvatar";
 import { getAstraAuthContext } from "../../lib/auth/profile";
+import { getUserChartArrival, hasLegacyWelcomeReport } from "../../lib/chart-arrival";
 import { displayTimezone } from "../../lib/display";
 import { ui } from "../../lib/i18n";
-import { reportFamilyLabel } from "../../lib/report-display";
+import { isWelcomeReport, reportFamilyLabel } from "../../lib/report-display";
 
 function normalizeRole(value: string | undefined) {
   const normalizedRole = (value ?? "self").trim().toLowerCase();
@@ -131,6 +132,12 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
     chartRequests.find((request) => request.context?.subject?.subjectType === "self") ??
     chartRequests.find((request) => request.source === "self") ??
     chartRequests.at(0);
+  const legacyWelcome = await hasLegacyWelcomeReport(profile.userId);
+  const chartArrival = await getUserChartArrival(profile.userId);
+  const visibleReportRequests = reportRequests.filter((request) => !isWelcomeReport(request));
+  const visibleReportRequestIds = new Set(visibleReportRequests.map((request) => request.id));
+  const visibleReportResults = reportResults.filter((result) => visibleReportRequestIds.has(result.requestId));
+  const chartArrivalEligible = !legacyWelcome && chartArrival?.state !== "seen";
   const selectedOnboardingChart = params.chart
     ? chartRequests.find((request) => request.id === params.chart)
     : undefined;
@@ -235,9 +242,9 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
         <section className={birthOnboardingStyles.summaryRail} aria-label={ui.self.reportRequestsLabel}>
           <article className={`card ${birthOnboardingStyles.railCard}`}>
             <h2 className={birthOnboardingStyles.railTitle}>{ui.self.reportRequestsStatusTitle}</h2>
-            {reportRequests.length ? (
+            {visibleReportRequests.length ? (
               <ul className={birthOnboardingStyles.compactRecordList}>
-                {reportRequests.slice(0, 5).map((request) => (
+                {visibleReportRequests.slice(0, 5).map((request) => (
                   <li key={request.id}>
                     <div>
                       <strong>
@@ -270,8 +277,10 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
           role={profile.role}
           starBalance={profile.starBalance}
           initialRequests={chartRequests}
-          initialReportRequests={reportRequests}
-          initialReportResults={reportResults}
+          initialReportRequests={visibleReportRequests}
+          initialReportResults={visibleReportResults}
+          initialChartArrival={chartArrival ?? undefined}
+          chartArrivalEligible={chartArrivalEligible}
           initialBirthData={onboardingChart?.birthData}
           initialChartRequestId={onboardingChart?.id}
           initialSubjectName={profile.displayName === profile.email ? "" : profile.displayName}

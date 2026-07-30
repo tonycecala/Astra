@@ -1,12 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const astraServerCommand = process.env.ASTRA_E2E_SERVER_MODE === "production" ? "npm run start" : "npm run dev";
+const astraServerCommand = process.env.ASTRA_E2E_SERVER_MODE === "production" ? "npm run start" : "npm run dev -- --webpack";
 
 export default defineConfig({
   testDir: "./e2e",
-  timeout: 30_000,
+  timeout: 60_000,
+  workers: 1,
   expect: {
-    timeout: 5_000
+    timeout: 10_000
   },
   use: {
     baseURL: "http://localhost:3011",

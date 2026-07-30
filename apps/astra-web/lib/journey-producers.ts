@@ -1,8 +1,17 @@
 import "server-only";
 
 import type { AstrologyReportResult, ComposerPrivateFeedWrite } from "@astra/contracts";
-import { db, getUserAstrologyReportResult, listUserAstrologyReportResults, markAuthUserOnboardingComplete } from "@astra/db";
+import {
+  db,
+  getUserAstrologyReportResult,
+  getUserFeedItemById,
+  listUserAstrologyReportRequests,
+  listUserAstrologyReportResults,
+  markAuthUserOnboardingComplete,
+  updateUserFeedItemState
+} from "@astra/db";
 import { persistComposerPrivateFeedWrite } from "./composer-private-feed";
+import { isWelcomeReport } from "./report-display";
 
 function clean(value: string | undefined) {
   return value?.trim().replace(/^['"]|['"]$/g, "") || "";
@@ -99,7 +108,22 @@ export async function ensureReportJourneyItem(input: { requestId: string; userId
 }
 
 export async function reconcileCompletedReportJourneyItems(userId: string) {
-  const results = await listUserAstrologyReportResults(db, userId);
-  const completed = results.filter((result) => result.status === "completed" && result.publicSignal);
+  const [results, requests] = await Promise.all([
+    listUserAstrologyReportResults(db, userId),
+    listUserAstrologyReportRequests(db, userId)
+  ]);
+  const visibleRequestIds = new Set(requests.filter((request) => !isWelcomeReport(request)).map((request) => request.id));
+  const completed = results.filter((result) => visibleRequestIds.has(result.requestId) && result.status === "completed" && result.publicSignal);
   return Promise.all(completed.map((result) => ensureReportJourneyItem({ requestId: result.requestId, userId, result })));
+}
+
+export async function retireLegacyWelcomeJourneyItems(userId: string) {
+  const requests = await listUserAstrologyReportRequests(db, userId);
+  const welcomeIds = requests.filter(isWelcomeReport).map((request) => `report_signal_feed:${userId}:${request.id}`);
+  await Promise.all(welcomeIds.map(async (feedItemId) => {
+    const item = await getUserFeedItemById(db, { userId, feedItemId });
+    if (item?.state !== "seen") {
+      await updateUserFeedItemState(db, { userId, feedItemId, action: "complete" });
+    }
+  }));
 }

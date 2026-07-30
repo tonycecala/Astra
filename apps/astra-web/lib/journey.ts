@@ -6,6 +6,8 @@ import { fetchComposerAvailability } from "./composer-selection";
 import { ui } from "./i18n";
 import { buildPublicComposerPreview, PUBLIC_COMPOSER_SAMPLE_COUNT } from "./public-composer-preview";
 import { reconcileCompletedReportJourneyItems } from "./journey-producers";
+import { retireLegacyWelcomeJourneyItems } from "./journey-producers";
+import { CHART_ARRIVAL_REASON } from "./chart-arrival";
 
 export type JourneyStep = {
   item: UserFeedItem;
@@ -73,13 +75,17 @@ function stepFromFeedItem(item: UserFeedItem): JourneyStep {
 }
 
 export async function getJourneyViewModel(userId: string): Promise<JourneyViewModel> {
-  await reconcileCompletedReportJourneyItems(userId);
+  await Promise.all([reconcileCompletedReportJourneyItems(userId), retireLegacyWelcomeJourneyItems(userId)]);
   const [available, saved] = await Promise.all([
     listUserFeedItems(db, { userId, state: "available", limit: 50 }),
     listUserFeedItems(db, { userId, state: "saved", limit: 50 })
   ]);
-  const steps = available.items.map(stepFromFeedItem);
-  return { currentStep: steps[0], queue: steps.slice(1), saved: saved.items.map(stepFromFeedItem) };
+  const steps = available.items.filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON).map(stepFromFeedItem);
+  return {
+    currentStep: steps[0],
+    queue: steps.slice(1),
+    saved: saved.items.filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON).map(stepFromFeedItem)
+  };
 }
 
 export async function getPublicJourneyPreview(): Promise<PublicJourneyCard[]> {

@@ -7,7 +7,7 @@ import {
   type ReportChartBasisSnapshot,
   type ReportChartSourceSnapshot
 } from "@astra/contracts";
-import { db, getUserChartMakerRequest, listUserAstrologyReportRequests, listUserChartMakerRequests, purchaseAstrologyReportRequest } from "@astra/db";
+import { db, getUserChartMakerRequest, listUserAstrologyReportRequests, purchaseAstrologyReportRequest } from "@astra/db";
 import { getAstraAuthContext } from "../../../lib/auth/profile";
 import { reportProductFor } from "../../../lib/reportCatalog";
 import { synastryBasisForPerspective } from "../../../lib/synastryPerspective";
@@ -108,19 +108,6 @@ export async function POST(request: Request) {
   let primary = sourceSnapshot(primaryChart, profile.userId);
   let partner: ReportChartSourceSnapshot | undefined;
   let readerChart = primaryChart;
-  const introIdentity = parsed.data.introIdentity === true;
-  if (introIdentity) {
-    const [ownedCharts, existingReports] = await Promise.all([
-      listUserChartMakerRequests(db, profile.userId),
-      listUserAstrologyReportRequests(db, profile.userId)
-    ]);
-    const selfChartCount = ownedCharts.filter((chart) => chart.source === "self").length;
-    const introAlreadyCreated = existingReports.some((report) => report.context?.modelPilot === "gemini-intro-identity");
-    if (parsed.data.reportType !== "identity" || primaryChart.source !== "self" || selfChartCount !== 1 || introAlreadyCreated) {
-      return invalidBasis("The free introduction is available only for a first natal Self chart.");
-    }
-  }
-
   if (parsed.data.reportBasis.type === "progressed") {
     if (primary.birthData.birthTimeKnown === false || !primary.birthData.time) {
       return invalidBasis("Progressed reports require a known birth time.");
@@ -164,7 +151,6 @@ export async function POST(request: Request) {
   const context = {
     ...(readerChart.context ?? {}),
     chartSettings: reportBasis.chartSettings,
-    ...(introIdentity ? { modelPilot: "gemini-intro-identity" } : {}),
     ...(partner
       ? {
           synastryPartner: {
@@ -189,14 +175,14 @@ export async function POST(request: Request) {
       intent: parsed.data.intent,
       context,
       source: readerChart.source,
-      costCredits: introIdentity ? 0 : product.costStars,
+      costCredits: product.costStars,
       reportBasis,
       bypassCreditDebit: profile.role === "admin"
     });
     return NextResponse.json({ request: purchased.request, balanceAfter: purchased.balanceAfter }, { status: 201 });
   } catch (error) {
     if (error instanceof Error && error.message === "insufficient_credits") {
-      return insufficientStars(introIdentity ? 0 : product.costStars);
+      return insufficientStars(product.costStars);
     }
     throw error;
   }

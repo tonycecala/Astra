@@ -24,6 +24,7 @@ Include:
 | `stream_card_saved` | User saves to Library. |
 | `empty_state_cta_clicked` | User acts from an empty state. |
 | `success_moment_viewed` | Meaningful milestone ceremony shown. |
+| `chart_arrival_completed` | User explicitly chooses **Enter Astra** after viewing the persisted First Glimpse. Runtime emission is N/A until Astra has an analytics transport. |
 | `value_replay_opened` | Digest/notification/widget replay opened. |
 | `library_artifact_created` | Report/card/reflection/certificate stored. |
 | `commitment_created` | User declares goal/pace/focus. |

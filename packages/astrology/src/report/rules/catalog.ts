@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import source from "../../../rules/report-policies.json";
+import source from "../../../rules/report-policies.json" with { type: "json" };
 
 const sectionClosingSchema = z.record(z.string(), z.string());
 

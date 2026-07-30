@@ -1,5 +1,4 @@
 import {
-  buildCalendarMonth,
   formatDisplayTime,
   isFutureDateOnly,
   isValidDateOnly,
@@ -12,25 +11,6 @@ import {
 } from "@astra/contracts";
 
 const today = new Date(2026, 5, 28);
-const calendar = buildCalendarMonth({
-  year: 2026,
-  monthIndex: 4,
-  selectedDate: "2026-05-16",
-  today
-});
-
-if (calendar.length !== 42) {
-  throw new Error(`Calendar should render a stable 42-cell grid, got ${calendar.length}.`);
-}
-
-if (!calendar.some((day) => day.date === "2026-05-16" && day.isSelected)) {
-  throw new Error("Calendar did not preserve the selected date.");
-}
-
-if (!calendar.some((day) => day.date === "2026-06-01" && day.isFuture === false)) {
-  throw new Error("Adjacent non-future days should remain selectable.");
-}
-
 if (!isFutureDateOnly("2026-06-29", today)) {
   throw new Error("Future birth dates must be detected.");
 }

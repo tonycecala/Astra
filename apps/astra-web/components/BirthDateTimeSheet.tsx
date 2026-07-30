@@ -1,20 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { AlertCircle, CalendarDays, ChevronLeft, ChevronRight, Clock3, Globe2, X } from "lucide-react";
+import { AlertCircle, CalendarDays, Clock3, Globe2, X } from "lucide-react";
 import { displayTimezone } from "../lib/display";
 import { ui } from "../lib/i18n";
 import {
   type BirthDateTimeValue,
-  buildCalendarMonth,
   defaultBrowserTimezone,
   formatDisplayTime,
   formatReadableDateOnly,
   isFutureDateOnly,
   isValidDateOnly,
   isValidTimeOnly,
-  monthLabel,
+  pad2,
   parseDateOnly
 } from "./BirthDateTimeSheet.helpers";
 import styles from "./BirthDateTimeSheet.module.css";
@@ -30,24 +29,38 @@ type BirthDateTimeSheetProps = {
   onSave: (value: BirthDateTimeValue) => void;
 };
 
-const dayLabels = ["S", "M", "T", "W", "T", "F", "S"];
 const monthOptions = Array.from({ length: 12 }, (_, monthIndex) => ({
-  value: monthIndex,
+  value: monthIndex + 1,
   label: new Intl.DateTimeFormat("en-US", { month: "long" }).format(new Date(2000, monthIndex, 1))
 }));
+const dayOptions = Array.from({ length: 31 }, (_, index) => index + 1);
 
-function selectedMonth(value: BirthDateTimeValue) {
-  const parsed = parseDateOnly(value.date) ?? new Date();
+type DateParts = {
+  month: string;
+  day: string;
+  year: string;
+};
+
+function datePartsFromValue(date: string): DateParts {
+  const parsed = parseDateOnly(date);
+  if (!parsed) return { month: "", day: "", year: "" };
   return {
-    year: parsed.getFullYear(),
-    monthIndex: parsed.getMonth()
+    month: String(parsed.getMonth() + 1),
+    day: String(parsed.getDate()),
+    year: String(parsed.getFullYear())
   };
 }
 
-function dateValidationError(value: BirthDateTimeValue) {
-  if (!value.date) return ui.self.birthMomentDayRequired;
-  if (!isValidDateOnly(value.date)) return ui.self.birthMomentDateRequired;
-  if (isFutureDateOnly(value.date)) return ui.self.birthMomentFutureDate;
+function dateFromParts(parts: DateParts) {
+  if (!parts.month || !parts.day || parts.year.length !== 4) return "";
+  return `${parts.year}-${pad2(Number.parseInt(parts.month, 10))}-${pad2(Number.parseInt(parts.day, 10))}`;
+}
+
+function dateValidationError(parts: DateParts) {
+  if (!parts.month || !parts.day || parts.year.length !== 4) return ui.self.birthMomentDateIncomplete;
+  const date = dateFromParts(parts);
+  if (!isValidDateOnly(date)) return ui.self.birthMomentDateRequired;
+  if (isFutureDateOnly(date)) return ui.self.birthMomentFutureDate;
   return "";
 }
 
@@ -62,10 +75,6 @@ function timezoneValidationError(value: BirthDateTimeValue) {
   return "";
 }
 
-function validate(value: BirthDateTimeValue) {
-  return dateValidationError(value) || timeValidationError(value) || timezoneValidationError(value);
-}
-
 export function BirthDateTimeSheet({
   open,
   title = ui.self.birthMomentSheetTitle,
@@ -77,7 +86,7 @@ export function BirthDateTimeSheet({
   onSave
 }: BirthDateTimeSheetProps) {
   const [draft, setDraft] = useState(() => ({ ...value, timezone: value.timezone || defaultBrowserTimezone() }));
-  const [visibleMonth, setVisibleMonth] = useState(() => selectedMonth({ ...value, timezone: value.timezone || defaultBrowserTimezone() }));
+  const [dateParts, setDateParts] = useState(() => datePartsFromValue(value.date));
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -91,23 +100,6 @@ export function BirthDateTimeSheet({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onClose, open]);
 
-  const calendarDays = useMemo(
-    () =>
-      buildCalendarMonth({
-        year: visibleMonth.year,
-        monthIndex: visibleMonth.monthIndex,
-        selectedDate: draft.date
-      }),
-    [draft.date, visibleMonth]
-  );
-
-  const canGoNext = useMemo(() => {
-    const today = new Date();
-    const nextMonth = new Date(visibleMonth.year, visibleMonth.monthIndex + 1, 1);
-    const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    return nextMonth.getTime() <= currentMonth.getTime();
-  }, [visibleMonth]);
-
   if (!open || typeof document === "undefined") return null;
 
   function updateDraft(next: Partial<BirthDateTimeValue>) {
@@ -115,35 +107,17 @@ export function BirthDateTimeSheet({
     setMessage("");
   }
 
-  function selectDay(date: string, isFuture: boolean) {
-    if (isFuture || disabled) return;
-    updateDraft({ date });
-  }
-
-  function showMonth(next: { year: number; monthIndex: number }) {
-    setVisibleMonth(next);
-    setDraft((current) => {
-      const selected = parseDateOnly(current.date);
-      if (!selected || (selected.getFullYear() === next.year && selected.getMonth() === next.monthIndex)) return current;
-      return { ...current, date: "" };
-    });
-    setMessage("");
-  }
-
-  function moveMonth(delta: number) {
-    const next = new Date(visibleMonth.year, visibleMonth.monthIndex + delta, 1);
-    showMonth({ year: next.getFullYear(), monthIndex: next.getMonth() });
-  }
-
-  function setVisibleYear(year: number) {
-    if (!Number.isInteger(year) || year < 1) return;
-    const today = new Date();
-    const cappedYear = Math.min(year, today.getFullYear());
-    showMonth({ ...visibleMonth, year: cappedYear });
+  function updateDatePart(part: keyof DateParts, value: string) {
+    const next = {
+      ...dateParts,
+      [part]: part === "year" ? value.replace(/\D/g, "").slice(0, 4) : value
+    };
+    setDateParts(next);
+    updateDraft({ date: dateFromParts(next) });
   }
 
   function save() {
-    const error = validate(draft);
+    const error = dateValidationError(dateParts) || timeValidationError(draft) || timezoneValidationError(draft);
     if (error) {
       setMessage(error);
       return;
@@ -156,10 +130,10 @@ export function BirthDateTimeSheet({
     });
   }
 
-  const validationError = validate(draft);
-  const dateError = dateValidationError(draft);
+  const dateError = dateValidationError(dateParts);
   const timeError = timeValidationError(draft);
   const timezoneError = timezoneValidationError(draft);
+  const validationError = dateError || timeError || timezoneError;
   const consequence = draft.birthTimeKnown
     ? draft.date && draft.time && draft.timezone
       ? ui.self.birthMomentKnownConsequence(formatReadableDateOnly(draft.date), formatDisplayTime(draft.time), displayTimezone(draft.timezone))
@@ -179,30 +153,21 @@ export function BirthDateTimeSheet({
           </button>
         </header>
 
-        <div aria-invalid={Boolean(dateError)} className={styles.calendarCard} data-invalid={Boolean(dateError)}>
-          <div className={styles.monthHeader}>
-            <button aria-label={ui.self.birthMomentPreviousMonth} className={styles.iconButton} onClick={() => moveMonth(-1)} type="button">
-              <ChevronLeft aria-hidden="true" size={18} />
-            </button>
-            <strong>{monthLabel(visibleMonth.year, visibleMonth.monthIndex)}</strong>
-            <button
-              aria-label={ui.self.birthMomentNextMonth}
-              className={styles.iconButton}
-              disabled={!canGoNext}
-              onClick={() => moveMonth(1)}
-              type="button"
-            >
-              <ChevronRight aria-hidden="true" size={18} />
-            </button>
-          </div>
-          <div className={styles.monthJump}>
+        <section className={styles.dateCard} data-invalid={Boolean(dateError)}>
+          <h3>{ui.self.birthMomentDate}</h3>
+          <div className={styles.dateFields}>
             <label>
               <span>{ui.self.birthMomentMonth}</span>
               <select
                 aria-label={ui.self.birthMomentMonth}
-                onChange={(event) => showMonth({ ...visibleMonth, monthIndex: Number.parseInt(event.target.value, 10) })}
-                value={visibleMonth.monthIndex}
+                aria-describedby={dateError ? "birth-date-error" : undefined}
+                aria-invalid={Boolean(dateError)}
+                autoComplete="bday-month"
+                disabled={disabled}
+                onChange={(event) => updateDatePart("month", event.target.value)}
+                value={dateParts.month}
               >
+                <option value="">{ui.self.birthMomentMonthPlaceholder}</option>
                 {monthOptions.map((month) => (
                   <option key={month.value} value={month.value}>
                     {month.label}
@@ -211,50 +176,52 @@ export function BirthDateTimeSheet({
               </select>
             </label>
             <label>
+              <span>{ui.self.birthMomentDay}</span>
+              <select
+                aria-label={ui.self.birthMomentDay}
+                aria-describedby={dateError ? "birth-date-error" : undefined}
+                aria-invalid={Boolean(dateError)}
+                autoComplete="bday-day"
+                disabled={disabled}
+                onChange={(event) => updateDatePart("day", event.target.value)}
+                value={dateParts.day}
+              >
+                <option value="">{ui.self.birthMomentDayPlaceholder}</option>
+                {dayOptions.map((day) => (
+                  <option key={day} value={day}>
+                    {day}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
               <span>{ui.self.birthMomentYear}</span>
               <input
+                autoComplete="bday-year"
                 aria-label={ui.self.birthMomentYear}
+                aria-describedby={dateError ? "birth-date-error" : undefined}
+                aria-invalid={Boolean(dateError)}
+                disabled={disabled}
                 inputMode="numeric"
-                max={new Date().getFullYear()}
-                min={1}
-                onChange={(event) => setVisibleYear(Number.parseInt(event.target.value, 10))}
-                type="number"
-                value={visibleMonth.year}
+                maxLength={4}
+                onChange={(event) => updateDatePart("year", event.target.value)}
+                pattern="[0-9]*"
+                placeholder={ui.self.birthMomentYearPlaceholder}
+                type="text"
+                value={dateParts.year}
               />
             </label>
           </div>
-          <div className={styles.weekdays} aria-hidden="true">
-            {dayLabels.map((dayLabel, index) => (
-              <span key={`${dayLabel}-${index}`}>{dayLabel}</span>
-            ))}
-          </div>
-          <div aria-describedby={dateError ? "birth-date-error" : undefined} className={styles.dayGrid} role="grid" aria-label={ui.self.birthMomentCalendarLabel}>
-            {calendarDays.map((day) => (
-              <button
-                aria-disabled={day.isFuture}
-                aria-label={ui.self.birthMomentDayLabel(formatReadableDateOnly(day.date), day.isSelected)}
-                aria-pressed={day.isSelected}
-                className={styles.dayButton}
-                data-in-month={day.inMonth}
-                data-selected={day.isSelected}
-                disabled={day.isFuture || disabled}
-                key={day.date}
-                onClick={() => selectDay(day.date, day.isFuture)}
-                type="button"
-              >
-                {day.day}
-              </button>
-            ))}
-          </div>
           {dateError ? (
-            <p className={styles.calendarError} id="birth-date-error" role="alert">
+            <p className={styles.dateError} id="birth-date-error" role="alert">
               <AlertCircle aria-hidden="true" size={15} />
               {dateError}
             </p>
           ) : null}
-        </div>
+        </section>
 
-        <div className={styles.controlsCard}>
+        <section className={styles.controlsCard}>
+          <h3>{ui.self.birthMomentTimeSection}</h3>
           <label className={styles.controlRow} data-invalid={Boolean(timeError)}>
             <span>
               <Clock3 aria-hidden="true" size={17} />
@@ -309,7 +276,7 @@ export function BirthDateTimeSheet({
               </span>
             </span>
           </label>
-        </div>
+        </section>
 
         {consequence ? <p className={styles.helperText}>{consequence}</p> : null}
         {message ? <p className={styles.errorText} aria-live="polite">{message}</p> : null}

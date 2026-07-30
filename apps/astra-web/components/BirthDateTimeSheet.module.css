@@ -1,4 +1,5 @@
 .backdrop {
+  box-sizing: border-box;
   position: fixed;
   inset: 0;
   z-index: 2147483000;
@@ -10,11 +11,14 @@
 }
 
 .sheet {
+  box-sizing: border-box;
   display: grid;
   width: min(430px, 100%);
+  min-width: 0;
   max-height: min(92vh, 760px);
   gap: 12px;
   overflow: auto;
+  scroll-padding-block: 58px 20px;
   border: 1px solid color-mix(in srgb, var(--gold) 24%, var(--line));
   border-radius: 24px;
   padding: 10px 10px 14px;
@@ -23,11 +27,15 @@
 }
 
 .header {
+  position: sticky;
+  top: -2px;
+  z-index: 2;
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
   min-height: 42px;
+  background: var(--soft);
 }
 
 .header h2 {
@@ -79,14 +87,15 @@
   font-weight: 800;
 }
 
-.calendarCard,
+.dateCard,
 .controlsCard {
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: var(--panel);
 }
 
-.calendarCard[data-invalid="true"],
+.dateCard[data-invalid="true"],
 .controlRow[data-invalid="true"] {
   border-color: var(--rose);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rose) 45%, transparent);
@@ -97,7 +106,7 @@
   color: var(--rose);
 }
 
-.calendarCard[data-invalid="true"] {
+.dateCard[data-invalid="true"] {
   background: color-mix(in srgb, var(--rose) 5%, var(--panel));
 }
 
@@ -128,115 +137,59 @@
   font-weight: 720;
 }
 
-.calendarCard {
-  padding: 10px;
+.dateCard {
+  padding: 13px 14px 12px;
 }
 
-.monthHeader {
-  display: grid;
-  grid-template-columns: 36px minmax(0, 1fr) 36px;
-  align-items: center;
-  gap: 8px;
-  min-height: 38px;
-}
-
-.monthHeader strong {
-  color: var(--ink);
-  font-size: 0.98rem;
+.dateCard h3,
+.controlsCard h3 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.82rem;
   font-weight: 780;
-  text-align: center;
+  letter-spacing: 0.01em;
 }
 
-.monthJump {
+.dateFields {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 104px;
-  gap: 8px;
-  margin: 8px 0 6px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(72px, 0.75fr) minmax(88px, 0.9fr);
+  gap: 9px;
+  margin-top: 10px;
 }
 
-.monthJump label {
+.dateFields label {
   display: grid;
   gap: 4px;
+  min-width: 0;
 }
 
-.monthJump span {
+.dateFields span {
   color: var(--muted);
   font-size: 0.68rem;
   font-weight: 760;
 }
 
-.monthJump select,
-.monthJump input {
+.dateFields select,
+.dateFields input {
+  width: 100%;
   min-width: 0;
-  min-height: 34px;
+  min-height: 42px;
   border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 0 10px;
+  border-radius: 12px;
+  padding: 0 11px;
   background: var(--soft);
   color: var(--ink);
   font: inherit;
-  font-size: 0.84rem;
+  font-size: 0.92rem;
   font-weight: 720;
 }
 
-.weekdays,
-.dayGrid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 3px;
-}
-
-.weekdays {
-  margin: 8px 0 4px;
-}
-
-.weekdays span {
-  display: grid;
-  min-height: 24px;
-  place-items: center;
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 760;
-}
-
-.dayButton {
-  display: grid;
-  aspect-ratio: 1;
-  min-width: 0;
-  min-height: 38px;
-  place-items: center;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--ink);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.dayButton[data-in-month="false"] {
-  color: color-mix(in srgb, var(--muted) 42%, transparent);
-}
-
-.dayButton[data-selected="true"] {
-  background: var(--gold);
-  color: #171412;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--gold) 18%, transparent);
-}
-
-.dayButton:disabled {
-  cursor: default;
-  opacity: 0.32;
-}
-
-.dayButton:focus-visible,
 .iconButton:focus-visible,
 .primaryAction:focus-visible,
 .timeInput:focus-visible,
 .controlRow select:focus-visible,
-.monthJump select:focus-visible,
-.monthJump input:focus-visible,
+.dateFields select:focus-visible,
+.dateFields input:focus-visible,
 .unknownRow input:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--gold) 72%, var(--ink));
   outline-offset: 2px;
@@ -244,6 +197,10 @@
 
 .controlsCard {
   overflow: hidden;
+}
+
+.controlsCard h3 {
+  padding: 13px 14px 7px;
 }
 
 .controlRow {
@@ -302,7 +259,7 @@
   line-height: 1.25;
 }
 
-.calendarError {
+.dateError {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -313,7 +270,7 @@
   line-height: 1.3;
 }
 
-.calendarError svg {
+.dateError svg {
   flex: 0 0 auto;
 }
 
@@ -340,6 +297,7 @@
 .unknownRow em {
   display: block;
   font-style: normal;
+  white-space: normal;
 }
 
 .unknownRow em {
@@ -378,7 +336,8 @@
   }
 
   .sheet {
-    width: 100%;
+    width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
     max-height: calc(100dvh - 16px);
     border-radius: 22px;
     padding-bottom: 14px;
@@ -397,9 +356,26 @@
   }
 
   .controlRow select,
-  .timeInput {
+  .dateFields select,
+  .dateFields input {
     width: 100%;
     max-width: 100%;
+    font-size: 1rem;
+  }
+
+  .timeInput {
+    width: 152px;
+    max-width: 100%;
+    font-size: 1rem;
+  }
+
+  .dateCard {
+    padding-inline: 12px;
+  }
+
+  .dateFields {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.7fr) minmax(0, 0.85fr);
+    gap: 7px;
   }
 
   .fieldError {

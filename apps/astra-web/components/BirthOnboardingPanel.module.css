@@ -742,6 +742,73 @@
   font-size: 13px;
 }
 
+.arrivalCard {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+  width: min(100%, 680px);
+  margin-inline: auto;
+  overflow: hidden;
+}
+
+.arrivalMark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line));
+  border-radius: 50%;
+  color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+}
+
+.arrivalRecognition,
+.arrivalOrientation,
+.arrivalGlimpse p {
+  margin: 0;
+}
+
+.arrivalEvidence {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.arrivalFact {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.arrivalFact span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.arrivalFact strong {
+  overflow-wrap: anywhere;
+  color: var(--gold);
+}
+
+.arrivalGlimpse {
+  display: grid;
+  gap: 8px;
+  border-left: 2px solid var(--gold);
+  padding-left: 14px;
+}
+
+.arrivalGlimpse h3 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 @media (max-width: 900px) {
   .panel,
   .birthMomentButton,
@@ -777,6 +844,10 @@
 
   .compactRecordList li {
     grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .arrivalEvidence {
+    grid-template-columns: 1fr;
   }
 
   .statusActions {

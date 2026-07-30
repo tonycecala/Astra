@@ -217,6 +217,42 @@ export const createUserFeedItemSchema = z.object({
   expiresAt: isoDateSchema.optional()
 });
 
+export const chartArrivalEvidenceSchema = z.object({
+  key: z.enum(["sun", "moon", "rising", "precision"]),
+  label: z.string().min(1),
+  value: z.string().min(1)
+});
+
+export const chartArrivalGenerationSourceSchema = z.enum(["composer", "deterministic"]);
+
+export const chartArrivalViewSchema = z.object({
+  id: idSchema,
+  chartRequestId: idSchema,
+  title: z.string().min(1),
+  recognition: z.string().min(1),
+  evidence: z.array(chartArrivalEvidenceSchema).min(1).max(4),
+  deterministicGlimpse: z.string().min(1),
+  glimpse: z.string().min(1),
+  generationSource: chartArrivalGenerationSourceSchema,
+  promptVersion: z.string().min(1),
+  state: z.enum(["available", "seen"]),
+  createdAt: isoDateSchema
+});
+
+export const createChartArrivalSchema = z.object({
+  chartRequestId: idSchema
+});
+
+export const chartArrivalRewriteRequestSchema = z.object({
+  evidence: z.array(chartArrivalEvidenceSchema).min(1).max(4),
+  deterministicGlimpse: z.string().min(20).max(500)
+});
+
+export const chartArrivalRewriteResponseSchema = z.object({
+  glimpse: z.string().min(20).max(500),
+  promptVersion: z.string().min(1)
+});
+
 export const journeyFeedItemActionSchema = z.enum(["complete", "dismiss", "save", "restore"]);
 
 export const createComposerDecisionSchema = z.object({
@@ -759,7 +795,6 @@ export const astrologyReportRequestSchema = z.object({
 export const createAstrologyReportRequestSchema = z.object({
   chartRequestId: idSchema,
   reportType: orderableAstrologyReportTypeSchema.default("identity"),
-  introIdentity: z.boolean().optional(),
   reportBasis: reportChartBasisInputSchema,
   question: z.string().min(1).optional(),
   intent: z.string().min(1).optional(),
@@ -980,6 +1015,12 @@ export type ComposerDecision = z.infer<typeof composerDecisionSchema>;
 export type PrivateFeedRequest = z.infer<typeof privateFeedRequestSchema>;
 export type PrivateFeedResponse = z.infer<typeof privateFeedResponseSchema>;
 export type CreateUserFeedItem = z.infer<typeof createUserFeedItemSchema>;
+export type ChartArrivalEvidence = z.infer<typeof chartArrivalEvidenceSchema>;
+export type ChartArrivalGenerationSource = z.infer<typeof chartArrivalGenerationSourceSchema>;
+export type ChartArrivalView = z.infer<typeof chartArrivalViewSchema>;
+export type CreateChartArrival = z.infer<typeof createChartArrivalSchema>;
+export type ChartArrivalRewriteRequest = z.infer<typeof chartArrivalRewriteRequestSchema>;
+export type ChartArrivalRewriteResponse = z.infer<typeof chartArrivalRewriteResponseSchema>;
 export type JourneyFeedItemAction = z.infer<typeof journeyFeedItemActionSchema>;
 export type CreateComposerDecision = z.infer<typeof createComposerDecisionSchema>;
 export type ComposerPrivateFeedDecisionInput = z.infer<typeof composerPrivateFeedDecisionInputSchema>;

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import Script from "next/script";
 import { Sparkles } from "lucide-react";
@@ -9,8 +9,32 @@ import { ui } from "../lib/i18n";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  applicationName: ui.shell.brand,
   title: ui.metadata.title,
-  description: ui.metadata.description
+  description: ui.metadata.description,
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: ui.shell.brand
+  },
+  icons: {
+    icon: [
+      { url: "/icons/astra-icon.svg", type: "image/svg+xml" },
+      { url: "/icons/astra-192.png", sizes: "192x192", type: "image/png" }
+    ],
+    apple: [{ url: "/icons/astra-apple-touch.png", sizes: "180x180", type: "image/png" }]
+  }
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fbfaf7" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c0f12" }
+  ]
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

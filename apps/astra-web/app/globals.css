@@ -95,6 +95,21 @@ textarea {
   font: inherit;
 }
 
+@media (max-width: 900px) {
+  /*
+   * iOS Safari zooms the visual viewport when a focused form control computes
+   * below 16px. Keep user pinch-zoom available; prevent focus zoom by making
+   * the control typography itself accessible at phone and tablet widths.
+   */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+  select,
+  textarea,
+  [contenteditable="true"] {
+    font-size: 16px !important;
+    touch-action: manipulation;
+  }
+}
+
 .shell {
   min-height: 100vh;
   display: grid;

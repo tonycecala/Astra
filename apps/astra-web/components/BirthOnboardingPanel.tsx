@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { type CSSProperties, FormEvent, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, BookOpenText, Check, Send } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpenText, Check, Send, Sparkles } from "lucide-react";
 import {
   chartCalculationModeForBirthData,
   type Ally,
   AstrologyReportRequest,
   AstrologyReportResult,
   ChartBirthData,
+  type ChartArrivalView,
   ChartMakerRequest,
   OrderableAstrologyReportType,
   type SynastryPerspective
@@ -95,6 +96,8 @@ type BirthOnboardingPanelProps = {
   initialChartRequestId?: string;
   initialSubjectName?: string;
   initialStep?: Step;
+  initialChartArrival?: ChartArrivalView;
+  chartArrivalEligible?: boolean;
   hideRecentRequestPanels?: boolean;
   hideSummaryRail?: boolean;
 };
@@ -160,10 +163,17 @@ function optional(value: string) {
   return clean ? clean : undefined;
 }
 
-function reportRequestErrorMessage(code?: string) {
+type RequestIssue = { path?: string; message?: string };
+
+function requestErrorMessage(code?: string, issues: RequestIssue[] = []) {
   if (code === "INSUFFICIENT_STARS") return ui.self.reportConfirmInsufficient;
   if (code === "INVALID_REPORT_BASIS") return ui.self.reportBasisInvalid;
-  if (code === "INVALID_CHART_REQUEST") return ui.self.reportRequestInvalid;
+  if (code === "INVALID_CHART_REQUEST") {
+    if (issues.some((issue) => issue.path === "birthData.date")) return ui.self.birthMomentDateRequired;
+    if (issues.some((issue) => issue.path === "birthData.time")) return ui.self.birthMomentTimeInvalid;
+    if (issues.some((issue) => issue.path === "birthData.timezone")) return ui.self.birthMomentTimezoneRequired;
+    return ui.self.chartArrivalInvalidBirthDetails;
+  }
   if (code === "INVALID_ASTROLOGY_REPORT_REQUEST") return ui.self.reportRequestInvalid;
   if (code === "AUTH_REQUIRED") return ui.self.reportAuthRequired;
   return "";
@@ -296,6 +306,8 @@ export function BirthOnboardingPanel({
   initialChartRequestId,
   initialSubjectName,
   initialStep,
+  initialChartArrival,
+  chartArrivalEligible = false,
   hideRecentRequestPanels = false,
   hideSummaryRail = false
 }: BirthOnboardingPanelProps) {
@@ -315,6 +327,8 @@ export function BirthOnboardingPanel({
   const [isConfirmingReport, setIsConfirmingReport] = useState(false);
   const [isBirthMomentSheetOpen, setIsBirthMomentSheetOpen] = useState(false);
   const [isBirthLocationSheetOpen, setIsBirthLocationSheetOpen] = useState(false);
+  const [chartArrival, setChartArrival] = useState(initialChartArrival);
+  const [isCompletingArrival, setIsCompletingArrival] = useState(false);
 
   const isAlly = subjectType === "ally";
   const isAdmin = role === "admin";
@@ -334,9 +348,9 @@ export function BirthOnboardingPanel({
     ? requests.find((request) => request.id === selectedExistingChartRequestId)
     : undefined;
   const isUsingExistingChart = Boolean(existingChartRequest);
-  const isFirstSelfChart = !isAlly && !isUsingExistingChart && !requests.some((request) => request.source === "self");
-  const selectedReportType = isFirstSelfChart ? "identity" : form.reportType;
-  const selectedReportCost = isFirstSelfChart ? 0 : reportTypeCost(selectedReportType);
+  const isChartArrivalFlow = !isAlly && chartArrivalEligible && chartArrival?.state !== "seen";
+  const selectedReportType = form.reportType;
+  const selectedReportCost = reportTypeCost(selectedReportType);
   const balanceAfterReport = starBalance - selectedReportCost;
   const canAffordSelectedReport = isAdmin || balanceAfterReport >= 0;
   const isExistingChartOrderMode = isAlly && isUsingExistingChart;
@@ -356,34 +370,35 @@ export function BirthOnboardingPanel({
   const synastryComparisonName = form.synastryPerspective === "comparison"
     ? synastryPrimaryName
     : synastryPartner?.subjectName;
-  const reviewSubjectName = !isFirstSelfChart && form.reportType === "synastry"
+  const reviewSubjectName = !isChartArrivalFlow && form.reportType === "synastry"
     ? synastryReaderName
     : form.subjectName;
   const previewBirthData = isExistingChartLocked && existingChartRequest
     ? existingChartRequest.birthData
     : birthDataFor(form);
   const hasHouseCalculation = chartCalculationModeForBirthData(previewBirthData) === "full";
-  const reviewRows = useMemo(
-    () => [
+  const reviewRows = [
       [ui.self.onboardingReviewName, reviewSubjectName || ui.self.onboardingReviewMissing],
-      [ui.self.onboardingReviewReportType, reportTypeLabel(selectedReportType, isFirstSelfChart)],
-      [ui.self.reportConfirmBasis, reportBasisLabel(selectedReportType)],
+      ...(isChartArrivalFlow ? [] : [
+        [ui.self.onboardingReviewReportType, reportTypeLabel(selectedReportType)],
+        [ui.self.reportConfirmBasis, reportBasisLabel(selectedReportType)]
+      ]),
       [ui.self.zodiacModeLabel, ui.self.zodiacModes[form.zodiacMode]],
       [ui.self.houseSystemLabel, hasHouseCalculation ? ui.self.houseSystems[form.houseSystem] : ui.self.houseSystemUnavailable],
-      ...(!isFirstSelfChart && form.reportType === "progressed"
+      ...(!isChartArrivalFlow && form.reportType === "progressed"
         ? ([[ui.self.progressedAsOfLabel, form.progressedAsOfDate]] as const)
         : []),
-      ...(!isFirstSelfChart && form.reportType === "synastry"
+      ...(!isChartArrivalFlow && form.reportType === "synastry"
         ? ([
             [ui.self.onboardingReviewSynastryReader, synastryReaderName ?? ui.self.onboardingReviewMissing],
             [ui.self.onboardingReviewSynastryPartner, synastryComparisonName ?? ui.self.onboardingReviewMissing]
           ] as const)
         : []),
-      [ui.self.reportConfirmCost, ui.stars.reportCost(selectedReportCost)],
-      [ui.self.reportConfirmBalance, ui.stars.balance(starBalance)]
-    ],
-    [form, hasHouseCalculation, isFirstSelfChart, reviewSubjectName, selectedReportCost, selectedReportType, starBalance, synastryComparisonName, synastryReaderName]
-  );
+      ...(isChartArrivalFlow ? [] : [
+        [ui.self.reportConfirmCost, ui.stars.reportCost(selectedReportCost)],
+        [ui.self.reportConfirmBalance, ui.stars.balance(starBalance)]
+      ])
+    ];
   const chartRequestsBySubjectId = useMemo(() => {
     const indexed = new Map<string, ChartMakerRequest>();
     for (const request of requests) {
@@ -441,10 +456,10 @@ export function BirthOnboardingPanel({
   function stepError(step: Step) {
     if (step === "subject" && !optional(form.subjectName)) return ui.self.onboardingSubjectRequired;
     if (step === "subject" && isAlly && !optional(form.relationship)) return ui.allies.wizardRelationshipRequired;
-    if (!isFirstSelfChart && step === "report" && form.reportType === "synastry" && !optional(form.synastryPartnerChartRequestId)) {
+    if (!isChartArrivalFlow && step === "report" && form.reportType === "synastry" && !optional(form.synastryPartnerChartRequestId)) {
       return ui.self.onboardingSynastryPartnerRequired;
     }
-    if (!isFirstSelfChart && step === "report" && form.reportType === "progressed") {
+    if (!isChartArrivalFlow && step === "report" && form.reportType === "progressed") {
       if (!form.birthTimeKnown || !optional(form.time)) return ui.self.onboardingProgressedTimeRequired;
       if (!isValidDateOnly(form.progressedAsOfDate)) return ui.self.onboardingProgressedDateRequired;
       if (form.progressedAsOfDate < form.date) return ui.self.onboardingProgressedDateBeforeBirth;
@@ -475,6 +490,7 @@ export function BirthOnboardingPanel({
   }
 
   function stepLabel(step: Step) {
+    if (step === "report" && isChartArrivalFlow) return ui.self.onboardingSteps.arrival;
     return isAlly && step === "subject" ? ui.allies.wizard.subjectStepLabel : ui.self.onboardingSteps[step];
   }
 
@@ -517,15 +533,17 @@ export function BirthOnboardingPanel({
       }
     });
     const text = await response.text();
-    let payload = { error: ui.self.chartRequestError } as T & { error?: string; message?: string };
+    let payload = { error: ui.self.chartRequestError } as T & { error?: string; message?: string; issues?: RequestIssue[] };
     if (text) {
       try {
-        payload = JSON.parse(text) as T & { error?: string; message?: string };
+        payload = JSON.parse(text) as T & { error?: string; message?: string; issues?: RequestIssue[] };
       } catch {
         payload = { error: text } as T & { error?: string };
       }
     }
-    if (!response.ok) throw new Error(reportRequestErrorMessage(payload.error) || payload.message || payload.error || ui.self.chartRequestError);
+    if (!response.ok) {
+      throw new Error(requestErrorMessage(payload.error, payload.issues) || payload.message || payload.error || ui.self.chartRequestError);
+    }
     return payload;
   }
 
@@ -556,12 +574,80 @@ export function BirthOnboardingPanel({
       return;
     }
 
-    if (isFirstSelfChart) {
-      await submitConfirmedReport();
+    if (isChartArrivalFlow) {
+      const requiredStep = (["subject", "birth_details"] as const).find((step) => stepError(step));
+      if (requiredStep) {
+        setActiveStep(requiredStep);
+        setMessage(stepError(requiredStep));
+        return;
+      }
+      await submitChartArrival();
       return;
     }
 
     setIsConfirmingReport(true);
+  }
+
+  async function submitChartArrival() {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setMessage(ui.self.chartArrivalReading);
+
+    try {
+      const chartSettings = {
+        zodiacMode: form.zodiacMode,
+        houseSystem: form.houseSystem
+      };
+      const canReuseExistingChart = Boolean(existingChartRequest && birthDataMatchesForm(existingChartRequest.birthData, form));
+      const chartRequest = canReuseExistingChart && existingChartRequest
+        ? existingChartRequest
+        : (await requestJson<{ request: ChartMakerRequest }>("/api/chart-requests", {
+            method: "POST",
+            body: JSON.stringify({
+              subjectName: form.subjectName.trim(),
+              birthData: birthDataFor(form),
+              source: "self",
+              context: {
+                subject: {
+                  subjectType: "self",
+                  displayName: form.subjectName.trim()
+                },
+                chartSettings
+              }
+            })
+          })).request;
+      const arrival = await requestJson<ChartArrivalView>("/api/chart-arrivals", {
+        method: "POST",
+        body: JSON.stringify({ chartRequestId: chartRequest.id })
+      });
+
+      if (!canReuseExistingChart) {
+        setRequests((current) => [chartRequest, ...current.filter((request) => request.id !== chartRequest.id)]);
+      }
+      setSelectedExistingChartRequestId(chartRequest.id);
+      setChartArrival(arrival);
+      setMessage("");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : ui.self.chartArrivalError);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function completeArrival() {
+    if (!chartArrival || isCompletingArrival) return;
+    setIsCompletingArrival(true);
+    setMessage("");
+    try {
+      await requestJson<ChartArrivalView>(
+        `/api/chart-arrivals/${encodeURIComponent(chartArrival.chartRequestId)}/complete`,
+        { method: "POST" }
+      );
+      window.location.assign("/self");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : ui.self.chartArrivalCompleteError);
+      setIsCompletingArrival(false);
+    }
   }
 
   async function submitConfirmedReport() {
@@ -576,7 +662,7 @@ export function BirthOnboardingPanel({
     setIsConfirmingReport(false);
     setIsSubmitting(true);
     setIsSubmissionComplete(false);
-    setMessage(isFirstSelfChart ? ui.self.chartRequestCreatingWelcome : ui.self.chartRequestWorking);
+    setMessage(ui.self.chartRequestWorking);
 
     try {
       const ally = !existingChartRequest && isAlly ? await createAllyRecord() : undefined;
@@ -629,7 +715,6 @@ export function BirthOnboardingPanel({
         body: JSON.stringify({
           chartRequestId: chartRequest.id,
           reportType: selectedReportType,
-          ...(isFirstSelfChart ? { introIdentity: true } : {}),
           reportBasis
         })
       });
@@ -688,11 +773,41 @@ export function BirthOnboardingPanel({
     }
   }
 
+  if (chartArrival?.state === "available") {
+    return (
+      <section className={styles.panel} aria-label={ui.self.chartArrivalPanelLabel}>
+        <article className={`card ${styles.arrivalCard}`}>
+          <div className={styles.arrivalMark} aria-hidden="true"><Sparkles size={22} /></div>
+          <h2>{ui.self.chartArrivalTitle}</h2>
+          <p className={styles.arrivalRecognition}>{chartArrival.recognition}</p>
+          <div className={styles.arrivalEvidence} aria-label={ui.self.chartArrivalEvidenceLabel}>
+            {chartArrival.evidence.map((fact) => (
+              <div className={styles.arrivalFact} key={fact.key}>
+                <span>{fact.label}</span>
+                <strong>{fact.value}</strong>
+              </div>
+            ))}
+          </div>
+          <div className={styles.arrivalGlimpse}>
+            <h3>{ui.self.chartArrivalGlimpseLabel}</h3>
+            <p>{chartArrival.glimpse}</p>
+          </div>
+          <p className={styles.arrivalOrientation}>{ui.self.chartArrivalOrientation}</p>
+          <button className="button" disabled={isCompletingArrival} onClick={completeArrival} type="button">
+            <Sparkles aria-hidden="true" size={18} />
+            {isCompletingArrival ? ui.self.chartArrivalCompleting : ui.self.chartArrivalEnter}
+          </button>
+          {message ? <p className={styles.message} role="status">{message}</p> : null}
+        </article>
+      </section>
+    );
+  }
+
   return (
     <section className={styles.panel} aria-label={panelCopy.chartRequestPanelLabel}>
       <article className="card">
-        <h2>{isAlly ? ui.allies.wizard.chartRequestExistingTitle : isFirstSelfChart ? ui.self.chartRequestWelcomeTitle : panelCopy.chartRequestTitle}</h2>
-        {!isAlly && !isExistingChartOrderMode ? <p>{isFirstSelfChart ? ui.self.chartRequestWelcomeIntro : panelCopy.chartRequestIntro}</p> : null}
+        <h2>{isAlly ? ui.allies.wizard.chartRequestExistingTitle : isChartArrivalFlow ? ui.self.chartArrivalPanelTitle : panelCopy.chartRequestTitle}</h2>
+        {!isAlly && !isExistingChartOrderMode ? <p>{isChartArrivalFlow ? ui.self.chartArrivalPanelIntro : panelCopy.chartRequestIntro}</p> : null}
 
         {!isSingleStepFlow ? (
           <div
@@ -767,8 +882,8 @@ export function BirthOnboardingPanel({
               <button className="button" type="submit" disabled={isSubmitting || Boolean(activeStepError)}>
                 {isSubmitting ? <Send aria-hidden="true" size={18} /> : null}
                 {isSubmitting
-                  ? isFirstSelfChart ? ui.self.chartRequestCreatingWelcome : ui.self.chartRequestWorking
-                  : isFirstSelfChart ? ui.self.chartRequestCreateFirstChart : ui.self.chartRequestSubmit}
+                  ? isChartArrivalFlow ? ui.self.chartArrivalReading : ui.self.chartRequestWorking
+                  : isChartArrivalFlow ? ui.self.chartArrivalReveal : ui.self.chartRequestSubmit}
               </button>
             ) : isWizardComplete ? (
               <div className={styles.completionActions}>
@@ -890,7 +1005,7 @@ export function BirthOnboardingPanel({
                   </div>
                 </div>
               </fieldset>
-              {!isFirstSelfChart ? <fieldset className={styles.optionGroup} aria-label={ui.self.onboardingReportTypeLabel}>
+              {!isChartArrivalFlow ? <fieldset className={styles.optionGroup} aria-label={ui.self.onboardingReportTypeLabel}>
                 {availableReportTypes.map((reportType) => (
                   <label className={styles.option} key={reportType}>
                     <input
@@ -910,7 +1025,7 @@ export function BirthOnboardingPanel({
                   </label>
                 ))}
               </fieldset> : null}
-              {!isFirstSelfChart && form.reportType === "progressed" ? (
+              {!isChartArrivalFlow && form.reportType === "progressed" ? (
                 <label>
                   <span>{ui.self.progressedAsOfLabel}</span>
                   <input
@@ -922,7 +1037,7 @@ export function BirthOnboardingPanel({
                   />
                 </label>
               ) : null}
-              {!isFirstSelfChart && form.reportType === "synastry" ? (
+              {!isChartArrivalFlow && form.reportType === "synastry" ? (
                 <>
                   <label>
                     <span>{ui.self.synastryPartnerLabel}</span>

@@ -5,14 +5,6 @@ export type BirthDateTimeValue = {
   birthTimeKnown: boolean;
 };
 
-export type CalendarDay = {
-  date: string;
-  day: number;
-  inMonth: boolean;
-  isFuture: boolean;
-  isSelected: boolean;
-};
-
 export function pad2(value: number) {
   return String(value).padStart(2, "0");
 }
@@ -52,10 +44,6 @@ export function isValidTimeOnly(value: string) {
   return hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59;
 }
 
-export function monthLabel(year: number, monthIndex: number) {
-  return new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(new Date(year, monthIndex, 1));
-}
-
 export function formatReadableDateOnly(value?: string | null) {
   const parsed = value ? parseDateOnly(value) : null;
   if (!parsed) return "";
@@ -68,28 +56,6 @@ export function formatDisplayTime(value?: string | null, locales?: Intl.LocalesA
   const hour = Number.parseInt(hourText ?? "0", 10);
   const minute = Number.parseInt(minuteText ?? "0", 10);
   return new Intl.DateTimeFormat(locales, { hour: "numeric", minute: "2-digit" }).format(new Date(2000, 0, 1, hour, minute));
-}
-
-export function buildCalendarMonth(input: {
-  year: number;
-  monthIndex: number;
-  selectedDate?: string;
-  today?: Date;
-}): CalendarDay[] {
-  const first = new Date(input.year, input.monthIndex, 1);
-  const start = new Date(input.year, input.monthIndex, 1 - first.getDay());
-  const today = input.today ?? new Date();
-  return Array.from({ length: 42 }, (_, index) => {
-    const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + index);
-    const dateOnly = toDateOnly(date);
-    return {
-      date: dateOnly,
-      day: date.getDate(),
-      inMonth: date.getMonth() === input.monthIndex,
-      isFuture: isFutureDateOnly(dateOnly, today),
-      isSelected: input.selectedDate === dateOnly
-    };
-  });
 }
 
 export function defaultBrowserTimezone() {

@@ -12,6 +12,7 @@ import {
   reportDisplayName,
   reportDisplayTitle,
   reportFamilyLabel,
+  isWelcomeReport,
   resolveLegacySynastryPartnerBirthDate
 } from "../../lib/report-display";
 import { and, eq } from "drizzle-orm";
@@ -292,7 +293,7 @@ async function getUserLibraryArtifacts(userId: string) {
   const sharedRequestIds = new Set(reportShares.map((share) => share.requestId));
   const nonReportArtifacts = artifacts.filter((artifact) => artifact.kind !== "report");
   const reportArtifacts = reportResults
-    .filter((result) => result.status === "completed")
+    .filter((result) => result.status === "completed" && !isWelcomeReport(requestById.get(result.requestId)))
     .map((result): LibraryArtifact => {
       const request = requestById.get(result.requestId);
       const subject = reportSubjectContext(request);

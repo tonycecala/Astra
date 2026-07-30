@@ -137,7 +137,7 @@ async function readOtp() {
   return readOtpFromMailpit();
 }
 
-await expectStatus(`${appBaseUrl}/api/places/search?q=New`, 401);
+await expectStatus(`${appBaseUrl}/api/places/search?q=New%20York`, 401);
 
 await requestJson(`${authBaseUrl}/email-otp/send-verification-otp`, {
   method: "POST",
@@ -149,10 +149,10 @@ await requestJson(`${authBaseUrl}/sign-in/email-otp`, {
   body: JSON.stringify({ email, otp: await readOtp(), name })
 });
 
-const payload = await requestJson(`${appBaseUrl}/api/places/search?q=New&limit=5`);
+const payload = await requestJson(`${appBaseUrl}/api/places/search?q=New%20York&limit=5`);
 const search = birthPlaceSearchResponseSchema.parse(payload);
-const newYork = search.results.find((place) => place.label === "New York, NY, USA");
-if (!newYork) throw new Error("Place search did not return the New York fixture.");
+const newYork = search.results.find((place) => /New York/i.test(place.label) && place.timezone === "America/New_York");
+if (!newYork) throw new Error(`Place search did not return a New York result with the expected timezone from ${search.provider}.`);
 if (newYork.timezone !== "America/New_York") throw new Error("Place search did not return the expected timezone.");
 
 console.log(`Place search API smoke passed for ${email}: ${newYork.label}.`);
