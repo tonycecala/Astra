@@ -13,15 +13,14 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": ".",
     "paths": {
-      "@astra/contracts": ["packages/contracts/src/index.ts"],
-      "@astra/db": ["packages/db/src/index.ts"],
-      "@astra/db/*": ["packages/db/src/*"],
-      "@astra/chart-maker": ["packages/chart-maker/src/index.ts"],
-      "@astra/ui": ["packages/ui/src/index.ts"],
-      "@astra/testkit": ["packages/testkit/src/index.ts"],
-      "@astra/astrology": ["packages/astrology/src/index.ts"]
+      "@astra/contracts": ["./packages/contracts/src/index.ts"],
+      "@astra/db": ["./packages/db/src/index.ts"],
+      "@astra/db/*": ["./packages/db/src/*"],
+      "@astra/chart-maker": ["./packages/chart-maker/src/index.ts"],
+      "@astra/ui": ["./packages/ui/src/index.ts"],
+      "@astra/testkit": ["./packages/testkit/src/index.ts"],
+      "@astra/astrology": ["./packages/astrology/src/index.ts"]
     }
   }
 }

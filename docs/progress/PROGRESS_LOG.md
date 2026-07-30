@@ -13,6 +13,38 @@ summary: "Durable session-by-session memory for Astra repo work."
 
 ## Entries
 
+### 2026-07-30 - TypeScript 7 Throughput Trial
+
+**Report Level:** 4 - Implementation / Debug Handoff
+**Actor:** Codex
+**Session Type:** compiler migration benchmark
+**Status:** complete
+
+#### What Changed
+
+- Added TypeScript 7.0.2 as Astra's CLI compiler while retaining the TypeScript
+  6 API for Next.js and `typescript-eslint`.
+- Removed the TypeScript 7-incompatible `baseUrl` option and made workspace
+  alias targets explicitly relative.
+- Recorded the reproducible benchmark, compatibility findings, rollback, and
+  validation playbook.
+
+#### Validation
+
+- Five-run no-cache typecheck mean: 5.600s to 0.688s (8.14x faster).
+- Cold `npm run check`: 22.05s to 17.77s (19.4% faster).
+- TypeScript 6 and 7 typechecks passed with identical Astra-owned file
+  coverage.
+- Fresh `npm ci` and full `npm run check` passed on the trial branch.
+- Steward judgment: accept-with-notes; retain TS6 until TS7 exposes a supported
+  programmatic API and the dependent tools adopt it.
+
+#### Next Copy/Paste Goal
+
+Review and merge the isolated TypeScript 7 throughput branch, then use normal
+Astra development for one session and compare observed verification latency
+before standardizing the same side-by-side layout in Composer or other repos.
+
 ### 2026-06-19 - Shared Card Face And Mobile Chrome Stabilization
 
 **Report Level:** 3 - Workflow & QA View
