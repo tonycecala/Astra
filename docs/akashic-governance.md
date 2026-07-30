@@ -46,6 +46,20 @@ Use `ak doctor` for one-screen workbench health: Mail folders/schema, new and wo
 
 Every start/end message should include an informative dirty summary: count dirty files, classify likely `owned-mail`, `current-session`, `generated-artifact`, and `unknown-risk` files, name files that will be avoided, and recommend `ak dirty` or `ak doctor` when available.
 
+On macOS, `.DS_Store` is ambient Finder noise. Keep it ignored, do not mention it in normal reports, and only clean/comment when it is tracked, staged, or blocking a command/check.
+
+## Review And Learning Closeout
+
+Before final Git status/commit reporting for a substantial dev or debug session:
+
+1. Review the actual diff and validation evidence using the repo's Steward review checklist. Record one judgment: accept, accept-with-notes, retry/fix, or blocked.
+2. Update the most relevant repo-local `akashic/playbooks/*.md` file with the reusable procedure, decision rule, or verification path proven by the session. Improve an existing playbook instead of creating a duplicate when possible.
+3. Capture every genuinely reusable discovery in the source repo with `ak learn <skill|warning|adr|mission> <title> --body <text>`.
+4. If no new reusable lesson exists, record `No new reusable lesson` in the review instead of creating noise.
+5. When the lesson should be shared, run `ak ingest <source-repo-path>` from central Akashic and review the imported artifact before canonical promotion.
+
+The closeout order is: validate, review, update playbook, capture learning, refresh REPOMAP when artifacts changed, then perform final Git inspection.
+
 Before adding a new rule or instruction, apply delete-before-add: check whether the failure came from stale source, bad memory, confusing tooling, excessive reach, missing proof, or obsolete harness first.
 
 Smart end reports must include work completed, files changed, checks run, checks skipped, dirty files remaining, Mail closed/created/updated, and the next recommended action.
