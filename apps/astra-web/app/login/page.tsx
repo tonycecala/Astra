@@ -6,7 +6,7 @@ export default function LoginPage() {
     <main className="loginShell" id="main-content">
       <section className="loginCard">
         <a className="loginLogo" href="/">
-          Astra
+          {ui.shell.brand}
         </a>
         <div className="loginHeader">
           <p className="loginKicker">{ui.login.pageKicker}</p>

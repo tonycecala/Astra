@@ -57,8 +57,13 @@ Before final Git status/commit reporting for a substantial dev or debug session:
 3. Capture every genuinely reusable discovery in the source repo with `ak learn <skill|warning|adr|mission> <title> --body <text>`.
 4. If no new reusable lesson exists, record `No new reusable lesson` in the review instead of creating noise.
 5. When the lesson should be shared, run `ak ingest <source-repo-path>` from central Akashic and review the imported artifact before canonical promotion.
+6. If JCodeMunch reported a stale commit during the session, refresh its repo
+   index after the final commit and verify the indexed commit matches `HEAD`.
+   Do not carry a known-stale code index into the next work session.
 
-The closeout order is: validate, review, update playbook, capture learning, refresh REPOMAP when artifacts changed, then perform final Git inspection.
+The closeout order is: validate, review, update playbook, capture learning,
+commit the verified work, refresh REPOMAP and any known-stale JCodeMunch index,
+then perform final Git inspection.
 
 Before adding a new rule or instruction, apply delete-before-add: check whether the failure came from stale source, bad memory, confusing tooling, excessive reach, missing proof, or obsolete harness first.
 

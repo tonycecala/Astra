@@ -571,6 +571,7 @@ export const ui = {
     reportPlateStatus: "Status",
     reportPlateDate: "Date",
     reportChartPlateLabel: "Report basis and chart snapshot",
+    reportChartEvidence: "Chart Evidence",
     reportChartWheelLabel: "Static report chart wheel",
     reportChartBirthData: "Birth data",
     reportChartBasis: "Report basis",
@@ -721,7 +722,18 @@ export const ui = {
     adjustmentAmount: "Amount",
     adjustmentDirection: "Direction",
     adjustmentNotes: "Notes",
+    adjustmentNotesPlaceholder: "Optional operator note",
     adjustmentReason: "Reason",
+    adjustmentReasons: {
+      betaExplorerPack: "Beta Explorer Pack",
+      betaTesterGrant: "Beta tester grant",
+      manualCorrection: "Manual correction",
+      failedGenerationRefund: "Failed generation refund",
+      courtesyStar: "Courtesy Star",
+      promoCampaign: "Promo campaign",
+      testTransaction: "Test transaction",
+      other: "Other"
+    },
     adjustmentSubmit: "Submit Ledger Entry",
     adjustmentTitle: "Manual ledger entry",
     adminRole: "Admin",
@@ -756,6 +768,10 @@ export const ui = {
     ledgerTitle: "Recent ledger entries",
     model: "Model",
     modelProvider: "Provider",
+    modelProviders: {
+      openRouter: "OpenRouter",
+      openAi: "OpenAI"
+    },
     modelProfile: "Report",
     modelProfiles: {
       smoke: "System Test (GPT-5.6 Luna)",
@@ -800,6 +816,8 @@ export const ui = {
       debug: "Debug model writer"
     },
     usage: "Usage",
+    userAssetCounts: (chartCount: number, reportCount: number) =>
+      `${chartCount} ${chartCount === 1 ? "chart" : "charts"} · ${reportCount} ${reportCount === 1 ? "report" : "reports"}`,
     usageSummary: (input: string, output: string, total: string, spend: string, latency: string) =>
       `Input ${input} · Output ${output} · Total ${total} · Spend ${spend} · Latency ${latency}`,
     validationErrors: "Validation Errors",

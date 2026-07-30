@@ -63,6 +63,12 @@ node -e 'console.log(require("typescript").version)'
 10. Remove or move `tsconfig.tsbuildinfo` and `.next` from both worktrees, then
     compare cold `npm run check` executions.
 11. Run a fresh `npm ci` and the full repo gate one final time.
+12. Use the adopted layout for a normal development edit. Record one real
+    post-edit `npm run typecheck` latency and one real `npm run check` latency,
+    plus any TypeScript, editor, ESLint, or Next.js diagnostics.
+13. At closeout, confirm `tsc` is 7.x while `tsc6` and
+    `require("typescript")` are 6.x. Do not describe Next.js's internal
+    TypeScript phase as a TypeScript 7 measurement.
 
 ## Acceptance
 

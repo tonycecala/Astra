@@ -82,6 +82,26 @@ file differences.
    source coverage, `npm ci`, `npm run check`, and
    `npm run test:journey-curation` all passed on the current base.
 
+## Normal Development Session
+
+The first normal `alpha` development session after adoption moved remaining
+Astra interface chrome into the i18n dictionary and added a static i18n chrome
+guard to the full check.
+
+| Post-edit check | First run | Final exact-diff run | Result |
+| --- | ---: | ---: | --- |
+| `npm run typecheck` | 0.63s | 0.94s | pass |
+| `npm run check` | 17.77s | 17.47s | pass |
+
+- TypeScript 7 CLI typechecking remained clean.
+- ESLint reported no errors or warnings.
+- Next.js 16.2.9 compiled successfully. Its TypeScript 6 API phase emitted the
+  existing project-reference limitation warning and completed in 4.3s.
+- No editor issue was observed in this terminal/browser session; editor
+  extension behavior was not directly instrumented.
+- Rendered desktop/mobile login, logged-out Library, and the `/admin` private
+  redirect were clean with no console warnings/errors or horizontal overflow.
+
 ## Rollback
 
 Restore `typescript` to the prior 5.x declaration, remove

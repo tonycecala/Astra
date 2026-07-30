@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ui } from "../lib/i18n";
 
 function inlineMarkdown(text: string) {
   const nodes: ReactNode[] = [];
@@ -70,7 +71,7 @@ export function ReportMarkdown({
     nodes.push(
       evidenceListOpen ? (
         <details className="reportMarkdownEvidence" key={`evidence-${nodes.length}`}>
-          <summary>Chart Evidence</summary>
+          <summary>{ui.library.reportChartEvidence}</summary>
           {listNode}
         </details>
       ) : (
@@ -87,7 +88,7 @@ export function ReportMarkdown({
     if (!evidence.length) return;
     nodes.push(
       <details className="reportMarkdownEvidence" key={`evidence-${nodes.length}`}>
-        <summary>Chart Evidence</summary>
+        <summary>{ui.library.reportChartEvidence}</summary>
         <ul>
           {evidence.map((item, index) => (
             <li key={`${index}-${item.label}`}>

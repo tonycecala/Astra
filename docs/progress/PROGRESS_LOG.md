@@ -569,3 +569,34 @@ Continue Composer v1 quarry rebuild from the real 78-card Astrology 101 course, 
 
 - First formal Steward review task created and acknowledged.
 - Run a formal Steward review of private feed, report generation, and Composer boundaries.
+### 2026-07-30 - TypeScript 7 Normal Session and i18n Chrome Guard
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** i18n audit and TypeScript 7 adoption proof
+**Status:** complete
+
+#### What Changed
+
+- Routed remaining app chrome in login, admin, and report disclosures through
+  the Astra i18n dictionary while preserving canonical form/provider values.
+- Added `npm run check:i18n` to prevent raw JSX chrome from returning.
+- Recorded a normal post-edit TypeScript 7 session and made stale JCodeMunch
+  refresh a documented closeout responsibility.
+
+#### Tests Run
+
+- `npm run check:i18n`
+- `npm run typecheck` (0.94s final exact-diff run; 0.63s first run)
+- `npm run check` (17.47s final exact-diff run; 17.77s first run)
+- In-app browser QA at desktop/mobile for `/login`, logged-out `/library`, and
+  the `/admin` redirect boundary; no console warnings/errors or overflow.
+
+#### Steward Review
+
+- Judgment: accept-with-notes.
+- The i18n guard intentionally excludes technical `<code>` literals and API
+  routes; authored/generated report content remains data, not interface chrome.
+- No public/private, analytics, persistence, or report-generation boundary
+  changed. The only observed framework note is Next.js's existing
+  project-reference support warning.

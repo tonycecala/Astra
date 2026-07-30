@@ -625,19 +625,19 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
           <label>
             <span>{ui.admin.adjustmentReason}</span>
             <select name="reason" defaultValue="Beta tester grant" required>
-              <option>Beta Explorer Pack</option>
-              <option>Beta tester grant</option>
-              <option>Manual correction</option>
-              <option>Failed generation refund</option>
-              <option>Courtesy Star</option>
-              <option>Promo campaign</option>
-              <option>Test transaction</option>
-              <option>Other</option>
+              <option value="Beta Explorer Pack">{ui.admin.adjustmentReasons.betaExplorerPack}</option>
+              <option value="Beta tester grant">{ui.admin.adjustmentReasons.betaTesterGrant}</option>
+              <option value="Manual correction">{ui.admin.adjustmentReasons.manualCorrection}</option>
+              <option value="Failed generation refund">{ui.admin.adjustmentReasons.failedGenerationRefund}</option>
+              <option value="Courtesy Star">{ui.admin.adjustmentReasons.courtesyStar}</option>
+              <option value="Promo campaign">{ui.admin.adjustmentReasons.promoCampaign}</option>
+              <option value="Test transaction">{ui.admin.adjustmentReasons.testTransaction}</option>
+              <option value="Other">{ui.admin.adjustmentReasons.other}</option>
             </select>
           </label>
           <label>
             <span>{ui.admin.adjustmentNotes}</span>
-            <input name="notes" type="text" placeholder="Optional operator note" />
+            <input name="notes" type="text" placeholder={ui.admin.adjustmentNotesPlaceholder} />
           </label>
           <button className="button" type="submit" disabled={!selectedCreditUser?.email}>{ui.admin.adjustmentSubmit}</button>
         </form>
@@ -662,7 +662,7 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
                   <p>{roleLabel(user.role)}</p>
                 </div>
                 <div role="cell">
-                  <strong>{user.chartCount} charts · {user.reportCount} reports</strong>
+                  <strong>{ui.admin.userAssetCounts(user.chartCount, user.reportCount)}</strong>
                   <p>{user.userId}</p>
                 </div>
                 <time role="cell">{formatAdminDate(user.createdAt)}</time>
@@ -906,8 +906,8 @@ export default async function AdminPage({ searchParams }: { searchParams?: Promi
             <label>
               <span>{ui.admin.modelProvider}</span>
               <select name="modelProvider" defaultValue="openrouter">
-                <option value="openrouter">openrouter</option>
-                <option value="openai">openai</option>
+                <option value="openrouter">{ui.admin.modelProviders.openRouter}</option>
+                <option value="openai">{ui.admin.modelProviders.openAi}</option>
               </select>
             </label>
             <label>

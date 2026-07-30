@@ -136,6 +136,20 @@ Astra should:
 - Give users undo, edit, delete, or re-run paths where personal data and artifacts are involved.
 - Use i18n for app UI handles, labels, empty states, and errors.
 
+## i18n Chrome Enforcement
+
+Route all visible interface chrome through `apps/astra-web/lib/i18n.ts`,
+including headings, labels, placeholders, select-option labels, disclosure
+summaries, empty/loading/error text, and accessible-name attributes. Keep
+canonical form values, API identifiers, technical `<code>` samples, and
+authored or generated report content literal when they are data rather than UI
+chrome.
+
+Run `npm run check:i18n` after user-facing TSX changes. The guard scans Astra
+routes and components for raw alphabetic JSX text and raw accessible-name
+attributes, and it is part of `npm run check`. Treat a reported literal as a
+design-boundary question before adding an exception.
+
 ## Review Question
 
 Before shipping, ask:
