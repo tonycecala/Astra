@@ -3355,10 +3355,10 @@
       "route_count": 0
     },
     {
-      "file": "akashic/mail/new/AKM-20260729-0001.md",
+      "file": "akashic/mail/done/AKM-20260729-0001.md",
       "weight": 27.08,
       "bucket": "akashic",
-      "estimated_tokens": 350,
+      "estimated_tokens": 362,
       "lines": 52,
       "symbols": 7,
       "symbol_type_counts": {
@@ -6050,6 +6050,6 @@
   "coverage": {
     "files": 401,
     "symbols": 5636,
-    "total_estimated_tokens": 1113409
+    "total_estimated_tokens": 1113421
   }
 }
