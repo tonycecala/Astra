@@ -3355,6 +3355,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/mail/new/AKM-20260729-0001.md",
+      "weight": 27.08,
+      "bucket": "akashic",
+      "estimated_tokens": 350,
+      "lines": 52,
+      "symbols": 7,
+      "symbol_type_counts": {
+        "heading": 7
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/astra-web/lib/public-composer-preview.ts",
       "weight": 27.05,
       "bucket": "other",
@@ -6034,8 +6048,8 @@
     }
   ],
   "coverage": {
-    "files": 400,
-    "symbols": 5629,
-    "total_estimated_tokens": 1113059
+    "files": 401,
+    "symbols": 5636,
+    "total_estimated_tokens": 1113409
   }
 }

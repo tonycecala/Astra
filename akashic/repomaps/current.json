@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-07-30T00:08:19.406Z",
+  "generated_at": "2026-07-30T00:08:42.753Z",
   "root_name": "astra-ak-closeout.VqXEO3",
-  "files_indexed": 400,
-  "total_symbols": 5629,
-  "total_estimated_tokens": 1113059,
+  "files_indexed": 401,
+  "total_symbols": 5636,
+  "total_estimated_tokens": 1113409,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -32510,6 +32510,67 @@
       "importance_bucket": "other"
     },
     {
+      "file": "akashic/mail/new/AKM-20260729-0001.md",
+      "lang": "markdown",
+      "size": 1397,
+      "lines": 52,
+      "estimated_tokens": 350,
+      "symbols": [
+        {
+          "name": "Akashic review and learning closeout installed",
+          "line": 34,
+          "type": "heading"
+        },
+        {
+          "name": "Request",
+          "line": 36,
+          "type": "heading"
+        },
+        {
+          "name": "Context",
+          "line": 39,
+          "type": "heading"
+        },
+        {
+          "name": "Constraints",
+          "line": 42,
+          "type": "heading"
+        },
+        {
+          "name": "Attachments",
+          "line": 45,
+          "type": "heading"
+        },
+        {
+          "name": "Acceptance",
+          "line": 48,
+          "type": "heading"
+        },
+        {
+          "name": "Agent Closeout",
+          "line": 51,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Akashic review and learning closeout installed",
+        "Request",
+        "Context",
+        "Constraints",
+        "Attachments",
+        "Acceptance",
+        "Agent Closeout"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 27.08,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "apps/astra-web/lib/public-composer-preview.ts",
       "lang": "typescript",
       "size": 1753,
@@ -39378,6 +39439,11 @@
     ],
     "Acceptance": [
       {
+        "file": "akashic/mail/new/AKM-20260729-0001.md",
+        "line": 48,
+        "type": "heading"
+      },
+      {
         "file": "akashic/mail/templates/amail-ask.md",
         "line": 37,
         "type": "heading"
@@ -40192,6 +40258,11 @@
     ],
     "Agent Closeout": [
       {
+        "file": "akashic/mail/new/AKM-20260729-0001.md",
+        "line": 51,
+        "type": "heading"
+      },
+      {
         "file": "akashic/mail/templates/amail-ask.md",
         "line": 40,
         "type": "heading"
@@ -40244,6 +40315,13 @@
       {
         "file": "AGENTS.md",
         "line": 23,
+        "type": "heading"
+      }
+    ],
+    "Akashic review and learning closeout installed": [
+      {
+        "file": "akashic/mail/new/AKM-20260729-0001.md",
+        "line": 34,
         "type": "heading"
       }
     ],
@@ -43004,6 +43082,11 @@
       }
     ],
     "Attachments": [
+      {
+        "file": "akashic/mail/new/AKM-20260729-0001.md",
+        "line": 45,
+        "type": "heading"
+      },
       {
         "file": "akashic/mail/templates/amail-ask.md",
         "line": 34,
@@ -48203,6 +48286,11 @@
     ],
     "Constraints": [
       {
+        "file": "akashic/mail/new/AKM-20260729-0001.md",
+        "line": 42,
+        "type": "heading"
+      },
+      {
         "file": "akashic/mail/templates/amail-ask.md",
         "line": 31,
         "type": "heading"
@@ -48303,6 +48391,11 @@
       {
         "file": "akashic/decisions/ADR-20260717-report-prose-budgets-and-prompt-contracts.md",
         "line": 28,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/mail/new/AKM-20260729-0001.md",
+        "line": 39,
         "type": "heading"
       },
       {
@@ -65660,6 +65753,11 @@
     ],
     "Request": [
       {
+        "file": "akashic/mail/new/AKM-20260729-0001.md",
+        "line": 36,
+        "type": "heading"
+      },
+      {
         "file": "akashic/mail/templates/amail-ask.md",
         "line": 25,
         "type": "heading"
@@ -77561,6 +77659,20 @@
         "route_count": 0
       },
       {
+        "file": "akashic/mail/new/AKM-20260729-0001.md",
+        "weight": 27.08,
+        "bucket": "akashic",
+        "estimated_tokens": 350,
+        "lines": 52,
+        "symbols": 7,
+        "symbol_type_counts": {
+          "heading": 7
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "apps/astra-web/lib/public-composer-preview.ts",
         "weight": 27.05,
         "bucket": "other",
@@ -80240,9 +80352,9 @@
       }
     ],
     "coverage": {
-      "files": 400,
-      "symbols": 5629,
-      "total_estimated_tokens": 1113059
+      "files": 401,
+      "symbols": 5636,
+      "total_estimated_tokens": 1113409
     }
   }
 }
