@@ -1,64 +1,6 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
-
-type JsonObject = Record<string, unknown>;
-
-function findOtp(value: unknown): string | null {
-  if (typeof value === "string") return value.match(/\b\d{6}\b/)?.[0] ?? null;
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      const otp = findOtp(item);
-      if (otp) return otp;
-    }
-  }
-  if (value && typeof value === "object") {
-    for (const item of Object.values(value as JsonObject)) {
-      const otp = findOtp(item);
-      if (otp) return otp;
-    }
-  }
-  return null;
-}
-
-async function readOtpFromMailpit(email: string) {
-  const mailpitUrl = process.env.MAILPIT_API_URL?.trim() || "http://localhost:8025";
-  const deadline = Date.now() + 5_000;
-
-  while (Date.now() < deadline) {
-    const searchUrl = new URL("/api/v1/search", mailpitUrl);
-    searchUrl.searchParams.set("query", email);
-    searchUrl.searchParams.set("limit", "10");
-
-    const searchResponse = await fetch(searchUrl);
-    if (!searchResponse.ok) throw new Error(`Mailpit search failed with ${searchResponse.status}.`);
-    const search = (await searchResponse.json()) as JsonObject;
-    const messages = Array.isArray(search.messages) ? search.messages : Array.isArray(search.Messages) ? search.Messages : [];
-
-    for (const summary of messages as JsonObject[]) {
-      const id = String(summary.ID ?? summary.Id ?? summary.id ?? "");
-      if (!id) continue;
-      const messageResponse = await fetch(new URL(`/api/v1/message/${id}`, mailpitUrl));
-      if (!messageResponse.ok) continue;
-      const otp = findOtp(await messageResponse.json());
-      if (otp) return otp;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  }
-
-  throw new Error(`No OTP found in Mailpit for ${email}.`);
-}
-
-async function signInWithOtp(page: Page, input: { email: string; name: string }) {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill(input.email);
-  await page.getByRole("button", { name: "Send code" }).click();
-  await page.getByLabel("Code").fill(await readOtpFromMailpit(input.email));
-  await page.getByRole("button", { name: "Verify code" }).click();
-  await expect(page).toHaveURL(/\/self(?:[?#]|$)/);
-  await expect(page.locator(".self-profile-name")).toHaveText(input.email);
-  await page.waitForLoadState("networkidle");
-}
+import { signInWithTestSession } from "./support/auth-session";
 
 async function gotoAfterDevCompilation(page: Page, url: string) {
   let lastError: unknown;
@@ -177,7 +119,7 @@ async function chooseKnownBirthMomentWithoutPlace(page: Page) {
 }
 
 test.describe("birth date and time sheet", () => {
-  test("Self sheet works across responsive viewports and Ally can reuse it", async ({ page }, testInfo) => {
+  test("Self sheet works across responsive viewports and Ally can reuse it @auth @responsive @report @release", async ({ page }, testInfo) => {
     const consoleMessages: string[] = [];
     const pageErrors: string[] = [];
     const failedResponses: string[] = [];
@@ -205,7 +147,7 @@ test.describe("birth date and time sheet", () => {
 
     const name = `Birth Sheet ${testInfo.project.name}`;
     const email = `birth-sheet-${testInfo.project.name}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
-    await signInWithOtp(page, { email, name });
+    await signInWithTestSession(page, { email, name });
 
     // Compile and hydrate the report destination before the form submission triggers
     // a full-page navigation in Next development mode.

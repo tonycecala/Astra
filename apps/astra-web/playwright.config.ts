@@ -1,9 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
+import { fileURLToPath } from "node:url";
 
 const astraServerCommand = process.env.ASTRA_E2E_SERVER_MODE === "production" ? "npm run start" : "npm run dev -- --webpack";
+const emailCaptureDir = fileURLToPath(new URL("../../.astra-email/e2e", import.meta.url));
+process.env.ASTRA_EMAIL_DELIVERY = "file";
+process.env.ASTRA_EMAIL_CAPTURE_DIR = emailCaptureDir;
 
 export default defineConfig({
   testDir: "./e2e",
+  testIgnore: "auth-rate-limit.spec.ts",
   timeout: 60_000,
   workers: 1,
   expect: {
@@ -29,7 +34,7 @@ export default defineConfig({
       timeout: 120_000
     },
     {
-      command: `ASTRA_PLACE_SEARCH_PROVIDER=open-meteo ASTRA_OPEN_METEO_GEOCODING_URL=http://127.0.0.1:4317/v1/search ${astraServerCommand}`,
+      command: `ASTRA_E2E_DISABLE_AUTH_RATE_LIMIT=1 ASTRA_EMAIL_DELIVERY=file ASTRA_EMAIL_CAPTURE_DIR=${JSON.stringify(emailCaptureDir)} ASTRA_PLACE_SEARCH_PROVIDER=open-meteo ASTRA_OPEN_METEO_GEOCODING_URL=http://127.0.0.1:4317/v1/search ${astraServerCommand}`,
       url: "http://localhost:3011/",
       reuseExistingServer: true,
       timeout: 120_000

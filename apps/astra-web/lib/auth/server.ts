@@ -35,6 +35,12 @@ export const auth = betterAuth({
   appName: "Astra",
   baseURL: authBaseUrl(),
   secret: authSecret(),
+  rateLimit: {
+    // The exhaustive browser matrix can exceed Better Auth's global request
+    // window through harmless session reads. Only the Playwright server sets
+    // this flag; the isolated production rate-limit contract deliberately does not.
+    enabled: process.env.ASTRA_E2E_DISABLE_AUTH_RATE_LIMIT !== "1"
+  },
   advanced: {
     database: {
       generateId: "uuid"

@@ -173,22 +173,6 @@
       "route_count": 0
     },
     {
-      "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-      "weight": 321.23,
-      "bucket": "other",
-      "estimated_tokens": 9739,
-      "lines": 724,
-      "symbols": 86,
-      "symbol_type_counts": {
-        "constant": 73,
-        "function": 12,
-        "type": 1
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
       "file": "scripts/lib/semantic-synthesis-v2-evaluation.ts",
       "weight": 299.31,
       "bucket": "other",
@@ -235,6 +219,22 @@
       },
       "dependency_in": 2,
       "dependency_out": 8,
+      "route_count": 0
+    },
+    {
+      "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+      "weight": 272.24,
+      "bucket": "other",
+      "estimated_tokens": 9420,
+      "lines": 678,
+      "symbols": 74,
+      "symbol_type_counts": {
+        "constant": 64,
+        "function": 9,
+        "type": 1
+      },
+      "dependency_in": 0,
+      "dependency_out": 2,
       "route_count": 0
     },
     {
@@ -385,46 +385,14 @@
       "route_count": 0
     },
     {
-      "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
-      "weight": 209.3,
-      "bucket": "other",
-      "estimated_tokens": 4680,
-      "lines": 360,
-      "symbols": 57,
-      "symbol_type_counts": {
-        "constant": 49,
-        "function": 7,
-        "type": 1
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
       "file": "docs/progress/PROGRESS_LOG.md",
-      "weight": 184.22,
+      "weight": 196.22,
       "bucket": "other",
-      "estimated_tokens": 11544,
-      "lines": 603,
-      "symbols": 60,
+      "estimated_tokens": 11854,
+      "lines": 637,
+      "symbols": 64,
       "symbol_type_counts": {
-        "heading": 60
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
-      "file": "apps/astra-web/e2e/journey-step.spec.ts",
-      "weight": 178.32,
-      "bucket": "other",
-      "estimated_tokens": 3670,
-      "lines": 291,
-      "symbols": 50,
-      "symbol_type_counts": {
-        "constant": 44,
-        "function": 5,
-        "type": 1
+        "heading": 64
       },
       "dependency_in": 0,
       "dependency_out": 0,
@@ -526,6 +494,21 @@
       },
       "dependency_in": 3,
       "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
+      "weight": 151.31,
+      "bucket": "other",
+      "estimated_tokens": 4142,
+      "lines": 302,
+      "symbols": 42,
+      "symbol_type_counts": {
+        "constant": 38,
+        "function": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 1,
       "route_count": 0
     },
     {
@@ -1018,6 +1001,22 @@
       "route_count": 0
     },
     {
+      "file": "apps/astra-web/e2e/support/otp.ts",
+      "weight": 99.45,
+      "bucket": "other",
+      "estimated_tokens": 706,
+      "lines": 88,
+      "symbols": 23,
+      "symbol_type_counts": {
+        "constant": 17,
+        "function": 5,
+        "type": 1
+      },
+      "dependency_in": 1,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/composer-web/app/api/cards/query/route.ts",
       "weight": 97.94,
       "bucket": "app/api",
@@ -1134,6 +1133,21 @@
       "route_count": 0
     },
     {
+      "file": "apps/astra-web/e2e/journey-step.spec.ts",
+      "weight": 91.33,
+      "bucket": "other",
+      "estimated_tokens": 3148,
+      "lines": 240,
+      "symbols": 27,
+      "symbol_type_counts": {
+        "constant": 26,
+        "function": 1
+      },
+      "dependency_in": 0,
+      "dependency_out": 1,
+      "route_count": 0
+    },
+    {
       "file": "apps/composer-web/src/onboardingWorkflow.ts",
       "weight": 89.39,
       "bucket": "other",
@@ -1215,6 +1229,22 @@
       "dependency_in": 0,
       "dependency_out": 2,
       "route_count": 1
+    },
+    {
+      "file": "apps/astra-web/e2e/support/auth-session.ts",
+      "weight": 83.47,
+      "bucket": "other",
+      "estimated_tokens": 568,
+      "lines": 92,
+      "symbols": 15,
+      "symbol_type_counts": {
+        "constant": 7,
+        "function": 6,
+        "type": 2
+      },
+      "dependency_in": 3,
+      "dependency_out": 0,
+      "route_count": 0
     },
     {
       "file": "packages/astrology/src/readability.ts",
@@ -1772,10 +1802,10 @@
     },
     {
       "file": "apps/astra-web/lib/auth/server.ts",
-      "weight": 60.36,
+      "weight": 60.42,
       "bucket": "other",
-      "estimated_tokens": 564,
-      "lines": 74,
+      "estimated_tokens": 646,
+      "lines": 80,
       "symbols": 8,
       "symbol_type_counts": {
         "constant": 3,
@@ -2995,6 +3025,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/skills/tier-browser-verification-by-changed-boundary.md",
+      "weight": 32.98,
+      "bucket": "akashic",
+      "estimated_tokens": 351,
+      "lines": 46,
+      "symbols": 9,
+      "symbol_type_counts": {
+        "heading": 9
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "akashic/templates/skill-template.md",
       "weight": 32.83,
       "bucket": "akashic",
@@ -3827,6 +3871,20 @@
       "route_count": 0
     },
     {
+      "file": "docs/evaluations/ASTRA_VERIFICATION_TIERS.md",
+      "weight": 22.06,
+      "bucket": "other",
+      "estimated_tokens": 1251,
+      "lines": 57,
+      "symbols": 6,
+      "symbol_type_counts": {
+        "heading": 6
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "docs/architecture/ASTRA_REPORT_ENGINE_MODULARIZATION_MAP.md",
       "weight": 21.78,
       "bucket": "other",
@@ -3938,6 +3996,20 @@
       },
       "dependency_in": 0,
       "dependency_out": 4,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/playbooks/astra-verification-tiers.md",
+      "weight": 20.69,
+      "bucket": "akashic",
+      "estimated_tokens": 341,
+      "lines": 33,
+      "symbols": 5,
+      "symbol_type_counts": {
+        "heading": 5
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -4453,6 +4525,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/warnings/do-not-consume-production-auth-rate-windows-with-repeated-e2e-sign-ins.md",
+      "weight": 17.57,
+      "bucket": "akashic",
+      "estimated_tokens": 261,
+      "lines": 28,
+      "symbols": 4,
+      "symbol_type_counts": {
+        "heading": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "akashic/warnings/ui-qa-should-scale-with-change-risk.md",
       "weight": 17.55,
       "bucket": "akashic",
@@ -4860,6 +4946,20 @@
       "route_count": 0
     },
     {
+      "file": "apps/astra-web/playwright.config.ts",
+      "weight": 10.16,
+      "bucket": "other",
+      "estimated_tokens": 474,
+      "lines": 58,
+      "symbols": 2,
+      "symbol_type_counts": {
+        "constant": 2
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/astra-web/lib/auth/client.ts",
       "weight": 9.74,
       "bucket": "other",
@@ -4905,8 +5005,8 @@
       "file": "package.json",
       "weight": 9.34,
       "bucket": "manifest",
-      "estimated_tokens": 2681,
-      "lines": 139,
+      "estimated_tokens": 2889,
+      "lines": 148,
       "symbols": 0,
       "symbol_type_counts": {},
       "dependency_in": 0,
@@ -5106,20 +5206,6 @@
       "route_count": 0
     },
     {
-      "file": "apps/astra-web/playwright.config.ts",
-      "weight": 7.1,
-      "bucket": "other",
-      "estimated_tokens": 375,
-      "lines": 53,
-      "symbols": 1,
-      "symbol_type_counts": {
-        "constant": 1
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
       "file": "README.md",
       "weight": 6.94,
       "bucket": "other",
@@ -5128,6 +5214,20 @@
       "symbols": 1,
       "symbol_type_counts": {
         "heading": 1
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "apps/astra-web/playwright.rate-limit.config.ts",
+      "weight": 6.72,
+      "bucket": "other",
+      "estimated_tokens": 242,
+      "lines": 33,
+      "symbols": 1,
+      "symbol_type_counts": {
+        "constant": 1
       },
       "dependency_in": 0,
       "dependency_out": 0,
@@ -5264,6 +5364,20 @@
       "symbols": 0,
       "symbol_type_counts": {},
       "dependency_in": 1,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "apps/astra-web/e2e/auth-rate-limit.spec.ts",
+      "weight": 6.24,
+      "bucket": "other",
+      "estimated_tokens": 138,
+      "lines": 18,
+      "symbols": 1,
+      "symbol_type_counts": {
+        "constant": 1
+      },
+      "dependency_in": 0,
       "dependency_out": 0,
       "route_count": 0
     },
@@ -5940,6 +6054,18 @@
       "route_count": 0
     },
     {
+      "file": "apps/composer-web/next-env.d.ts",
+      "weight": 2.52,
+      "bucket": "other",
+      "estimated_tokens": 63,
+      "lines": 7,
+      "symbols": 0,
+      "symbol_type_counts": {},
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/composer-web/tsconfig.json",
       "weight": 2.42,
       "bucket": "other",
@@ -6215,8 +6341,8 @@
     }
   ],
   "coverage": {
-    "files": 412,
-    "symbols": 5839,
-    "total_estimated_tokens": 1131837
+    "files": 421,
+    "symbols": 5858,
+    "total_estimated_tokens": 1135078
   }
 }

@@ -600,3 +600,37 @@ Continue Composer v1 quarry rebuild from the real 78-card Astrology 101 course, 
 - No public/private, analytics, persistence, or report-generation boundary
   changed. The only observed framework note is Next.js's existing
   project-reference support warning.
+
+### 2026-07-30 - Tiered Verification and Stable Auth E2E
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** verification performance and reliability
+**Status:** complete
+
+#### What Changed
+
+- Added fast/static, focused browser, responsive, security, and release tiers
+  with a change-to-test decision matrix.
+- Enabled ESLint caching and replaced repeated OTP sign-ins with signed Better
+  Auth test sessions after one real OTP contract.
+- Isolated the production OTP rate-limit contract and hardened Journey durable
+  state verification.
+
+#### Tests Run
+
+- `npm run check:fast` (2.50s)
+- cached `npm run lint` (1.45s)
+- `npm run check` (11.32s)
+- production focused E2E tiers (14.20s to about 49s)
+- production `npm run test:e2e:release` (45 passed, 6 intentionally skipped)
+- production `npm run test:e2e:rate-limit` (fourth request returned 429)
+
+#### Steward Review
+
+- Judgment: accept.
+- Production auth and rate-limit defaults remain enabled. Only the main
+  exhaustive Playwright server disables the general Better Auth request window;
+  a separate production-mode server proves throttling independently.
+- No user-facing design, analytics, persistence schema, or public/private
+  product boundary changed.

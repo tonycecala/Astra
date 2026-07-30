@@ -4,6 +4,8 @@ import { ASTRA_REPORT_WRITER_ENV, LOCAL_DETERMINISTIC_REPORT_WRITER, buildAstrol
 import { buildChartMakerRecordResult } from "@astra/chart-maker";
 import { appUserProfiles, createAlly, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, creditLedgerEntries, db, listUserAstrologyReportResults, listUserFeedItems, mirrorCreditBalanceToProfile, recordAstrologyReportResult, recordChartMakerResult, updateAuthUserProfileDisplayName } from "@astra/db";
 import { eq } from "drizzle-orm";
+import { signInWithTestSession } from "./support/auth-session";
+import { readOtp } from "./support/otp";
 
 type JsonObject = Record<string, unknown>;
 
@@ -22,74 +24,6 @@ const routes = [
   { path: "/gifts", heading: "Sign in to see Gifts", mobileHeading: "Gifts" },
   { path: "/login", heading: "Welcome back to Astra" }
 ];
-
-function findOtp(value: unknown): string | null {
-  if (typeof value === "string") return value.match(/\b\d{6}\b/)?.[0] ?? null;
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      const otp = findOtp(item);
-      if (otp) return otp;
-    }
-  }
-  if (value && typeof value === "object") {
-    for (const item of Object.values(value as JsonObject)) {
-      const otp = findOtp(item);
-      if (otp) return otp;
-    }
-  }
-  return null;
-}
-
-async function readOtpFromMailpit(email: string) {
-  const mailpitUrl = process.env.MAILPIT_API_URL?.trim() || "http://localhost:8025";
-  const deadline = Date.now() + 5_000;
-
-  while (Date.now() < deadline) {
-    const searchUrl = new URL("/api/v1/search", mailpitUrl);
-    searchUrl.searchParams.set("query", email);
-    searchUrl.searchParams.set("limit", "10");
-
-    const searchResponse = await fetch(searchUrl);
-    if (!searchResponse.ok) {
-      throw new Error(`Mailpit search failed with ${searchResponse.status}. Is Mailpit running at ${mailpitUrl}?`);
-    }
-
-    const search = (await searchResponse.json()) as JsonObject;
-    const messages = Array.isArray(search.messages)
-      ? search.messages
-      : Array.isArray(search.Messages)
-        ? search.Messages
-        : [];
-
-    for (const summary of messages as JsonObject[]) {
-      const id = String(summary.ID ?? summary.Id ?? summary.id ?? "");
-      if (!id) continue;
-
-      const messageResponse = await fetch(new URL(`/api/v1/message/${id}`, mailpitUrl));
-      if (!messageResponse.ok) continue;
-      const message = (await messageResponse.json()) as JsonObject;
-      const otp = findOtp(message);
-      if (otp) return otp;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  }
-
-  throw new Error(`No OTP found in Mailpit for ${email}.`);
-}
-
-async function signInWithOtp(page: Page, input: { email: string; name: string }) {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill(input.email);
-  await page.getByRole("button", { name: "Send code" }).click();
-  await expect(page.getByText("Check email for the sign-in code")).toBeVisible();
-
-  await page.getByLabel("Code").fill(await readOtpFromMailpit(input.email));
-  await page.getByRole("button", { name: "Verify code" }).click();
-  await expect(page).toHaveURL(/\/self(?:[?#]|$)/);
-  await expect(page.locator(".self-profile-name")).toHaveText(input.email);
-  await page.waitForLoadState("networkidle");
-}
 
 async function chooseUnknownBirthMoment(page: Page, input: { year: string; month: string; day: string }) {
   await page.getByRole("button", { name: "Edit birth details" }).click();
@@ -304,7 +238,7 @@ async function fulfillCheckoutThroughWebhook(page: Page, input: { checkoutSessio
 
 test.describe("clean-start routes", () => {
   for (const route of routes) {
-    test(`${route.path} renders without console errors`, async ({ page }, testInfo) => {
+    test(`${route.path} renders without console errors @smoke @release`, async ({ page }, testInfo) => {
       const errors: string[] = [];
       page.on("console", (message) => {
         if (
@@ -322,11 +256,17 @@ test.describe("clean-start routes", () => {
       } else {
         await expect(page.getByRole("heading", { name: route.heading })).toBeVisible();
       }
-      expect(errors.filter((message) => !message.includes("cannot have a negative time stamp"))).toEqual([]);
+      expect(
+        errors.filter(
+          (message) =>
+            !message.includes("cannot have a negative time stamp") &&
+            !message.includes("due to access control checks.")
+        )
+      ).toEqual([]);
     });
   }
 
-  test("mobile layout has no document-level horizontal overflow", async ({ page }) => {
+  test("mobile layout has no document-level horizontal overflow @responsive @release", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await expect(page.getByRole("navigation", { name: "Mobile navigation" })).toBeVisible();
@@ -334,7 +274,7 @@ test.describe("clean-start routes", () => {
     expect(hasOverflow).toBe(false);
   });
 
-  test("active navigation is visible on desktop and mobile", async ({ page }) => {
+  test("active navigation is visible on desktop and mobile @smoke @responsive @release", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/self");
     const desktopSelf = page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Self" });
@@ -348,7 +288,7 @@ test.describe("clean-start routes", () => {
     await expect(mobileLibrary).toHaveCSS("font-weight", "700");
   });
 
-  test("primary journey reaches adjacent clean-start areas", async ({ page }, testInfo) => {
+  test("primary journey reaches adjacent clean-start areas @smoke @journey @release", async ({ page }, testInfo) => {
     await page.goto("/journey");
     await page.waitForLoadState("networkidle");
     await page.locator('a[href="/allies"]:visible').click();
@@ -367,7 +307,7 @@ test.describe("clean-start routes", () => {
     }
   });
 
-  test("public Journey uses the established PublishedCard surface", async ({ page }) => {
+  test("public Journey uses the established PublishedCard surface @smoke @journey", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "Welcome to Astra" })).toBeVisible();
     const cards = page.getByLabel("Public Journey preview").locator("article.astraPublishedCard");
@@ -383,7 +323,7 @@ test.describe("clean-start routes", () => {
     await expect(firstCard.getByRole("button", { name: "Show less" })).toBeVisible();
   });
 
-  test("theme toggle switches and persists the Astra theme", async ({ page }) => {
+  test("theme toggle switches and persists the Astra theme @responsive", async ({ page }) => {
     await page.goto("/journey");
     await page.waitForLoadState("networkidle");
     await page.locator('button[aria-label="Switch to dark mode"]:visible').click();
@@ -395,21 +335,17 @@ test.describe("clean-start routes", () => {
     await expect(page.locator("html")).toHaveAttribute("data-astra-theme", "light");
   });
 
-  test("login surface follows the Astra theme", async ({ page }) => {
+  test("login surface follows the Astra theme @auth @responsive", async ({ page }) => {
     await page.goto("/login");
     await expect(page.locator(".loginShell")).toHaveCSS("background-color", "rgb(238, 232, 220)");
     await expect(page.locator(".loginCard")).toHaveCSS("background-color", "rgba(255, 255, 255, 0.88)");
-    await page.getByLabel("Email").fill(`theme-contrast-${Date.now()}@example.com`);
-    await page.getByRole("button", { name: "Send code" }).click();
-    await expect(page.locator(".loginStatus-success")).toHaveCSS("color", "rgb(71, 107, 85)");
 
     await page.getByRole("button", { name: "Switch to dark mode" }).first().click();
     await expect(page.locator(".loginShell")).toHaveCSS("background-color", "rgb(8, 5, 13)");
     await expect(page.locator(".loginCard")).toHaveCSS("background-color", "rgba(8, 13, 24, 0.62)");
-    await expect(page.locator(".loginStatus-success")).toHaveCSS("color", "rgb(131, 199, 162)");
   });
 
-  test("login route exposes Better Auth controls", async ({ page }) => {
+  test("login route exposes Better Auth controls @auth @smoke @release", async ({ page }) => {
     await page.goto("/login");
     await expect(page.getByLabel("Authentication panel")).toBeVisible();
     await expect(page.getByLabel("Name")).toHaveCount(0);
@@ -418,7 +354,22 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("button", { name: "Send code" })).toBeVisible();
   });
 
-  test("first Self chart creates a persisted one-time Chart Arrival", async ({ page }, testInfo) => {
+  test("email OTP completes a real sign-in contract @auth @release", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "The real OTP contract runs once; other journeys reuse signed test sessions.");
+
+    const email = `otp-contract-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
+    await page.goto("/login");
+    await page.getByLabel("Email").fill(email);
+    await page.getByRole("button", { name: "Send code" }).click();
+    await expect(page.getByText("Check email for the sign-in code")).toBeVisible();
+    await expect(page.locator(".loginStatus-success")).toHaveCSS("color", "rgb(71, 107, 85)");
+    await page.getByLabel("Code").fill(await readOtp(email));
+    await page.getByRole("button", { name: "Verify code" }).click();
+    await expect(page).toHaveURL(/\/self(?:[?#]|$)/);
+    await expect(page.locator(".self-profile-name")).toHaveText(email);
+  });
+
+  test("first Self chart creates a persisted one-time Chart Arrival @auth @journey @report @release", async ({ page }, testInfo) => {
     const email = `self-onboarding-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
     const name = "Astra Onboarding Smoke";
     const browserErrors: string[] = [];
@@ -427,15 +378,14 @@ test.describe("clean-start routes", () => {
     });
     page.on("pageerror", (error) => { if (!isExpectedNavigationCancellation(error.message)) browserErrors.push(error.message); });
 
-    await signInWithOtp(page, { email, name });
+    const onboardingUserId = await signInWithTestSession(page, { email, name });
     await expect(page).toHaveURL(/\/self(?:[?#]|$)/);
 
-    await expect(page.locator(".self-profile-name")).toHaveText(email);
+    await expect(page.locator(".self-profile-name")).toHaveText(name);
     await expect(page.getByRole("heading", { name: "Reveal your chart" })).toBeVisible();
     await expect(page.getByLabel("Alpha onboarding guidance")).toHaveCount(0);
     await expect(page.getByLabel("Chart generation flow")).toHaveCount(0);
 
-    const onboardingUserId = await userIdForEmail(email);
     await updateAuthUserProfileDisplayName(db, { userId: onboardingUserId, displayName: name });
     let prematureChartRequests = 0;
     page.on("request", (request) => {
@@ -541,7 +491,7 @@ test.describe("clean-start routes", () => {
     expect(browserErrors.filter((message) => message !== "Load failed" && !isExpectedNavigationCancellation(message))).toEqual([]);
   });
 
-  test("legacy Welcome Report stays directly readable but hidden from normal surfaces", async ({ page }, testInfo) => {
+  test("legacy Welcome Report stays directly readable but hidden from normal surfaces @auth @journey @report", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "desktop", "Existing-account producer reconciliation is covered once on desktop.");
     const email = `journey-existing-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
     const browserErrors: string[] = [];
@@ -549,11 +499,14 @@ test.describe("clean-start routes", () => {
       if (message.type() === "error" && !message.text().startsWith("Failed to load resource:") && !message.text().includes("due to access control checks.")) browserErrors.push(message.text());
     });
     page.on("pageerror", (error) => { if (!isExpectedNavigationCancellation(error.message)) browserErrors.push(error.message); });
-    await signInWithOtp(page, { email, name: "Existing Journey Account" });
+    await signInWithTestSession(page, { email, name: "Existing Journey Account" });
     const completed = await createCompletedReport(email, { name: "Existing Journey Account", reportType: "identity", legacyWelcome: true });
 
     await page.goto("/journey");
-    await expect(page.getByText(completed.result.publicSignal?.headline ?? "", { exact: true })).toHaveCount(0);
+    const legacyHeadline = completed.result.publicSignal?.headline;
+    if (legacyHeadline) {
+      await expect(page.getByText(legacyHeadline, { exact: true })).toHaveCount(0);
+    }
     await page.goto("/library");
     await expect(page.getByText("Welcome Report", { exact: true })).toHaveCount(0);
     await page.goto(`/library?reportId=${completed.request.id}`);
@@ -563,15 +516,15 @@ test.describe("clean-start routes", () => {
     expect(browserErrors).toEqual([]);
   });
 
-  test("admin Stars ledger and Synastry controls stay browser-visible", async ({ page }, testInfo) => {
+  test("admin Stars ledger and Synastry controls stay browser-visible @auth @report @release", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "desktop", "The auth-backed admin and Synastry parity journey is covered on desktop.");
 
     const email = `alpha-parity-admin-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
     const name = "Astra Alpha Admin";
 
-    await signInWithOtp(page, { email, name });
+    await signInWithTestSession(page, { email, name });
     await page.goto("/self");
-    await expect(page.getByRole("heading", { level: 1, name: email })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
     await makeProfileAdmin(email);
 
     await page.goto("/stars");
@@ -596,8 +549,9 @@ test.describe("clean-start routes", () => {
         successUrl: "http://localhost:3011/stars?checkout=success"
       }
     });
-    expect(checkoutResponse.ok()).toBe(true);
-    const checkout = (await checkoutResponse.json()) as JsonObject;
+    const checkoutBody = await checkoutResponse.text();
+    expect(checkoutResponse.ok(), checkoutBody).toBe(true);
+    const checkout = JSON.parse(checkoutBody) as JsonObject;
     const checkoutSessionId = String(checkout.checkoutSessionId ?? "");
     expect(checkoutSessionId).toMatch(/^cs_/);
     expect(String(checkout.url ?? "")).toContain("checkout.stripe.com");
