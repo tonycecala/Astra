@@ -2996,6 +2996,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+      "weight": 33.2,
+      "bucket": "akashic",
+      "estimated_tokens": 587,
+      "lines": 62,
+      "symbols": 9,
+      "symbol_type_counts": {
+        "heading": 9
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/astra-web/app/stars/page.tsx",
       "weight": 33.14,
       "bucket": "other",
@@ -3785,6 +3799,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/playbooks/astra-verification-tiers.md",
+      "weight": 23.94,
+      "bucket": "akashic",
+      "estimated_tokens": 712,
+      "lines": 47,
+      "symbols": 6,
+      "symbol_type_counts": {
+        "heading": 6
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/composer-web/src/index.ts",
       "weight": 23.79,
       "bucket": "other",
@@ -3996,20 +4024,6 @@
       },
       "dependency_in": 0,
       "dependency_out": 4,
-      "route_count": 0
-    },
-    {
-      "file": "akashic/playbooks/astra-verification-tiers.md",
-      "weight": 20.73,
-      "bucket": "akashic",
-      "estimated_tokens": 389,
-      "lines": 35,
-      "symbols": 5,
-      "symbol_type_counts": {
-        "heading": 5
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -4525,6 +4539,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
+      "weight": 17.6,
+      "bucket": "akashic",
+      "estimated_tokens": 263,
+      "lines": 29,
+      "symbols": 4,
+      "symbol_type_counts": {
+        "heading": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "akashic/warnings/do-not-consume-production-auth-rate-windows-with-repeated-e2e-sign-ins.md",
       "weight": 17.57,
       "bucket": "akashic",
@@ -4544,20 +4572,6 @@
       "bucket": "akashic",
       "estimated_tokens": 455,
       "lines": 29,
-      "symbols": 4,
-      "symbol_type_counts": {
-        "heading": 4
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
-      "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
-      "weight": 17.5,
-      "bucket": "akashic",
-      "estimated_tokens": 172,
-      "lines": 25,
       "symbols": 4,
       "symbol_type_counts": {
         "heading": 4
@@ -6355,8 +6369,8 @@
     }
   ],
   "coverage": {
-    "files": 422,
-    "symbols": 5862,
-    "total_estimated_tokens": 1135310
+    "files": 423,
+    "symbols": 5872,
+    "total_estimated_tokens": 1136311
   }
 }

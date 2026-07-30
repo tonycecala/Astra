@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-07-30T16:04:09.355Z",
+  "generated_at": "2026-07-30T23:14:15.354Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 422,
-  "total_symbols": 5862,
-  "total_estimated_tokens": 1135310,
+  "files_indexed": 423,
+  "total_symbols": 5872,
+  "total_estimated_tokens": 1136311,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -31729,6 +31729,78 @@
       "importance_bucket": "akashic"
     },
     {
+      "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+      "lang": "markdown",
+      "size": 2345,
+      "lines": 62,
+      "estimated_tokens": 587,
+      "symbols": [
+        {
+          "name": "Private shadow-generation bakeoff parity",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "Problem",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Signals",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "Root Cause",
+          "line": 27,
+          "type": "heading"
+        },
+        {
+          "name": "Investigation",
+          "line": 33,
+          "type": "heading"
+        },
+        {
+          "name": "Resolution",
+          "line": 40,
+          "type": "heading"
+        },
+        {
+          "name": "Prevention",
+          "line": 49,
+          "type": "heading"
+        },
+        {
+          "name": "Related Files",
+          "line": 55,
+          "type": "heading"
+        },
+        {
+          "name": "Related ADRs",
+          "line": 60,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Private shadow-generation bakeoff parity",
+        "Problem",
+        "Signals",
+        "Root Cause",
+        "Investigation",
+        "Resolution",
+        "Prevention",
+        "Related Files"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 33.2,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "apps/astra-web/app/stars/page.tsx",
       "lang": "typescript",
       "size": 2288,
@@ -34807,6 +34879,61 @@
       "importance_bucket": "other"
     },
     {
+      "file": "akashic/playbooks/astra-verification-tiers.md",
+      "lang": "markdown",
+      "size": 2848,
+      "lines": 47,
+      "estimated_tokens": 712,
+      "symbols": [
+        {
+          "name": "Astra Verification Tiers",
+          "line": 11,
+          "type": "heading"
+        },
+        {
+          "name": "Purpose",
+          "line": 13,
+          "type": "heading"
+        },
+        {
+          "name": "Procedure",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Authenticated browser tests",
+          "line": 26,
+          "type": "heading"
+        },
+        {
+          "name": "Review",
+          "line": 30,
+          "type": "heading"
+        },
+        {
+          "name": "Private shadow-generation bakeoffs",
+          "line": 36,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Astra Verification Tiers",
+        "Purpose",
+        "Procedure",
+        "Authenticated browser tests",
+        "Review",
+        "Private shadow-generation bakeoffs"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 23.94,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "apps/composer-web/src/index.ts",
       "lang": "typescript",
       "size": 1349,
@@ -35500,55 +35627,6 @@
       "dependency_out": 4,
       "importance_weight": 20.81,
       "importance_bucket": "other"
-    },
-    {
-      "file": "akashic/playbooks/astra-verification-tiers.md",
-      "lang": "markdown",
-      "size": 1555,
-      "lines": 35,
-      "estimated_tokens": 389,
-      "symbols": [
-        {
-          "name": "Astra Verification Tiers",
-          "line": 11,
-          "type": "heading"
-        },
-        {
-          "name": "Purpose",
-          "line": 13,
-          "type": "heading"
-        },
-        {
-          "name": "Procedure",
-          "line": 17,
-          "type": "heading"
-        },
-        {
-          "name": "Authenticated browser tests",
-          "line": 26,
-          "type": "heading"
-        },
-        {
-          "name": "Review",
-          "line": 30,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Astra Verification Tiers",
-        "Purpose",
-        "Procedure",
-        "Authenticated browser tests",
-        "Review"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 20.73,
-      "importance_bucket": "akashic"
     },
     {
       "file": "apps/astra-web/components/PublicJourneyPreview.tsx",
@@ -37175,6 +37253,49 @@
       "importance_bucket": "akashic"
     },
     {
+      "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
+      "lang": "markdown",
+      "size": 1050,
+      "lines": 29,
+      "estimated_tokens": 263,
+      "symbols": [
+        {
+          "name": "Browser action acknowledgement is not persisted-state proof",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "What Happened",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Why It Happened",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "How To Avoid It",
+          "line": 25,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Browser action acknowledgement is not persisted-state proof",
+        "What Happened",
+        "Why It Happened",
+        "How To Avoid It"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 17.6,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "akashic/warnings/do-not-consume-production-auth-rate-windows-with-repeated-e2e-sign-ins.md",
       "lang": "markdown",
       "size": 1041,
@@ -37258,49 +37379,6 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 17.55,
-      "importance_bucket": "akashic"
-    },
-    {
-      "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
-      "lang": "markdown",
-      "size": 686,
-      "lines": 25,
-      "estimated_tokens": 172,
-      "symbols": [
-        {
-          "name": "Browser action acknowledgement is not persisted-state proof",
-          "line": 15,
-          "type": "heading"
-        },
-        {
-          "name": "What Happened",
-          "line": 17,
-          "type": "heading"
-        },
-        {
-          "name": "Why It Happened",
-          "line": 20,
-          "type": "heading"
-        },
-        {
-          "name": "How To Avoid It",
-          "line": 23,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Browser action acknowledgement is not persisted-state proof",
-        "What Happened",
-        "Why It Happened",
-        "How To Avoid It"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 17.5,
       "importance_bucket": "akashic"
     },
     {
@@ -56842,7 +56920,7 @@
       },
       {
         "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
-        "line": 23,
+        "line": 25,
         "type": "heading"
       },
       {
@@ -57684,6 +57762,11 @@
       {
         "file": "akashic/skills/enforce-astra-interface-chrome-through-i18n.md",
         "line": 30,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+        "line": 33,
         "type": "heading"
       },
       {
@@ -64658,6 +64741,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+        "line": 49,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/tier-browser-verification-by-changed-boundary.md",
         "line": 36,
         "type": "heading"
@@ -64984,6 +65072,20 @@
         "type": "heading"
       }
     ],
+    "Private shadow-generation bakeoff parity": [
+      {
+        "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+        "line": 15,
+        "type": "heading"
+      }
+    ],
+    "Private shadow-generation bakeoffs": [
+      {
+        "file": "akashic/playbooks/astra-verification-tiers.md",
+        "line": 36,
+        "type": "heading"
+      }
+    ],
     "PrivateFeedRequest": [
       {
         "file": "packages/contracts/src/index.ts",
@@ -65042,6 +65144,11 @@
       },
       {
         "file": "akashic/skills/enforce-astra-interface-chrome-through-i18n.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
         "line": 17,
         "type": "heading"
       },
@@ -66982,6 +67089,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+        "line": 60,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/tier-browser-verification-by-changed-boundary.md",
         "line": 44,
         "type": "heading"
@@ -67006,6 +67118,11 @@
       {
         "file": "akashic/skills/enforce-astra-interface-chrome-through-i18n.md",
         "line": 43,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+        "line": 55,
         "type": "heading"
       },
       {
@@ -68840,6 +68957,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+        "line": 40,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/tier-browser-verification-by-changed-boundary.md",
         "line": 32,
         "type": "heading"
@@ -69819,6 +69941,11 @@
       {
         "file": "akashic/skills/enforce-astra-interface-chrome-through-i18n.md",
         "line": 26,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+        "line": 27,
         "type": "heading"
       },
       {
@@ -72027,6 +72154,11 @@
       {
         "file": "akashic/skills/enforce-astra-interface-chrome-through-i18n.md",
         "line": 21,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+        "line": 20,
         "type": "heading"
       },
       {
@@ -80373,6 +80505,20 @@
         "route_count": 0
       },
       {
+        "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+        "weight": 33.2,
+        "bucket": "akashic",
+        "estimated_tokens": 587,
+        "lines": 62,
+        "symbols": 9,
+        "symbol_type_counts": {
+          "heading": 9
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "apps/astra-web/app/stars/page.tsx",
         "weight": 33.14,
         "bucket": "other",
@@ -81162,6 +81308,20 @@
         "route_count": 0
       },
       {
+        "file": "akashic/playbooks/astra-verification-tiers.md",
+        "weight": 23.94,
+        "bucket": "akashic",
+        "estimated_tokens": 712,
+        "lines": 47,
+        "symbols": 6,
+        "symbol_type_counts": {
+          "heading": 6
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "apps/composer-web/src/index.ts",
         "weight": 23.79,
         "bucket": "other",
@@ -81373,20 +81533,6 @@
         },
         "dependency_in": 0,
         "dependency_out": 4,
-        "route_count": 0
-      },
-      {
-        "file": "akashic/playbooks/astra-verification-tiers.md",
-        "weight": 20.73,
-        "bucket": "akashic",
-        "estimated_tokens": 389,
-        "lines": 35,
-        "symbols": 5,
-        "symbol_type_counts": {
-          "heading": 5
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -81902,6 +82048,20 @@
         "route_count": 0
       },
       {
+        "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
+        "weight": 17.6,
+        "bucket": "akashic",
+        "estimated_tokens": 263,
+        "lines": 29,
+        "symbols": 4,
+        "symbol_type_counts": {
+          "heading": 4
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "akashic/warnings/do-not-consume-production-auth-rate-windows-with-repeated-e2e-sign-ins.md",
         "weight": 17.57,
         "bucket": "akashic",
@@ -81921,20 +82081,6 @@
         "bucket": "akashic",
         "estimated_tokens": 455,
         "lines": 29,
-        "symbols": 4,
-        "symbol_type_counts": {
-          "heading": 4
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
-        "route_count": 0
-      },
-      {
-        "file": "akashic/warnings/browser-action-acknowledgement-is-not-persisted-state-proof.md",
-        "weight": 17.5,
-        "bucket": "akashic",
-        "estimated_tokens": 172,
-        "lines": 25,
         "symbols": 4,
         "symbol_type_counts": {
           "heading": 4
@@ -83732,9 +83878,9 @@
       }
     ],
     "coverage": {
-      "files": 422,
-      "symbols": 5862,
-      "total_estimated_tokens": 1135310
+      "files": 423,
+      "symbols": 5872,
+      "total_estimated_tokens": 1136311
     }
   }
 }

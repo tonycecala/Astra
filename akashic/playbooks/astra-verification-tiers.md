@@ -32,3 +32,15 @@ Prove the real OTP contract once. Reuse Better Auth-signed test sessions for pro
 Record the selected tier and why in closeout. If a relevant tier was omitted, state the boundary evidence that made it unnecessary.
 
 For durable state transitions, first prove the action acknowledgement, then reload before asserting the persisted result. Do not make release acceptance depend on client revalidation timing.
+
+## Private shadow-generation bakeoffs
+
+Use a private shadow-generation bakeoff when the question is editorial or model-behavioral and does not require a product-path change.
+
+1. Read saved source records without inserting or updating production data.
+2. Require an explicit `--generate` flag and pin the current approved writer.
+3. Duplicate every production provider control that affects output, including temperature and reasoning effort. Record any intentional scope-driven difference, such as a larger completion-token limit for a longer experimental structure; never omit a provider control silently.
+4. Write the prompt, source IDs, raw output, latency, usage, cost, hashes, and deterministic validation into a private ignored artifact directory with `0600` files.
+5. Retain failed attempts beside the accepted attempt; do not silently replace evidence.
+6. Run targeted lint plus `npm run check` when the experiment adds executable code. Browser E2E is not required when no route, runtime, database write, or product prompt changes.
+7. Refresh REPOMAP and the incremental JCodeMunch index at closeout. If JCodeMunch cannot index the experiment's file type, report the exact limitation and use REPOMAP plus targeted source validation rather than calling the index current for that file.
