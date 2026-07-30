@@ -871,6 +871,15 @@ textarea {
 
 .journey-current-step { min-width: 0; }
 .journey-current-card { min-height: 0; }
+.journey-current-card .astraPublishedCardMedia {
+  aspect-ratio: auto;
+  height: clamp(132px, 18vw, 190px);
+  min-height: 132px;
+}
+.journey-current-card .astraPublishedCardImage {
+  height: 100%;
+  aspect-ratio: auto;
+}
 .journey-step-subtitle { color: var(--muted); font-weight: 650; }
 .journey-provenance { margin-top: 16px; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: color-mix(in srgb, var(--panel) 86%, transparent); }
 .journey-provenance summary { color: var(--gold); cursor: pointer; font-weight: 750; }
@@ -883,6 +892,7 @@ textarea {
 .journey-queue ol { display: grid; gap: 0; margin: 16px 0 0; padding-left: 24px; }
 .journey-queue ol li { padding: 12px 0 12px 6px; border-bottom: 1px solid var(--line); }
 .journey-queue li span { display: block; margin-top: 3px; color: var(--muted); font-size: .88rem; }
+.journey-queue-remainder { margin: 14px 0 0; color: var(--muted); font-size: .88rem; }
 .journey-saved { margin-top: 26px; }
 .journey-saved h3 { color: var(--gold); font-size: 1rem; }
 .journey-saved ul { display: grid; gap: 10px; padding: 0; list-style: none; }
@@ -890,6 +900,10 @@ textarea {
 .journey-empty .button { margin-top: 12px; }
 .public-journey-preview { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 24px; }
 .public-journey-preview h2 { color: var(--gold); }
+
+@media (max-width: 1100px) {
+  .journey-step-layout { grid-template-columns: 1fr; }
+}
 
 .reader-toolbar {
   display: flex;

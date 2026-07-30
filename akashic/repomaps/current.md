@@ -23,7 +23,7 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `1113421`
+- Estimated token footprint: `1156865`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
@@ -39,6 +39,7 @@ akashic/
 apps/
 docs/
 eslint.config.mjs
+output/
 package-lock.json
 package.json
 packages/
@@ -59,7 +60,7 @@ tsconfig.json
 - `akashic/warnings` knowledge artifacts
 
 ## Entry Points
-- `apps/astra-web/app/api/reports/route.ts` - 2 route handler(s), 2 export(s), 39 symbol(s), 6 import(s), ~2128 tokens
+- `apps/astra-web/app/api/reports/route.ts` - 2 route handler(s), 2 export(s), 36 symbol(s), 6 import(s), ~1914 tokens
 - `apps/composer-web/app/api/cards/queue-draft/route.ts` - 3 route handler(s), 3 export(s), 22 symbol(s), 4 import(s), ~679 tokens
 - `apps/astra-web/app/api/reports/[requestId]/share/route.ts` - 2 route handler(s), 2 export(s), 10 symbol(s), 3 import(s), ~372 tokens
 - `apps/composer-web/app/api/cards/publish-plan/route.ts` - 2 route handler(s), 2 export(s), 10 symbol(s), 2 import(s), ~306 tokens
@@ -67,6 +68,7 @@ tsconfig.json
 - `apps/astra-web/app/api/allies/route.ts` - 2 route handler(s), 2 export(s), 8 symbol(s), 4 import(s), ~294 tokens
 - `apps/astra-web/app/api/stripe/webhook/route.ts` - 1 route handler(s), 2 export(s), 20 symbol(s), 4 import(s), ~790 tokens
 - `apps/composer-web/app/api/library/availability/route.ts` - 1 route handler(s), 1 export(s), 16 symbol(s), 4 import(s), ~635 tokens
+- `apps/composer-web/app/api/chart-arrival/rewrite/route.ts` - 1 route handler(s), 1 export(s), 15 symbol(s), 3 import(s), ~618 tokens
 - `apps/astra-web/app/api/composer/selection/route.ts` - 1 route handler(s), 1 export(s), 12 symbol(s), 3 import(s), ~665 tokens
 - `apps/composer-web/app/api/cards/prepare-batch/route.ts` - 1 route handler(s), 1 export(s), 12 symbol(s), 5 import(s), ~639 tokens
 - `apps/astra-web/app/api/admin/replay-report/route.ts` - 1 route handler(s), 1 export(s), 12 symbol(s), 5 import(s), ~723 tokens
@@ -78,7 +80,6 @@ tsconfig.json
 - `apps/astra-web/app/api/places/search/route.ts` - 1 route handler(s), 1 export(s), 6 symbol(s), 4 import(s), ~356 tokens
 - `apps/astra-web/app/api/beta-feedback/route.ts` - 1 route handler(s), 1 export(s), 7 symbol(s), 4 import(s), ~386 tokens
 - `apps/composer-web/app/api/operator/preview/route.ts` - 1 route handler(s), 1 export(s), 7 symbol(s), 2 import(s), ~257 tokens
-- `apps/astra-web/app/api/reports/[requestId]/route.ts` - 1 route handler(s), 1 export(s), 5 symbol(s), 3 import(s), ~205 tokens
 
 ## External Integrations
 - Auth provider/library
@@ -95,20 +96,20 @@ tsconfig.json
 
 ## Critical Files
 - `packages/astrology/src/index.ts` - weight 2748.11, ~43368 tokens, 645 symbols, in:0/out:13
-- `packages/db/src/repositories.ts` - weight 1020.18, ~19335 tokens, 215 symbols, in:1/out:2
+- `packages/db/src/repositories.ts` - weight 1045.18, ~19595 tokens, 220 symbols, in:1/out:2
 - `packages/astrology/src/meaningComplexNetwork.ts` - weight 918.2, ~15519 tokens, 233 symbols, in:1/out:0
 - `packages/astrology/src/structuralChartFacts.ts` - weight 798.22, ~12000 tokens, 206 symbols, in:1/out:0
 - `apps/composer-web/lib/cardLibrary.ts` - weight 585.24, ~8636 tokens, 135 symbols, in:16/out:13
-- `apps/astra-web/components/BirthOnboardingPanel.tsx` - weight 501.22, ~11867 tokens, 110 symbols, in:2/out:5
-- `packages/contracts/src/index.ts` - weight 492.23, ~10025 tokens, 179 symbols, in:0/out:0
+- `apps/astra-web/components/BirthOnboardingPanel.tsx` - weight 550.21, ~13099 tokens, 122 symbols, in:2/out:5
+- `packages/contracts/src/index.ts` - weight 522.23, ~10420 tokens, 191 symbols, in:0/out:0
 - `apps/astra-web/app/admin/page.tsx` - weight 481.22, ~11012 tokens, 100 symbols, in:0/out:2
 - `apps/composer-web/components/CardWorkspace.tsx` - weight 457.24, ~9273 tokens, 91 symbols, in:3/out:1
 - `packages/astrology/src/meaningComplexReportViews.ts` - weight 394.3, ~4580 tokens, 99 symbols, in:2/out:0
-- `apps/astra-web/e2e/foundation-routes.spec.ts` - weight 324.24, ~9337 tokens, 87 symbols, in:0/out:0
+- `apps/astra-web/e2e/foundation-routes.spec.ts` - weight 321.23, ~9794 tokens, 86 symbols, in:0/out:0
 - `scripts/lib/semantic-synthesis-v2-evaluation.ts` - weight 299.31, ~4127 tokens, 79 symbols, in:0/out:2
 - `packages/astrology/src/normalizedChartFacts.ts` - weight 289.31, ~3967 tokens, 77 symbols, in:1/out:0
 - `apps/astra-web/components/ReportReader.tsx` - weight 281.32, ~3614 tokens, 54 symbols, in:2/out:8
-- `apps/astra-web/app/api/reports/route.ts` - weight 258.36, ~2128 tokens, 39 symbols, in:0/out:3
+- `packages/astrology/src/report/promptBuilderContracts.ts` - weight 251.24, ~8831 tokens, 58 symbols, in:0/out:0
 
 ## Critical Routes
 - `POST /api/admin/replay-report` in `apps/astra-web/app/api/admin/replay-report/route.ts:15`
@@ -117,6 +118,8 @@ tsconfig.json
 - `POST /api/allies` in `apps/astra-web/app/api/allies/route.ts:18`
 - `POST /api/beta-feedback` in `apps/astra-web/app/api/beta-feedback/route.ts:13`
 - `POST /api/billing/create-checkout-session` in `apps/astra-web/app/api/billing/create-checkout-session/route.ts:16`
+- `POST /api/chart-arrivals/[chartRequestId]/complete` in `apps/astra-web/app/api/chart-arrivals/[chartRequestId]/complete/route.ts:7`
+- `POST /api/chart-arrivals` in `apps/astra-web/app/api/chart-arrivals/route.ts:6`
 - `GET /api/chart-requests` in `apps/astra-web/app/api/chart-requests/route.ts:10`
 - `POST /api/chart-requests` in `apps/astra-web/app/api/chart-requests/route.ts:18`
 - `POST /api/chart-results` in `apps/astra-web/app/api/chart-results/route.ts:6`
@@ -145,6 +148,7 @@ tsconfig.json
 - `GET /api/cards/queue-draft` in `apps/composer-web/app/api/cards/queue-draft/route.ts:31`
 - `PUT /api/cards/queue-draft` in `apps/composer-web/app/api/cards/queue-draft/route.ts:44`
 - `DELETE /api/cards/queue-draft` in `apps/composer-web/app/api/cards/queue-draft/route.ts:65`
+- `POST /api/chart-arrival/rewrite` in `apps/composer-web/app/api/chart-arrival/rewrite/route.ts:39`
 - `GET /api/library/availability` in `apps/composer-web/app/api/library/availability/route.ts:33`
 - `GET /api/onboarding/preview` in `apps/composer-web/app/api/onboarding/preview/route.ts:4`
 - `POST /api/onboarding/publish` in `apps/composer-web/app/api/onboarding/publish/route.ts:5`
@@ -154,8 +158,8 @@ tsconfig.json
 
 ## Pareto Profiles
 - `32000` tokens -> 1 files, 645 symbols, ~43368 estimated tokens.
-- `64000` tokens -> 3 files, 1093 symbols, ~78222 estimated tokens.
-- `128000` tokens -> 8 files, 1823 symbols, ~131762 estimated tokens.
+- `64000` tokens -> 3 files, 1098 symbols, ~78482 estimated tokens.
+- `128000` tokens -> 8 files, 1852 symbols, ~133649 estimated tokens.
 
 ## Data Model
 Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.
@@ -187,4 +191,4 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - Treat auth as a first-class product concern and verify the repo's documented local auth flow.
 - Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 401 local files in `/private/tmp/astra-ak-mail.AnILUv`.
+Generated from 417 local files for `astra-clean-start`.

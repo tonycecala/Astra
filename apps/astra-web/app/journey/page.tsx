@@ -16,6 +16,6 @@ export default async function JourneyPage() {
   } catch (error) {
     console.error("Journey onboarding cards are not ready; Astra will retry when Journey is opened again.", error);
   }
-  const view = await getJourneyViewModel(profile.userId);
+  const view = await getJourneyViewModel(profile.userId, { userRole: profile.role });
   return <><PageHeader eyebrow={ui.journey.eyebrow} title={ui.journey.title}>{ui.journey.intro}</PageHeader><JourneyStepReader {...view} /></>;
 }

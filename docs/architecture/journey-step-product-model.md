@@ -26,16 +26,21 @@ Every read and mutation is scoped by both `userId` and feed-item ID. Journey nev
 ## Producer integration
 
 - Opening Journey for a profile whose onboarding status is still pending asks Composer to publish its deterministic private onboarding batch. Astra marks onboarding complete only after the full batch persists; a Composer outage leaves the profile pending so the next Journey visit retries without blocking auth, Self, Library, or report APIs.
-- Successful report generation immediately publishes the completed report's public signal as a deterministic user-owned `report_signal` item.
-- Opening Journey reconciles completed historical reports with public signals, so accounts created before automatic publishing receive their missing report items.
+- Successful report generation makes the report eligible for a curated, deterministic user-owned `report_signal` item; it does not guarantee a permanent Journey entry.
+- A report signal qualifies only when the completed report is no more than 30 days old, has a matching private request, is not imported, legacy, preview/test data, or an unsupported report family, and is the newest report for its chart target and report type.
+- Customer accounts may receive those curated report signals. Admin accounts receive no automatic report signals because their high-volume report runs are operational/test output; admin reports remain intact in Library.
+- At most three report signals remain active. Opening Journey repairs existing available signals by marking ineligible, duplicate, excess, imported, test, orphaned, and stale signals seen. The repair is idempotent and never deletes or changes the report in Library.
+- User-saved steps are not retired by automatic curation.
 - Repeated producer writes may refresh authored card content but must preserve the user's durable state and original availability. A retry cannot resurrect a completed, saved, or dismissed step.
 - Report-card continuity uses the private report request ID for `/library?reportId=...`; the public-signal ID is provenance, not an Astra route handle.
+- Customer-facing report context is generated from the owning request in plain language. Engine, model, ranking, and debug provenance remain internal.
+- The current step is primary. `Up next` discloses at most three titles while retaining an honest total count, so Journey never becomes a second Library.
 
 ## Product states and pattern acceptance
 
 The rendered states are signed-out illustration, loading, private empty, one step, multiple ordered steps, saved steps, action failure, Composer delay with safe retry, and database failure. The implementation follows `01-time-to-value.md` (real onboarding value reaches Journey), `05-progressive-disclosure.md` (queue secondary to the current step), `20-fail-safe.md` (producer retries preserve user state), and `36-trust-building.md` (user-scoped projections and report provenance). No forbidden or adversarial pattern is used.
 
-Analytics are N/A in this iteration because Astra has no active client analytics transport. The durable database state remains the source of truth; no silent telemetry sink was invented.
+The analytics contract documents `journey_step_opened`, `journey_step_completed`, `journey_step_saved`, `journey_step_dismissed`, and `journey_step_restored`. Runtime emission remains N/A because Astra has no active client analytics transport. The durable database state remains the source of truth; no silent telemetry sink was invented.
 
 ## Surface ownership
 

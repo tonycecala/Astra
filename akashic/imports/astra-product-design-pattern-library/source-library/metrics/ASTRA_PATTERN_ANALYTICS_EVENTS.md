@@ -25,6 +25,11 @@ Include:
 | `empty_state_cta_clicked` | User acts from an empty state. |
 | `success_moment_viewed` | Meaningful milestone ceremony shown. |
 | `chart_arrival_completed` | User explicitly chooses **Enter Astra** after viewing the persisted First Glimpse. Runtime emission is N/A until Astra has an analytics transport. |
+| `journey_step_opened` | User follows a Journey step to its owning Astra surface. Runtime emission is N/A until Astra has an analytics transport. |
+| `journey_step_completed` | User marks the current private Journey step complete. Runtime emission is N/A until Astra has an analytics transport. |
+| `journey_step_saved` | User defers a Journey step into Saved for later. Runtime emission is N/A until Astra has an analytics transport. |
+| `journey_step_dismissed` | User dismisses a Journey step from the active queue. Runtime emission is N/A until Astra has an analytics transport. |
+| `journey_step_restored` | User restores a saved, completed, or dismissed Journey step. Runtime emission is N/A until Astra has an analytics transport. |
 | `value_replay_opened` | Digest/notification/widget replay opened. |
 | `library_artifact_created` | Report/card/reflection/certificate stored. |
 | `commitment_created` | User declares goal/pace/focus. |

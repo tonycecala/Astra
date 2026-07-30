@@ -59,7 +59,7 @@ export const ui = {
     dismissedNotice: "Step dismissed.",
     completedNotice: "Step completed.",
     provenance: {
-      report: "You chose to bring this completed report signal into your private Journey.",
+      report: "This recent report is ready in your private Library. Journey is bringing it forward once so you can decide what comes next.",
       onboarding: "This is part of the private welcome sequence created for your Astra account.",
       ally: "This step connects to an Ally saved in your private Astra.",
       gift: "This step connects to a Gift in your private Astra.",
@@ -69,7 +69,9 @@ export const ui = {
     upNextLabel: "Upcoming Journey steps",
     savedForLater: "Saved for later",
     stepCount: (count: number) => `${count} ${count === 1 ? "step" : "steps"}`,
+    queueRemainder: (count: number) => `${count} more ${count === 1 ? "step is" : "steps are"} held in your private queue.`,
     queueEmpty: "Nothing else is waiting right now.",
+    privateReportContext: "A private report saved in your Library.",
     publicPreviewLabel: "Public Journey preview",
     actionError: "Astra could not save that change. Please try again.",
     seededStream: "Seeded stream",

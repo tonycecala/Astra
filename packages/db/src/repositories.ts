@@ -1142,6 +1142,42 @@ export async function listUserFeedItems(
   });
 }
 
+export async function listAvailableUserReportSignalsForRepair(
+  database: AstraDb,
+  userId: string
+): Promise<UserFeedItem[]> {
+  const rows = await database
+    .select()
+    .from(userFeedItems)
+    .where(and(
+      eq(userFeedItems.userId, userId),
+      eq(userFeedItems.feedKind, "report_signal"),
+      eq(userFeedItems.state, "available")
+    ))
+    .orderBy(desc(userFeedItems.rankScore), asc(userFeedItems.availableAt));
+
+  return rows.map(userFeedItemFromRow);
+}
+
+export async function retireAvailableUserFeedItems(
+  database: AstraDb,
+  input: { userId: string; feedItemIds: string[] }
+): Promise<number> {
+  if (!input.feedItemIds.length) return 0;
+  const now = new Date();
+  const rows = await database
+    .update(userFeedItems)
+    .set({ state: "seen", seenAt: now, updatedAt: now })
+    .where(and(
+      eq(userFeedItems.userId, input.userId),
+      eq(userFeedItems.state, "available"),
+      inArray(userFeedItems.id, input.feedItemIds)
+    ))
+    .returning({ id: userFeedItems.id });
+
+  return rows.length;
+}
+
 export async function getUserFeedItemById(
   database: AstraDb,
   input: { userId: string; feedItemId: string }

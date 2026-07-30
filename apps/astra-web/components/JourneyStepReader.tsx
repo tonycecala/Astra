@@ -8,7 +8,17 @@ import { useState } from "react";
 import { ui } from "../lib/i18n";
 import type { JourneyStep } from "../lib/journey";
 
-export function JourneyStepReader({ currentStep, queue, saved }: { currentStep?: JourneyStep; queue: JourneyStep[]; saved: JourneyStep[] }) {
+export function JourneyStepReader({
+  currentStep,
+  queue,
+  queuedStepCount,
+  saved
+}: {
+  currentStep?: JourneyStep;
+  queue: JourneyStep[];
+  queuedStepCount: number;
+  saved: JourneyStep[];
+}) {
   const router = useRouter();
   const [pendingId, setPendingId] = useState<string>();
   const [error, setError] = useState("");
@@ -72,8 +82,9 @@ export function JourneyStepReader({ currentStep, queue, saved }: { currentStep?:
         </div>
       </main>
       <aside className="journey-queue" aria-label={ui.journey.upNextLabel}>
-        <div className="journey-queue-heading"><h2>{ui.journey.upNext}</h2><span>{ui.journey.stepCount(queue.length)}</span></div>
+        <div className="journey-queue-heading"><h2>{ui.journey.upNext}</h2><span>{ui.journey.stepCount(queuedStepCount)}</span></div>
         {queue.length ? <ol>{queue.map((step) => <li key={step.item.id}><strong>{step.card.title}</strong>{step.card.subtitle ? <span>{step.card.subtitle}</span> : null}</li>)}</ol> : <p>{ui.journey.queueEmpty}</p>}
+        {queuedStepCount > queue.length ? <p className="journey-queue-remainder">{ui.journey.queueRemainder(queuedStepCount - queue.length)}</p> : null}
         {saved.length ? <section className="journey-saved"><h3>{ui.journey.savedForLater}</h3><ul>{saved.map((step) => <li key={step.item.id}><span>{step.card.title}</span><button className="text-button" disabled={pendingId === step.item.id} onClick={() => act(step.item.id, "restore")} type="button">{ui.journey.restoreStep}</button></li>)}</ul></section> : null}
       </aside>
     </div>

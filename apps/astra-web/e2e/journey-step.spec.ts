@@ -1,6 +1,6 @@
 import { expect, type BrowserContext, test } from "@playwright/test";
 import { randomUUID } from "node:crypto";
-import { appUserProfiles, createUserFeedItem, db } from "@astra/db";
+import { appUserProfiles, createUserFeedItem, db, userFeedItems } from "@astra/db";
 import { eq } from "drizzle-orm";
 
 type JsonObject = Record<string, unknown>;
@@ -53,18 +53,20 @@ async function userIdFor(email: string) {
   return profile.userId;
 }
 
-async function seedStep(userId: string, input: { rank: number; title: string; kind?: "manual" | "report_signal" }) {
+async function seedStep(userId: string, input: { rank: number; title: string; kind?: "artifact" | "manual" | "report_signal" }) {
   return createUserFeedItem(db, {
     id: `playwright_journey:${randomUUID()}`,
     userId,
     feedKind: input.kind ?? "manual",
     title: input.title,
     body: `${input.title} body copy for Journey lifecycle verification.`,
-    displayPayload: input.kind === "report_signal"
+    displayPayload: input.kind === "artifact"
       ? { subtitle: "A completed private report", ctaLabel: "Open report", publicSignal: { reportId: randomUUID(), requestId: randomUUID() } }
       : { subtitle: "Private Journey guidance" },
     rankScore: input.rank,
-    reasonCode: input.kind === "report_signal" ? "explicit_report_signal_publish" : "playwright_journey_lifecycle",
+    reasonCode: input.kind === "report_signal" || input.kind === "artifact"
+      ? "explicit_report_signal_publish"
+      : "playwright_journey_lifecycle",
     state: "available",
     availableAt: new Date().toISOString()
   });
@@ -92,8 +94,13 @@ test("JourneyStep is private, durable, recoverable, and responsive", async ({ br
   const userB = await userIdFor(emailB);
   await db.update(appUserProfiles).set({ onboardingStatus: "complete", updatedAt: new Date() }).where(eq(appUserProfiles.userId, userA));
   await db.update(appUserProfiles).set({ onboardingStatus: "complete", updatedAt: new Date() }).where(eq(appUserProfiles.userId, userB));
-  const current = await seedStep(userA, { rank: 300, title: "A private current step", kind: "report_signal" });
-  await seedStep(userA, { rank: 200, title: "A private next step" });
+  await seedStep(userA, { rank: 600, title: "A private current step", kind: "artifact" });
+  const orphanSignal = await seedStep(userA, { rank: 550, title: "Obsolete imported report signal", kind: "report_signal" });
+  await seedStep(userA, { rank: 500, title: "A private next step" });
+  await seedStep(userA, { rank: 400, title: "A private third step" });
+  await seedStep(userA, { rank: 300, title: "A private fourth step" });
+  await seedStep(userA, { rank: 200, title: "A private fifth step" });
+  await seedStep(userA, { rank: 100, title: "A private sixth step" });
   const userBOnly = await seedStep(userB, { rank: 400, title: "B private step" });
 
   await pageA.goto("/journey");
@@ -104,8 +111,14 @@ test("JourneyStep is private, durable, recoverable, and responsive", async ({ br
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
   await expect(pageA.getByText("B private step")).toHaveCount(0);
   await expect(pageA.getByRole("link", { name: "Open report" })).toHaveAttribute("href", /\/library\?reportId=/);
+  await expect(pageA.getByText("Obsolete imported report signal")).toHaveCount(0);
+  const [repairedSignal] = await db.select({ state: userFeedItems.state }).from(userFeedItems).where(eq(userFeedItems.id, orphanSignal.id)).limit(1);
+  expect(repairedSignal?.state).toBe("seen");
+  await expect(pageA.getByRole("complementary", { name: "Upcoming Journey steps" }).getByRole("listitem")).toHaveCount(3);
+  await expect(pageA.getByText("5 steps")).toBeVisible();
+  await expect(pageA.getByText("2 more steps are held in your private queue.")).toBeVisible();
   await pageA.getByText("Why this now?").click();
-  await expect(pageA.getByText("You chose to bring this completed report signal into your private Journey.")).toBeVisible();
+  await expect(pageA.getByText("This recent report is ready in your private Library. Journey is bringing it forward once so you can decide what comes next.")).toBeVisible();
 
   const forged = await pageA.request.patch(`/api/journey/items/${encodeURIComponent(userBOnly.id)}`, { data: { action: "dismiss" } });
   expect(forged.status()).toBe(404);
@@ -121,7 +134,7 @@ test("JourneyStep is private, durable, recoverable, and responsive", async ({ br
   await pageA.getByRole("button", { name: "Undo" }).click();
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
 
-  const currentActionUrl = `**/api/journey/items/${encodeURIComponent(current.id)}`;
+  const currentActionUrl = "**/api/journey/items/**";
   await pageA.route(currentActionUrl, (route) => route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ error: "TEST_FAILURE" }) }));
   await pageA.getByRole("button", { name: "Complete" }).click();
   await expect(pageA.locator(".form-error[role=alert]")).toHaveText("Astra could not save that change. Please try again.");

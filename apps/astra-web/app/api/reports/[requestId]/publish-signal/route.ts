@@ -9,7 +9,7 @@ export async function POST(_request: Request, context: RouteContext) {
   if (!profile) return NextResponse.json({ error: "AUTH_REQUIRED" }, { status: 401 });
   const { requestId } = await context.params;
   try {
-    const published = await ensureReportJourneyItem({ requestId, userId: profile.userId });
+    const published = await ensureReportJourneyItem({ requestId, userId: profile.userId, userRole: profile.role });
     return NextResponse.json(published, { status: 201 });
   } catch (error) {
     const code = error instanceof Error ? error.message : "ASTROLOGY_REPORT_PUBLIC_SIGNAL_NOT_PUBLISHED";

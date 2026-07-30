@@ -1,13 +1,14 @@
 import "server-only";
 
-import type { AstraCard, StreamItem, UserFeedItem } from "@astra/contracts";
-import { db, listUserFeedItems, readFoundationSnapshot, seedSnapshot } from "@astra/db";
+import type { AstraCard, AstrologyReportRequest, StreamItem, UserFeedItem } from "@astra/contracts";
+import { db, listUserAstrologyReportRequests, listUserFeedItems, readFoundationSnapshot, seedSnapshot } from "@astra/db";
 import { fetchComposerAvailability } from "./composer-selection";
 import { ui } from "./i18n";
 import { buildPublicComposerPreview, PUBLIC_COMPOSER_SAMPLE_COUNT } from "./public-composer-preview";
 import { reconcileCompletedReportJourneyItems } from "./journey-producers";
 import { retireLegacyWelcomeJourneyItems } from "./journey-producers";
 import { CHART_ARRIVAL_REASON } from "./chart-arrival";
+import { JOURNEY_UP_NEXT_PREVIEW_LIMIT, reportJourneySubtitle } from "./journey-policy";
 
 export type JourneyStep = {
   item: UserFeedItem;
@@ -16,7 +17,7 @@ export type JourneyStep = {
   provenance: string;
 };
 export type PublicJourneyCard = { item: StreamItem | { id: string }; card: AstraCard };
-export type JourneyViewModel = { currentStep?: JourneyStep; queue: JourneyStep[]; saved: JourneyStep[] };
+export type JourneyViewModel = { currentStep?: JourneyStep; queue: JourneyStep[]; queuedStepCount: number; saved: JourneyStep[] };
 
 function payloadString(payload: Record<string, unknown>, key: string) {
   const value = payload[key];
@@ -56,7 +57,12 @@ function provenanceFor(item: UserFeedItem) {
   return ui.journey.provenance.privateJourney;
 }
 
-function stepFromFeedItem(item: UserFeedItem): JourneyStep {
+function stepFromFeedItem(item: UserFeedItem, requestsById: Map<string, AstrologyReportRequest>): JourneyStep {
+  const requestId = reportRequestId(item);
+  const request = requestId ? requestsById.get(requestId) : undefined;
+  const subtitle = item.feedKind === "report_signal"
+    ? request ? reportJourneySubtitle(request) : ui.journey.privateReportContext
+    : payloadString(item.displayPayload, "subtitle");
   return {
     item,
     primaryAction: primaryActionFor(item),
@@ -64,7 +70,7 @@ function stepFromFeedItem(item: UserFeedItem): JourneyStep {
     card: {
       id: item.id,
       title: item.title,
-      subtitle: payloadString(item.displayPayload, "subtitle"),
+      subtitle,
       body: item.body,
       lane: laneForFeedKind(item.feedKind),
       tone: "grounded",
@@ -74,17 +80,21 @@ function stepFromFeedItem(item: UserFeedItem): JourneyStep {
   };
 }
 
-export async function getJourneyViewModel(userId: string): Promise<JourneyViewModel> {
-  await Promise.all([reconcileCompletedReportJourneyItems(userId), retireLegacyWelcomeJourneyItems(userId)]);
-  const [available, saved] = await Promise.all([
+export async function getJourneyViewModel(userId: string, options: { userRole?: string } = {}): Promise<JourneyViewModel> {
+  await Promise.all([reconcileCompletedReportJourneyItems(userId, options), retireLegacyWelcomeJourneyItems(userId)]);
+  const [available, saved, requests] = await Promise.all([
     listUserFeedItems(db, { userId, state: "available", limit: 50 }),
-    listUserFeedItems(db, { userId, state: "saved", limit: 50 })
+    listUserFeedItems(db, { userId, state: "saved", limit: 50 }),
+    listUserAstrologyReportRequests(db, userId)
   ]);
-  const steps = available.items.filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON).map(stepFromFeedItem);
+  const requestsById = new Map(requests.map((request) => [request.id, request]));
+  const steps = available.items.filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON).map((item) => stepFromFeedItem(item, requestsById));
+  const queue = steps.slice(1);
   return {
     currentStep: steps[0],
-    queue: steps.slice(1),
-    saved: saved.items.filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON).map(stepFromFeedItem)
+    queue: queue.slice(0, JOURNEY_UP_NEXT_PREVIEW_LIMIT),
+    queuedStepCount: queue.length,
+    saved: saved.items.filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON).map((item) => stepFromFeedItem(item, requestsById))
   };
 }
 

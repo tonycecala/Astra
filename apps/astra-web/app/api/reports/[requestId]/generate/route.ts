@@ -44,7 +44,7 @@ export async function POST(_request: Request, context: RouteContext) {
   let journey = null;
   if (result.status === "completed" && result.publicSignal) {
     try {
-      journey = await ensureReportJourneyItem({ requestId, userId: profile.userId, result });
+      journey = await ensureReportJourneyItem({ requestId, userId: profile.userId, userRole: profile.role, result });
     } catch (error) {
       console.error("The report is complete but its Journey item is pending reconciliation.", error);
     }

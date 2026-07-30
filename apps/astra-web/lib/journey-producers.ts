@@ -1,16 +1,19 @@
 import "server-only";
 
-import type { AstrologyReportResult, ComposerPrivateFeedWrite } from "@astra/contracts";
+import type { AstrologyReportRequest, AstrologyReportResult, ComposerPrivateFeedWrite } from "@astra/contracts";
 import {
   db,
   getUserAstrologyReportResult,
   getUserFeedItemById,
+  listAvailableUserReportSignalsForRepair,
   listUserAstrologyReportRequests,
   listUserAstrologyReportResults,
   markAuthUserOnboardingComplete,
+  retireAvailableUserFeedItems,
   updateUserFeedItemState
 } from "@astra/db";
 import { persistComposerPrivateFeedWrite } from "./composer-private-feed";
+import { curateReportSignals, reportJourneySubtitle } from "./journey-policy";
 import { isWelcomeReport } from "./report-display";
 
 function clean(value: string | undefined) {
@@ -43,7 +46,7 @@ export async function ensureComposerOnboardingJourney(input: { onboardingStatus:
   return { created: true } as const;
 }
 
-function reportSignalWrite(result: AstrologyReportResult): ComposerPrivateFeedWrite {
+function reportSignalWrite(result: AstrologyReportResult, request: AstrologyReportRequest): ComposerPrivateFeedWrite {
   if (result.status !== "completed" || !result.publicSignal) throw new Error("ASTROLOGY_REPORT_PUBLIC_SIGNAL_NOT_READY");
   const signal = result.publicSignal;
   const createdAt = result.createdAt;
@@ -73,7 +76,7 @@ function reportSignalWrite(result: AstrologyReportResult): ComposerPrivateFeedWr
       title: signal.headline,
       body: signal.summary,
       displayPayload: {
-        subtitle: signal.provenanceSummary,
+        subtitle: reportJourneySubtitle(request),
         lane: "know_yourself",
         tone: signal.tone,
         ctaLabel: "Open",
@@ -99,22 +102,36 @@ function reportSignalWrite(result: AstrologyReportResult): ComposerPrivateFeedWr
   };
 }
 
-export async function ensureReportJourneyItem(input: { requestId: string; userId: string; result?: AstrologyReportResult }) {
+export async function ensureReportJourneyItem(input: { requestId: string; userId: string; userRole?: string; result?: AstrologyReportResult }) {
   const result = input.result ?? await getUserAstrologyReportResult(db, input);
   if (!result || result.userId !== input.userId) throw new Error("ASTROLOGY_REPORT_RESULT_NOT_FOUND");
-  const artifact = reportSignalWrite(result);
-  const write = await persistComposerPrivateFeedWrite(artifact);
-  return { artifact, feedItem: write.feedItem, write };
+  if (result.status !== "completed" || !result.publicSignal) throw new Error("ASTROLOGY_REPORT_PUBLIC_SIGNAL_NOT_READY");
+  const reconciliation = await reconcileCompletedReportJourneyItems(input.userId, { userRole: input.userRole });
+  const published = reconciliation.published.find((entry) => entry.artifact.feedItem.id === `report_signal_feed:${input.userId}:${input.requestId}`);
+  return published ?? { created: false, reason: reconciliation.suppressed.get(input.requestId) ?? "not_selected" };
 }
 
-export async function reconcileCompletedReportJourneyItems(userId: string) {
-  const [results, requests] = await Promise.all([
+export async function reconcileCompletedReportJourneyItems(userId: string, options: { userRole?: string } = {}) {
+  const [results, requests, availableSignals] = await Promise.all([
     listUserAstrologyReportResults(db, userId),
-    listUserAstrologyReportRequests(db, userId)
+    listUserAstrologyReportRequests(db, userId),
+    listAvailableUserReportSignalsForRepair(db, userId)
   ]);
-  const visibleRequestIds = new Set(requests.filter((request) => !isWelcomeReport(request)).map((request) => request.id));
-  const completed = results.filter((result) => visibleRequestIds.has(result.requestId) && result.status === "completed" && result.publicSignal);
-  return Promise.all(completed.map((result) => ensureReportJourneyItem({ requestId: result.requestId, userId, result })));
+  const visibleRequests = requests.filter((request) => !isWelcomeReport(request));
+  const curated = curateReportSignals(visibleRequests, results, new Date(), {
+    allowReportSignals: options.userRole !== "admin"
+  });
+  const selectedFeedIds = new Set(curated.selected.map(({ result }) => `report_signal_feed:${userId}:${result.requestId}`));
+  const retired = await retireAvailableUserFeedItems(db, {
+    userId,
+    feedItemIds: availableSignals.filter((item) => !selectedFeedIds.has(item.id)).map((item) => item.id)
+  });
+  const published = await Promise.all(curated.selected.map(async ({ request, result }) => {
+    const artifact = reportSignalWrite(result, request);
+    const write = await persistComposerPrivateFeedWrite(artifact);
+    return { artifact, feedItem: write.feedItem, write };
+  }));
+  return { published, retired, suppressed: curated.suppressed };
 }
 
 export async function retireLegacyWelcomeJourneyItems(userId: string) {
