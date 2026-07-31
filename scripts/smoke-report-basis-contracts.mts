@@ -4,6 +4,7 @@ import {
   type ReportChartSourceSnapshot
 } from "@astra/contracts";
 import { synastryBasisForPerspective } from "../apps/astra-web/lib/synastryPerspective";
+import { synastryToneSnapshot } from "@astra/astrology";
 
 const chartSettings = { zodiacMode: "tropical", houseSystem: "whole-sign" } as const;
 
@@ -68,11 +69,21 @@ const comparison: ReportChartSourceSnapshot = {
   ...source,
   chartRequestId: "chart_comparison",
   subjectType: "ally",
+  subjectId: "ally_1",
   subjectName: "Comparison"
 };
 const reciprocalBasis = synastryBasisForPerspective({ primary: source, comparison, perspective: "comparison" });
 if (reciprocalBasis.primary.chartRequestId !== comparison.chartRequestId || reciprocalBasis.comparison.chartRequestId !== source.chartRequestId) {
   throw new Error("Comparison-reader Synastry must swap the persisted report basis without changing either chart.");
+}
+const tone = synastryToneSnapshot({ allyId: "ally_1", relationship: "Lover" });
+const primaryBasis = synastryBasisForPerspective({ primary: source, comparison, perspective: "primary" });
+const toneForOrderedPair = (pair: { primary: ReportChartSourceSnapshot; comparison: ReportChartSourceSnapshot }) => {
+  const ally = [pair.primary, pair.comparison].find((chart) => chart.subjectType === "ally");
+  return synastryToneSnapshot({ allyId: ally?.subjectId, relationship: "Lover" });
+};
+if (JSON.stringify(toneForOrderedPair(primaryBasis)) !== JSON.stringify(tone) || JSON.stringify(toneForOrderedPair(reciprocalBasis)) !== JSON.stringify(tone)) {
+  throw new Error("Reciprocal perspective must swap only chart order, not the server-derived tone snapshot.");
 }
 
 const progressedWithoutDate = reportChartBasisSnapshotSchema.safeParse({

@@ -89,7 +89,7 @@ async function readOtpFromMailpit(email: string) {
 function makeClient() {
   let cookieHeader = "";
 
-  async function requestJson(url: string, init?: RequestInit) {
+  async function request(url: string, init?: RequestInit) {
     const headers = new Headers(init?.headers);
     headers.set("origin", appBaseUrl);
     if (cookieHeader) headers.set("cookie", cookieHeader);
@@ -97,6 +97,11 @@ function makeClient() {
 
     const response = await fetch(url, { ...init, headers });
     cookieHeader = appendCookies(cookieHeader, response.headers);
+    return response;
+  }
+
+  async function requestJson(url: string, init?: RequestInit) {
+    const response = await request(url, init);
 
     const text = await response.text();
     if (!response.ok) {
@@ -106,7 +111,14 @@ function makeClient() {
     return text ? (JSON.parse(text) as JsonObject) : {};
   }
 
-  return { requestJson };
+  async function expectStatus(url: string, expectedStatus: number, init?: RequestInit) {
+    const response = await request(url, init);
+    if (response.status !== expectedStatus) {
+      throw new Error(`${url} expected ${expectedStatus} but returned ${response.status}: ${await response.text()}`);
+    }
+  }
+
+  return { expectStatus, requestJson };
 }
 
 async function signIn(email: string, name: string) {
@@ -151,6 +163,19 @@ const created = await firstUser.requestJson(`${appBaseUrl}/api/allies`, {
 const allyId = (created.ally as JsonObject | undefined)?.id;
 if (!allyId) throw new Error("Ally API did not return an ally id.");
 
+await firstUser.expectStatus(`${appBaseUrl}/api/allies`, 400, {
+  method: "POST",
+  body: JSON.stringify({ name: "Invalid Self Ally", kind: "person", relationship: "Self" })
+});
+
+const updated = await firstUser.requestJson(`${appBaseUrl}/api/allies/${encodeURIComponent(String(allyId))}`, {
+  method: "PATCH",
+  body: JSON.stringify({ relationship: "Lover" })
+});
+if ((updated.ally as JsonObject | undefined)?.relationship !== "Lover") {
+  throw new Error("Owner-scoped Ally PATCH did not persist the canonical Lover tag.");
+}
+
 const firstListed = await firstUser.requestJson(`${appBaseUrl}/api/allies`);
 const firstAllies = Array.isArray(firstListed.allies) ? firstListed.allies : [];
 if (!firstAllies.some((ally) => (ally as JsonObject).id === allyId)) {
@@ -158,6 +183,10 @@ if (!firstAllies.some((ally) => (ally as JsonObject).id === allyId)) {
 }
 
 const secondUser = await signIn(secondEmail, "Astra Ally Privacy Smoke");
+await secondUser.expectStatus(`${appBaseUrl}/api/allies/${encodeURIComponent(String(allyId))}`, 404, {
+  method: "PATCH",
+  body: JSON.stringify({ relationship: "Child" })
+});
 const secondListed = await secondUser.requestJson(`${appBaseUrl}/api/allies`);
 const secondAllies = Array.isArray(secondListed.allies) ? secondListed.allies : [];
 if (secondAllies.some((ally) => (ally as JsonObject).id === allyId)) {

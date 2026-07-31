@@ -11,6 +11,8 @@ import {
   type ReportGenerationRetryFailure,
   type ReportGenerationRetryIssue,
   type ReportGenerationRetryReasonCode,
+  type SynastryToneSnapshot,
+  type SynastryV3Metadata,
   astrologyReportRequestSchema,
   birthPlaceSearchQuerySchema,
   birthPlaceSearchResponseSchema,
@@ -97,6 +99,16 @@ import { parseModelDraft as parseModelDraftFromReport } from "./report/draftPars
 import { sectionFromModelText } from "./report/sectionParsing";
 import { validateSectionedReportSection as validateSectionedReportSectionFromReport } from "./report/sectionValidation";
 import { retryModelPart } from "./report/retryOrchestration";
+import { synastryToneSnapshot, synastryV3Headings } from "./report/allyTone";
+import {
+  ASTRA_SYNASTRY_V3_PROMPT_VERSION,
+  buildSynastryV3EvidenceIndex,
+  buildSynastryV3Prompt,
+  buildSynastryV3SemanticPrompt,
+  parseSynastryV3Response,
+  parseSynastryV3SemanticResponse
+} from "./report/synastryV3";
+import { validateSynastryV3 } from "./report/synastryV3Validation";
 import {
   mergeProviderUsage,
   maxModelOutputTokensFor as maxModelOutputTokensForProvider,
@@ -113,6 +125,9 @@ export * from "./normalizedChartFacts";
 export * from "./structuralChartFacts";
 export * from "./meaningComplexNetwork";
 export * from "./meaningComplexReportViews";
+export * from "./report/allyTone";
+export * from "./report/synastryV3";
+export * from "./report/synastryV3Validation";
 export {
   relationshipSituationKeys,
   normalizedRelationshipContextFromRequest,
@@ -2348,6 +2363,19 @@ export function buildAstrologyReportSectionEvidence(input: AstrologyReportReques
   }));
 }
 
+function synastryToneFromRequest(request: AstrologyReportRequest): SynastryToneSnapshot {
+  return request.context?.synastryTone ?? synastryToneSnapshot({
+    allyId: request.context?.subject?.allyId,
+    relationship: request.context?.subject?.relationship
+  });
+}
+
+function synastryV3Names(request: AstrologyReportRequest) {
+  const basis = reportBasisFor(request);
+  if (basis.type !== "synastry" || !basis.partner) throw new Error("Synastry V3 requires a two-chart report basis.");
+  return { readerName: basis.primary.subjectName, allyName: basis.partner.subjectName };
+}
+
 function sectionSignalCardBlock(card: ReportSectionSignalCard) {
   return buildSectionWriterPacket(card);
 }
@@ -3693,6 +3721,164 @@ async function parseValidatedModelDraft(input: ReportWriterInput, writer: (previ
   };
 }
 
+class SynastryV3GenerationError extends Error {
+  constructor(
+    message: string,
+    readonly generation: {
+      attemptCount: number;
+      usage: ModelUsage;
+      latencyMs: number;
+      failures: ReportGenerationRetryFailure[];
+    }
+  ) {
+    super(message);
+    this.name = "SynastryV3GenerationError";
+  }
+}
+
+async function generateSynastryV3Draft(
+  input: ReportWriterInput,
+  writer: PromptModelWriter
+): Promise<{
+  draft: ReportDraft;
+  attemptCount: number;
+  usage: ModelUsage;
+  latencyMs: number;
+  reviewNotes: ReportGenerationRetryIssue[];
+  failures: ReportGenerationRetryFailure[];
+  synastryV3: SynastryV3Metadata;
+}> {
+  const startedAt = Date.now();
+  const tone = synastryToneFromRequest(input.request);
+  const { readerName, allyName } = synastryV3Names(input.request);
+  const headings = synastryV3Headings(tone, allyName);
+  const evidenceIndex = buildSynastryV3EvidenceIndex(
+    buildAstrologyReportSectionEvidence(input.request, synastryReportHeadings)
+  );
+  if (!evidenceIndex.length) throw new Error("Synastry V3 strongest-15 packet was empty.");
+
+  let usage: ModelUsage = {};
+  let previousErrors: string[] = [];
+  const failures: ReportGenerationRetryFailure[] = [];
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const response = await writer(buildSynastryV3Prompt({ readerName, allyName, tone, evidenceIndex, previousErrors }), maxModelOutputTokensFor(input.request));
+    usage = mergeModelUsage(usage, response.usage);
+    let parsed: ReturnType<typeof parseSynastryV3Response>;
+    let sections: AstrologyReportSection[];
+    try {
+      parsed = parseSynastryV3Response(response.text);
+      sections = markdownSectionsFromText(parsed.portrait, input.request);
+    } catch (error) {
+      previousErrors = [error instanceof Error ? error.message : "The response format was invalid."];
+      failures.push(synastryV3RetryFailure(attempt, previousErrors, response, response.text, "invalid_markdown"));
+      if (attempt === 1) continue;
+      throw new SynastryV3GenerationError(
+        `Synastry V3 failed its output boundary after one corrective retry: ${previousErrors.join(" ")}`,
+        { attemptCount: attempt, usage, latencyMs: Date.now() - startedAt, failures }
+      );
+    }
+
+    let validation = validateSynastryV3({ portrait: parsed.portrait, sections, headings, trace: parsed.trace, evidenceIndex, tone, allyName });
+    if (!validation.greenLight) {
+      previousErrors = [...validation.boundaryViolations, ...validation.fatalCategories.map((category) => `Fatal category: ${category}`)];
+      failures.push(synastryV3RetryFailure(attempt, previousErrors, response, response.text, "unsupported_claim"));
+      if (attempt === 1) continue;
+      throw new SynastryV3GenerationError(
+        `Synastry V3 remained outside its acceptance policy after one corrective retry: ${previousErrors.join(" ")}`,
+        { attemptCount: attempt, usage, latencyMs: Date.now() - startedAt, failures }
+      );
+    }
+
+    const semanticResponse = await writer(buildSynastryV3SemanticPrompt({ portrait: parsed.portrait, evidenceIndex }), 700);
+    usage = mergeModelUsage(usage, semanticResponse.usage);
+    let semantic: ReturnType<typeof parseSynastryV3SemanticResponse>;
+    try {
+      semantic = parseSynastryV3SemanticResponse(semanticResponse.text);
+    } catch (error) {
+      previousErrors = [error instanceof Error ? error.message : "Semantic support response was invalid."];
+      failures.push(synastryV3RetryFailure(attempt, previousErrors, semanticResponse, response.text, "provider_no_text"));
+      if (attempt === 1) continue;
+      throw new SynastryV3GenerationError(
+        `Synastry V3 semantic support check failed after one corrective retry: ${previousErrors.join(" ")}`,
+        { attemptCount: attempt, usage, latencyMs: Date.now() - startedAt, failures }
+      );
+    }
+    validation = validateSynastryV3({
+      portrait: parsed.portrait,
+      sections,
+      headings,
+      trace: parsed.trace,
+      evidenceIndex,
+      tone,
+      allyName,
+      semanticSeverity: semantic.severity
+    });
+    if (!validation.greenLight) {
+      previousErrors = [...validation.boundaryViolations, ...validation.fatalCategories.map((category) => `Fatal category: ${category}`)];
+      failures.push(synastryV3RetryFailure(attempt, previousErrors, response, response.text, "unsupported_claim"));
+      if (attempt === 1) continue;
+      throw new SynastryV3GenerationError(
+        `Synastry V3 remained outside its acceptance policy after one corrective retry: ${previousErrors.join(" ")}`,
+        { attemptCount: attempt, usage, latencyMs: Date.now() - startedAt, failures }
+      );
+    }
+
+    const baseline = writeDeterministicCoreReport(input);
+    const summary = summaryFromMarkdown(parsed.portrait, `${readerName} and ${allyName}: a private relationship portrait.`);
+    const draft: ReportDraft = {
+      summary,
+      sections,
+      publicSignal: baseline.publicSignal
+        ? {
+            ...baseline.publicSignal,
+            headline: `${readerName} + ${allyName}`,
+            summary,
+            provenanceSummary: "A private feeling-first relationship portrait."
+          }
+        : undefined
+    };
+    return {
+      draft,
+      attemptCount: attempt,
+      usage,
+      latencyMs: Date.now() - startedAt,
+      reviewNotes: [],
+      failures,
+      synastryV3: {
+        schemaVersion: 1,
+        sourceReportIds: [],
+        tone,
+        evidenceIndex,
+        chapterTrace: parsed.trace,
+        validation,
+        semanticSupport: {
+          ...semantic,
+          ...semanticResponse.usage,
+          latencyMs: semanticResponse.latencyMs
+        }
+      }
+    };
+  }
+  throw new Error("Synastry V3 did not produce an accepted report.");
+}
+
+function synastryV3RetryFailure(
+  attempt: number,
+  messages: string[],
+  response: ModelWriterResponse,
+  rejectedText: string,
+  code: ReportGenerationRetryReasonCode
+): ReportGenerationRetryFailure {
+  return {
+    attempt,
+    issues: messages.map((message) => ({ code, message })),
+    ...response.usage,
+    ...(response.finishReason ? { finishReason: response.finishReason } : {}),
+    rejectedText,
+    latencyMs: response.latencyMs
+  };
+}
+
 function monolithicRetryIssue(message: string): ReportGenerationRetryIssue {
   return monolithicRetryIssueFromReport(message);
 }
@@ -3859,9 +4045,10 @@ async function buildDebugModelReportResult(
   const chartSignature = buildChartSignature(request);
   let draft: ReportDraft;
   let writerSummary: string;
-  let generation: Awaited<ReturnType<typeof parseValidatedModelDraft>> | Awaited<ReturnType<typeof generateSectionedDeepDraft>> | Awaited<ReturnType<typeof generateSectionedEnrichedCoreDraft>>;
+  let generation: Awaited<ReturnType<typeof parseValidatedModelDraft>> | Awaited<ReturnType<typeof generateSectionedDeepDraft>> | Awaited<ReturnType<typeof generateSectionedEnrichedCoreDraft>> | Awaited<ReturnType<typeof generateSynastryV3Draft>>;
   let sectionedGeneration: Awaited<ReturnType<typeof generateSectionedDeepDraft>> | null = null;
   let sectionedCoreGeneration: Awaited<ReturnType<typeof generateSectionedEnrichedCoreDraft>> | null = null;
+  let synastryGeneration: Awaited<ReturnType<typeof generateSynastryV3Draft>> | null = null;
   try {
     if (config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER) {
       if (!config.openRouterApiKey || !config.openRouterBaseUrl) {
@@ -3876,7 +4063,13 @@ async function buildDebugModelReportResult(
       const openRouterBaseUrl = config.openRouterBaseUrl;
       const writerInput = { request, chartSignature };
       const modelConfig = { reportModel, openRouterApiKey, openRouterBaseUrl };
-      if (request.reportType === "deep") {
+      if (request.reportType === "synastry") {
+        synastryGeneration = await generateSynastryV3Draft(
+          writerInput,
+          (prompt, maxOutputTokens) => writeOpenRouterModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
+        );
+        generation = synastryGeneration;
+      } else if (request.reportType === "deep") {
         sectionedGeneration = await generateSectionedDeepDraft(
           writerInput,
           (prompt, maxOutputTokens) => writeOpenRouterModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
@@ -3904,7 +4097,13 @@ async function buildDebugModelReportResult(
       const openaiApiKey = config.openaiApiKey;
       const writerInput = { request, chartSignature };
       const modelConfig = { reportModel, openaiApiKey };
-      if (request.reportType === "deep") {
+      if (request.reportType === "synastry") {
+        synastryGeneration = await generateSynastryV3Draft(
+          writerInput,
+          (prompt, maxOutputTokens) => writeOpenAIModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
+        );
+        generation = synastryGeneration;
+      } else if (request.reportType === "deep") {
         sectionedGeneration = await generateSectionedDeepDraft(
           writerInput,
           (prompt, maxOutputTokens) => writeOpenAIModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
@@ -3926,6 +4125,23 @@ async function buildDebugModelReportResult(
       writerSummary = `${OPENAI_REPORT_MODEL_PROVIDER}/${config.reportModel}`;
     }
   } catch (error) {
+    if (error instanceof SynastryV3GenerationError) {
+      return buildReportModelCallFailedResult(request, error.message, {
+        writer: DEBUG_MODEL_REPORT_WRITER,
+        provider: config.reportModelProvider,
+        model: config.reportModel,
+        modelProfile: config.reportModelProfile,
+        ...(config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
+          ? { reasoningEffort: reportReasoningEffortForModel(config.reportModel) }
+          : {}),
+        promptVersion: ASTRA_SYNASTRY_V3_PROMPT_VERSION,
+        attemptCount: error.generation.attemptCount,
+        ...error.generation.usage,
+        latencyMs: error.generation.latencyMs,
+        orchestration: "synastry-v3",
+        failures: error.generation.failures
+      });
+    }
     if (error instanceof SectionedDeepReportGenerationError) {
       return buildReportModelCallFailedResult(request, error.message, {
         writer: DEBUG_MODEL_REPORT_WRITER,
@@ -3983,11 +4199,18 @@ async function buildDebugModelReportResult(
       ...(config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
         ? { reasoningEffort: reportReasoningEffortForModel(config.reportModel) }
         : {}),
-      promptVersion: ASTRA_REPORT_PROMPT_VERSION,
+      promptVersion: synastryGeneration ? ASTRA_SYNASTRY_V3_PROMPT_VERSION : ASTRA_REPORT_PROMPT_VERSION,
       attemptCount: generation.attemptCount,
       ...generation.usage,
       latencyMs: generation.latencyMs,
-      ...(sectionedGeneration
+      ...(synastryGeneration
+        ? {
+            orchestration: "synastry-v3" as const,
+            synastryV3: synastryGeneration.synastryV3,
+            ...(synastryGeneration.failures.length ? { failures: synastryGeneration.failures } : {}),
+            readability: reportReadabilityMetadata(draft.sections)
+          }
+        : sectionedGeneration
         ? {
             orchestration: "sectioned-v1" as const,
             thesis: partGenerationMetadata(sectionedGeneration.thesis),

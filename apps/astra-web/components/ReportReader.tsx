@@ -29,12 +29,15 @@ export function ReportReader({
 }) {
   const subject = reportSubjectContext(request);
   const title = reportDisplayTitle(request, report.publicSignal?.headline);
-  const evidenceByTitle = buildReportEvidenceByTitle(request, report);
+  const evidenceByTitle = shared ? {} : buildReportEvidenceByTitle(request, report);
   const sectionSubtitles = deepChapterSubtitles(request, evidenceByTitle, ui.library.deepSubtitleFocuses);
   const reportMarkdown = reportMarkdownFrom(report, request, title, subject.name, evidenceByTitle, sectionSubtitles);
   const sectionMarkdown = reportSectionsMarkdownFrom(report, request, evidenceByTitle);
   const chartSnapshot = buildReportChartSnapshot(request);
-  const reviewNotes = report.generationMetadata?.reviewNotes ?? [];
+  const reviewNotes = shared ? [] : [
+    ...(report.generationMetadata?.reviewNotes ?? []),
+    ...(report.generationMetadata?.synastryV3?.validation.reviewNotes ?? []).map((message) => ({ code: "synastry_v3", message }))
+  ];
 
   return (
     <section className="reportReaderShell" aria-label={shared ? ui.library.sharedReportLabel : ui.library.selectedReportLabel}>
@@ -240,7 +243,7 @@ export function formatReportDate(value: string) {
   }).format(date);
 }
 
-type ReportEvidenceByTitle = Record<string, Array<{ label: string; meaning: string }>>;
+type ReportEvidenceByTitle = Record<string, Array<{ id?: string; label: string; meaning: string }>>;
 
 const legacyCustomerCopyPatterns = [
   /\s*The reading lens is the computed birth-data pattern because no optional question was supplied\.\.?/gi,
@@ -303,6 +306,17 @@ function buildReportChartSnapshot(request: AstrologyReportRequest | null) {
 
 function buildReportEvidenceByTitle(request: AstrologyReportRequest | null, report: AstrologyReportResult): ReportEvidenceByTitle {
   if (!request || !report.sections.length) return {};
+  const v3 = report.generationMetadata?.synastryV3;
+  if (v3) {
+    const evidenceById = new Map(v3.evidenceIndex.map((item) => [item.id, item]));
+    return Object.fromEntries(v3.chapterTrace.map((trace) => [
+      trace.chapter,
+      trace.evidenceIds.flatMap((id) => {
+        const item = evidenceById.get(id);
+        return item ? [{ id: item.id, label: item.label, meaning: item.meaning }] : [];
+      })
+    ]));
+  }
   try {
     return Object.fromEntries(
       buildAstrologyReportSectionEvidence(
@@ -318,5 +332,5 @@ function buildReportEvidenceByTitle(request: AstrologyReportRequest | null, repo
 function evidenceMarkdownFor(title: string, evidenceByTitle: ReportEvidenceByTitle) {
   const evidence = evidenceByTitle[title] ?? [];
   if (!evidence.length) return "";
-  return ["**Chart Evidence**", ...evidence.map((item) => `- **${item.label}**: ${item.meaning}`)].join("\n");
+  return ["**Chart Evidence**", ...evidence.map((item) => `- **${item.id ? `${item.id} · ` : ""}${item.label}**: ${item.meaning}`)].join("\n");
 }

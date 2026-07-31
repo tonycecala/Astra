@@ -1,6 +1,6 @@
 ---
 title: "Synastry V3 clean-prose production implementation plan"
-status: "ready-for-implementation"
+status: "completed"
 created: "2026-07-31"
 updated: "2026-07-31"
 type: "implementation-plan"
@@ -9,7 +9,9 @@ owner: "Codex"
 branch: "codex/dual-perspective-synastry-bakeoff"
 planning_commit: "4bfbd33"
 accepted_reader_benchmark: "The Undertow of Recognition"
-production_status: "not-implemented"
+production_status: "implemented"
+completed: "2026-07-31"
+completion_evidence: "Targeted contracts, engine, API, production build, and desktop/tablet/mobile public-private browser journeys passed."
 ---
 
 # Synastry V3 Clean-Prose Production Implementation Plan

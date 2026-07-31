@@ -1,0 +1,106 @@
+import { expect, test } from "@playwright/test";
+import { randomUUID } from "node:crypto";
+import { allyRelationshipTags } from "@astra/contracts";
+import { synastryToneSnapshot, synastryV3Headings } from "@astra/astrology";
+import { createAlly, createAstrologyReportRequest, createAstrologyReportShare, db, recordAstrologyReportResult } from "@astra/db";
+import { signInWithTestSession } from "./support/auth-session";
+
+test.describe("Synastry V3 production boundary", () => {
+  test("canonical Ally edit, private Evidence, and public-share suppression", async ({ page }, testInfo) => {
+    const errors: string[] = [];
+    const expectedCancellation = (message: string) => message.includes("due to access control checks.") || message.includes("ChunkLoadError");
+    page.on("console", (message) => { if (message.type() === "error" && !message.text().startsWith("Failed to load resource:") && !expectedCancellation(message.text())) errors.push(message.text()); });
+    page.on("pageerror", (error) => { if (!expectedCancellation(error.message)) errors.push(error.message); });
+
+    await page.goto("/allies");
+    await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+    await page.goto("/library");
+    await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+
+    const email = `synastry-v3-${testInfo.project.name}-${Date.now()}@example.com`;
+    const userId = await signInWithTestSession(page, { email, name: "V3 Reader" });
+    const ally = await createAlly(db, { userId, name: "Cheyenne", kind: "person", relationship: "Friend" });
+
+    await page.goto("/allies#ally-birth-onboarding");
+    const createSelector = page.getByLabel("Relationship").last();
+    await expect(createSelector).toBeVisible();
+    const optionLabels = await createSelector.locator("option").allTextContents();
+    for (const tag of allyRelationshipTags) expect(optionLabels).toContain(tag);
+    expect(optionLabels).not.toContain("Self");
+
+    const card = page.locator(`[id="ally-${ally.id}"]`);
+    await expect(card.locator(".ally-card-badge")).toHaveText("Friend");
+    await card.getByLabel("Edit relationship").selectOption("Lover");
+    await card.getByRole("button", { name: "Save" }).click();
+    await expect(card.getByText("Relationship saved.")).toBeVisible();
+    await expect(card.locator(".ally-card-badge")).toHaveText("Lover");
+    await page.reload();
+    await expect(page.locator(`[id="ally-${ally.id}"] .ally-card-badge`)).toHaveText("Lover");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+
+    const tone = synastryToneSnapshot({ allyId: ally.id, relationship: "Lover" });
+    const headings = synastryV3Headings(tone, "Cheyenne");
+    const requestId = randomUUID();
+    const request = await createAstrologyReportRequest(db, {
+      id: requestId,
+      userId,
+      reportType: "synastry",
+      subjectName: "V3 Reader",
+      birthData: { date: "1961-05-23", time: "09:30", timezone: "America/New_York", location: "New York, NY, USA", latitude: 40.7128, longitude: -74.006 },
+      context: { subject: { subjectType: "self", displayName: "V3 Reader" }, synastryTone: tone },
+      source: "self"
+    });
+    await recordAstrologyReportResult(db, {
+      requestId,
+      userId,
+      engine: "local-chart-routine",
+      engineVersion: "v3-browser-fixture",
+      status: "completed",
+      summary: "A feeling-first relationship portrait.",
+      sections: headings.map((title, index) => ({
+        id: `${requestId}:section:${index + 1}`,
+        title,
+        body: `A distinct feeling opens here. Cheyenne remains independently present, and the relationship between you develops its own consequence in chapter ${index + 1}.`,
+        emphasis: index === 0 ? "primary" : "supporting"
+      })),
+      provenance: [{ id: `${requestId}:private`, kind: "engine", label: "Private engine note", summary: "Private provenance must not be shared.", boundary: "private" }],
+      publicSignal: {
+        reportId: `${requestId}:signal`, requestId, reportType: "synastry", headline: "V3 Reader + Cheyenne", summary: "A feeling-first relationship portrait.", tone: "grounded", boundary: "public_signal", provenanceSummary: "Feeling-first portrait."
+      },
+      generationMetadata: {
+        writer: "debug-model-writer", promptVersion: "astra-synastry-v3-feeling-first-2026-07", attemptCount: 1, orchestration: "synastry-v3",
+        reviewNotes: [{ code: "unsupported_claim", message: "INTERNAL_REVIEW_NOTE" }],
+        synastryV3: {
+          schemaVersion: 1,
+          sourceReportIds: [],
+          tone,
+          evidenceIndex: [{ id: "S01", label: "PRIVATE_TECHNICAL_EVIDENCE", meaning: "Exact private evidence meaning", evidenceJobs: ["Attraction"] }],
+          chapterTrace: headings.map((chapter) => ({ chapter, evidenceIds: ["S01"], supportedFeeling: "a distinct feeling" })),
+          validation: { wordCount: 1500, acceptedWordRange: { minimum: 1350, maximum: 1650 }, boundaryViolations: [], fatalCategories: [], reviewNotes: ["PRIVATE_V3_REVIEW_NOTE"], greenLight: true },
+          semanticSupport: { supportedClaims: ["a distinct feeling"], unsupportedClaims: [], severity: "none", latencyMs: 1 }
+        }
+      }
+    });
+    const share = await createAstrologyReportShare(db, { requestId: request.id, userId, baseUrl: "http://localhost:3011" });
+    if (!share) throw new Error("Could not create browser share fixture.");
+
+    await page.goto(`/library?reportId=${requestId}`);
+    await expect(page.getByRole("heading", { name: "V3 Reader — Synastry Report" })).toBeVisible();
+    await expect(page.locator("details.reportMarkdownEvidence")).toHaveCount(6);
+    await page.locator("details.reportMarkdownEvidence").first().getByText("Chart Evidence").click();
+    await expect(page.getByText(/S01 · PRIVATE_TECHNICAL_EVIDENCE/).first()).toBeVisible();
+    await expect(page.getByText("PRIVATE_V3_REVIEW_NOTE")).toBeAttached();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+
+    await page.context().clearCookies();
+    await page.goto(share.shareUrl);
+    await expect(page.getByRole("heading", { name: "V3 Reader — Synastry Report" })).toBeVisible();
+    await expect(page.locator("details.reportMarkdownEvidence")).toHaveCount(0);
+    await expect(page.locator("body")).not.toContainText(/S01|PRIVATE_TECHNICAL_EVIDENCE|PRIVATE_V3_REVIEW_NOTE|INTERNAL_REVIEW_NOTE/);
+    const response = await page.request.get(share.shareUrl);
+    const html = await response.text();
+    expect(html).not.toMatch(/S01|PRIVATE_TECHNICAL_EVIDENCE|PRIVATE_V3_REVIEW_NOTE|INTERNAL_REVIEW_NOTE|Private provenance/);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+    expect(errors).toEqual([]);
+  });
+});

@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { BookOpenText, ChartPie, Pencil, Search } from "lucide-react";
-import type { Ally, AstrologyReportRequest, AstrologyReportResult, ChartMakerRequest } from "@astra/contracts";
+import { BookOpenText, ChartPie, Search } from "lucide-react";
+import { normalizeAllyRelationshipTag, type Ally, type AstrologyReportRequest, type AstrologyReportResult, type ChartMakerRequest } from "@astra/contracts";
 import { PageHeader } from "../../components/PageHeader";
 import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
 import { AllyRemoveButton } from "../../components/AllyRemoveButton";
+import { AllyRelationshipEditor } from "../../components/AllyRelationshipEditor";
 import { SelfTabAvatar } from "../../components/SelfTabAvatar";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
@@ -90,9 +91,7 @@ function AllyCard({
   const createPortraitHref = chartRequest
     ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=report#ally-birth-onboarding`
     : "#ally-birth-onboarding";
-  const editDetailsHref = chartRequest
-    ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=report#ally-birth-onboarding`
-    : "#ally-birth-onboarding";
+  const relationshipLabel = normalizeAllyRelationshipTag(ally.relationship);
 
   return (
     <article className="card ally-card" id={`ally-${ally.id}`}>
@@ -100,7 +99,7 @@ function AllyCard({
         <div className="ally-card-identity">
           <div className="ally-card-title-row">
             <h2>{ally.name}</h2>
-            <span className="ally-card-badge">{ally.relationship}</span>
+            <span className="ally-card-badge">{relationshipLabel ? ui.allies.relationshipLabels[relationshipLabel] : ally.relationship}</span>
           </div>
           <span className="ally-card-birth">{compactBirthLine(chartRequest)}</span>
         </div>
@@ -122,13 +121,11 @@ function AllyCard({
                 <BookOpenText aria-hidden="true" size={16} />
               </Link>
             )}
-            <Link aria-label={ui.charts.editDetails} className="button secondary" href={editDetailsHref} title={ui.charts.editDetails}>
-              <Pencil aria-hidden="true" size={16} />
-            </Link>
             <AllyRemoveButton allyId={ally.id} allyName={ally.name} />
           </div>
         </div>
       </div>
+      <AllyRelationshipEditor allyId={ally.id} relationship={ally.relationship} />
     </article>
   );
 }
@@ -205,12 +202,12 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
   const clearFilterHref = `/allies${clearFilterParams.toString() ? `?${clearFilterParams.toString()}` : ""}`;
   const filterQuery = params.q?.trim() ?? "";
   const filterRelationship = params.relationship?.trim() ?? "";
-  const relationshipOptions = Array.from(new Set(allies.map((ally) => ally.relationship).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+  const relationshipOptions = Array.from(new Set(allies.map((ally) => normalizeAllyRelationshipTag(ally.relationship) ?? ally.relationship).filter(Boolean))).sort((a, b) => a.localeCompare(b));
   const filteredAllies = allies.filter((ally) => {
     const chartRequest = latestChartRequestByAllyId.get(ally.id);
     const haystack = [ally.name, ally.relationship, compactBirthLine(chartRequest)].join(" ").toLowerCase();
     const matchesQuery = filterQuery ? haystack.includes(cleanFilter(filterQuery)) : true;
-    const matchesRelationship = filterRelationship ? ally.relationship === filterRelationship : true;
+    const matchesRelationship = filterRelationship ? (normalizeAllyRelationshipTag(ally.relationship) ?? ally.relationship) === filterRelationship : true;
     return matchesQuery && matchesRelationship;
   });
 
@@ -241,7 +238,7 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
               <option value="">{ui.allies.filterAllRelationships}</option>
               {relationshipOptions.map((relationship) => (
                 <option key={relationship} value={relationship}>
-                  {relationship}
+                  {normalizeAllyRelationshipTag(relationship) ? ui.allies.relationshipLabels[normalizeAllyRelationshipTag(relationship)!] : relationship}
                 </option>
               ))}
             </select>

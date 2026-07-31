@@ -5,9 +5,11 @@ import {
   createAstrologyReportRequestSchema,
   type ChartMakerRequest,
   type ReportChartBasisSnapshot,
-  type ReportChartSourceSnapshot
+  type ReportChartSourceSnapshot,
+  type SynastryToneSnapshot
 } from "@astra/contracts";
-import { db, getUserChartMakerRequest, listUserAstrologyReportRequests, purchaseAstrologyReportRequest } from "@astra/db";
+import { synastryToneSnapshot } from "@astra/astrology";
+import { db, getUserAlly, getUserChartMakerRequest, listUserAstrologyReportRequests, purchaseAstrologyReportRequest } from "@astra/db";
 import { getAstraAuthContext } from "../../../lib/auth/profile";
 import { reportProductFor } from "../../../lib/reportCatalog";
 import { synastryBasisForPerspective } from "../../../lib/synastryPerspective";
@@ -108,6 +110,7 @@ export async function POST(request: Request) {
   let primary = sourceSnapshot(primaryChart, profile.userId);
   let partner: ReportChartSourceSnapshot | undefined;
   let readerChart = primaryChart;
+  let tone: SynastryToneSnapshot | undefined;
   if (parsed.data.reportBasis.type === "progressed") {
     if (primary.birthData.birthTimeKnown === false || !primary.birthData.time) {
       return invalidBasis("Progressed reports require a known birth time.");
@@ -138,6 +141,14 @@ export async function POST(request: Request) {
     primary = ordered.primary;
     partner = ordered.comparison;
     readerChart = parsed.data.reportBasis.perspective === "comparison" ? partnerChart : primaryChart;
+    const allyChart = [primaryChart, partnerChart].find((chart) => chart.context?.subject?.subjectType === "ally");
+    const allyId = allyChart?.context?.subject?.allyId ?? allyChart?.context?.subject?.subjectId;
+    const liveAlly = allyId ? await getUserAlly(db, { allyId, userId: profile.userId }) : null;
+    const resolvedAllyId = liveAlly?.id ?? allyId;
+    tone = synastryToneSnapshot({
+      ...(resolvedAllyId ? { allyId: resolvedAllyId } : {}),
+      relationship: liveAlly?.relationship ?? allyChart?.context?.subject?.relationship
+    });
   }
 
   const reportBasis: ReportChartBasisSnapshot = {
@@ -159,7 +170,8 @@ export async function POST(request: Request) {
             birthData: partner.birthData
           }
         }
-      : {})
+      : {}),
+    ...(tone ? { synastryTone: tone } : {})
   };
   const requestId = randomUUID();
 

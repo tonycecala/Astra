@@ -698,3 +698,12 @@ the experiment did not change production runtime, routes, data, or UI.
   names the public-share Evidence leak as an implementation boundary, and
   defines proportional tests and browser journeys without running production
   verification during this documentation-only closeout.
+
+## 2026-07-31 — Synastry V3 feeling-first production slice
+
+- Promoted only new Synastry reports to the six-chapter feeling-first writer while preserving the existing direct cross-chart calculation and strongest-15-policy evidence jobs; saved reports and the complete-inventory experiment are not writer inputs.
+- Added canonical non-Self Ally create/edit tags including Lover, owner-scoped PATCH, live server-side tone derivation, and immutable tone/Evidence/trace/validation metadata in the existing JSONB result field with no SQL migration or backfill.
+- Added separate semantic-support evaluation, contextual leakage and fabricated-speech checks, the 1,350-1,650 review band, the approved two-category green / three-category retry policy, one corrective retry, and private rejected-attempt metadata.
+- Owner readers now use stored V3 Evidence IDs; public shares omit Evidence, trace metadata, failures, private provenance, and internal review notes before rendering.
+- Focused static, contract, engine, API, i18n, build, and desktop/tablet/mobile browser journeys passed. Existing reports were not rewritten and no broad release suite was run.
+- Steward review: **accept**. Contracts, runtime guards, persistence, authenticated UI, and public/private projection moved together; no chart-calculation, SQL schema, natal/progressed, credit, or payment path changed.

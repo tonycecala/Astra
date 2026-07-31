@@ -86,11 +86,51 @@ export const allySchema = z.object({
   createdAt: isoDateSchema
 });
 
+export const allyRelationshipTags = [
+  "Family",
+  "Mother",
+  "Father",
+  "Child",
+  "Lover",
+  "Spouse",
+  "Partner",
+  "Sibling",
+  "Ex",
+  "Friend",
+  "Companion",
+  "Business",
+  "Colleague",
+  "Mentor",
+  "Student",
+  "Ancestor",
+  "Guide",
+  "Archetype",
+  "Historical Figure",
+  "Other",
+  "Client",
+  "Public Figure"
+] as const;
+
+export const allyRelationshipTagSchema = z.enum(allyRelationshipTags);
+
+export function normalizeAllyRelationshipTag(value: string | undefined) {
+  const normalized = value?.trim().toLocaleLowerCase().replace(/[\s_-]+/g, " ");
+  return allyRelationshipTags.find((tag) => tag.toLocaleLowerCase() === normalized);
+}
+
 export const createAllySchema = z.object({
   name: z.string().trim().min(1),
   kind: allySchema.shape.kind.default("person"),
   relationship: z.string().trim().min(1),
   note: z.string().trim().min(1).optional()
+});
+
+export const createCanonicalAllySchema = createAllySchema.extend({
+  relationship: allyRelationshipTagSchema
+});
+
+export const updateAllyRelationshipSchema = z.object({
+  relationship: allyRelationshipTagSchema
 });
 
 export const artifactSchema = z.object({
@@ -464,6 +504,39 @@ export const chartSubjectContextSchema = z.object({
   note: z.string().min(1).optional()
 });
 
+export const synastryStructuralLensSchema = z.enum([
+  "family-generic",
+  "family-parent",
+  "family-caregiving-child",
+  "adult-romantic",
+  "former-romantic",
+  "friendship",
+  "adult-neutral-partnership",
+  "family-peer",
+  "professional",
+  "mentorship",
+  "ancestral-symbolic",
+  "symbolic",
+  "observational",
+  "neutral"
+]);
+
+export const synastryRomanticLanguageSchema = z.enum([
+  "lead-romantic-sexual",
+  "allow-full-romantic",
+  "allow-adult-overtones",
+  "prohibit"
+]);
+
+export const synastryToneSnapshotSchema = z.object({
+  policyVersion: z.literal("ally-tone-v1"),
+  allyId: idSchema.optional(),
+  authoredRelationship: z.string().min(1),
+  normalizedTag: z.union([allyRelationshipTagSchema, z.literal("unknown")]),
+  structuralLens: synastryStructuralLensSchema,
+  romanticLanguage: synastryRomanticLanguageSchema
+});
+
 export const chartSettingsSchema = z.object({
   zodiacMode: z.enum(["tropical", "sidereal"]).default("tropical"),
   houseSystem: z.enum(["whole-sign", "placidus"]).default("whole-sign")
@@ -484,7 +557,8 @@ export const chartRequestContextSchema = jsonObjectSchema.and(
   z.object({
     subject: chartSubjectContextSchema.optional(),
     chartSettings: chartSettingsSchema.optional(),
-    synastryPartner: synastryPartnerSchema.optional()
+    synastryPartner: synastryPartnerSchema.optional(),
+    synastryTone: synastryToneSnapshotSchema.optional()
   })
 );
 
@@ -735,6 +809,48 @@ const reportReadabilityMetadataSchema = z.object({
   sections: z.array(reportReadabilityMetricSchema.extend({ title: z.string().min(1) }))
 });
 
+const synastryV3EvidenceItemSchema = z.object({
+  id: z.string().regex(/^S\d{2,}$/),
+  label: z.string().min(1),
+  meaning: z.string().min(1),
+  evidenceJobs: z.array(z.string().min(1)).min(1)
+});
+
+const synastryV3ChapterTraceSchema = z.object({
+  chapter: z.string().min(1),
+  evidenceIds: z.array(z.string().regex(/^S\d{2,}$/)).min(1),
+  supportedFeeling: z.string().min(1)
+});
+
+const synastryV3SemanticSupportSchema = z.object({
+  supportedClaims: z.array(z.string()).default([]),
+  unsupportedClaims: z.array(z.string()).default([]),
+  severity: z.enum(["none", "minor", "severe"]),
+  inputTokens: z.number().int().nonnegative().optional(),
+  outputTokens: z.number().int().nonnegative().optional(),
+  reasoningTokens: z.number().int().nonnegative().optional(),
+  totalTokens: z.number().int().nonnegative().optional(),
+  estimatedSpend: z.number().nonnegative().optional(),
+  latencyMs: z.number().int().nonnegative()
+});
+
+export const synastryV3MetadataSchema = z.object({
+  schemaVersion: z.literal(1),
+  sourceReportIds: z.array(z.string()).length(0),
+  tone: synastryToneSnapshotSchema,
+  evidenceIndex: z.array(synastryV3EvidenceItemSchema).min(1),
+  chapterTrace: z.array(synastryV3ChapterTraceSchema).length(6),
+  validation: z.object({
+    wordCount: z.number().int().nonnegative(),
+    acceptedWordRange: z.object({ minimum: z.literal(1350), maximum: z.literal(1650) }),
+    boundaryViolations: z.array(z.string()),
+    fatalCategories: z.array(z.string()),
+    reviewNotes: z.array(z.string()),
+    greenLight: z.boolean()
+  }),
+  semanticSupport: synastryV3SemanticSupportSchema.optional()
+});
+
 const reportGenerationPartMetadataSchema = z.object({
   attemptCount: z.number().int().positive(),
   inputTokens: z.number().int().nonnegative().optional(),
@@ -763,12 +879,13 @@ export const reportGenerationMetadataSchema = z.object({
   estimatedSpend: z.number().nonnegative().optional(),
   reasoningEffort: z.enum(["none", "minimal", "low", "medium", "high", "xhigh", "max"]).optional(),
   latencyMs: z.number().int().nonnegative().optional(),
-  orchestration: z.enum(["monolithic", "sectioned-v1"]).optional(),
+  orchestration: z.enum(["monolithic", "sectioned-v1", "synastry-v3"]).optional(),
   reviewNotes: z.array(reportGenerationRetryIssueSchema).optional(),
   failures: z.array(reportGenerationRetryFailureSchema).optional(),
   thesis: reportGenerationPartMetadataSchema.optional(),
   sections: z.array(reportGenerationPartMetadataSchema.extend({ title: z.string().min(1) })).optional(),
-  readability: reportReadabilityMetadataSchema.optional()
+  readability: reportReadabilityMetadataSchema.optional(),
+  synastryV3: synastryV3MetadataSchema.optional()
 });
 
 export const astrologyReportRequestSchema = z.object({
@@ -1005,6 +1122,8 @@ export type StreamItem = z.infer<typeof streamItemSchema>;
 export type Achievement = z.infer<typeof achievementSchema>;
 export type Ally = z.infer<typeof allySchema>;
 export type CreateAlly = z.infer<typeof createAllySchema>;
+export type AllyRelationshipTag = z.infer<typeof allyRelationshipTagSchema>;
+export type UpdateAllyRelationship = z.infer<typeof updateAllyRelationshipSchema>;
 export type Artifact = z.infer<typeof artifactSchema>;
 export type Gift = z.infer<typeof giftSchema>;
 export type StarTransaction = z.infer<typeof starTransactionSchema>;
@@ -1036,6 +1155,9 @@ export type ChartSubjectContext = z.infer<typeof chartSubjectContextSchema>;
 export type ChartSettings = z.infer<typeof chartSettingsSchema>;
 export type ExplicitChartSettings = z.infer<typeof explicitChartSettingsSchema>;
 export type ChartRequestContext = z.infer<typeof chartRequestContextSchema>;
+export type SynastryStructuralLens = z.infer<typeof synastryStructuralLensSchema>;
+export type SynastryRomanticLanguage = z.infer<typeof synastryRomanticLanguageSchema>;
+export type SynastryToneSnapshot = z.infer<typeof synastryToneSnapshotSchema>;
 export type BirthPlaceSearchQuery = z.infer<typeof birthPlaceSearchQuerySchema>;
 export type BirthPlaceSearchResult = z.infer<typeof birthPlaceSearchResultSchema>;
 export type BirthPlaceSearchResponse = z.infer<typeof birthPlaceSearchResponseSchema>;
@@ -1060,6 +1182,7 @@ export type AstrologyReportPublicSignal = z.infer<typeof astrologyReportPublicSi
 export type ReportGenerationRetryReasonCode = z.infer<typeof reportGenerationRetryReasonCodeSchema>;
 export type ReportGenerationRetryIssue = z.infer<typeof reportGenerationRetryIssueSchema>;
 export type ReportGenerationRetryFailure = z.infer<typeof reportGenerationRetryFailureSchema>;
+export type SynastryV3Metadata = z.infer<typeof synastryV3MetadataSchema>;
 export type AstrologyReportRequest = z.infer<typeof astrologyReportRequestSchema>;
 export type CreateAstrologyReportRequest = z.infer<typeof createAstrologyReportRequestSchema>;
 export type AstrologyReportResult = z.infer<typeof astrologyReportResultSchema>;

@@ -4,7 +4,9 @@ import Link from "next/link";
 import { type CSSProperties, FormEvent, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpenText, Check, Send, Sparkles } from "lucide-react";
 import {
+  allyRelationshipTags,
   chartCalculationModeForBirthData,
+  normalizeAllyRelationshipTag,
   type Ally,
   AstrologyReportRequest,
   AstrologyReportResult,
@@ -939,14 +941,22 @@ export function BirthOnboardingPanel({
                 <>
                   <label>
                     <span>{ui.allies.wizardRelationshipLabel}</span>
-                    <input
+                    <select
                       aria-invalid={Boolean(relationshipError)}
                       disabled={isExistingChartLocked}
-                      readOnly={isExistingChartLocked}
                       value={form.relationship}
                       onChange={(event) => updateField("relationship", event.target.value)}
                       required={!isExistingChartLocked}
-                    />
+                    >
+                      <option value="">{ui.allies.wizardRelationshipPlaceholder}</option>
+                      {form.relationship && !normalizeAllyRelationshipTag(form.relationship) ? (
+                        <option value={form.relationship}>{form.relationship}</option>
+                      ) : null}
+                      {allyRelationshipTags.map((relationship) => (
+                        <option key={relationship} value={relationship}>{ui.allies.relationshipLabels[relationship]}</option>
+                      ))}
+                    </select>
+                    <small>{ui.allies.relationshipLensHelp}</small>
                     {relationshipError ? <small className={styles.subjectFieldError}>{relationshipError}</small> : null}
                   </label>
                   <label>

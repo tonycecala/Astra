@@ -32,7 +32,7 @@ function inlineMarkdown(text: string) {
   );
 }
 
-type ReportEvidenceByTitle = Record<string, Array<{ label: string; meaning: string }>>;
+type ReportEvidenceByTitle = Record<string, Array<{ id?: string; label: string; meaning: string }>>;
 
 export function ReportMarkdown({
   markdown,
@@ -92,7 +92,7 @@ export function ReportMarkdown({
         <ul>
           {evidence.map((item, index) => (
             <li key={`${index}-${item.label}`}>
-              <strong>{item.label}</strong>: {item.meaning}
+              <strong>{item.id ? `${item.id} · ${item.label}` : item.label}</strong>: {item.meaning}
             </li>
           ))}
         </ul>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createAllySchema } from "@astra/contracts";
+import { createCanonicalAllySchema } from "@astra/contracts";
 import { createAlly, db, listUserAllies } from "@astra/db";
 import { getAstraAuthContext } from "../../../lib/auth/profile";
 
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const { profile } = await getAstraAuthContext();
   if (!profile) return unauthorized();
 
-  const parsed = createAllySchema.safeParse(await request.json());
+  const parsed = createCanonicalAllySchema.safeParse(await request.json());
   if (!parsed.success) {
     return NextResponse.json(
       {

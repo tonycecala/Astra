@@ -9,6 +9,7 @@ import {
   type ComposerAvailabilityCollection,
   type ComposerAvailabilityResponse,
   type CreateAlly,
+  type UpdateAllyRelationship,
   type CreateComposerDecision,
   type CreateUserFeedItem,
   type ComposerStreamArtifact,
@@ -36,6 +37,7 @@ import {
   composerDecisionSchema,
   createComposerDecisionSchema,
   createAllySchema,
+  updateAllyRelationshipSchema,
   reportChartBasisSnapshotSchema,
   createUserFeedItemSchema,
   composerStreamArtifactSchema,
@@ -1376,6 +1378,28 @@ export async function listUserAllies(database: AstraDb, userId: string): Promise
   return rows.map(allyFromRow);
 }
 
+export async function getUserAlly(database: AstraDb, input: { allyId: string; userId: string }): Promise<Ally | null> {
+  const [row] = await database
+    .select()
+    .from(allies)
+    .where(and(eq(allies.id, input.allyId), eq(allies.userId, input.userId)))
+    .limit(1);
+  return row ? allyFromRow(row) : null;
+}
+
+export async function updateUserAllyRelationship(
+  database: AstraDb,
+  input: { allyId: string; userId: string } & UpdateAllyRelationship
+): Promise<Ally | null> {
+  const parsed = updateAllyRelationshipSchema.parse(input);
+  const [row] = await database
+    .update(allies)
+    .set({ relationship: parsed.relationship })
+    .where(and(eq(allies.id, input.allyId), eq(allies.userId, input.userId)))
+    .returning();
+  return row ? allyFromRow(row) : null;
+}
+
 export async function deleteUserAlly(database: AstraDb, input: { allyId: string; userId: string }) {
   const deleted = await database
     .delete(allies)
@@ -2109,7 +2133,24 @@ export async function getSharedAstrologyReport(database: AstraDb, token: string)
   ]);
 
   if (!request || !result || result.status !== "completed") return null;
-  return { request, result };
+  const generationMetadata = result.generationMetadata
+    ? {
+        ...result.generationMetadata,
+        reviewNotes: undefined,
+        failures: undefined,
+        thesis: undefined,
+        sections: undefined,
+        synastryV3: undefined
+      }
+    : undefined;
+  return {
+    request,
+    result: {
+      ...result,
+      provenance: [],
+      generationMetadata
+    }
+  };
 }
 
 function normalizeBetaFeedbackCategory(value: string): BetaFeedbackCategory {

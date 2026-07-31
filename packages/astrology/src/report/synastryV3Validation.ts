@@ -1,0 +1,104 @@
+import type { SynastryToneSnapshot } from "@astra/contracts";
+
+export type SynastryV3TraceRow = { chapter: string; evidenceIds: string[]; supportedFeeling: string };
+export type SynastryV3EvidenceRow = { id: string; label: string; meaning: string; evidenceJobs: string[] };
+export type SynastryV3FatalCategory =
+  | "format_integrity"
+  | "technical_surface"
+  | "invented_reality"
+  | "perspective_erasure"
+  | "semantic_fidelity"
+  | "comparative_verdict"
+  | "identity_integrity";
+
+const technicalTermPattern = /\b(?:astrology|astrological|chart|planet|sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven|zodiac|natal|synastry|interaspect|aspect|conjunction|conjunct|trine|square|sextile|quincunx|opposition|orb|aries|taurus|gemini|cancer|leo|virgo|libra|scorpio|sagittarius|capricorn|aquarius|pisces)\b/i;
+const technicalHousePattern = /\b(?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|\d+(?:st|nd|rd|th)?)\s+house\b/i;
+const technicalDegreePattern = /\b\d+(?:\.\d+)?\s*(?:degrees?|°)\b/i;
+const technicalOppositePattern = /\b(?:sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven)\s+(?:is\s+)?opposite\b|\bopposite\s+(?:the\s+)?(?:sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven)\b/i;
+const inventedHistoryPattern = /\b(?:you learned (?:early|in childhood)|when you (?:first met|fell in love)|throughout your (?:marriage|relationship)|always have|never have|built to last|meant to be|fate|destiny|destined|fated|past lives?|ancient bond|what happened between you|after the breakup)\b/i;
+const fabricatedDialoguePattern = /(?:["“][^"”]*(?:\bI\b|\bme\b|\bmy\b)[^"”]*["”])|(?:\*[^*]*(?:\bI\b|\bme\b|\bmy\b)[^*]*\*[,;:]?\s+(?:she|he|they|\w+)\s+(?:thinks?|feels?|says?))/i;
+const comparativeVerdictPattern = /\b(?:you|\w+)\s+(?:carry|carries|give|gives|contribute|contributes|sacrifice|sacrifices|cost|costs|earn|earns)\s+(?:more|less|most|least)\b|\bmore (?:invested|important|responsible|burdened) than\b/i;
+const containmentBurdenPattern = /\b(?:you|\w+)\s+(?:contain|contains|carry|carries|hold|holds|bear|bears)\s+(?:the other person|their|his|her|your)\s+(?:burden|feelings?|chaos|pain|weight)\b|\bone of you (?:contains|carries|holds|bears) (?:more|the relationship|the bond)\b|\bemotional labor\b/i;
+const romanticPattern = /\b(?:romantic|romance|sexual|sexually|erotic|lover|lovers|chemistry|attraction|arousal|kiss|naked|bedroom)\b/i;
+
+export function synastryV3WordCount(value: string) {
+  return value.trim() ? value.trim().split(/\s+/).length : 0;
+}
+
+export function technicalLeakageMatches(value: string) {
+  return [technicalTermPattern, technicalHousePattern, technicalDegreePattern, technicalOppositePattern]
+    .filter((pattern) => pattern.test(value))
+    .map((pattern) => pattern.source);
+}
+
+export function validateSynastryV3(input: {
+  portrait: string;
+  sections: Array<{ title: string; body: string }>;
+  headings: string[];
+  trace: SynastryV3TraceRow[];
+  evidenceIndex: SynastryV3EvidenceRow[];
+  tone: SynastryToneSnapshot;
+  allyName: string;
+  semanticSeverity?: "none" | "minor" | "severe";
+}) {
+  const boundaryViolations: string[] = [];
+  const fatal = new Set<SynastryV3FatalCategory>();
+  const reviewNotes: string[] = [];
+  const wordCount = synastryV3WordCount(input.portrait.replace(/^#+\s+.*$/gm, ""));
+  const expectedTitles = input.headings.map((value) => value.toLocaleLowerCase());
+  const actualTitles = input.sections.map((section) => section.title.toLocaleLowerCase());
+
+  if (input.sections.length !== 6 || expectedTitles.some((title, index) => actualTitles[index] !== title)) {
+    fatal.add("format_integrity");
+  }
+  if (technicalLeakageMatches(input.portrait).length || /\bS\d{2,}\b/.test(input.portrait)) fatal.add("technical_surface");
+  if (inventedHistoryPattern.test(input.portrait) || fabricatedDialoguePattern.test(input.portrait)) fatal.add("invented_reality");
+  if (comparativeVerdictPattern.test(input.portrait) || containmentBurdenPattern.test(input.portrait)) fatal.add("comparative_verdict");
+  if (new RegExp(`\\b${escapeRegExp(input.allyName)}(?:,| is| as) (?:the |your )?${escapeRegExp(input.tone.authoredRelationship)}\\b`, "i").test(input.portrait)) {
+    fatal.add("identity_integrity");
+  }
+
+  const observational = new Set(["observational", "symbolic", "ancestral-symbolic"]).has(input.tone.structuralLens);
+  for (const section of input.sections) {
+    if (!new RegExp(`\\b${escapeRegExp(input.allyName)}\\b`, "i").test(section.body)) fatal.add("perspective_erasure");
+    if (!observational && !/\b(?:relationship|connection|bond|between you|what forms between)\b/i.test(section.body)) fatal.add("perspective_erasure");
+  }
+  if (input.semanticSeverity === "severe") fatal.add("semantic_fidelity");
+
+  const evidenceIds = new Set(input.evidenceIndex.map((row) => row.id));
+  if (input.trace.length !== 6) boundaryViolations.push("Evidence trace must contain exactly six chapter rows.");
+  for (let index = 0; index < input.trace.length; index += 1) {
+    const row = input.trace[index];
+    if (!row || row.chapter !== input.headings[index]) boundaryViolations.push(`Evidence trace chapter ${index + 1} does not match its portrait heading.`);
+    if (!row?.evidenceIds.length) boundaryViolations.push(`Evidence trace chapter ${index + 1} has no evidence IDs.`);
+    for (const id of row?.evidenceIds ?? []) if (!evidenceIds.has(id)) boundaryViolations.push(`Evidence trace references unknown ID ${id}.`);
+  }
+  if (input.tone.romanticLanguage === "prohibit" && romanticPattern.test(input.portrait)) {
+    boundaryViolations.push("Romantic or sexual framing is prohibited for this Ally tone.");
+  }
+  if (input.tone.romanticLanguage === "lead-romantic-sexual") {
+    const opening = input.sections[0]?.body.slice(0, 900) ?? "";
+    const romanticOpening = /\b(?:romantic|romance|desire|chemistry|lover)\b/i.test(opening);
+    const sexualOpening = /\b(?:sexual|sexually|erotic|arousal)\b/i.test(opening);
+    if (!romanticOpening || !sexualOpening) {
+      reviewNotes.push("Lover opening does not clearly lead with romantic and sexual charge.");
+      fatal.add("format_integrity");
+    }
+  }
+  if (wordCount < 1350 || wordCount > 1650) reviewNotes.push(`Portrait is ${wordCount} words; the accepted range is 1,350-1,650.`);
+  if (input.evidenceIndex.length !== 15) reviewNotes.push(`The strongest-15 selection policy produced ${input.evidenceIndex.length} unique Evidence rows; it was not padded.`);
+
+  const fatalCategories = [...fatal];
+  return {
+    wordCount,
+    acceptedWordRange: { minimum: 1350 as const, maximum: 1650 as const },
+    boundaryViolations: [...new Set(boundaryViolations)],
+    fatalCategories,
+    reviewNotes,
+    greenLight: boundaryViolations.length === 0 && fatalCategories.length <= 2
+  };
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
