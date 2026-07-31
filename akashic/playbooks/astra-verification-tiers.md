@@ -31,6 +31,17 @@ Prove the real OTP contract once. Reuse Better Auth-signed test sessions for pro
 
 Record the selected tier and why in closeout. If a relevant tier was omitted, state the boundary evidence that made it unnecessary.
 
+## Branch and worktree closeout
+
+Tony should not need to reconstruct Git history to know whether work is safe. At every implementation closeout:
+
+1. List all worktrees and classify each branch as active, merged, or intentionally parked.
+2. Commit coherent owned work before switching integration contexts; never leave completed changes as unexplained worktree dirt.
+3. Before merging an old branch, prove whether its committed or uncommitted result is already present in the target. Use ancestry plus a path-scoped tree comparison, not commit messages alone.
+4. If the old result is byte-identical to an existing target commit and the target has since evolved, preserve the newer target tree and record a history-only merge. Do not replay the old patch over newer refactors.
+5. Merge unique work into the current shared branch, resolve against current contracts, and run only the checks justified by the resulting tree diff.
+6. Finish with clean worktrees, an ancestry audit, and a concise list of any branches that remain intentionally active. Push only when Tony has authorized it.
+
 Verification must be proportional to the changed boundary and the claim being made:
 
 - Documentation, comments, copy, and other non-executable edits usually need only diff inspection and format or link checks relevant to the file.
