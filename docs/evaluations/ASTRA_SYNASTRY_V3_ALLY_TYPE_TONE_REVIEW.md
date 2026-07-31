@@ -78,6 +78,16 @@ The report lens should control chapter vocabulary and prohibited inferences. It 
 
 No production change is approved by this evaluation.
 
+## Production-readiness note
+
+When Tony authorizes production edits, add explicit Ally tag selection back to clean-start Ally onboarding and editing. Include `Lover` in the approved selectable set, preserve existing authored free-text relationships during migration, keep the display tag separate from the normalized report-tone lens, and route romantic language only through the approved whitelist. Do not implement the chooser, schema migration, or production prompt routing during the private V3 experiment.
+
+## Three-tone strongest-15 test
+
+Tony Cecala was privately tested with Felicia Weiss as `Spouse`, Marissa Yahil as `Child`, and Cheyenne Autumn as `Lover`. Cheyenne's saved `friend` value remained unchanged; `Lover` was an experiment-only routing override.
+
+The controlled retry demonstrated that tag routing materially changes the portrait in the intended direction: Marissa received a distinct non-romantic family structure with no romantic-language findings, while Cheyenne's Lover portrait explicitly led with romantic and sexual overtones. All three remained held as finished prose because the writer continued to create load-bearing or unequal-cost metaphors; Felicia also retained degree language, Marissa was subtly infantilized despite no age evidence, and Cheyenne invented first-contact texture and ran short. Steward judgment: **accept-with-notes as tone-routing evidence; hold for production**. Private evidence is retained at `.astra-exports/dual-perspective-synastry-bakeoff/2026-07-31-three-sample-v2/`.
+
 ## Felicia + Tony strongest-15 sample
 
 The private `felicia-tony` sample generated successfully from direct chart signals with the stored `spouse` context:

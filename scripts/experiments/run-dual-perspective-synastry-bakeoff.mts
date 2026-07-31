@@ -39,31 +39,44 @@ type SampleConfig = {
   primaryName: string;
   partnerChartId: string;
   partnerName: string;
-  allyRelationship: string;
-  toneMode: "adult-romantic";
+  storedAllyRelationship: string;
+  experimentalAllyTag: "Child" | "Lover" | "Spouse";
+  toneMode: "adult-romantic" | "family-caregiving-child" | "lover-romantic-sexual";
 };
 
 const sampleConfigs: Record<string, SampleConfig> = {
-  "cheyenne-tony": {
-    key: "cheyenne-tony",
+  "cheyenne-tony-lover": {
+    key: "cheyenne-tony-lover",
     primaryChartId: "v1-chart:4f42aa82-c5fd-41d2-96b6-7f9143ace78c",
     primaryName: "Cheyenne Autumn",
     partnerChartId: "0fac9ad6-6ccd-4a30-ac0b-480892254f0f",
     partnerName: "Tony Cecala",
-    allyRelationship: "friend",
-    toneMode: "adult-romantic"
+    storedAllyRelationship: "friend",
+    experimentalAllyTag: "Lover",
+    toneMode: "lover-romantic-sexual"
   },
-  "felicia-tony": {
-    key: "felicia-tony",
+  "felicia-tony-spouse": {
+    key: "felicia-tony-spouse",
     primaryChartId: "v1-chart:d4eda33e-5cd8-4f24-b258-04a19887af72",
     primaryName: "Felicia Weiss",
     partnerChartId: "0fac9ad6-6ccd-4a30-ac0b-480892254f0f",
     partnerName: "Tony Cecala",
-    allyRelationship: "spouse",
+    storedAllyRelationship: "spouse",
+    experimentalAllyTag: "Spouse",
     toneMode: "adult-romantic"
+  },
+  "marissa-tony-child": {
+    key: "marissa-tony-child",
+    primaryChartId: "v1-chart:2d2ac172-e68c-443e-8354-8d9432249905",
+    primaryName: "Marissa Yahil",
+    partnerChartId: "0fac9ad6-6ccd-4a30-ac0b-480892254f0f",
+    partnerName: "Tony Cecala",
+    storedAllyRelationship: "child",
+    experimentalAllyTag: "Child",
+    toneMode: "family-caregiving-child"
   }
 };
-const sampleKey = option("--sample") || "cheyenne-tony";
+const sampleKey = option("--sample") || "cheyenne-tony-lover";
 const sample = sampleConfigs[sampleKey];
 if (!sample) {
   throw new Error(`Unknown sample ${sampleKey}. Choose one of: ${Object.keys(sampleConfigs).join(", ")}.`);
@@ -99,9 +112,10 @@ const apiKey =
 
 if (process.argv.includes("--help")) {
   console.log("Generate one private, direct-chart-signal Dual-Perspective Synastry Portrait.");
-  console.log("Generation: --generate [--sample cheyenne-tony|felicia-tony] [--complete-inventory] [--output].");
-  console.log("Signals only: --signals-only [--sample cheyenne-tony|felicia-tony] [--complete-inventory] [--output].");
-  console.log("Validation only: --validate <portrait.md> [--sample cheyenne-tony|felicia-tony].");
+  console.log(`Samples: ${Object.keys(sampleConfigs).join(" | ")}.`);
+  console.log("Generation: --generate [--sample <sample>] [--complete-inventory] [--output].");
+  console.log("Signals only: --signals-only [--sample <sample>] [--complete-inventory] [--output].");
+  console.log("Validation only: --validate <portrait.md> [--sample <sample>].");
   process.exit(0);
 }
 
@@ -242,9 +256,9 @@ function buildDirectSignalRequest(charts: ChartMakerRequest[]) {
     throw new Error("Source chart names no longer match the selected sample.");
   }
   const storedRelationship = chartRelationship(primary);
-  if (storedRelationship.toLowerCase() !== sample.allyRelationship.toLowerCase()) {
+  if (storedRelationship.toLowerCase() !== sample.storedAllyRelationship.toLowerCase()) {
     throw new Error(
-      `Selected sample expects Ally relationship ${sample.allyRelationship}, found ${storedRelationship || "none"}.`
+      `Selected sample expects stored Ally relationship ${sample.storedAllyRelationship}, found ${storedRelationship || "none"}.`
     );
   }
   return astrologyReportRequestSchema.parse({
@@ -310,6 +324,7 @@ function renderSignalPacket(signals: SignalPacket, completeInventory: boolean) {
 function buildPrompt(signalMarkdown: string, completeInventory: boolean) {
   const primaryFirstName = firstName(sample.primaryName);
   const partnerFirstName = firstName(sample.partnerName);
+  const headings = expectedPortraitHeadings().map((heading) => `## ${heading}`).join("\n");
   const packetContract = completeInventory
     ? `The packet is the complete calculated inventory of supported major interaspects between Astra's standard report bodies. Do not treat contact count as a vote, give wide-orb or outer-planet contacts equal weight by default, or force every contact into the portrait. Select load-bearing evidence by exactness, personal-planet relevance, recurrence, and explanatory value. The inventory excludes house overlays, angles, nodes, asteroids, midpoints, Yods, composite charts, and Davison charts; do not infer anything about those excluded systems.`
     : `The packet is a curated selection of the strongest contacts, not an exhaustive list. Never infer that an unlisted reciprocal contact does not exist, and never rank which person contributes more by treating omitted signals as negative evidence.`;
@@ -318,25 +333,19 @@ function buildPrompt(signalMarkdown: string, completeInventory: boolean) {
 Write one experimental Dual-Perspective Synastry Portrait for ${sample.partnerName} and ${sample.primaryName}. This is a private shadow-generation bakeoff, not a production report.
 
 Relationship context:
-- ${sample.primaryName} is stored as ${sample.partnerName}'s Ally with relationship type "${sample.allyRelationship}."
-- Tone mode: ${sample.toneMode}. Romantic, erotic, and sexual-attraction themes are allowed only when supported by the supplied interaspects. Do not infer monogamy, permanence, relationship satisfaction, or a stay/leave conclusion from the Ally type.
-- The Ally relationship label is routing context, not evidence of relationship history. Do not claim how they met, fell in love, built a life, divided marital labor, or what their current relationship is like unless the selected interaspects can support a clearly conditional possibility.
+- ${sample.primaryName} is stored as ${sample.partnerName}'s Ally with saved relationship "${sample.storedAllyRelationship}."
+- For this private test only, route the portrait through requested Ally tag "${sample.experimentalAllyTag}." Do not write this experimental tag back to the app or database.
+- ${toneInstruction()}
+- The Ally relationship label is routing context, not evidence of relationship history. Do not claim how they met, what happened at a first look or first conversation, fell in love, built a life, divided relational labor, or what their current relationship is like. Interaspects cannot establish those biographical facts. Never frame attraction as bypassing, preceding, or overriding consent.
 
 Purpose:
 - Produce psychologically dense, specific, restrained, literary writing without relying on any prior report prose.
 - Make the asymmetry of lived experience central: show ${partnerFirstName}'s experience, ${primaryFirstName}'s experience, and the relationship itself as three distinct protagonists.
 - Create meaning, not a list of aspects. The astrology should operate as load-bearing evidence beneath the prose.
-- Be emotionally candid and interesting. Do not sand down contradiction, desire, anger, projection, power, dependency, erotic charge, or differences in how each person may experience relational effort. Do not rank who contributes, earns, carries, gives, or receives more.
+- ${candorInstruction()}
 
 Required structure — use these exact H2 headings, in this order:
-## 1. The Recognition
-## 2. ${primaryFirstName} Inside ${partnerFirstName}
-## 3. ${partnerFirstName} Inside ${primaryFirstName}
-## 4. The Spell and the Projection
-## 5. Desire, Anger, and Pursuit
-## 6. The Love Language Under Pressure
-## 7. The Shadow Bargain
-## 8. The Relationship as a Third Being
+${headings}
 
 Write an H1 title before Chapter 1 and a short italic deck that states the portrait's central thesis. Do not add any other H2 sections. Target 4,200-5,800 words total, with fully developed chapters rather than padded repetition.
 
@@ -349,16 +358,15 @@ Perspective discipline:
 
 Evidence contract:
 - The chart-signal packet below is the only astrological evidence supplied. Use no aspect, placement, house, angle, node, asteroid, midpoint, Yod, composite chart, or Davison claim that is absent from it.
-- Degree and orb values are calculation trace only. Do not reproduce numerical degrees or orbs in the portrait, and never convert decimal degrees into degree-minute notation.
+- Degree, orb, closeness, and exactness language is calculation trace only. Do not mention degrees, orbs, exactness, near-exactness, tightness, or how close a contact is anywhere in the portrait, even without a number, and never convert decimal degrees into degree-minute notation.
 - Do not import a conclusion from an earlier report; none is provided.
 - ${packetContract}
 - An interaspect is reciprocal even when its two people experience the contacted planets differently. Do not describe the aspect itself as energy flowing only one way.
 - The four packet headings are evidence-selection jobs, not the required output structure. Recompose their signals across the eight chapters.
 - Build Chapters 2 and 3 from how the same interaspects land differently for each named person.
-- Build Chapter 4 only from supplied signals that support idealization, ambiguity, permeability, or projection.
-- Build Chapters 5 and 6 from supplied desire/conflict and communication/emotional signals respectively.
-- Build Chapter 7 from differences in lived experience, power, or cost within the supplied interaspects. Keep them as hypotheses and do not turn aspect counts or one person's contacted planets into a verdict about who carries, earns, gives, or receives more.
-- Build Chapter 8 only by synthesizing reciprocal interaspects as a relationship pattern.
+- ${chapterEvidenceInstructions()}
+- Chapter 8 must be a fully developed synthesis of at least 400 words. Do not satisfy the third-being perspective by merely repeating the phrase "the relationship."
+- Never describe either person as the load-bearing partner, say one gives more than they receive, claim one provides the floor or architecture, or assign unequal relational labor from aspect direction or contact volume.
 - If a desired theme is not supported by a supplied signal, omit that theme rather than filling the gap.
 
 <chart_signals>
@@ -383,7 +391,8 @@ function signalManifest(
     sourceReportIds: [],
     sourceChartIds,
     sample: sample.key,
-    allyRelationship: sample.allyRelationship,
+    storedAllyRelationship: sample.storedAllyRelationship,
+    experimentalAllyTag: sample.experimentalAllyTag,
     toneMode: sample.toneMode,
     reportProseInput: false,
     signalSource: inventoryCalculation
@@ -604,16 +613,7 @@ function validatePortrait(
 ) {
   const primaryFirstName = firstName(sample.primaryName);
   const partnerFirstName = firstName(sample.partnerName);
-  const expectedHeadings = [
-    "1. The Recognition",
-    `2. ${primaryFirstName} Inside ${partnerFirstName}`,
-    `3. ${partnerFirstName} Inside ${primaryFirstName}`,
-    "4. The Spell and the Projection",
-    "5. Desire, Anger, and Pursuit",
-    "6. The Love Language Under Pressure",
-    "7. The Shadow Bargain",
-    "8. The Relationship as a Third Being"
-  ];
+  const expectedHeadings = expectedPortraitHeadings();
   const headings = [...markdown.matchAll(/^## (.+)$/gm)].map((match) =>
     match[1].trim()
   );
@@ -632,9 +632,9 @@ function validatePortrait(
   if (nameMentions(markdown, primaryFirstName) < 20) {
     issues.push(`${primaryFirstName}'s perspective is not explicit enough.`);
   }
-  if ((markdown.match(/\brelationship\b/gi) ?? []).length < 12) {
-    issues.push("The relationship-as-third-being perspective is underdeveloped.");
-  }
+  const chapterEight = markdown.split(/^## 8\.[^\n]*$/m)[1] ?? "";
+  const chapterEightWordCount = wordCount(chapterEight);
+  if (chapterEightWordCount < 400) issues.push(`Chapter 8 is underdeveloped (${chapterEightWordCount} words).`);
   if (groundedSignalCount !== undefined && groundedSignalCount < 8) {
     issues.push(`Portrait visibly grounds too few supplied signals (${groundedSignalCount}).`);
   }
@@ -653,13 +653,34 @@ function validatePortrait(
     issues.push("Portrait discusses a Yod without a supplied Yod signal.");
   }
   const rawCalculationClaims = [
-    ...markdown.matchAll(/[°º]|\borb(?: of)?\s+\d|\b\d+(?:\.\d+)?-degree\b/gi)
+    ...markdown.matchAll(/[°º]|\borb\b|\bdegrees?\b|\bnear-exact\b|\bnearly exact\b|\balmost exact\b|\b(?:tight|close) enough\b/gi)
   ].map((match) => match[0]);
   if (rawCalculationClaims.length) {
     issues.push("Portrait reproduces raw degree or orb calculation trace.");
   }
-  const contributionLedgerClaims = completeInventory
-    ? [
+  const romanticLanguageClaims = sample.toneMode === "family-caregiving-child"
+    ? [...markdown.matchAll(/\b(?:romantic|romance|sexual|erotic|lover|sensual|chemistry|attraction)\b/gi)].map((match) => match[0])
+    : [];
+  if (romanticLanguageClaims.length) {
+    issues.push("Child portrait uses prohibited romantic or sexual language.");
+  }
+  if (sample.toneMode === "lover-romantic-sexual") {
+    const opening = markdown.slice(0, 2_000);
+    if (!/\bromantic\b/i.test(opening) || !/\bsexual\b/i.test(opening)) {
+      issues.push("Lover portrait does not lead with both romantic and sexual overtones.");
+    }
+  }
+  const contributionLedgerClaims = [
+    ...markdown.matchAll(/\b(?:load-bearing|provid(?:e|es|ing) the floor|gives? more.{0,80}receives?|more architecture.{0,80}receives?|costs? (?:him|her|them) ongoing effort)\b/gi)
+  ].map((match) => match[0]);
+  if (contributionLedgerClaims.length) {
+    issues.push("Portrait assigns comparative relational labor from chart evidence.");
+  }
+  const unexpectedScriptClaims = [...markdown.matchAll(/[\p{Script=Han}]/gu)].map((match) => match[0]);
+  if (unexpectedScriptClaims.length) issues.push("English portrait contains unexpected non-Latin copy artifacts.");
+  if (completeInventory) {
+    contributionLedgerClaims.push(
+      ...[
         /costs are not evenly distributed/gi,
         /did (?:very )?little to earn/gi,
         /without reciprocating at the same volume/gi,
@@ -669,11 +690,12 @@ function validatePortrait(
         /by her own effort/gi,
         /comparatively less visited/gi
       ].flatMap((pattern) => markdown.match(pattern) ?? [])
-    : [];
-  if (contributionLedgerClaims.length) {
-    issues.push(
-      "Complete-inventory portrait turns contact volume into a comparative contribution ledger."
     );
+  }
+  if (contributionLedgerClaims.length) {
+    if (!issues.includes("Portrait assigns comparative relational labor from chart evidence.")) {
+      issues.push("Complete-inventory portrait turns contact volume into a comparative contribution ledger.");
+    }
   }
   return {
     issues,
@@ -682,12 +704,66 @@ function validatePortrait(
     groundedSignalCount,
     contributionLedgerClaims,
     rawCalculationClaims,
+    romanticLanguageClaims,
+    unexpectedScriptClaims,
+    chapterEightWordCount,
     mentions: {
       [partnerFirstName]: nameMentions(markdown, partnerFirstName),
       [primaryFirstName]: nameMentions(markdown, primaryFirstName),
       relationship: (markdown.match(/\brelationship\b/gi) ?? []).length
     }
   };
+}
+
+function expectedPortraitHeadings() {
+  const primaryFirstName = firstName(sample.primaryName);
+  const partnerFirstName = firstName(sample.partnerName);
+  if (sample.toneMode === "family-caregiving-child") {
+    return [
+      "1. The Recognition",
+      `2. ${primaryFirstName} Inside ${partnerFirstName}`,
+      `3. ${partnerFirstName} Inside ${primaryFirstName}`,
+      "4. Safety, Attachment, and Trust",
+      "5. Will, Friction, and Repair",
+      "6. Communication and Emotional Translation",
+      "7. Care, Autonomy, and the Growing Edge",
+      "8. The Family Bond as a Living System"
+    ];
+  }
+  return [
+    "1. The Recognition",
+    `2. ${primaryFirstName} Inside ${partnerFirstName}`,
+    `3. ${partnerFirstName} Inside ${primaryFirstName}`,
+    "4. The Spell and the Projection",
+    "5. Desire, Anger, and Pursuit",
+    "6. The Love Language Under Pressure",
+    "7. The Shadow Bargain",
+    "8. The Relationship as a Third Being"
+  ];
+}
+
+function toneInstruction() {
+  if (sample.toneMode === "family-caregiving-child") {
+    return "Tone mode: family-caregiving-child. Romantic, sexual, erotic, lover, sensual, chemistry, and attraction language is prohibited. Do not use those words even to deny or contrast them. Begin directly from kinship and family recognition. Do not infer Marissa's age or developmental stage. Center attachment, care, trust, autonomy, communication, family roles, and repair without assigning adult emotional labor to the child or judging Tony's parenting.";
+  }
+  if (sample.toneMode === "lover-romantic-sexual") {
+    return "Tone mode: lover-romantic-sexual. Lead the title, deck, and opening chapter with romantic and sexual overtones grounded in the supplied interaspects. The opening must explicitly use both words, romantic and sexual, naturally. Make attraction, chemistry, and embodied charge central without converting symbolism into consent, exclusivity, commitment, permanence, verified sexual history, or destiny.";
+  }
+  return "Tone mode: adult-romantic spouse. Romantic, erotic, and sexual-attraction themes are allowed only when supported by supplied interaspects. Do not infer monogamy, permanence, relationship satisfaction, marriage history, or a stay/leave conclusion from the Spouse tag.";
+}
+
+function candorInstruction() {
+  if (sample.toneMode === "family-caregiving-child") {
+    return "Be emotionally candid and interesting. Do not sand down contradiction, anger, projection, authority, dependency, attachment, or differences in how parent and child may experience the bond. Do not rank who contributes, earns, carries, gives, or receives more, and never assign responsibility for the adult's regulation to the child.";
+  }
+  return "Be emotionally candid and interesting. Do not sand down contradiction, desire, anger, projection, power, dependency, erotic charge, or differences in how each person may experience relational effort. Do not rank who contributes, earns, carries, gives, or receives more.";
+}
+
+function chapterEvidenceInstructions() {
+  if (sample.toneMode === "family-caregiving-child") {
+    return "Build Chapter 4 from supplied emotional-safety, permeability, attachment, and trust signals. Build Chapters 5 and 6 from supplied conflict/will and communication/emotional signals respectively. Build Chapter 7 from care, authority, autonomy, and developmental room without inferring age, assigning burden to Marissa, or issuing a parenting verdict. Build Chapter 8 only by synthesizing reciprocal interaspects as a family-bond pattern.";
+  }
+  return "Build Chapter 4 only from supplied signals that support idealization, ambiguity, permeability, or projection. Build Chapters 5 and 6 from supplied desire/conflict and communication/emotional signals respectively. Build Chapter 7 from differences in lived experience, power, or cost within the supplied interaspects. Keep them as hypotheses and do not turn aspect counts or one person's contacted planets into a verdict about who carries, earns, gives, or receives more. Build Chapter 8 only by synthesizing reciprocal interaspects as a relationship pattern.";
 }
 
 function countGroundedSignals(markdown: string, signals: SignalPacket) {
