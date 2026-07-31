@@ -388,8 +388,8 @@
       "file": "docs/progress/PROGRESS_LOG.md",
       "weight": 208.22,
       "bucket": "other",
-      "estimated_tokens": 12255,
-      "lines": 675,
+      "estimated_tokens": 12278,
+      "lines": 677,
       "symbols": 68,
       "symbol_type_counts": {
         "heading": 68
@@ -2920,6 +2920,20 @@
       "route_count": 0
     },
     {
+      "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
+      "weight": 34.31,
+      "bucket": "other",
+      "estimated_tokens": 3751,
+      "lines": 117,
+      "symbols": 10,
+      "symbol_type_counts": {
+        "heading": 10
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "docs/inbox-astra/tony-cecala-deep-natal-report.md",
       "weight": 34.28,
       "bucket": "other",
@@ -3201,20 +3215,6 @@
       "bucket": "other",
       "estimated_tokens": 2942,
       "lines": 219,
-      "symbols": 9,
-      "symbol_type_counts": {
-        "heading": 9
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
-      "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-      "weight": 31.32,
-      "bucket": "other",
-      "estimated_tokens": 3404,
-      "lines": 111,
       "symbols": 9,
       "symbol_type_counts": {
         "heading": 9
@@ -3525,7 +3525,7 @@
       "file": "akashic/playbooks/astra-verification-tiers.md",
       "weight": 27.2,
       "bucket": "akashic",
-      "estimated_tokens": 1834,
+      "estimated_tokens": 1863,
       "lines": 69,
       "symbols": 7,
       "symbol_type_counts": {
@@ -4595,10 +4595,24 @@
       "route_count": 0
     },
     {
+      "file": "akashic/warnings/report-instrumentation-is-not-reader-quality.md",
+      "weight": 17.6,
+      "bucket": "akashic",
+      "estimated_tokens": 480,
+      "lines": 31,
+      "symbols": 4,
+      "symbol_type_counts": {
+        "heading": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "akashic/warnings/hidden-evidence-coverage-is-not-semantic-fidelity.md",
       "weight": 17.58,
       "bucket": "akashic",
-      "estimated_tokens": 452,
+      "estimated_tokens": 481,
       "lines": 30,
       "symbols": 4,
       "symbol_type_counts": {
@@ -4851,7 +4865,7 @@
       "file": "docs/architecture/RISK_REGISTER.md",
       "weight": 15.75,
       "bucket": "other",
-      "estimated_tokens": 538,
+      "estimated_tokens": 546,
       "lines": 37,
       "symbols": 4,
       "symbol_type_counts": {
@@ -6467,8 +6481,8 @@
     }
   ],
   "coverage": {
-    "files": 430,
-    "symbols": 5919,
-    "total_estimated_tokens": 1146529
+    "files": 431,
+    "symbols": 5924,
+    "total_estimated_tokens": 1147445
   }
 }

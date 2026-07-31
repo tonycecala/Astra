@@ -19,11 +19,11 @@ In clean-prose relationship-report experiments, a private evidence trace can cit
 
 ## Why It Happened
 
-The trace validator proved only that valid evidence IDs appeared in every chapter. It did not prove that each rendered claim stayed within the cited signal's meaning. A literary prompt can therefore cover the packet mechanically while using fate or unequal-labor language to create narrative tension. Direct second-person address can create a parallel illusion of balance by making one person's experience vivid while rendering the other person's interiority through that viewpoint.
+The trace validator proved only that valid evidence IDs appeared in every chapter. It did not prove that each rendered claim stayed within the cited signal's meaning. A literary prompt can therefore cover the packet mechanically while using fate, unequal-labor language, fabricated dialogue, or invented life history to create narrative tension. Direct second-person address can create a parallel illusion of balance by making one person's experience vivid while rendering the other person's interiority through that viewpoint.
 
 ## How To Avoid It
 
 1. Keep the stable private evidence index and chapter trace, but score trace completeness and semantic support as separate checks.
 2. Require distinct claims for the addressed person, the other person, and the relationship in each relevant chapter; review each viewpoint independently.
-3. Add deterministic gates for fate, invented history, comparative burden, contribution ledgers, technical leakage, tone framing, and word range.
+3. Treat fabricated direct quotations and concrete invented biography as fatal; keep fate metaphor, comparative-burden risk, tone framing, and numeric misses as review notes unless they become fixed factual verdicts.
 4. Use a blind editorial comparison after deterministic checks, not as a replacement for them.

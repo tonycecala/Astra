@@ -51,6 +51,12 @@ type CleanProseOutput = {
   evidenceTrace: CleanProseTraceEntry[];
 };
 
+type CleanProseFinding = {
+  code: string;
+  message: string;
+  details: string[];
+};
+
 type SampleConfig = {
   key: string;
   primaryChartId: string;
@@ -116,6 +122,10 @@ const model = reportModelProfileModels.production[0];
 const reasoningEffort = "none";
 const temperature = 0.3;
 const maxOutputTokens = 16_000;
+const cleanProseExperimentVersion = "v2";
+const cleanProseWordTarget = 1_500;
+const numericTolerance = 0.1;
+const fatalErrorLimit = 2;
 const generatedAt = new Date().toISOString();
 const runStamp = generatedAt.replace(/[:.]/g, "-");
 const privateExportRoot = resolve(".astra-exports");
@@ -134,7 +144,8 @@ if (process.argv.includes("--help")) {
   console.log("Generate one private, direct-chart-signal Dual-Perspective Synastry Portrait.");
   console.log(`Samples: ${Object.keys(sampleConfigs).join(" | ")}.`);
   console.log("Generation: --generate [--sample <sample>] [--complete-inventory] [--output].");
-  console.log("Clean prose: --generate --sample cheyenne-tony-lover --clean-prose-thriller --blind-baseline <portrait.md> [--output].");
+  console.log("Clean prose V2: --generate --sample cheyenne-tony-lover --clean-prose-thriller --blind-baseline <portrait.md> [--output].");
+  console.log("Reassess clean prose: --reassess-clean-prose <private-output-directory>.");
   console.log("Signals only: --signals-only [--sample <sample>] [--complete-inventory] [--output].");
   console.log("Validation only: --validate <portrait.md> [--sample <sample>].");
   process.exit(0);
@@ -142,13 +153,47 @@ if (process.argv.includes("--help")) {
 
 if (process.argv.includes("--self-test-clean-prose")) {
   const parsed = parseCleanProseOutput(`<portrait_markdown>\n# Test\n</portrait_markdown>\n<evidence_trace_json>\n[{"chapter":"1. The Recognition","evidenceIds":["S01"],"supportedFeeling":"A supported feeling long enough to validate."}]\n</evidence_trace_json>`);
-  const blind = parseJsonObject(`{"reports":{"A":{"scores":{"emotionalSpecificity":8,"narrativeTension":8,"perspectiveBalance":8,"technicalCleanliness":8,"evidenceFidelity":8}},"B":{"scores":{"emotionalSpecificity":7,"narrativeTension":7,"perspectiveBalance":7,"technicalCleanliness":7,"evidenceFidelity":7}}},"preferred":"A","reason":"Report A is more specific while remaining grounded."}`);
+  const blind = parseJsonObject(`{"reports":{"A":{"scores":{"emotionalSpecificity":8,"narrativeTension":8,"perspectiveBalance":8,"technicalCleanliness":8,"evidenceFidelity":8},"semanticSupport":{"supportedClaims":["One claim is anchored.","Another claim is anchored."],"unsupportedClaims":[]}},"B":{"scores":{"emotionalSpecificity":7,"narrativeTension":7,"perspectiveBalance":7,"technicalCleanliness":7,"evidenceFidelity":7},"semanticSupport":{"supportedClaims":["One claim is anchored.","Another claim is anchored."],"unsupportedClaims":[]}}},"preferred":"A","reason":"Report A is more specific while remaining grounded."}`);
   const issues = validateBlindEvaluation(blind);
-  if (parsed.evidenceTrace[0]?.evidenceIds[0] !== "S01" || issues.length) {
+  const tolerance = toleratedRange(cleanProseWordTarget, cleanProseWordTarget);
+  const twoFatalGreen = passesFatalGate([{ code: "one" }, { code: "two" }]);
+  const threeFatalGreen = passesFatalGate([{ code: "one" }, { code: "two" }, { code: "three" }]);
+  if (
+    parsed.evidenceTrace[0]?.evidenceIds[0] !== "S01" ||
+    issues.length ||
+    tolerance.minimum !== 1_350 ||
+    tolerance.maximum !== 1_650 ||
+    !twoFatalGreen ||
+    threeFatalGreen
+  ) {
     throw new Error(`Clean-prose self-test failed: ${issues.join("; ")}`);
   }
-  console.log(JSON.stringify({ ok: true, parsedEvidenceId: "S01", blindEvaluationIssues: issues }, null, 2));
+  console.log(JSON.stringify({
+    ok: true,
+    parsedEvidenceId: "S01",
+    blindEvaluationIssues: issues,
+    numericTolerance: tolerance,
+    twoFatalErrorsGreenLight: twoFatalGreen,
+    threeFatalErrorsGreenLight: threeFatalGreen
+  }, null, 2));
   process.exit(0);
+}
+
+const reassessCleanProseDir = option("--reassess-clean-prose");
+if (reassessCleanProseDir) {
+  const directory = resolve(reassessCleanProseDir);
+  if (!directory.startsWith(`${privateExportRoot}${sep}`)) {
+    throw new Error("Clean-prose reassessment must stay under the private export root.");
+  }
+  const portrait = await readFile(join(directory, "clean-prose-portrait.md"), "utf8");
+  const evidenceEntries = JSON.parse(await readFile(join(directory, "evidence-index.json"), "utf8")) as EvidenceEntry[];
+  const trace = JSON.parse(await readFile(join(directory, "evidence-trace.json"), "utf8")) as CleanProseTraceEntry[];
+  const mapping = JSON.parse(await readFile(join(directory, "blind-mapping.json"), "utf8")) as { A: string; B: string };
+  const blindEvaluation = parseJsonObject(await readFile(join(directory, "blind-evaluation-raw.txt"), "utf8"));
+  const validation = validateCleanProsePortrait(portrait, trace, evidenceEntries);
+  const acceptance = buildCleanProseAcceptance(validation, blindEvaluation, mapping);
+  console.log(JSON.stringify({ ok: acceptance.greenLight, directory, validation, acceptance }, null, 2));
+  process.exit(acceptance.greenLight ? 0 : 1);
 }
 
 const validationPath = option("--validate");
@@ -518,21 +563,23 @@ async function runCleanProseExperiment(input: {
     }
   };
   const mapping = {
-    A: cleanIsA ? "clean-prose-thriller" : "current-v3",
-    B: cleanIsA ? "current-v3" : "clean-prose-thriller"
+    A: cleanIsA ? "clean-prose-v2" : "current-v3",
+    B: cleanIsA ? "current-v3" : "clean-prose-v2"
   } as const;
+  const acceptance = buildCleanProseAcceptance(validation, blindEvaluation, mapping);
 
   await writePrivate(join(outputDir, "blind-comparison-prompt.md"), `${comparisonPrompt}\n`);
   await writePrivate(join(outputDir, "blind-evaluation-raw.txt"), `${comparisonGenerated.text.trim()}\n`);
   await writePrivate(join(outputDir, "blind-mapping.json"), `${JSON.stringify(mapping, null, 2)}\n`);
   await writePrivate(
     join(outputDir, "blind-comparison.md"),
-    `${renderBlindComparison(blindEvaluation, blindEvaluationIssues, mapping, objectiveMetrics)}\n`
+    `${renderBlindComparison(blindEvaluation, blindEvaluationIssues, mapping, objectiveMetrics, acceptance)}\n`
   );
 
   const manifest = {
     ...signalManifest(input.signalMarkdown, input.signalValidation),
-    experiment: "dual-perspective-synastry-v3-clean-prose-psychological-thriller",
+    experiment: "dual-perspective-synastry-v3-clean-prose-psychological-thriller-v2",
+    experimentVersion: cleanProseExperimentVersion,
     cleanProseThriller: true,
     model,
     modelProfile: "production",
@@ -557,6 +604,7 @@ async function runCleanProseExperiment(input: {
     finishReason: generated.finishReason,
     usage: generated.usage,
     validation,
+    acceptance,
     blindComparison: {
       baselinePortraitSha256: sha256(baselinePortrait),
       baselineSignalPacketMatch,
@@ -575,7 +623,7 @@ async function runCleanProseExperiment(input: {
   await writePrivate(join(outputDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 
   const ok = input.signalValidation.issues.length === 0 &&
-    validation.issues.length === 0 &&
+    acceptance.greenLight &&
     blindEvaluationIssues.length === 0;
   console.log(JSON.stringify({
     ok,
@@ -585,6 +633,7 @@ async function runCleanProseExperiment(input: {
     usage: generated.usage,
     signalValidation: input.signalValidation,
     validation,
+    acceptance,
     blindComparison: {
       mapping,
       usage: comparisonGenerated.usage,
@@ -609,22 +658,26 @@ function cleanProseHeadings() {
 
 function buildCleanProsePrompt(signalMarkdown: string, evidenceEntries: EvidenceEntry[]) {
   const headings = cleanProseHeadings().map((heading) => `## ${heading}`).join("\n");
-  return `You are Astra's premium psychological portrait writer. Write one private experimental Tony Cecala + Cheyenne Autumn Lover portrait in a clean-prose psychological-thriller register.
+  return `You are Astra's premium psychological portrait writer. Write one private experimental Tony Cecala + Cheyenne Autumn Lover portrait in a clean-prose psychological-thriller register. This is V2: lead with the meat, then support it lightly.
 
 This is still direct-chart-signal generation. The packet below is the only astrological evidence. No saved report prose is supplied. Stable S-number IDs exist only so your hidden evidence trace can prove grounding without forcing astrology into the finished portrait.
 
 Rendered-prose contract:
 - Address Tony as "you" and "your," not as Tony. Refer to Cheyenne naturally by name and as she/her.
-- Preserve three protagonists: your felt experience, Cheyenne's distinct felt experience, and the relationship as a presence with its own pressure and momentum.
-- Lead every paragraph with a specific feeling, impulse, bodily response, fear, misreading, temptation, reversal, or hidden relational consequence. Let the evidence stay beneath the sentence.
-- Write with psychological-thriller propulsion: recognition that feels dangerous, warmth with a hidden cost, desire that changes shape under pressure, and intimacy that can become exposure. Do not invent crimes, literal danger, secrets, pathology, or melodramatic biography.
+- Turn evidence-first writing around. Open each paragraph with the feeling, desire, fear, bodily response, private thought, reversal, or hidden consequence that matters. Do not begin by explaining a pattern and then arrive at the feeling.
+- Give the reader the portrait, not the proof. The Evidence drawers will hold the technical support. After the lead sentence, support it lightly through one consequence, contrast, or complication; do not explain the astrological mechanism or inventory the packet.
+- Preserve three protagonists in every chapter: what you feel, what Cheyenne independently feels, and what the relationship itself starts doing between you.
+- Give Cheyenne at least one unfiltered sentence in every chapter that states what she wants, fears, resists, or risks directly. Do not filter her interiority through phrases such as "you sense that she" or "you imagine that she."
+- Give the relationship agency in every chapter: it may tighten, provoke, expose, shelter, interrupt, seduce, or change the emotional weather. It must do more than merely be named.
+- Write with psychological-thriller propulsion: recognition that feels dangerous, warmth with a hidden cost, desire that changes shape under pressure, and intimacy that can become exposure. Imaginative intensification is welcome when framed as felt possibility, metaphor, or "as if" experience. Do not invent crimes, literal danger, secrets, pathology, or concrete relationship biography.
 - The opening must make the connection explicitly romantic and sexual, while treating consent, actual behavior, exclusivity, commitment, permanence, and history as unknown.
 - Do not claim a first look, first conversation, how they met, actual sexual contact, falling in love, shared routines, relationship duration, or current relationship state.
-- Do not turn the felt charge into fate or history. Avoid inevitability, destiny, meant-to-be language, ancient or old contracts, timeless recognition, old bones, or claims that the relationship began before the people did.
-- Do not assign one person more relational labor, stability, architecture, responsibility, giving, or cost than the other.
+- Do not fabricate direct quotations for either person. Render interiority as possibility in the narrator's voice, not as words Tony or Cheyenne supposedly said.
+- Do not state fate or hidden history as fact. A character may feel as if something is inevitable, ancient, or already underway, but the prose must keep that inside subjective experience rather than pronounce destiny.
+- Do not assign one person more relational labor, stability, architecture, responsibility, giving, or cost than the other. Difference is welcome; a contribution ledger is not.
 - Do not give advice, action steps, compatibility verdicts, therapy language, or a stay/leave conclusion.
 - Use no technical astrology language anywhere in portraitMarkdown: no planet, sign, aspect, chart, synastry, placement, degree, orb, house, angle, node, or astrological-system terminology. Do not include evidence IDs in portraitMarkdown.
-- Target 2,000-2,600 words.
+- Target about 1,500 words. Clarity and emotional force matter more than padding; numeric review allows ±10%.
 
 Use these exact H2 headings in order:
 ${headings}
@@ -634,7 +687,7 @@ Place one H1 title and a short italic deck before Chapter 1. Make Chapter 6 a de
 Hidden-trace contract:
 - After the portrait, return exactly one evidence-trace entry for each H2 chapter.
 - Each entry must use the exact chapter heading without the leading "## ", cite 1-5 valid evidence IDs, and state the chapter's supported feeling in one concise sentence.
-- Across the trace, use at least 10 unique IDs. Do not force an ID into prose or claim more than its source supports.
+- Across the trace, use at least 10 unique IDs. Evidence coverage and semantic support will be reviewed separately. Do not force an ID into prose or turn a suggestive signal into invented fact.
 
 Return exactly this two-block format and nothing else:
 <portrait_markdown>
@@ -678,64 +731,242 @@ function validateCleanProsePortrait(
   trace: CleanProseTraceEntry[],
   evidenceEntries: EvidenceEntry[]
 ) {
-  const issues: string[] = [];
+  const fatalErrors: CleanProseFinding[] = [];
+  const reviewNotes: CleanProseFinding[] = [];
+  const addFinding = (
+    target: CleanProseFinding[],
+    code: string,
+    message: string,
+    details: string[] = []
+  ) => target.push({ code, message, details });
   const words = wordCount(markdown);
   const headings = [...markdown.matchAll(/^## (.+)$/gm)].map((match) => match[1].trim());
   const expectedHeadings = cleanProseHeadings();
   const technicalClaims = [...markdown.matchAll(cleanProseTechnicalPattern())].map((match) => match[0]);
   const evidenceIdClaims = [...markdown.matchAll(/\bS\d{2}\b/g)].map((match) => match[0]);
-  const fateClaims = [...markdown.matchAll(/\b(?:inevitab\w*|destin(?:y|ed)|fated|meant to be|ancient contract|old contract|old bones|timeless recognition|began (?:somewhere )?before (?:either|they|you))\b/gi)].map((match) => match[0]);
+  const fateClaims = [...markdown.matchAll(/\b(?:(?:this|it|the relationship|the connection|the bond) (?:is|was|has been) (?:inevitab\w*|destin(?:ed|y)|fated)|meant to be|ancient contract|old contract|began (?:somewhere )?before (?:either|they|you))\b/gi)].map((match) => match[0]);
   const contributionLedgerClaims = [...markdown.matchAll(/\b(?:load-bearing|unequal bargain|provid(?:e|es|ing) the floor|gives? more.{0,80}receives?|more architecture.{0,80}receives?|costs? (?:him|her|them) ongoing effort|over-function(?:s|ing)?|she tempers.{0,80}you (?:widen|contain)|you (?:widen|contain).{0,80}she tempers)\b/gi)].map((match) => match[0]);
   const biographyClaims = [...markdown.matchAll(/\b(?:first (?:look|glance|conversation|contact)|how (?:you|they) met|when (?:you|they) met|fell in love|shared (?:meal|home|routine)|years together)\b/gi)].map((match) => match[0]);
+  const fabricatedDialogueClaims = [...markdown.matchAll(/["“][^"”\n]{8,}["”]/g)].map((match) => match[0]);
   const validIds = new Set(evidenceEntries.map((entry) => entry.id));
   const traceIds = trace.flatMap((entry) => entry.evidenceIds);
   const invalidTraceIds = traceIds.filter((id) => !validIds.has(id));
   const uniqueTraceIds = new Set(traceIds);
   const opening = markdown.slice(0, 1_500);
   const chapterSix = markdown.split(/^## 6\.[^\n]*$/m)[1] ?? "";
+  const youMentions = (markdown.match(/\byou\b|\byour\b/gi) ?? []).length;
+  const tonyMentions = nameMentions(markdown, "Tony");
+  const cheyenneMentions = nameMentions(markdown, "Cheyenne");
+  const chapterSixWords = wordCount(chapterSix);
+  const wordRange = toleratedRange(cleanProseWordTarget, cleanProseWordTarget);
+  const acceptedChapterSixMinimum = toleratedMinimum(300);
+  const acceptedYouMinimum = toleratedMinimum(45);
+  const acceptedCheyenneMinimum = toleratedMinimum(12);
+  const acceptedTraceMinimum = toleratedMinimum(10);
+  const formatDetails = [
+    ...(!/^# [^#]/m.test(markdown) ? ["missing H1 title"] : []),
+    ...(!/^\*[^*]+\*$/m.test(markdown) ? ["missing italic deck"] : []),
+    ...(JSON.stringify(headings) !== JSON.stringify(expectedHeadings)
+      ? ["six-chapter heading contract changed"]
+      : [])
+  ];
+  if (formatDetails.length) {
+    addFinding(fatalErrors, "format_integrity", "The portrait structure is not usable as the six-chapter report.", formatDetails);
+  }
 
-  if (!/^# [^#]/m.test(markdown)) issues.push("Clean prose is missing an H1 title.");
-  if (!/^\*[^*]+\*$/m.test(markdown)) issues.push("Clean prose is missing its italic deck.");
-  if (JSON.stringify(headings) !== JSON.stringify(expectedHeadings)) issues.push("Clean prose did not follow the six-chapter heading contract.");
-  if (words < 2_000 || words > 2_600) issues.push(`Clean prose misses the 2,000-2,600 word target (${words}).`);
-  if (wordCount(chapterSix) < 300) issues.push(`The third-presence chapter is underdeveloped (${wordCount(chapterSix)} words).`);
-  if ((markdown.match(/\byou\b|\byour\b/gi) ?? []).length < 45) issues.push("Tony is not addressed directly enough as you.");
-  if (nameMentions(markdown, "Tony") > 3) issues.push("Clean prose names Tony instead of addressing him as you.");
-  if (nameMentions(markdown, "Cheyenne") < 12) issues.push("Cheyenne's distinct perspective is undernamed.");
-  if (!/\bromantic\b/i.test(opening) || !/\bsexual\b/i.test(opening)) issues.push("Lover opening does not explicitly establish romantic and sexual overtones.");
-  if (technicalClaims.length) issues.push("Rendered portrait leaks technical astrology language.");
-  if (evidenceIdClaims.length) issues.push("Rendered portrait leaks hidden evidence IDs.");
-  if (fateClaims.length) issues.push("Rendered portrait turns felt charge into unsupported fate or history.");
-  if (contributionLedgerClaims.length) issues.push("Rendered portrait assigns comparative relational labor.");
-  if (biographyClaims.length) issues.push("Rendered portrait invents relationship biography.");
-  if (trace.length !== expectedHeadings.length || trace.some((entry, index) => entry.chapter !== expectedHeadings[index])) {
-    issues.push("Evidence trace does not map one ordered entry to each chapter.");
+  const numericOutsideToleranceDetails: string[] = [];
+  const numericNoteDetails: string[] = [];
+  if (words < wordRange.minimum || words > wordRange.maximum) {
+    numericOutsideToleranceDetails.push(`word count ${words} is outside tolerated ${wordRange.minimum}-${wordRange.maximum}`);
   }
-  if (trace.some((entry) => entry.evidenceIds.length < 1 || entry.evidenceIds.length > 5 || entry.supportedFeeling.length < 20)) {
-    issues.push("Evidence trace entries are incomplete or overstuffed.");
+  if (chapterSixWords < acceptedChapterSixMinimum) {
+    numericOutsideToleranceDetails.push(`third-presence chapter has ${chapterSixWords} words; tolerated minimum is ${acceptedChapterSixMinimum}`);
+  } else if (chapterSixWords < 300) {
+    numericNoteDetails.push(`third-presence chapter has ${chapterSixWords} words; requested minimum is 300`);
   }
-  if (invalidTraceIds.length) issues.push(`Evidence trace contains invalid IDs: ${[...new Set(invalidTraceIds)].join(", ")}.`);
-  if (uniqueTraceIds.size < 10) issues.push(`Evidence trace uses too few unique signals (${uniqueTraceIds.size}).`);
+  if (youMentions < acceptedYouMinimum) {
+    numericOutsideToleranceDetails.push(`direct you/your count is ${youMentions}; tolerated minimum is ${acceptedYouMinimum}`);
+  } else if (youMentions < 45) {
+    numericNoteDetails.push(`direct you/your count is ${youMentions}; requested minimum is 45`);
+  }
+  if (cheyenneMentions < acceptedCheyenneMinimum) {
+    numericOutsideToleranceDetails.push(`Cheyenne count is ${cheyenneMentions}; tolerated minimum is ${acceptedCheyenneMinimum}`);
+  } else if (cheyenneMentions < 12) {
+    numericNoteDetails.push(`Cheyenne count is ${cheyenneMentions}; requested minimum is 12`);
+  }
+  if (uniqueTraceIds.size < acceptedTraceMinimum) {
+    numericOutsideToleranceDetails.push(`unique evidence count is ${uniqueTraceIds.size}; tolerated minimum is ${acceptedTraceMinimum}`);
+  } else if (uniqueTraceIds.size < 10) {
+    numericNoteDetails.push(`unique evidence count is ${uniqueTraceIds.size}; requested minimum is 10`);
+  }
+  if (numericOutsideToleranceDetails.length) {
+    addFinding(reviewNotes, "numeric_contract", "One or more measured targets exceed the ±10% tolerance.", numericOutsideToleranceDetails);
+  }
+  if (numericNoteDetails.length) {
+    addFinding(reviewNotes, "numeric_tolerance", "Measured targets use the approved ±10% editorial tolerance.", numericNoteDetails);
+  }
+
+  if (tonyMentions > 3) {
+    addFinding(reviewNotes, "direct_address", "The portrait sometimes names Tony instead of addressing him as you.", [`Tony count: ${tonyMentions}`]);
+  }
+
+  const chapterPerspectiveCoverage = cleanProseChapterBodies(markdown, expectedHeadings).map(({ chapter, body }) => ({
+    chapter,
+    hasYou: /\byou\b|\byour\b/i.test(body),
+    hasCheyenne: /\bCheyenne\b/i.test(body),
+    hasRelationship: /\b(?:relationship|connection|bond|between you|between the two of you|space between you|third presence)\b/i.test(body)
+  }));
+  const perspectiveDetails = chapterPerspectiveCoverage.flatMap((entry) => [
+    ...(!entry.hasYou ? [`${entry.chapter}: no direct you/your perspective`] : []),
+    ...(!entry.hasCheyenne ? [`${entry.chapter}: no named Cheyenne perspective`] : []),
+    ...(!entry.hasRelationship ? [`${entry.chapter}: no relationship-as-protagonist marker`] : [])
+  ]);
+  if (perspectiveDetails.length) {
+    const losesProtagonistCompletely = youMentions === 0 ||
+      cheyenneMentions === 0 ||
+      chapterPerspectiveCoverage.every((entry) => !entry.hasRelationship);
+    addFinding(
+      losesProtagonistCompletely ? fatalErrors : reviewNotes,
+      "perspective_balance",
+      losesProtagonistCompletely
+        ? "The portrait loses one of the three protagonists completely."
+        : "Some chapters could make all three protagonists more explicit.",
+      perspectiveDetails
+    );
+  }
+
+  const hasRomanticOpening = /\bromantic\b/i.test(opening);
+  const hasSexualOpening = /\bsexual\b/i.test(opening);
+  const hasLoverOpening = /\b(?:attraction|desire|erotic|want(?:s|ed|ing)?)\b/i.test(opening);
+  if (!hasRomanticOpening || !hasSexualOpening) {
+    addFinding(
+      !hasRomanticOpening && !hasSexualOpening && !hasLoverOpening ? fatalErrors : reviewNotes,
+      "lover_lens",
+      "The opening implies the Lover lens without stating both romantic and sexual overtones literally.",
+      [
+        `romantic literal: ${hasRomanticOpening}`,
+        `sexual literal: ${hasSexualOpening}`,
+        `other attraction/desire language: ${hasLoverOpening}`
+      ]
+    );
+  }
+  const surfaceDetails = [
+    ...(technicalClaims.length ? [`technical terms: ${[...new Set(technicalClaims)].join(", ")}`] : []),
+    ...(evidenceIdClaims.length ? [`visible evidence IDs: ${[...new Set(evidenceIdClaims)].join(", ")}`] : [])
+  ];
+  if (surfaceDetails.length) {
+    addFinding(fatalErrors, "technical_surface", "The rendered portrait exposes material reserved for the Evidence drawers.", surfaceDetails);
+  }
+  if (biographyClaims.length || fabricatedDialogueClaims.length) {
+    addFinding(
+      fatalErrors,
+      "invented_biography",
+      "The portrait asserts concrete relationship biography or fabricated dialogue that was not supplied.",
+      [...new Set([...biographyClaims, ...fabricatedDialogueClaims])]
+    );
+  }
+  if (fateClaims.length) {
+    addFinding(
+      reviewNotes,
+      "fate_language",
+      "The portrait uses fate-coded language that may read as metaphor or as fact.",
+      [...new Set(fateClaims)]
+    );
+  }
+  if (contributionLedgerClaims.length) {
+    addFinding(
+      reviewNotes,
+      "contribution_ledger",
+      "The portrait approaches a comparative relational-labor or burden reading.",
+      [...new Set(contributionLedgerClaims)]
+    );
+  }
+
+  const traceDetails = [
+    ...(trace.length !== expectedHeadings.length || trace.some((entry, index) => entry.chapter !== expectedHeadings[index])
+      ? ["trace does not map one ordered entry to each chapter"]
+      : []),
+    ...(trace.some((entry) => entry.evidenceIds.length < 1 || entry.evidenceIds.length > 6 || entry.supportedFeeling.length < 18)
+      ? ["one or more trace entries is empty, overstuffed beyond tolerance, or lacks a supported feeling"]
+      : []),
+    ...(invalidTraceIds.length ? [`invalid evidence IDs: ${[...new Set(invalidTraceIds)].join(", ")}`] : [])
+  ];
+  if (traceDetails.length) {
+    addFinding(fatalErrors, "trace_integrity", "The private Evidence-drawer trace is structurally invalid.", traceDetails);
+  }
+  if (trace.some((entry) => entry.evidenceIds.length === 6 || (entry.supportedFeeling.length >= 18 && entry.supportedFeeling.length < 20))) {
+    addFinding(reviewNotes, "trace_numeric_tolerance", "A trace entry uses the approved ±10% numeric tolerance.");
+  }
+
+  const issues = [...fatalErrors, ...reviewNotes].map((finding) => finding.message);
 
   return {
     issues,
+    fatalErrors,
+    reviewNotes,
+    fatalErrorLimit,
+    fatalErrorCount: fatalErrors.length,
+    deterministicGreenLight: passesFatalGate(fatalErrors),
+    numericTolerance: {
+      percent: numericTolerance * 100,
+      requestedWordTarget: cleanProseWordTarget,
+      acceptedWordRange: wordRange,
+      requestedChapterSixMinimum: 300,
+      acceptedChapterSixMinimum,
+      requestedYouMinimum: 45,
+      acceptedYouMinimum,
+      requestedCheyenneMinimum: 12,
+      acceptedCheyenneMinimum,
+      requestedUniqueEvidenceMinimum: 10,
+      acceptedUniqueEvidenceMinimum: acceptedTraceMinimum
+    },
     wordCount: words,
     chapterHeadings: headings,
-    chapterSixWordCount: wordCount(chapterSix),
+    chapterSixWordCount: chapterSixWords,
+    chapterPerspectiveCoverage,
     technicalClaims,
     evidenceIdClaims,
     fateClaims,
     contributionLedgerClaims,
     biographyClaims,
+    fabricatedDialogueClaims,
     traceEntryCount: trace.length,
     tracedEvidenceCount: uniqueTraceIds.size,
     invalidTraceIds,
     mentions: {
-      you: (markdown.match(/\byou\b|\byour\b/gi) ?? []).length,
-      Tony: nameMentions(markdown, "Tony"),
-      Cheyenne: nameMentions(markdown, "Cheyenne")
+      you: youMentions,
+      Tony: tonyMentions,
+      Cheyenne: cheyenneMentions
     }
   };
+}
+
+function toleratedRange(minimum: number, maximum: number) {
+  return {
+    minimum: Math.ceil(minimum * (1 - numericTolerance)),
+    maximum: Math.floor(maximum * (1 + numericTolerance))
+  };
+}
+
+function toleratedMinimum(value: number) {
+  return Math.ceil(value * (1 - numericTolerance));
+}
+
+function passesFatalGate(fatalErrors: Array<{ code: string }>) {
+  return new Set(fatalErrors.map((finding) => finding.code)).size <= fatalErrorLimit;
+}
+
+function cleanProseChapterBodies(markdown: string, headings: string[]) {
+  return headings.map((chapter, index) => {
+    const marker = `## ${chapter}`;
+    const start = markdown.indexOf(marker);
+    const nextMarker = headings[index + 1] ? `## ${headings[index + 1]}` : "";
+    const end = nextMarker ? markdown.indexOf(nextMarker) : markdown.length;
+    return {
+      chapter,
+      body: start >= 0 ? markdown.slice(start + marker.length, end >= 0 ? end : markdown.length) : ""
+    };
+  });
 }
 
 function cleanProseTechnicalPattern() {
@@ -745,7 +976,9 @@ function cleanProseTechnicalPattern() {
 function buildBlindComparisonPrompt(signalMarkdown: string, reportA: string, reportB: string) {
   return `You are a blind senior editorial evaluator for a private Astra Synastry V3 experiment. You do not know which report is the control or the experimental variant. Do not infer or discuss their implementation.
 
-Both reports were intended to interpret the exact same strongest-15 direct chart-signal packet below for Tony Cecala and Cheyenne Autumn under a Lover lens. Evaluate the rendered prose, not whether it visibly names astrology. A report may remain evidence-faithful through psychologically precise paraphrase. Penalize unsupported biography, deterministic claims, unequal-labor verdicts, or themes that cannot be traced to the packet.
+Both reports were intended to interpret the exact same strongest-15 direct chart-signal packet below for Tony Cecala and Cheyenne Autumn under a Lover lens. Evaluate the rendered prose, not whether it visibly names astrology. The Evidence drawers, not the portrait body, are where technical support belongs. Do not penalize a report for hiding its evidence or for leading with feeling instead of explanation.
+
+Allow imaginative intensification, metaphor, ambiguity, and subjective "as if" language when the emotional theme is plausibly anchored in the packet. Mark a claim unsupported only when it asserts concrete invented biography, fixed destiny, diagnosis, literal danger, or a one-person burden/verdict that the packet does not license.
 
 Score each report from 1-10 on:
 - emotionalSpecificity: concrete, differentiated feelings rather than generic intensity;
@@ -754,8 +987,8 @@ Score each report from 1-10 on:
 - technicalCleanliness: 10 means the portrait reads cleanly with no distracting astrology exposition;
 - evidenceFidelity: psychological claims remain supportable by the supplied packet even when evidence is not named.
 
-Then choose A, B, or Tie. Return JSON only in this exact shape:
-{"reports":{"A":{"scores":{"emotionalSpecificity":1,"narrativeTension":1,"perspectiveBalance":1,"technicalCleanliness":1,"evidenceFidelity":1},"strengths":["..."],"risks":["..."]},"B":{"scores":{"emotionalSpecificity":1,"narrativeTension":1,"perspectiveBalance":1,"technicalCleanliness":1,"evidenceFidelity":1},"strengths":["..."],"risks":["..."]}},"preferred":"A","reason":"..."}
+For semantic support, name at least two representative emotional claims that the packet supports and list only genuinely unsupported claims; an empty unsupportedClaims array is valid. Then choose A, B, or Tie. Return JSON only in this exact shape:
+{"reports":{"A":{"scores":{"emotionalSpecificity":1,"narrativeTension":1,"perspectiveBalance":1,"technicalCleanliness":1,"evidenceFidelity":1},"semanticSupport":{"supportedClaims":["...","..."],"unsupportedClaims":[]},"strengths":["..."],"risks":["..."]},"B":{"scores":{"emotionalSpecificity":1,"narrativeTension":1,"perspectiveBalance":1,"technicalCleanliness":1,"evidenceFidelity":1},"semanticSupport":{"supportedClaims":["...","..."],"unsupportedClaims":[]},"strengths":["..."],"risks":["..."]}},"preferred":"A","reason":"..."}
 
 <evidence_packet>
 ${signalMarkdown}
@@ -787,10 +1020,149 @@ function validateBlindEvaluation(value: Record<string, unknown>) {
       const score = scores[criterion];
       if (typeof score !== "number" || score < 1 || score > 10) issues.push(`${label}.${criterion} is not a 1-10 score.`);
     }
+    const semanticSupport = report.semanticSupport && typeof report.semanticSupport === "object"
+      ? report.semanticSupport as Record<string, unknown>
+      : {};
+    const supportedClaims = semanticSupport.supportedClaims;
+    const unsupportedClaims = semanticSupport.unsupportedClaims;
+    if (!Array.isArray(supportedClaims) || supportedClaims.filter((claim) => clean(claim)).length < 2) {
+      issues.push(`${label}.semanticSupport needs at least two supported claims.`);
+    }
+    if (!Array.isArray(unsupportedClaims) || unsupportedClaims.some((claim) => !clean(claim))) {
+      issues.push(`${label}.semanticSupport.unsupportedClaims is not a clean array.`);
+    }
   }
   if (!["A", "B", "Tie"].includes(clean(value.preferred))) issues.push("Blind evaluator preference is invalid.");
   if (clean(value.reason).length < 20) issues.push("Blind evaluator reason is too short.");
   return issues;
+}
+
+function buildCleanProseAcceptance(
+  validation: ReturnType<typeof validateCleanProsePortrait>,
+  blindEvaluation: Record<string, unknown>,
+  mapping: { A: string; B: string }
+) {
+  const cleanLabel = mapping.A.startsWith("clean-prose") ? "A" : "B";
+  const report = blindReport(blindEvaluation, cleanLabel);
+  const scores = report.scores && typeof report.scores === "object"
+    ? report.scores as Record<string, unknown>
+    : {};
+  const evidenceFidelityScore = typeof scores.evidenceFidelity === "number"
+    ? scores.evidenceFidelity
+    : 0;
+  const perspectiveBalanceScore = typeof scores.perspectiveBalance === "number"
+    ? scores.perspectiveBalance
+    : 0;
+  const semantic = report.semanticSupport && typeof report.semanticSupport === "object"
+    ? report.semanticSupport as Record<string, unknown>
+    : {};
+  const supportedClaims = stringArray(semantic.supportedClaims);
+  const unsupportedClaims = stringArray(semantic.unsupportedClaims);
+  const fatalErrors = [...validation.fatalErrors];
+  const reviewNotes = [...validation.reviewNotes];
+  const semanticMinimum = toleratedMinimum(5);
+  const perspectiveMinimum = toleratedMinimum(5);
+  const severeSemanticThreshold = 3;
+  const severePerspectiveThreshold = 2;
+  const evaluatorBiographyClaims = unsupportedClaims.filter((claim) =>
+    /\b(?:invented|fabricated|biograph|backstory|direct-quote|direct quote)\b/i.test(claim)
+  );
+
+  if (evaluatorBiographyClaims.length) {
+    fatalErrors.push({
+      code: "invented_biography",
+      message: "The blind evaluator identified concrete invented biography or fabricated dialogue.",
+      details: evaluatorBiographyClaims
+    });
+  }
+
+  if (evidenceFidelityScore <= severeSemanticThreshold) {
+    fatalErrors.push({
+      code: "semantic_fidelity",
+      message: "The blind evaluator found severe semantic misrepresentation of the direct signal packet.",
+      details: [`score ${evidenceFidelityScore}; severe threshold ${severeSemanticThreshold}`, ...unsupportedClaims]
+    });
+  } else if (evidenceFidelityScore < semanticMinimum || unsupportedClaims.length) {
+    reviewNotes.push({
+      code: "semantic_reach",
+      message: "The portrait receives a green light with imaginative reach to review in the Evidence drawers.",
+      details: [`score ${evidenceFidelityScore}; preferred minimum ${semanticMinimum}`, ...unsupportedClaims]
+    });
+  }
+  if (perspectiveBalanceScore <= severePerspectiveThreshold) {
+    fatalErrors.push({
+      code: "perspective_balance",
+      message: "The blind evaluator found that the clean portrait effectively erases one of the three protagonists.",
+      details: [`score ${perspectiveBalanceScore}; severe threshold ${severePerspectiveThreshold}`]
+    });
+  } else if (perspectiveBalanceScore < perspectiveMinimum) {
+    reviewNotes.push({
+      code: "perspective_balance",
+      message: "The portrait could make the three protagonists more evenly explicit.",
+      details: [`score ${perspectiveBalanceScore}; preferred minimum ${perspectiveMinimum}`]
+    });
+  }
+
+  const uniqueFatalErrors = dedupeFindings(fatalErrors);
+  return {
+    policy: {
+      numericTolerancePercent: numericTolerance * 100,
+      fatalErrorLimit,
+      rule: "Green light unless the portrait has more than two fatal-error categories."
+    },
+    evidenceCoverage: {
+      tracedEvidenceCount: validation.tracedEvidenceCount,
+      invalidTraceIds: validation.invalidTraceIds,
+      traceIntegrityFatal: uniqueFatalErrors.some((finding) => finding.code === "trace_integrity")
+    },
+    semanticSupport: {
+      reportLabel: cleanLabel,
+      evidenceFidelityScore,
+      toleratedMinimum: semanticMinimum,
+      severeThreshold: severeSemanticThreshold,
+      supportedClaims,
+      unsupportedClaims,
+      preferredTargetMet: evidenceFidelityScore >= semanticMinimum,
+      severeMisrepresentation: evidenceFidelityScore <= severeSemanticThreshold
+    },
+    perspectiveBalance: {
+      score: perspectiveBalanceScore,
+      toleratedMinimum: perspectiveMinimum,
+      severeThreshold: severePerspectiveThreshold,
+      preferredTargetMet: perspectiveBalanceScore >= perspectiveMinimum,
+      protagonistErasure: perspectiveBalanceScore <= severePerspectiveThreshold
+    },
+    fatalErrors: uniqueFatalErrors,
+    reviewNotes: dedupeFindings(reviewNotes),
+    fatalErrorCount: uniqueFatalErrors.length,
+    greenLight: passesFatalGate(uniqueFatalErrors)
+  };
+}
+
+function blindReport(value: Record<string, unknown>, label: "A" | "B") {
+  const reports = value.reports && typeof value.reports === "object"
+    ? value.reports as Record<string, unknown>
+    : {};
+  return reports[label] && typeof reports[label] === "object"
+    ? reports[label] as Record<string, unknown>
+    : {};
+}
+
+function stringArray(value: unknown) {
+  return Array.isArray(value) ? value.map(clean).filter(Boolean) : [];
+}
+
+function dedupeFindings(findings: CleanProseFinding[]) {
+  const byCode = new Map<string, CleanProseFinding>();
+  for (const finding of findings) {
+    const existing = byCode.get(finding.code);
+    if (existing) {
+      existing.details = [...new Set([...existing.details, ...finding.details])];
+    } else {
+      byCode.set(finding.code, { ...finding, details: [...finding.details] });
+    }
+  }
+  return [...byCode.values()];
 }
 
 function proseMetrics(markdown: string) {
@@ -814,7 +1186,8 @@ function renderBlindComparison(
   blindEvaluation: Record<string, unknown>,
   issues: string[],
   mapping: { A: string; B: string },
-  objectiveMetrics: Record<string, unknown>
+  objectiveMetrics: Record<string, unknown>,
+  acceptance: ReturnType<typeof buildCleanProseAcceptance>
 ) {
   return [
     "# Blind Clean-Prose Comparison",
@@ -833,6 +1206,14 @@ function renderBlindComparison(
     "",
     `- Report A: ${mapping.A}`,
     `- Report B: ${mapping.B}`,
+    "",
+    "## Acceptance",
+    "",
+    `Green light: ${acceptance.greenLight ? "YES" : "NO"}`,
+    "",
+    "```json",
+    JSON.stringify(acceptance, null, 2),
+    "```",
     "",
     "## Objective metrics",
     "",

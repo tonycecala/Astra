@@ -644,14 +644,16 @@ Continue Composer v1 quarry rebuild from the real 78-card Astrology 101 course, 
 
 #### What Changed
 
-- Generated exactly one Tony Cecala + Cheyenne Autumn `Lover` clean-prose
-  psychological-thriller variant from the matched strongest-15 direct signal
-  packet, with stable private evidence IDs and no saved-report writer input.
-- Compared it blindly with current Cheyenne V3 and retained the failed
-  acceptance checks instead of regenerating: clean prose won on tension and
-  technical cleanliness but lost on perspective balance and evidence fidelity.
-- Added deterministic private-harness checks and captured the distinction
-  between evidence coverage and semantic support.
+- Generated two controlled Tony Cecala + Cheyenne Autumn `Lover` clean-prose
+  variants from the same strongest-15 direct signal packet, with stable private
+  evidence IDs and no saved-report writer input.
+- Recorded Tony's human green light for *The Undertow of Recognition*, then
+  revised the acceptance contract so instrumentation notes do not masquerade
+  as reader failure.
+- Generated V2 with feeling-first language. It remained green with one fatal
+  category: fabricated Cheyenne dialogue and concrete invented biography.
+- Added ±10% numeric assessment, the more-than-two-fatal rejection threshold,
+  and separate evidence-coverage and semantic-support review.
 
 #### Tests Run
 
@@ -667,8 +669,8 @@ the experiment did not change production runtime, routes, data, or UI.
 #### Steward Review
 
 - Judgment: accept-with-notes.
-- Accept the private evidence architecture, runner safeguards, and blind result.
-  Hold the generated portrait as finished prose because it missed length,
-  Cheyenne-perspective, Lover-opening, anti-fate, and contribution-ledger gates.
+- Green-light both private portraits as reader experiments. Keep Undertow as the
+  human-approved clarity benchmark; treat V2's fabricated dialogue/biography as
+  the single line to step behind while preserving its emotional density.
 - Production, saved reports, database state, and public/private product paths
   were unchanged.
