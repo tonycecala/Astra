@@ -1523,7 +1523,7 @@
       "file": "apps/astra-web/lib/i18n.ts",
       "weight": 73.23,
       "bucket": "other",
-      "estimated_tokens": 9838,
+      "estimated_tokens": 9839,
       "lines": 896,
       "symbols": 1,
       "symbol_type_counts": {
@@ -3203,6 +3203,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/skills/safe-stale-worktree-integration.md",
+      "weight": 32.89,
+      "bucket": "akashic",
+      "estimated_tokens": 233,
+      "lines": 40,
+      "symbols": 9,
+      "symbol_type_counts": {
+        "heading": 9
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "akashic/templates/skill-template.md",
       "weight": 32.83,
       "bucket": "akashic",
@@ -3421,6 +3435,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/playbooks/astra-verification-tiers.md",
+      "weight": 30.34,
+      "bucket": "akashic",
+      "estimated_tokens": 2834,
+      "lines": 90,
+      "symbols": 8,
+      "symbol_type_counts": {
+        "heading": 8
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "akashic/agent-inbox/2026-06-15-fresh-thread-astra-foundation-next-step.md",
       "weight": 30.26,
       "bucket": "akashic",
@@ -3625,20 +3653,6 @@
       },
       "dependency_in": 0,
       "dependency_out": 4,
-      "route_count": 0
-    },
-    {
-      "file": "akashic/playbooks/astra-verification-tiers.md",
-      "weight": 27.29,
-      "bucket": "akashic",
-      "estimated_tokens": 2562,
-      "lines": 79,
-      "symbols": 7,
-      "symbol_type_counts": {
-        "heading": 7
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -6642,8 +6656,8 @@
     }
   ],
   "coverage": {
-    "files": 443,
-    "symbols": 6125,
-    "total_estimated_tokens": 1173360
+    "files": 444,
+    "symbols": 6135,
+    "total_estimated_tokens": 1173866
   }
 }

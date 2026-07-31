@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-07-31T22:22:56.969Z",
+  "generated_at": "2026-07-31T22:30:55.545Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 443,
-  "total_symbols": 6125,
-  "total_estimated_tokens": 1173360,
+  "files_indexed": 444,
+  "total_symbols": 6135,
+  "total_estimated_tokens": 1173866,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -12273,7 +12273,7 @@
     {
       "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
       "lang": "typescript",
-      "size": 37685,
+      "size": 37687,
       "lines": 678,
       "estimated_tokens": 9420,
       "symbols": [
@@ -24954,9 +24954,9 @@
     {
       "file": "apps/astra-web/lib/i18n.ts",
       "lang": "typescript",
-      "size": 39362,
+      "size": 39364,
       "lines": 896,
-      "estimated_tokens": 9838,
+      "estimated_tokens": 9839,
       "symbols": [
         {
           "name": "ui",
@@ -33359,6 +33359,78 @@
       "importance_bucket": "akashic"
     },
     {
+      "file": "akashic/skills/safe-stale-worktree-integration.md",
+      "lang": "markdown",
+      "size": 930,
+      "lines": 40,
+      "estimated_tokens": 233,
+      "symbols": [
+        {
+          "name": "Safe stale-worktree integration",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "Problem",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Signals",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "Root Cause",
+          "line": 23,
+          "type": "heading"
+        },
+        {
+          "name": "Investigation",
+          "line": 26,
+          "type": "heading"
+        },
+        {
+          "name": "Resolution",
+          "line": 29,
+          "type": "heading"
+        },
+        {
+          "name": "Prevention",
+          "line": 32,
+          "type": "heading"
+        },
+        {
+          "name": "Related Files",
+          "line": 35,
+          "type": "heading"
+        },
+        {
+          "name": "Related ADRs",
+          "line": 38,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Safe stale-worktree integration",
+        "Problem",
+        "Signals",
+        "Root Cause",
+        "Investigation",
+        "Resolution",
+        "Prevention",
+        "Related Files"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 32.89,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "akashic/templates/skill-template.md",
       "lang": "markdown",
       "size": 472,
@@ -34269,6 +34341,73 @@
       "importance_bucket": "other"
     },
     {
+      "file": "akashic/playbooks/astra-verification-tiers.md",
+      "lang": "markdown",
+      "size": 11336,
+      "lines": 90,
+      "estimated_tokens": 2834,
+      "symbols": [
+        {
+          "name": "Astra Verification Tiers",
+          "line": 11,
+          "type": "heading"
+        },
+        {
+          "name": "Purpose",
+          "line": 13,
+          "type": "heading"
+        },
+        {
+          "name": "Procedure",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Authenticated browser tests",
+          "line": 26,
+          "type": "heading"
+        },
+        {
+          "name": "Review",
+          "line": 30,
+          "type": "heading"
+        },
+        {
+          "name": "Branch and worktree closeout",
+          "line": 34,
+          "type": "heading"
+        },
+        {
+          "name": "Private shadow-generation bakeoffs",
+          "line": 59,
+          "type": "heading"
+        },
+        {
+          "name": "Private OpenRouter bakeoff credential",
+          "line": 87,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Astra Verification Tiers",
+        "Purpose",
+        "Procedure",
+        "Authenticated browser tests",
+        "Review",
+        "Branch and worktree closeout",
+        "Private shadow-generation bakeoffs",
+        "Private OpenRouter bakeoff credential"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 30.34,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "akashic/agent-inbox/2026-06-15-fresh-thread-astra-foundation-next-step.md",
       "lang": "markdown",
       "size": 3119,
@@ -35038,67 +35177,6 @@
       "dependency_out": 4,
       "importance_weight": 27.4,
       "importance_bucket": "other"
-    },
-    {
-      "file": "akashic/playbooks/astra-verification-tiers.md",
-      "lang": "markdown",
-      "size": 10251,
-      "lines": 79,
-      "estimated_tokens": 2562,
-      "symbols": [
-        {
-          "name": "Astra Verification Tiers",
-          "line": 11,
-          "type": "heading"
-        },
-        {
-          "name": "Purpose",
-          "line": 13,
-          "type": "heading"
-        },
-        {
-          "name": "Procedure",
-          "line": 17,
-          "type": "heading"
-        },
-        {
-          "name": "Authenticated browser tests",
-          "line": 26,
-          "type": "heading"
-        },
-        {
-          "name": "Review",
-          "line": 30,
-          "type": "heading"
-        },
-        {
-          "name": "Private shadow-generation bakeoffs",
-          "line": 48,
-          "type": "heading"
-        },
-        {
-          "name": "Private OpenRouter bakeoff credential",
-          "line": 76,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Astra Verification Tiers",
-        "Purpose",
-        "Procedure",
-        "Authenticated browser tests",
-        "Review",
-        "Private shadow-generation bakeoffs",
-        "Private OpenRouter bakeoff credential"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 27.29,
-      "importance_bucket": "akashic"
     },
     {
       "file": "packages/db/src/client.ts",
@@ -48282,6 +48360,13 @@
         "type": "constant"
       }
     ],
+    "Branch and worktree closeout": [
+      {
+        "file": "akashic/playbooks/astra-verification-tiers.md",
+        "line": 34,
+        "type": "heading"
+      }
+    ],
     "Branch-Scoped Variables": [
       {
         "file": "docs/operations/alpha-vercel-launch.md",
@@ -60190,6 +60275,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/safe-stale-worktree-integration.md",
+        "line": 26,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/tier-browser-verification-by-changed-boundary.md",
         "line": 28,
         "type": "heading"
@@ -67344,6 +67434,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/safe-stale-worktree-integration.md",
+        "line": 32,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/tier-browser-verification-by-changed-boundary.md",
         "line": 36,
         "type": "heading"
@@ -67666,7 +67761,7 @@
     "Private OpenRouter bakeoff credential": [
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "line": 76,
+        "line": 87,
         "type": "heading"
       }
     ],
@@ -67687,7 +67782,7 @@
     "Private shadow-generation bakeoffs": [
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "line": 48,
+        "line": 59,
         "type": "heading"
       }
     ],
@@ -67764,6 +67859,11 @@
       },
       {
         "file": "akashic/skills/promote-clean-prose-reports-with-private-retry-evidence.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 17,
         "type": "heading"
       },
@@ -69752,6 +69852,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/safe-stale-worktree-integration.md",
+        "line": 38,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/tier-browser-verification-by-changed-boundary.md",
         "line": 44,
         "type": "heading"
@@ -69790,6 +69895,11 @@
       },
       {
         "file": "akashic/skills/promote-clean-prose-reports-with-private-retry-evidence.md",
+        "line": 35,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 35,
         "type": "heading"
       },
@@ -71678,6 +71788,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/safe-stale-worktree-integration.md",
+        "line": 29,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/tier-browser-verification-by-changed-boundary.md",
         "line": 32,
         "type": "heading"
@@ -72718,6 +72833,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/safe-stale-worktree-integration.md",
+        "line": 23,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/tier-browser-verification-by-changed-boundary.md",
         "line": 24,
         "type": "heading"
@@ -73187,6 +73307,13 @@
         "file": "packages/astrology/src/index.ts",
         "line": 3070,
         "type": "function"
+      }
+    ],
+    "Safe stale-worktree integration": [
+      {
+        "file": "akashic/skills/safe-stale-worktree-integration.md",
+        "line": 15,
+        "type": "heading"
       }
     ],
     "safeError": [
@@ -74992,6 +75119,11 @@
       },
       {
         "file": "akashic/skills/promote-clean-prose-reports-with-private-retry-evidence.md",
+        "line": 20,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 20,
         "type": "heading"
       },
@@ -82396,7 +82528,7 @@
         "file": "apps/astra-web/lib/i18n.ts",
         "weight": 73.23,
         "bucket": "other",
-        "estimated_tokens": 9838,
+        "estimated_tokens": 9839,
         "lines": 896,
         "symbols": 1,
         "symbol_type_counts": {
@@ -84076,6 +84208,20 @@
         "route_count": 0
       },
       {
+        "file": "akashic/skills/safe-stale-worktree-integration.md",
+        "weight": 32.89,
+        "bucket": "akashic",
+        "estimated_tokens": 233,
+        "lines": 40,
+        "symbols": 9,
+        "symbol_type_counts": {
+          "heading": 9
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "akashic/templates/skill-template.md",
         "weight": 32.83,
         "bucket": "akashic",
@@ -84294,6 +84440,20 @@
         "route_count": 0
       },
       {
+        "file": "akashic/playbooks/astra-verification-tiers.md",
+        "weight": 30.34,
+        "bucket": "akashic",
+        "estimated_tokens": 2834,
+        "lines": 90,
+        "symbols": 8,
+        "symbol_type_counts": {
+          "heading": 8
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "akashic/agent-inbox/2026-06-15-fresh-thread-astra-foundation-next-step.md",
         "weight": 30.26,
         "bucket": "akashic",
@@ -84498,20 +84658,6 @@
         },
         "dependency_in": 0,
         "dependency_out": 4,
-        "route_count": 0
-      },
-      {
-        "file": "akashic/playbooks/astra-verification-tiers.md",
-        "weight": 27.29,
-        "bucket": "akashic",
-        "estimated_tokens": 2562,
-        "lines": 79,
-        "symbols": 7,
-        "symbol_type_counts": {
-          "heading": 7
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -87515,9 +87661,9 @@
       }
     ],
     "coverage": {
-      "files": 443,
-      "symbols": 6125,
-      "total_estimated_tokens": 1173360
+      "files": 444,
+      "symbols": 6135,
+      "total_estimated_tokens": 1173866
     }
   }
 }
