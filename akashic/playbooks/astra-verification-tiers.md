@@ -44,3 +44,5 @@ Use a private shadow-generation bakeoff when the question is editorial or model-
 5. Retain failed attempts beside the accepted attempt; do not silently replace evidence.
 6. Run targeted lint plus `npm run check` when the experiment adds executable code. Browser E2E is not required when no route, runtime, database write, or product prompt changes.
 7. Refresh REPOMAP and the incremental JCodeMunch index at closeout. If JCodeMunch cannot index the experiment's file type, report the exact limitation and use REPOMAP plus targeted source validation rather than calling the index current for that file.
+
+For a new report architecture, prefer direct chart-signal generation over feeding prior report prose back into the writer. Persist source chart IDs, the exact calculated signal packet, and `sourceReportIds: []` in the private manifest. Treat a selected signal packet as affirmative evidence, not an exhaustive chart: the writer must not infer that unlisted contacts are absent or use omissions to rank which person contributes more.

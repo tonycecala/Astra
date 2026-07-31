@@ -4,10 +4,10 @@ type: "repomap"
 description: "Current repository map for agent onboarding and code navigation."
 status: "current"
 project: "akashic"
-date: "2026-07-30"
-created: "2026-07-30"
-updated: "2026-07-30"
-timestamp: "2026-07-30"
+date: "2026-07-31"
+created: "2026-07-31"
+updated: "2026-07-31"
+timestamp: "2026-07-31"
 okf_version: "0.1"
 tags: ["repomap", "onboarding"]
 related: []
@@ -23,7 +23,7 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `1136311`
+- Estimated token footprint: `1136844`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
@@ -190,4 +190,4 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - Treat auth as a first-class product concern and verify the repo's documented local auth flow.
 - Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 423 local files for `astra-clean-start`.
+Generated from 424 local files for `astra-clean-start`.

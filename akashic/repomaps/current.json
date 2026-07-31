@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-07-30T23:14:15.354Z",
+  "generated_at": "2026-07-31T03:52:34.988Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 423,
-  "total_symbols": 5872,
-  "total_estimated_tokens": 1136311,
+  "files_indexed": 424,
+  "total_symbols": 5876,
+  "total_estimated_tokens": 1136844,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -31657,6 +31657,78 @@
       "importance_bucket": "akashic"
     },
     {
+      "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+      "lang": "markdown",
+      "size": 2703,
+      "lines": 68,
+      "estimated_tokens": 676,
+      "symbols": [
+        {
+          "name": "Private shadow-generation bakeoff parity",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "Problem",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Signals",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "Root Cause",
+          "line": 27,
+          "type": "heading"
+        },
+        {
+          "name": "Investigation",
+          "line": 33,
+          "type": "heading"
+        },
+        {
+          "name": "Resolution",
+          "line": 40,
+          "type": "heading"
+        },
+        {
+          "name": "Prevention",
+          "line": 49,
+          "type": "heading"
+        },
+        {
+          "name": "Related Files",
+          "line": 61,
+          "type": "heading"
+        },
+        {
+          "name": "Related ADRs",
+          "line": 66,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Private shadow-generation bakeoff parity",
+        "Problem",
+        "Signals",
+        "Root Cause",
+        "Investigation",
+        "Resolution",
+        "Prevention",
+        "Related Files"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 33.27,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "akashic/skills/astra-stewardship-validation.md",
       "lang": "markdown",
       "size": 2587,
@@ -31726,78 +31798,6 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 33.22,
-      "importance_bucket": "akashic"
-    },
-    {
-      "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
-      "lang": "markdown",
-      "size": 2345,
-      "lines": 62,
-      "estimated_tokens": 587,
-      "symbols": [
-        {
-          "name": "Private shadow-generation bakeoff parity",
-          "line": 15,
-          "type": "heading"
-        },
-        {
-          "name": "Problem",
-          "line": 17,
-          "type": "heading"
-        },
-        {
-          "name": "Signals",
-          "line": 20,
-          "type": "heading"
-        },
-        {
-          "name": "Root Cause",
-          "line": 27,
-          "type": "heading"
-        },
-        {
-          "name": "Investigation",
-          "line": 33,
-          "type": "heading"
-        },
-        {
-          "name": "Resolution",
-          "line": 40,
-          "type": "heading"
-        },
-        {
-          "name": "Prevention",
-          "line": 49,
-          "type": "heading"
-        },
-        {
-          "name": "Related Files",
-          "line": 55,
-          "type": "heading"
-        },
-        {
-          "name": "Related ADRs",
-          "line": 60,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Private shadow-generation bakeoff parity",
-        "Problem",
-        "Signals",
-        "Root Cause",
-        "Investigation",
-        "Resolution",
-        "Prevention",
-        "Related Files"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 33.2,
       "importance_bucket": "akashic"
     },
     {
@@ -34881,9 +34881,9 @@
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
       "lang": "markdown",
-      "size": 2848,
-      "lines": 47,
-      "estimated_tokens": 712,
+      "size": 3282,
+      "lines": 49,
+      "estimated_tokens": 821,
       "symbols": [
         {
           "name": "Astra Verification Tiers",
@@ -34930,7 +34930,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 23.94,
+      "importance_weight": 23.96,
       "importance_bucket": "akashic"
     },
     {
@@ -37119,6 +37119,49 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 17.8,
+      "importance_bucket": "akashic"
+    },
+    {
+      "file": "akashic/warnings/curated-chart-signal-packets-cannot-prove-absent-contacts.md",
+      "lang": "markdown",
+      "size": 1340,
+      "lines": 34,
+      "estimated_tokens": 335,
+      "symbols": [
+        {
+          "name": "Curated chart-signal packets cannot prove absent contacts",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "What Happened",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Why It Happened",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "How To Avoid It",
+          "line": 27,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Curated chart-signal packets cannot prove absent contacts",
+        "What Happened",
+        "Why It Happened",
+        "How To Avoid It"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 17.72,
       "importance_bucket": "akashic"
     },
     {
@@ -51711,6 +51754,13 @@
         "type": "constant"
       }
     ],
+    "Curated chart-signal packets cannot prove absent contacts": [
+      {
+        "file": "akashic/warnings/curated-chart-signal-packets-cannot-prove-absent-contacts.md",
+        "line": 15,
+        "type": "heading"
+      }
+    ],
     "CuratedReportSignal": [
       {
         "file": "apps/astra-web/lib/journey-policy.ts",
@@ -56931,6 +56981,11 @@
       {
         "file": "akashic/warnings/composer-generated-image-binaries-stay-out-of-git.md",
         "line": 17,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/warnings/curated-chart-signal-packets-cannot-prove-absent-contacts.md",
+        "line": 27,
         "type": "heading"
       },
       {
@@ -67090,7 +67145,7 @@
       },
       {
         "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
-        "line": 60,
+        "line": 66,
         "type": "heading"
       },
       {
@@ -67122,7 +67177,7 @@
       },
       {
         "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
-        "line": 55,
+        "line": 61,
         "type": "heading"
       },
       {
@@ -76681,6 +76736,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/warnings/curated-chart-signal-packets-cannot-prove-absent-contacts.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
         "file": "akashic/warnings/do-not-consume-production-auth-rate-windows-with-repeated-e2e-sign-ins.md",
         "line": 17,
         "type": "heading"
@@ -76808,6 +76868,11 @@
       {
         "file": "akashic/warnings/composer-generated-image-binaries-stay-out-of-git.md",
         "line": 14,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/warnings/curated-chart-signal-packets-cannot-prove-absent-contacts.md",
+        "line": 20,
         "type": "heading"
       },
       {
@@ -80491,11 +80556,11 @@
         "route_count": 0
       },
       {
-        "file": "akashic/skills/astra-stewardship-validation.md",
-        "weight": 33.22,
+        "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+        "weight": 33.27,
         "bucket": "akashic",
-        "estimated_tokens": 647,
-        "lines": 64,
+        "estimated_tokens": 676,
+        "lines": 68,
         "symbols": 9,
         "symbol_type_counts": {
           "heading": 9
@@ -80505,11 +80570,11 @@
         "route_count": 0
       },
       {
-        "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
-        "weight": 33.2,
+        "file": "akashic/skills/astra-stewardship-validation.md",
+        "weight": 33.22,
         "bucket": "akashic",
-        "estimated_tokens": 587,
-        "lines": 62,
+        "estimated_tokens": 647,
+        "lines": 64,
         "symbols": 9,
         "symbol_type_counts": {
           "heading": 9
@@ -81309,10 +81374,10 @@
       },
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "weight": 23.94,
+        "weight": 23.96,
         "bucket": "akashic",
-        "estimated_tokens": 712,
-        "lines": 47,
+        "estimated_tokens": 821,
+        "lines": 49,
         "symbols": 6,
         "symbol_type_counts": {
           "heading": 6
@@ -81997,6 +82062,20 @@
         "bucket": "akashic",
         "estimated_tokens": 304,
         "lines": 37,
+        "symbols": 4,
+        "symbol_type_counts": {
+          "heading": 4
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "akashic/warnings/curated-chart-signal-packets-cannot-prove-absent-contacts.md",
+        "weight": 17.72,
+        "bucket": "akashic",
+        "estimated_tokens": 335,
+        "lines": 34,
         "symbols": 4,
         "symbol_type_counts": {
           "heading": 4
@@ -83878,9 +83957,9 @@
       }
     ],
     "coverage": {
-      "files": 423,
-      "symbols": 5872,
-      "total_estimated_tokens": 1136311
+      "files": 424,
+      "symbols": 5876,
+      "total_estimated_tokens": 1136844
     }
   }
 }

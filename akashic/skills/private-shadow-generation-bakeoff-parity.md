@@ -52,6 +52,12 @@ Treat model configuration as a tuple rather than a model name. Whenever the
 production adapter changes, review experimental runners for parity before the
 next paid bakeoff.
 
+When evaluating a new report architecture, calculate one canonical signal
+packet directly from the source charts. Keep prior reports as blind editorial
+benchmarks rather than writer inputs. A curated strongest-signal packet is not
+an exhaustive chart, so prompts and evaluations must reject conclusions built
+from the presumed absence of unlisted contacts.
+
 ## Related Files
 - `packages/astrology/src/report/providerResponse.ts`
 - `scripts/experiments/run-dual-perspective-synastry-bakeoff.mts`

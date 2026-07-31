@@ -2982,11 +2982,11 @@
       "route_count": 0
     },
     {
-      "file": "akashic/skills/astra-stewardship-validation.md",
-      "weight": 33.22,
+      "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
+      "weight": 33.27,
       "bucket": "akashic",
-      "estimated_tokens": 647,
-      "lines": 64,
+      "estimated_tokens": 676,
+      "lines": 68,
       "symbols": 9,
       "symbol_type_counts": {
         "heading": 9
@@ -2996,11 +2996,11 @@
       "route_count": 0
     },
     {
-      "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
-      "weight": 33.2,
+      "file": "akashic/skills/astra-stewardship-validation.md",
+      "weight": 33.22,
       "bucket": "akashic",
-      "estimated_tokens": 587,
-      "lines": 62,
+      "estimated_tokens": 647,
+      "lines": 64,
       "symbols": 9,
       "symbol_type_counts": {
         "heading": 9
@@ -3800,10 +3800,10 @@
     },
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
-      "weight": 23.94,
+      "weight": 23.96,
       "bucket": "akashic",
-      "estimated_tokens": 712,
-      "lines": 47,
+      "estimated_tokens": 821,
+      "lines": 49,
       "symbols": 6,
       "symbol_type_counts": {
         "heading": 6
@@ -4488,6 +4488,20 @@
       "bucket": "akashic",
       "estimated_tokens": 304,
       "lines": 37,
+      "symbols": 4,
+      "symbol_type_counts": {
+        "heading": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/warnings/curated-chart-signal-packets-cannot-prove-absent-contacts.md",
+      "weight": 17.72,
+      "bucket": "akashic",
+      "estimated_tokens": 335,
+      "lines": 34,
       "symbols": 4,
       "symbol_type_counts": {
         "heading": 4
@@ -6369,8 +6383,8 @@
     }
   ],
   "coverage": {
-    "files": 423,
-    "symbols": 5872,
-    "total_estimated_tokens": 1136311
+    "files": 424,
+    "symbols": 5876,
+    "total_estimated_tokens": 1136844
   }
 }
