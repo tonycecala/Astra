@@ -516,7 +516,7 @@ export const ui = {
     createPortrait: "Create portrait",
     editDetails: "Edit details",
     manageBirthData: "Manage birth data",
-    portraitReady: "Portrait ready",
+    portraitReady: "Portrait written",
     readyForPortrait: "Ready for portrait",
     subjectType: "Subject",
     zodiac: "Zodiac",
