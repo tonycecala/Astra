@@ -1,8 +1,9 @@
 ---
 title: "Next thread handoff: Dual-Perspective Synastry V3 direct-signal experiment"
-status: "ready-for-codex"
+status: "completed"
 created: "2026-07-31"
 updated: "2026-07-31"
+completed: "2026-07-31"
 priority: "high"
 type: "handoff"
 project: "Astra Clean Start"
@@ -254,3 +255,12 @@ proportional verification, inspect the final diff, refresh REPOMAP and Munch,
 note the stale JCodeMunch .mts issue at session closeout, leave Git clean, and do
 not change production or push.
 ```
+
+## Completion Evidence
+
+- Complete inventory: 36 eligible major interaspects from 121 standard-body pairs, generated directly from the two source charts with no saved-report input.
+- Private comparison run: `.astra-exports/dual-perspective-synastry-bakeoff/2026-07-31T14-40-43-290Z/`.
+- Verdict: keep strongest-15 as writer input; complete inventory added density but amplified contribution-ledger overreach and planet-owner confusion.
+- Production status: unchanged; no route, prompt, schema, database write, or saved report input.
+- Proportional validation: experiment-runner ESLint and repository TypeScript passed; strongest-15 and complete signal-only runs produced 15 and 36 unique interaspects respectively; strongest-15 portrait passed revalidation and complete-inventory portrait failed the new contribution-ledger gate as intended.
+- Steward review: **accept-with-notes**. The experimental implementation and verdict are accepted; JCodeMunch still cannot index the `.mts` runner, so REPOMAP, targeted source inspection, lint, TypeScript, and executable checks remain the evidence for that file.

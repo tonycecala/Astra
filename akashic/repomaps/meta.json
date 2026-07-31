@@ -2039,6 +2039,20 @@
       "route_count": 0
     },
     {
+      "file": "docs/inbox-astra/completed/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+      "weight": 43.34,
+      "bucket": "other",
+      "estimated_tokens": 2863,
+      "lines": 267,
+      "symbols": 13,
+      "symbol_type_counts": {
+        "heading": 13
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "akashic/imports/astra-product-design-pattern-library/source-library/ASTRA_PRODUCT_DESIGN_EXECUTIVE_SYNTHESIS.md",
       "weight": 42.48,
       "bucket": "akashic",
@@ -2124,20 +2138,6 @@
       },
       "dependency_in": 1,
       "dependency_out": 1,
-      "route_count": 0
-    },
-    {
-      "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
-      "weight": 40.35,
-      "bucket": "other",
-      "estimated_tokens": 2567,
-      "lines": 256,
-      "symbols": 12,
-      "symbol_type_counts": {
-        "heading": 12
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -3814,10 +3814,10 @@
     },
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
-      "weight": 23.96,
+      "weight": 23.98,
       "bucket": "akashic",
-      "estimated_tokens": 821,
-      "lines": 49,
+      "estimated_tokens": 972,
+      "lines": 51,
       "symbols": 6,
       "symbol_type_counts": {
         "heading": 6
@@ -4600,6 +4600,20 @@
       "bucket": "akashic",
       "estimated_tokens": 455,
       "lines": 29,
+      "symbols": 4,
+      "symbol_type_counts": {
+        "heading": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/warnings/complete-report-evidence-inventories-can-become-contribution-ledgers.md",
+      "weight": 17.48,
+      "bucket": "akashic",
+      "estimated_tokens": 484,
+      "lines": 27,
       "symbols": 4,
       "symbol_type_counts": {
         "heading": 4
@@ -6397,8 +6411,8 @@
     }
   ],
   "coverage": {
-    "files": 425,
-    "symbols": 5888,
-    "total_estimated_tokens": 1139411
+    "files": 426,
+    "symbols": 5893,
+    "total_estimated_tokens": 1140342
   }
 }
