@@ -43,6 +43,8 @@ More verification is not automatically more responsible. Choose the smallest evi
 
 For durable state transitions, first prove the action acknowledgement, then reload before asserting the persisted result. Do not make release acceptance depend on client revalidation timing.
 
+When one reader component serves both owner and public-share routes, treat hidden owner detail as a public/private boundary rather than a presentation toggle. Suppress private Evidence, trace IDs, and internal review notes in shared mode, then assert that the logged-out shared HTML and response payload do not contain them.
+
 ## Private shadow-generation bakeoffs
 
 Use a private shadow-generation bakeoff when the question is editorial or model-behavioral and does not require a product-path change.

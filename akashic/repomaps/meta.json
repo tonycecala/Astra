@@ -386,13 +386,13 @@
     },
     {
       "file": "docs/progress/PROGRESS_LOG.md",
-      "weight": 208.21,
+      "weight": 211.21,
       "bucket": "other",
-      "estimated_tokens": 12391,
-      "lines": 683,
-      "symbols": 68,
+      "estimated_tokens": 12672,
+      "lines": 701,
+      "symbols": 69,
       "symbol_type_counts": {
-        "heading": 68
+        "heading": 69
       },
       "dependency_in": 0,
       "dependency_out": 0,
@@ -1696,6 +1696,21 @@
       "route_count": 0
     },
     {
+      "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+      "weight": 65.26,
+      "bucket": "other",
+      "estimated_tokens": 7270,
+      "lines": 442,
+      "symbols": 21,
+      "symbol_type_counts": {
+        "heading": 19,
+        "type": 2
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "packages/astrology/src/report/providerResponse.ts",
       "weight": 64.11,
       "bucket": "other",
@@ -2286,8 +2301,8 @@
       "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
       "weight": 37.31,
       "bucket": "other",
-      "estimated_tokens": 3992,
-      "lines": 123,
+      "estimated_tokens": 4131,
+      "lines": 132,
       "symbols": 11,
       "symbol_type_counts": {
         "heading": 11
@@ -3507,10 +3522,10 @@
     },
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
-      "weight": 27.22,
+      "weight": 27.24,
       "bucket": "akashic",
-      "estimated_tokens": 1995,
-      "lines": 71,
+      "estimated_tokens": 2077,
+      "lines": 73,
       "symbols": 7,
       "symbol_type_counts": {
         "heading": 7
@@ -4516,6 +4531,20 @@
       "bucket": "akashic",
       "estimated_tokens": 304,
       "lines": 37,
+      "symbols": 4,
+      "symbol_type_counts": {
+        "heading": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/warnings/shared-report-readers-must-suppress-private-evidence-traces.md",
+      "weight": 17.8,
+      "bucket": "akashic",
+      "estimated_tokens": 403,
+      "lines": 38,
       "symbols": 4,
       "symbol_type_counts": {
         "heading": 4
@@ -5680,6 +5709,18 @@
       "route_count": 0
     },
     {
+      "file": ".codex/hooks/akashic_preflight.py",
+      "weight": 4.4,
+      "bucket": "other",
+      "estimated_tokens": 1322,
+      "lines": 175,
+      "symbols": 0,
+      "symbol_type_counts": {},
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "packages/db/drizzle/0003_round_hellcat.sql",
       "weight": 4.39,
       "bucket": "other",
@@ -6208,18 +6249,6 @@
       "route_count": 0
     },
     {
-      "file": "apps/composer-web/next-env.d.ts",
-      "weight": 2.52,
-      "bucket": "other",
-      "estimated_tokens": 63,
-      "lines": 7,
-      "symbols": 0,
-      "symbol_type_counts": {},
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
       "file": "apps/composer-web/tsconfig.json",
       "weight": 2.42,
       "bucket": "other",
@@ -6495,8 +6524,8 @@
     }
   ],
   "coverage": {
-    "files": 432,
-    "symbols": 5929,
-    "total_estimated_tokens": 1148440
+    "files": 434,
+    "symbols": 5955,
+    "total_estimated_tokens": 1157874
   }
 }

@@ -1,11 +1,13 @@
 ---
 title: "Synastry V3 Ally Type Tone Review"
-status: "proposed"
+status: "completed"
 project: "Astra Clean Start"
 created: "2026-07-31"
 updated: "2026-07-31"
 type: "evaluation"
-production_status: "not-approved"
+production_status: "implementation-plan-ready"
+accepted_reader_benchmark: "The Undertow of Recognition"
+production_plan: "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md"
 ---
 
 # Synastry V3 Ally Type Tone Review
@@ -77,6 +79,13 @@ The report lens should control chapter vocabulary and prohibited inferences. It 
 3. Still to decide: should `Archetype`, `Historical Figure`, `Public Figure`, and `Ancestor` be eligible for V3 at all, or receive a separate comparison product?
 
 No production change is approved by this evaluation.
+
+The private bakeoff is now closed. *The Undertow of Recognition* is the
+accepted reader benchmark, the strongest-15 direct-signal packet remains the
+recommended writer input, and the complete inventory remains an audit surface.
+The implementation-ready production plan is
+`docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md`. Planning
+approval does not itself change production.
 
 ## Production-readiness note
 

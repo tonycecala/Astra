@@ -680,3 +680,21 @@ the experiment did not change production runtime, routes, data, or UI.
   Close the bakeoff with Undertow preferred and no additional retry.
 - Production, saved reports, database state, and public/private product paths
   were unchanged.
+
+## 2026-07-31 — Synastry V3 bakeoff closure and production plan
+
+- Closed the private clean-prose bakeoff with *The Undertow of Recognition* as
+  the accepted reader benchmark and retained strongest-15 direct chart signals
+  as the production candidate; the complete inventory remains audit-only.
+- Added an implementation-ready, non-production plan covering the six-chapter
+  feeling-first writer, immutable owner-only Evidence drawers, all Ally tone
+  routes including Lover, contextual leakage checks, and the ±10% / more-than-two
+  editorial-fatal policy.
+- Verified that the smallest path needs no SQL migration: existing Ally text,
+  request context JSONB, and report generation-metadata JSONB can carry the
+  compatible tag, tone, Evidence, trace, and acceptance snapshots. Production
+  code, routes, data, and UI remain unchanged.
+- Steward review: **accept**. The plan preserves the chart-calculation path,
+  names the public-share Evidence leak as an implementation boundary, and
+  defines proportional tests and browser journeys without running production
+  verification during this documentation-only closeout.

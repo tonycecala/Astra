@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-07-31T20:09:13.737Z",
+  "generated_at": "2026-07-31T20:22:07.473Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 432,
-  "total_symbols": 5929,
-  "total_estimated_tokens": 1148440,
+  "files_indexed": 434,
+  "total_symbols": 5955,
+  "total_estimated_tokens": 1157874,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -15108,9 +15108,9 @@
     {
       "file": "docs/progress/PROGRESS_LOG.md",
       "lang": "markdown",
-      "size": 49566,
-      "lines": 683,
-      "estimated_tokens": 12391,
+      "size": 50693,
+      "lines": 701,
+      "estimated_tokens": 12672,
       "symbols": [
         {
           "name": "Astra Progress Log",
@@ -15451,6 +15451,11 @@
           "name": "Steward Review",
           "line": 672,
           "type": "heading"
+        },
+        {
+          "name": "2026-07-31 — Synastry V3 bakeoff closure and production plan",
+          "line": 684,
+          "type": "heading"
         }
       ],
       "imports": [],
@@ -15469,7 +15474,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 208.21,
+      "importance_weight": 211.21,
       "importance_bucket": "other"
     },
     {
@@ -25068,6 +25073,138 @@
       "importance_bucket": "other"
     },
     {
+      "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+      "lang": "markdown",
+      "size": 29118,
+      "lines": 442,
+      "estimated_tokens": 7270,
+      "symbols": [
+        {
+          "name": "Synastry V3 Clean-Prose Production Implementation Plan",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "Decision",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Verified current state and production gaps",
+          "line": 38,
+          "type": "heading"
+        },
+        {
+          "name": "Product and design contract",
+          "line": 51,
+          "type": "heading"
+        },
+        {
+          "name": "Ally tag and tone-routing contract",
+          "line": 81,
+          "type": "heading"
+        },
+        {
+          "name": "SynastryToneSnapshot",
+          "line": 115,
+          "type": "type"
+        },
+        {
+          "name": "Strongest-15 packet and stable private Evidence",
+          "line": 129,
+          "type": "heading"
+        },
+        {
+          "name": "SynastryV3Metadata",
+          "line": 149,
+          "type": "type"
+        },
+        {
+          "name": "Feeling-first writer structure",
+          "line": 184,
+          "type": "heading"
+        },
+        {
+          "name": "Acceptance and retry policy",
+          "line": 213,
+          "type": "heading"
+        },
+        {
+          "name": "1. Authorization and privacy boundaries",
+          "line": 217,
+          "type": "heading"
+        },
+        {
+          "name": "2. Fluid editorial gate",
+          "line": 231,
+          "type": "heading"
+        },
+        {
+          "name": "Smallest production edit surface",
+          "line": 276,
+          "type": "heading"
+        },
+        {
+          "name": "Migration and compatibility",
+          "line": 309,
+          "type": "heading"
+        },
+        {
+          "name": "Tests to implement",
+          "line": 321,
+          "type": "heading"
+        },
+        {
+          "name": "Deterministic and contract tests",
+          "line": 323,
+          "type": "heading"
+        },
+        {
+          "name": "Release checkpoint",
+          "line": 364,
+          "type": "heading"
+        },
+        {
+          "name": "Browser journeys for the implementation task",
+          "line": 372,
+          "type": "heading"
+        },
+        {
+          "name": "Implementation order",
+          "line": 398,
+          "type": "heading"
+        },
+        {
+          "name": "Definition of done",
+          "line": 417,
+          "type": "heading"
+        },
+        {
+          "name": "Copy/paste implementation goal",
+          "line": 437,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Synastry V3 Clean-Prose Production Implementation Plan",
+        "Decision",
+        "Verified current state and production gaps",
+        "Product and design contract",
+        "Ally tag and tone-routing contract",
+        "Strongest-15 packet and stable private Evidence",
+        "Feeling-first writer structure",
+        "Acceptance and retry policy"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 65.26,
+      "importance_bucket": "other"
+    },
+    {
       "file": "packages/astrology/src/report/providerResponse.ts",
       "lang": "typescript",
       "size": 1971,
@@ -28082,63 +28219,63 @@
     {
       "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
       "lang": "markdown",
-      "size": 15966,
-      "lines": 123,
-      "estimated_tokens": 3992,
+      "size": 16523,
+      "lines": 132,
+      "estimated_tokens": 4131,
       "symbols": [
         {
           "name": "Synastry V3 Ally Type Tone Review",
-          "line": 11,
-          "type": "heading"
-        },
-        {
-          "name": "Current boundary",
           "line": 13,
           "type": "heading"
         },
         {
+          "name": "Current boundary",
+          "line": 15,
+          "type": "heading"
+        },
+        {
           "name": "Complete chooser-coverage table",
-          "line": 23,
+          "line": 25,
           "type": "heading"
         },
         {
           "name": "Recommended contract",
-          "line": 53,
+          "line": 55,
           "type": "heading"
         },
         {
           "name": "Review questions",
-          "line": 73,
+          "line": 75,
           "type": "heading"
         },
         {
           "name": "Production-readiness note",
-          "line": 81,
+          "line": 90,
           "type": "heading"
         },
         {
           "name": "Three-tone strongest-15 test",
-          "line": 85,
+          "line": 94,
           "type": "heading"
         },
         {
           "name": "Cheyenne clean-prose psychological-thriller test",
-          "line": 91,
+          "line": 100,
           "type": "heading"
         },
         {
           "name": "Clean-prose V2",
-          "line": 99,
+          "line": 108,
           "type": "heading"
         },
         {
           "name": "Final clean-prose synthesis",
-          "line": 105,
+          "line": 114,
           "type": "heading"
         },
         {
           "name": "Felicia + Tony strongest-15 sample",
-          "line": 111,
+          "line": 120,
           "type": "heading"
         }
       ],
@@ -33879,9 +34016,9 @@
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
       "lang": "markdown",
-      "size": 7982,
-      "lines": 71,
-      "estimated_tokens": 1995,
+      "size": 8308,
+      "lines": 73,
+      "estimated_tokens": 2077,
       "symbols": [
         {
           "name": "Astra Verification Tiers",
@@ -33910,12 +34047,12 @@
         },
         {
           "name": "Private shadow-generation bakeoffs",
-          "line": 46,
+          "line": 48,
           "type": "heading"
         },
         {
           "name": "Private OpenRouter bakeoff credential",
-          "line": 68,
+          "line": 70,
           "type": "heading"
         }
       ],
@@ -33934,7 +34071,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 27.22,
+      "importance_weight": 27.24,
       "importance_bucket": "akashic"
     },
     {
@@ -37322,6 +37459,49 @@
       "importance_bucket": "akashic"
     },
     {
+      "file": "akashic/warnings/shared-report-readers-must-suppress-private-evidence-traces.md",
+      "lang": "markdown",
+      "size": 1610,
+      "lines": 38,
+      "estimated_tokens": 403,
+      "symbols": [
+        {
+          "name": "Shared report readers must suppress private Evidence traces",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "What Happened",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Why It Happened",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "How To Avoid It",
+          "line": 27,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Shared report readers must suppress private Evidence traces",
+        "What Happened",
+        "Why It Happened",
+        "How To Avoid It"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 17.8,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "akashic/warnings/curated-chart-signal-packets-cannot-prove-absent-contacts.md",
       "lang": "markdown",
       "size": 1340,
@@ -39862,6 +40042,23 @@
       "importance_bucket": "other"
     },
     {
+      "file": ".codex/hooks/akashic_preflight.py",
+      "lang": "python",
+      "size": 5287,
+      "lines": 175,
+      "estimated_tokens": 1322,
+      "symbols": [],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 4.4,
+      "importance_bucket": "other"
+    },
+    {
       "file": "packages/db/drizzle/0003_round_hellcat.sql",
       "lang": "sql",
       "size": 5613,
@@ -40614,23 +40811,6 @@
       "importance_bucket": "other"
     },
     {
-      "file": "apps/composer-web/next-env.d.ts",
-      "lang": "typescript",
-      "size": 251,
-      "lines": 7,
-      "estimated_tokens": 63,
-      "symbols": [],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 2.52,
-      "importance_bucket": "other"
-    },
-    {
       "file": "apps/composer-web/tsconfig.json",
       "lang": "json",
       "size": 207,
@@ -40793,6 +40973,13 @@
       {
         "file": "docs/inbox-astra/ASTRA_PRODUCTION_VISIBLE_PARITY_MATRIX.md",
         "line": 18,
+        "type": "heading"
+      }
+    ],
+    "1. Authorization and privacy boundaries": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 217,
         "type": "heading"
       }
     ],
@@ -41069,6 +41256,13 @@
         "type": "heading"
       }
     ],
+    "2. Fluid editorial gate": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 231,
+        "type": "heading"
+      }
+    ],
     "2. Global Composer Rules": [
       {
         "file": "apps/composer-web/docs/inbox-astra-composer/COMPOSER_VOICE_TEMPLATES.md",
@@ -41262,6 +41456,13 @@
       {
         "file": "docs/progress/PROGRESS_LOG.md",
         "line": 638,
+        "type": "heading"
+      }
+    ],
+    "2026-07-31 — Synastry V3 bakeoff closure and production plan": [
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 684,
         "type": "heading"
       }
     ],
@@ -41766,6 +41967,13 @@
       {
         "file": "docs/inbox-astra/completed/ASTRA_WEIGHTED_CHART_SIGNAL_GRAPH_TODO.md",
         "line": 46,
+        "type": "heading"
+      }
+    ],
+    "Acceptance and retry policy": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 213,
         "type": "heading"
       }
     ],
@@ -42844,6 +43052,13 @@
       {
         "file": "akashic/warnings/ally-relationship-labels-route-tone-but-do-not-prove-biography.md",
         "line": 15,
+        "type": "heading"
+      }
+    ],
+    "Ally tag and tone-routing contract": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 81,
         "type": "heading"
       }
     ],
@@ -46859,6 +47074,13 @@
         "type": "heading"
       }
     ],
+    "Browser journeys for the implementation task": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 372,
+        "type": "heading"
+      }
+    ],
     "buildAstrology101CourseSections": [
       {
         "file": "apps/composer-web/lib/cardLibrary.ts",
@@ -48767,7 +48989,7 @@
     "Cheyenne clean-prose psychological-thriller test": [
       {
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "line": 91,
+        "line": 100,
         "type": "heading"
       }
     ],
@@ -48970,7 +49192,7 @@
     "Clean-prose V2": [
       {
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "line": 99,
+        "line": 108,
         "type": "heading"
       }
     ],
@@ -49618,7 +49840,7 @@
     "Complete chooser-coverage table": [
       {
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "line": 23,
+        "line": 25,
         "type": "heading"
       }
     ],
@@ -51374,6 +51596,13 @@
         "type": "heading"
       }
     ],
+    "Copy/paste implementation goal": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 437,
+        "type": "heading"
+      }
+    ],
     "copyText": [
       {
         "file": "apps/astra-web/components/ReportReaderActions.tsx",
@@ -52387,7 +52616,7 @@
     "Current boundary": [
       {
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "line": 13,
+        "line": 15,
         "type": "heading"
       }
     ],
@@ -52985,6 +53214,11 @@
         "type": "heading"
       },
       {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
         "file": "docs/inbox-astra/completed/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_6_PRESENTATION_EVALUATION.md",
         "line": 125,
         "type": "heading"
@@ -53217,6 +53451,13 @@
         "file": "apps/astra-web/app/admin/page.tsx",
         "line": 481,
         "type": "constant"
+      }
+    ],
+    "Definition of done": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 417,
+        "type": "heading"
       }
     ],
     "Definition of Done": [
@@ -53513,6 +53754,13 @@
         "file": "apps/astra-web/lib/chart-arrival.ts",
         "line": 186,
         "type": "constant"
+      }
+    ],
+    "Deterministic and contract tests": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 323,
+        "type": "heading"
       }
     ],
     "Deterministic result": [
@@ -55227,10 +55475,17 @@
         "type": "constant"
       }
     ],
+    "Feeling-first writer structure": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 184,
+        "type": "heading"
+      }
+    ],
     "Felicia + Tony strongest-15 sample": [
       {
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "line": 111,
+        "line": 120,
         "type": "heading"
       }
     ],
@@ -55352,7 +55607,7 @@
     "Final clean-prose synthesis": [
       {
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "line": 105,
+        "line": 114,
         "type": "heading"
       }
     ],
@@ -57627,6 +57882,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/warnings/shared-report-readers-must-suppress-private-evidence-traces.md",
+        "line": 27,
+        "type": "heading"
+      },
+      {
         "file": "akashic/warnings/timezone-fields-should-use-constrained-iana-selection.md",
         "line": 17,
         "type": "heading"
@@ -57920,6 +58180,13 @@
       {
         "file": "docs/evaluations/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_EVALUATION.md",
         "line": 158,
+        "type": "heading"
+      }
+    ],
+    "Implementation order": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 398,
         "type": "heading"
       }
     ],
@@ -60753,6 +61020,13 @@
         "file": "apps/astra-web/components/FullChartWheel.tsx",
         "line": 62,
         "type": "function"
+      }
+    ],
+    "Migration and compatibility": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 309,
+        "type": "heading"
       }
     ],
     "minimum": [
@@ -65743,7 +66017,7 @@
     "Private OpenRouter bakeoff credential": [
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "line": 68,
+        "line": 70,
         "type": "heading"
       }
     ],
@@ -65764,7 +66038,7 @@
     "Private shadow-generation bakeoffs": [
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "line": 46,
+        "line": 48,
         "type": "heading"
       }
     ],
@@ -65891,6 +66165,13 @@
         "file": "apps/astra-web/app/api/reports/route.ts",
         "line": 97,
         "type": "constant"
+      }
+    ],
+    "Product and design contract": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 51,
+        "type": "heading"
       }
     ],
     "Product Areas": [
@@ -66155,7 +66436,7 @@
     "Production-readiness note": [
       {
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "line": 81,
+        "line": 90,
         "type": "heading"
       }
     ],
@@ -67513,7 +67794,7 @@
     "Recommended contract": [
       {
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "line": 53,
+        "line": 55,
         "type": "heading"
       }
     ],
@@ -67971,6 +68252,13 @@
       {
         "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
         "line": 112,
+        "type": "heading"
+      }
+    ],
+    "Release checkpoint": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 364,
         "type": "heading"
       }
     ],
@@ -70268,7 +70556,7 @@
     "Review questions": [
       {
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "line": 73,
+        "line": 75,
         "type": "heading"
       }
     ],
@@ -72602,6 +72890,13 @@
         "type": "heading"
       }
     ],
+    "Shared report readers must suppress private Evidence traces": [
+      {
+        "file": "akashic/warnings/shared-report-readers-must-suppress-private-evidence-traces.md",
+        "line": 15,
+        "type": "heading"
+      }
+    ],
     "Shared Voice and Evidence Rules": [
       {
         "file": "docs/architecture/ASTRA_REPORT_PROMPT_REVIEW.md",
@@ -73163,6 +73458,13 @@
         "file": "scripts/lib/semantic-synthesis-v2-phase-6.ts",
         "line": 335,
         "type": "function"
+      }
+    ],
+    "Smallest production edit surface": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 276,
+        "type": "heading"
       }
     ],
     "snapshot": [
@@ -74080,6 +74382,13 @@
         "type": "function"
       }
     ],
+    "Strongest-15 packet and stable private Evidence": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 129,
+        "type": "heading"
+      }
+    ],
     "strongestSeedOverlap": [
       {
         "file": "packages/astrology/src/meaningComplexReportViews.ts",
@@ -74670,7 +74979,14 @@
     "Synastry V3 Ally Type Tone Review": [
       {
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "line": 11,
+        "line": 13,
+        "type": "heading"
+      }
+    ],
+    "Synastry V3 Clean-Prose Production Implementation Plan": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 15,
         "type": "heading"
       }
     ],
@@ -74777,6 +75093,13 @@
         "type": "function"
       }
     ],
+    "SynastryToneSnapshot": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 115,
+        "type": "type"
+      }
+    ],
     "synastryV1CardBlock": [
       {
         "file": "packages/astrology/src/report/promptBuilderContracts.ts",
@@ -74789,6 +75112,13 @@
         "file": "packages/astrology/src/report/promptBuilderContracts.ts",
         "line": 14,
         "type": "constant"
+      }
+    ],
+    "SynastryV3Metadata": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 149,
+        "type": "type"
       }
     ],
     "synthesis": [
@@ -75243,6 +75573,13 @@
         "type": "heading"
       }
     ],
+    "Tests to implement": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 321,
+        "type": "heading"
+      }
+    ],
     "text": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
@@ -75414,7 +75751,7 @@
     "Three-tone strongest-15 test": [
       {
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "line": 85,
+        "line": 94,
         "type": "heading"
       }
     ],
@@ -77091,6 +77428,13 @@
         "type": "heading"
       }
     ],
+    "Verified current state and production gaps": [
+      {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "line": 38,
+        "type": "heading"
+      }
+    ],
     "Verified invariants": [
       {
         "file": "docs/inbox-astra/completed/ASTRA_REPORT_ENGINE_MODULARIZATION_HANDOFF.md",
@@ -77516,6 +77860,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/warnings/shared-report-readers-must-suppress-private-evidence-traces.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
         "file": "akashic/warnings/timezone-fields-should-use-constrained-iana-selection.md",
         "line": 11,
         "type": "heading"
@@ -77677,6 +78026,11 @@
       },
       {
         "file": "akashic/warnings/report-instrumentation-is-not-reader-quality.md",
+        "line": 20,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/warnings/shared-report-readers-must-suppress-private-evidence-traces.md",
         "line": 20,
         "type": "heading"
       },
@@ -78735,13 +79089,13 @@
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "weight": 208.21,
+        "weight": 211.21,
         "bucket": "other",
-        "estimated_tokens": 12391,
-        "lines": 683,
-        "symbols": 68,
+        "estimated_tokens": 12672,
+        "lines": 701,
+        "symbols": 69,
         "symbol_type_counts": {
-          "heading": 68
+          "heading": 69
         },
         "dependency_in": 0,
         "dependency_out": 0,
@@ -80045,6 +80399,21 @@
         "route_count": 0
       },
       {
+        "file": "docs/inbox-astra/ASTRA_SYNASTRY_V3_PRODUCTION_IMPLEMENTATION_PLAN.md",
+        "weight": 65.26,
+        "bucket": "other",
+        "estimated_tokens": 7270,
+        "lines": 442,
+        "symbols": 21,
+        "symbol_type_counts": {
+          "heading": 19,
+          "type": 2
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "packages/astrology/src/report/providerResponse.ts",
         "weight": 64.11,
         "bucket": "other",
@@ -80635,8 +81004,8 @@
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
         "weight": 37.31,
         "bucket": "other",
-        "estimated_tokens": 3992,
-        "lines": 123,
+        "estimated_tokens": 4131,
+        "lines": 132,
         "symbols": 11,
         "symbol_type_counts": {
           "heading": 11
@@ -81856,10 +82225,10 @@
       },
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "weight": 27.22,
+        "weight": 27.24,
         "bucket": "akashic",
-        "estimated_tokens": 1995,
-        "lines": 71,
+        "estimated_tokens": 2077,
+        "lines": 73,
         "symbols": 7,
         "symbol_type_counts": {
           "heading": 7
@@ -82865,6 +83234,20 @@
         "bucket": "akashic",
         "estimated_tokens": 304,
         "lines": 37,
+        "symbols": 4,
+        "symbol_type_counts": {
+          "heading": 4
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "akashic/warnings/shared-report-readers-must-suppress-private-evidence-traces.md",
+        "weight": 17.8,
+        "bucket": "akashic",
+        "estimated_tokens": 403,
+        "lines": 38,
         "symbols": 4,
         "symbol_type_counts": {
           "heading": 4
@@ -84029,6 +84412,18 @@
         "route_count": 0
       },
       {
+        "file": ".codex/hooks/akashic_preflight.py",
+        "weight": 4.4,
+        "bucket": "other",
+        "estimated_tokens": 1322,
+        "lines": 175,
+        "symbols": 0,
+        "symbol_type_counts": {},
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "packages/db/drizzle/0003_round_hellcat.sql",
         "weight": 4.39,
         "bucket": "other",
@@ -84557,18 +84952,6 @@
         "route_count": 0
       },
       {
-        "file": "apps/composer-web/next-env.d.ts",
-        "weight": 2.52,
-        "bucket": "other",
-        "estimated_tokens": 63,
-        "lines": 7,
-        "symbols": 0,
-        "symbol_type_counts": {},
-        "dependency_in": 0,
-        "dependency_out": 0,
-        "route_count": 0
-      },
-      {
         "file": "apps/composer-web/tsconfig.json",
         "weight": 2.42,
         "bucket": "other",
@@ -84844,9 +85227,9 @@
       }
     ],
     "coverage": {
-      "files": 432,
-      "symbols": 5929,
-      "total_estimated_tokens": 1148440
+      "files": 434,
+      "symbols": 5955,
+      "total_estimated_tokens": 1157874
     }
   }
 }
