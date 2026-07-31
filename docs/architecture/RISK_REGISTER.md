@@ -22,6 +22,7 @@ summary: "Known risks, fragile zones, mitigation status, and review triggers."
 | AS-R-002 | medium | Contracts | Report/chart/generation contracts can drift across packages and routes. | `packages/contracts/`, report APIs | Update contracts/docs/tests together | open |
 | AS-R-003 | medium | Browser proof | Route/UI work can pass shell checks while failing in browser. | Local warnings and QA standard | Use rendered browser checks for affected journeys | open |
 | AS-R-004 | low | Toolchain compatibility | TypeScript 7.0 has no programmatic API, while Next.js and `typescript-eslint` still import TypeScript. A direct replacement can break lint/build tooling. | TypeScript 7 benchmark and current peer ranges | Keep TS7 CLI and TS6 API side-by-side; remove TS6 only after dependent tooling explicitly supports the new API | monitoring |
+| AS-R-005 | medium | Report generation | A private evidence trace can cover every selected signal while clean rendered prose adds unsupported fate, history, or contribution-ledger claims and collapses the second perspective. | Tony + Cheyenne V3 clean-prose blind comparison, 2026-07-31 | Validate semantic fidelity separately from ID coverage; gate fate, burden, and perspective balance before editorial acceptance | open |
 
 ## Level 0 Escalations
 

@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-07-31T18:00:45.969Z",
+  "generated_at": "2026-07-31T18:39:33.347Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 429,
-  "total_symbols": 5910,
-  "total_estimated_tokens": 1145010,
+  "files_indexed": 430,
+  "total_symbols": 5919,
+  "total_estimated_tokens": 1146529,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -15108,9 +15108,9 @@
     {
       "file": "docs/progress/PROGRESS_LOG.md",
       "lang": "markdown",
-      "size": 47416,
-      "lines": 637,
-      "estimated_tokens": 11854,
+      "size": 49019,
+      "lines": 675,
+      "estimated_tokens": 12255,
       "symbols": [
         {
           "name": "Astra Progress Log",
@@ -15431,6 +15431,26 @@
           "name": "Steward Review",
           "line": 629,
           "type": "heading"
+        },
+        {
+          "name": "2026-07-31 - Synastry V3 Clean-Prose Blind Experiment",
+          "line": 638,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
+          "line": 645,
+          "type": "heading"
+        },
+        {
+          "name": "Tests Run",
+          "line": 656,
+          "type": "heading"
+        },
+        {
+          "name": "Steward Review",
+          "line": 667,
+          "type": "heading"
         }
       ],
       "imports": [],
@@ -15449,7 +15469,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 196.22,
+      "importance_weight": 208.22,
       "importance_bucket": "other"
     },
     {
@@ -32750,6 +32770,78 @@
       "importance_bucket": "other"
     },
     {
+      "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
+      "lang": "markdown",
+      "size": 13616,
+      "lines": 111,
+      "estimated_tokens": 3404,
+      "symbols": [
+        {
+          "name": "Synastry V3 Ally Type Tone Review",
+          "line": 11,
+          "type": "heading"
+        },
+        {
+          "name": "Current boundary",
+          "line": 13,
+          "type": "heading"
+        },
+        {
+          "name": "Complete chooser-coverage table",
+          "line": 23,
+          "type": "heading"
+        },
+        {
+          "name": "Recommended contract",
+          "line": 53,
+          "type": "heading"
+        },
+        {
+          "name": "Review questions",
+          "line": 73,
+          "type": "heading"
+        },
+        {
+          "name": "Production-readiness note",
+          "line": 81,
+          "type": "heading"
+        },
+        {
+          "name": "Three-tone strongest-15 test",
+          "line": 85,
+          "type": "heading"
+        },
+        {
+          "name": "Cheyenne clean-prose psychological-thriller test",
+          "line": 91,
+          "type": "heading"
+        },
+        {
+          "name": "Felicia + Tony strongest-15 sample",
+          "line": 99,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Synastry V3 Ally Type Tone Review",
+        "Current boundary",
+        "Complete chooser-coverage table",
+        "Recommended contract",
+        "Review questions",
+        "Production-readiness note",
+        "Three-tone strongest-15 test",
+        "Cheyenne clean-prose psychological-thriller test"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 31.32,
+      "importance_bucket": "other"
+    },
+    {
       "file": "docs/architecture/clean-start-foundation.md",
       "lang": "markdown",
       "size": 16010,
@@ -33445,73 +33537,6 @@
       "importance_bucket": "other"
     },
     {
-      "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-      "lang": "markdown",
-      "size": 12133,
-      "lines": 103,
-      "estimated_tokens": 3034,
-      "symbols": [
-        {
-          "name": "Synastry V3 Ally Type Tone Review",
-          "line": 11,
-          "type": "heading"
-        },
-        {
-          "name": "Current boundary",
-          "line": 13,
-          "type": "heading"
-        },
-        {
-          "name": "Complete chooser-coverage table",
-          "line": 23,
-          "type": "heading"
-        },
-        {
-          "name": "Recommended contract",
-          "line": 53,
-          "type": "heading"
-        },
-        {
-          "name": "Review questions",
-          "line": 73,
-          "type": "heading"
-        },
-        {
-          "name": "Production-readiness note",
-          "line": 81,
-          "type": "heading"
-        },
-        {
-          "name": "Three-tone strongest-15 test",
-          "line": 85,
-          "type": "heading"
-        },
-        {
-          "name": "Felicia + Tony strongest-15 sample",
-          "line": 91,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Synastry V3 Ally Type Tone Review",
-        "Current boundary",
-        "Complete chooser-coverage table",
-        "Recommended contract",
-        "Review questions",
-        "Production-readiness note",
-        "Three-tone strongest-15 test",
-        "Felicia + Tony strongest-15 sample"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 28.33,
-      "importance_bucket": "other"
-    },
-    {
       "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
       "lang": "markdown",
       "size": 13427,
@@ -33891,9 +33916,9 @@
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
       "lang": "markdown",
-      "size": 6578,
-      "lines": 67,
-      "estimated_tokens": 1644,
+      "size": 7336,
+      "lines": 69,
+      "estimated_tokens": 1834,
       "symbols": [
         {
           "name": "Astra Verification Tiers",
@@ -33927,7 +33952,7 @@
         },
         {
           "name": "Private OpenRouter bakeoff credential",
-          "line": 64,
+          "line": 66,
           "type": "heading"
         }
       ],
@@ -33946,7 +33971,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 27.18,
+      "importance_weight": 27.2,
       "importance_bucket": "akashic"
     },
     {
@@ -37504,6 +37529,49 @@
       "importance_bucket": "akashic"
     },
     {
+      "file": "akashic/warnings/hidden-evidence-coverage-is-not-semantic-fidelity.md",
+      "lang": "markdown",
+      "size": 1806,
+      "lines": 30,
+      "estimated_tokens": 452,
+      "symbols": [
+        {
+          "name": "Hidden evidence coverage is not semantic fidelity",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "What Happened",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Why It Happened",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "How To Avoid It",
+          "line": 24,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Hidden evidence coverage is not semantic fidelity",
+        "What Happened",
+        "Why It Happened",
+        "How To Avoid It"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 17.58,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "akashic/warnings/do-not-consume-production-auth-rate-windows-with-repeated-e2e-sign-ins.md",
       "lang": "markdown",
       "size": 1041,
@@ -38211,9 +38279,9 @@
     {
       "file": "docs/architecture/RISK_REGISTER.md",
       "lang": "markdown",
-      "size": 1725,
-      "lines": 36,
-      "estimated_tokens": 432,
+      "size": 2151,
+      "lines": 37,
+      "estimated_tokens": 538,
       "symbols": [
         {
           "name": "Astra Risk Register",
@@ -38227,12 +38295,12 @@
         },
         {
           "name": "Level 0 Escalations",
-          "line": 26,
+          "line": 27,
           "type": "heading"
         },
         {
           "name": "Gate Inventory",
-          "line": 30,
+          "line": 31,
           "type": "heading"
         }
       ],
@@ -38248,7 +38316,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 15.74,
+      "importance_weight": 15.75,
       "importance_bucket": "other"
     },
     {
@@ -41091,6 +41159,13 @@
       {
         "file": "docs/progress/PROGRESS_LOG.md",
         "line": 16,
+        "type": "heading"
+      }
+    ],
+    "2026-07-31 - Synastry V3 Clean-Prose Blind Experiment": [
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 638,
         "type": "heading"
       }
     ],
@@ -48586,6 +48661,13 @@
         "type": "constant"
       }
     ],
+    "Cheyenne clean-prose psychological-thriller test": [
+      {
+        "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
+        "line": 91,
+        "type": "heading"
+      }
+    ],
     "Cheyenne Deep canary": [
       {
         "file": "docs/evaluations/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_EVALUATION.md",
@@ -55038,7 +55120,7 @@
     "Felicia + Tony strongest-15 sample": [
       {
         "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "line": 91,
+        "line": 99,
         "type": "heading"
       }
     ],
@@ -55853,7 +55935,7 @@
     "Gate Inventory": [
       {
         "file": "docs/architecture/RISK_REGISTER.md",
-        "line": 30,
+        "line": 31,
         "type": "heading"
       }
     ],
@@ -56971,6 +57053,13 @@
         "type": "function"
       }
     ],
+    "Hidden evidence coverage is not semantic fidelity": [
+      {
+        "file": "akashic/warnings/hidden-evidence-coverage-is-not-semantic-fidelity.md",
+        "line": 15,
+        "type": "heading"
+      }
+    ],
     "High-Level Prompt Assessment": [
       {
         "file": "docs/architecture/ASTRA_REPORT_PROMPT_REVIEW.md",
@@ -57377,6 +57466,11 @@
       },
       {
         "file": "akashic/warnings/do-not-end-a-session-with-a-known-stale-jcodemunch-index.md",
+        "line": 24,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/warnings/hidden-evidence-coverage-is-not-semantic-fidelity.md",
         "line": 24,
         "type": "heading"
       },
@@ -59131,7 +59225,7 @@
     "Level 0 Escalations": [
       {
         "file": "docs/architecture/RISK_REGISTER.md",
-        "line": 26,
+        "line": 27,
         "type": "heading"
       }
     ],
@@ -65522,7 +65616,7 @@
     "Private OpenRouter bakeoff credential": [
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "line": 64,
+        "line": 66,
         "type": "heading"
       }
     ],
@@ -73638,6 +73732,11 @@
         "file": "docs/progress/PROGRESS_LOG.md",
         "line": 629,
         "type": "heading"
+      },
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 667,
+        "type": "heading"
       }
     ],
     "Steward Review Triggers": [
@@ -75002,6 +75101,11 @@
       {
         "file": "docs/progress/PROGRESS_LOG.md",
         "line": 620,
+        "type": "heading"
+      },
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 656,
         "type": "heading"
       }
     ],
@@ -77184,6 +77288,11 @@
         "file": "docs/progress/PROGRESS_LOG.md",
         "line": 611,
         "type": "heading"
+      },
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 645,
+        "type": "heading"
       }
     ],
     "What Happened": [
@@ -77229,6 +77338,11 @@
       },
       {
         "file": "akashic/warnings/do-not-end-a-session-with-a-known-stale-jcodemunch-index.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/warnings/hidden-evidence-coverage-is-not-semantic-fidelity.md",
         "line": 17,
         "type": "heading"
       },
@@ -77380,6 +77494,11 @@
       {
         "file": "akashic/warnings/do-not-end-a-session-with-a-known-stale-jcodemunch-index.md",
         "line": 21,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/warnings/hidden-evidence-coverage-is-not-semantic-fidelity.md",
+        "line": 20,
         "type": "heading"
       },
       {
@@ -78462,13 +78581,13 @@
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "weight": 196.22,
+        "weight": 208.22,
         "bucket": "other",
-        "estimated_tokens": 11854,
-        "lines": 637,
-        "symbols": 64,
+        "estimated_tokens": 12255,
+        "lines": 675,
+        "symbols": 68,
         "symbol_type_counts": {
-          "heading": 64
+          "heading": 68
         },
         "dependency_in": 0,
         "dependency_out": 0,
@@ -81286,6 +81405,20 @@
         "route_count": 0
       },
       {
+        "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
+        "weight": 31.32,
+        "bucket": "other",
+        "estimated_tokens": 3404,
+        "lines": 111,
+        "symbols": 9,
+        "symbol_type_counts": {
+          "heading": 9
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "docs/architecture/clean-start-foundation.md",
         "weight": 31.31,
         "bucket": "other",
@@ -81480,20 +81613,6 @@
         "route_count": 0
       },
       {
-        "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-        "weight": 28.33,
-        "bucket": "other",
-        "estimated_tokens": 3034,
-        "lines": 103,
-        "symbols": 8,
-        "symbol_type_counts": {
-          "heading": 8
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
-        "route_count": 0
-      },
-      {
         "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
         "weight": 28.32,
         "bucket": "other",
@@ -81599,10 +81718,10 @@
       },
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "weight": 27.18,
+        "weight": 27.2,
         "bucket": "akashic",
-        "estimated_tokens": 1644,
-        "lines": 67,
+        "estimated_tokens": 1834,
+        "lines": 69,
         "symbols": 7,
         "symbol_type_counts": {
           "heading": 7
@@ -82671,6 +82790,20 @@
         "route_count": 0
       },
       {
+        "file": "akashic/warnings/hidden-evidence-coverage-is-not-semantic-fidelity.md",
+        "weight": 17.58,
+        "bucket": "akashic",
+        "estimated_tokens": 452,
+        "lines": 30,
+        "symbols": 4,
+        "symbol_type_counts": {
+          "heading": 4
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "akashic/warnings/do-not-consume-production-auth-rate-windows-with-repeated-e2e-sign-ins.md",
         "weight": 17.57,
         "bucket": "akashic",
@@ -82911,10 +83044,10 @@
       },
       {
         "file": "docs/architecture/RISK_REGISTER.md",
-        "weight": 15.74,
+        "weight": 15.75,
         "bucket": "other",
-        "estimated_tokens": 432,
-        "lines": 36,
+        "estimated_tokens": 538,
+        "lines": 37,
         "symbols": 4,
         "symbol_type_counts": {
           "heading": 4
@@ -84529,9 +84662,9 @@
       }
     ],
     "coverage": {
-      "files": 429,
-      "symbols": 5910,
-      "total_estimated_tokens": 1145010
+      "files": 430,
+      "symbols": 5919,
+      "total_estimated_tokens": 1146529
     }
   }
 }

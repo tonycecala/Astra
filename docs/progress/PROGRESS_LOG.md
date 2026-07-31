@@ -634,3 +634,41 @@ Continue Composer v1 quarry rebuild from the real 78-card Astrology 101 course, 
   a separate production-mode server proves throttling independently.
 - No user-facing design, analytics, persistence schema, or public/private
   product boundary changed.
+
+### 2026-07-31 - Synastry V3 Clean-Prose Blind Experiment
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** private report-generation experiment
+**Status:** complete
+
+#### What Changed
+
+- Generated exactly one Tony Cecala + Cheyenne Autumn `Lover` clean-prose
+  psychological-thriller variant from the matched strongest-15 direct signal
+  packet, with stable private evidence IDs and no saved-report writer input.
+- Compared it blindly with current Cheyenne V3 and retained the failed
+  acceptance checks instead of regenerating: clean prose won on tension and
+  technical cleanliness but lost on perspective balance and evidence fidelity.
+- Added deterministic private-harness checks and captured the distinction
+  between evidence coverage and semantic support.
+
+#### Tests Run
+
+- Targeted ESLint for the experiment runner
+- TypeScript typecheck
+- Clean-prose parser/evaluator self-test
+- Signals-only direct-chart preflight and exact baseline packet comparison
+- Private file-permission, technical-leakage, diff, and governance checks
+
+Full build, broad test suite, and browser QA were intentionally skipped because
+the experiment did not change production runtime, routes, data, or UI.
+
+#### Steward Review
+
+- Judgment: accept-with-notes.
+- Accept the private evidence architecture, runner safeguards, and blind result.
+  Hold the generated portrait as finished prose because it missed length,
+  Cheyenne-perspective, Lover-opening, anti-fate, and contribution-ledger gates.
+- Production, saved reports, database state, and public/private product paths
+  were unchanged.

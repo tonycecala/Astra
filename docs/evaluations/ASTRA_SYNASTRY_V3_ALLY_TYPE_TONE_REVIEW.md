@@ -88,6 +88,14 @@ Tony Cecala was privately tested with Felicia Weiss as `Spouse`, Marissa Yahil a
 
 The controlled retry demonstrated that tag routing materially changes the portrait in the intended direction: Marissa received a distinct non-romantic family structure with no romantic-language findings, while Cheyenne's Lover portrait explicitly led with romantic and sexual overtones. All three remained held as finished prose because the writer continued to create load-bearing or unequal-cost metaphors; Felicia also retained degree language, Marissa was subtly infantilized despite no age evidence, and Cheyenne invented first-contact texture and ran short. Steward judgment: **accept-with-notes as tone-routing evidence; hold for production**. Private evidence is retained at `.astra-exports/dual-perspective-synastry-bakeoff/2026-07-31-three-sample-v2/`.
 
+## Cheyenne clean-prose psychological-thriller test
+
+One Tony Cecala + Cheyenne Autumn `Lover` variant was generated from the exact same strongest-15 direct chart-signal packet as the current Cheyenne V3. The writer received no saved report or baseline prose. Fifteen unique interaspects plus the timed Moon comparison were assigned 16 stable private evidence IDs; the portrait exposed none of them or any technical astrology language.
+
+The architecture succeeded, but the portrait did not win. It was 1,497 words rather than 2,000-2,600, named Cheyenne only 6 times, omitted the explicit romantic frame from the opening, and retained an unequal-labor metaphor. A blind evaluator preferred current V3: the clean variant improved narrative tension from 7 to 8 and technical cleanliness from 6 to 10, while emotional specificity fell from 8 to 7, perspective balance from 9 to 6, and evidence fidelity from 9 to 5. Fate-coded language such as inevitability and an ancient contract sounded literary but was not tightly licensed by the packet.
+
+Steward judgment: **accept-with-notes as architecture and editorial evidence; hold as finished prose**. The next iteration should keep the hidden trace and clean surface while requiring independent Cheyenne interiority, chapter-level semantic support, and explicit bans on fate and contribution-ledger language. Private evidence is retained at `.astra-exports/dual-perspective-synastry-bakeoff/2026-07-31-cheyenne-clean-prose-thriller-v1/`.
+
 ## Felicia + Tony strongest-15 sample
 
 The private `felicia-tony` sample generated successfully from direct chart signals with the stored `spouse` context:

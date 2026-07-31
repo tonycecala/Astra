@@ -33,6 +33,24 @@ type OpenRouterUsage = {
   cost?: number;
 };
 
+type EvidenceEntry = {
+  id: string;
+  label: string;
+  meaning: string;
+  sections: string[];
+};
+
+type CleanProseTraceEntry = {
+  chapter: string;
+  evidenceIds: string[];
+  supportedFeeling: string;
+};
+
+type CleanProseOutput = {
+  portraitMarkdown: string;
+  evidenceTrace: CleanProseTraceEntry[];
+};
+
 type SampleConfig = {
   key: string;
   primaryChartId: string;
@@ -106,6 +124,8 @@ const outputDir = resolve(
     `.astra-exports/dual-perspective-synastry-bakeoff/${runStamp}`
 );
 const completeInventory = process.argv.includes("--complete-inventory");
+const cleanProseThriller = process.argv.includes("--clean-prose-thriller");
+const blindBaselinePath = option("--blind-baseline");
 const apiKey =
   clean(process.env.ASTRA_OPENROUTER_API_KEY) ||
   clean(process.env.OPENROUTER_API_KEY);
@@ -114,8 +134,20 @@ if (process.argv.includes("--help")) {
   console.log("Generate one private, direct-chart-signal Dual-Perspective Synastry Portrait.");
   console.log(`Samples: ${Object.keys(sampleConfigs).join(" | ")}.`);
   console.log("Generation: --generate [--sample <sample>] [--complete-inventory] [--output].");
+  console.log("Clean prose: --generate --sample cheyenne-tony-lover --clean-prose-thriller --blind-baseline <portrait.md> [--output].");
   console.log("Signals only: --signals-only [--sample <sample>] [--complete-inventory] [--output].");
   console.log("Validation only: --validate <portrait.md> [--sample <sample>].");
+  process.exit(0);
+}
+
+if (process.argv.includes("--self-test-clean-prose")) {
+  const parsed = parseCleanProseOutput(`<portrait_markdown>\n# Test\n</portrait_markdown>\n<evidence_trace_json>\n[{"chapter":"1. The Recognition","evidenceIds":["S01"],"supportedFeeling":"A supported feeling long enough to validate."}]\n</evidence_trace_json>`);
+  const blind = parseJsonObject(`{"reports":{"A":{"scores":{"emotionalSpecificity":8,"narrativeTension":8,"perspectiveBalance":8,"technicalCleanliness":8,"evidenceFidelity":8}},"B":{"scores":{"emotionalSpecificity":7,"narrativeTension":7,"perspectiveBalance":7,"technicalCleanliness":7,"evidenceFidelity":7}}},"preferred":"A","reason":"Report A is more specific while remaining grounded."}`);
+  const issues = validateBlindEvaluation(blind);
+  if (parsed.evidenceTrace[0]?.evidenceIds[0] !== "S01" || issues.length) {
+    throw new Error(`Clean-prose self-test failed: ${issues.join("; ")}`);
+  }
+  console.log(JSON.stringify({ ok: true, parsedEvidenceId: "S01", blindEvaluationIssues: issues }, null, 2));
   process.exit(0);
 }
 
@@ -136,6 +168,12 @@ if (generationApproved === signalsOnly) {
 if (generationApproved && !apiKey) {
   throw new Error("ASTRA_OPENROUTER_API_KEY or OPENROUTER_API_KEY is required.");
 }
+if (cleanProseThriller && (sample.key !== "cheyenne-tony-lover" || completeInventory)) {
+  throw new Error("Clean-prose thriller mode requires --sample cheyenne-tony-lover and cannot use --complete-inventory.");
+}
+if (cleanProseThriller && generationApproved && !blindBaselinePath) {
+  throw new Error("Clean-prose thriller mode requires --blind-baseline <portrait.md>.");
+}
 if (!outputDir.startsWith(`${privateExportRoot}${sep}`)) {
   throw new Error(`Private output must stay under ${privateExportRoot}.`);
 }
@@ -153,7 +191,12 @@ try {
   const inventory = completeInventory ? buildCompleteInteraspectInventory(request) : null;
   const signals = inventory?.signals ?? buildAstrologyReportSectionEvidence(request, evidenceHeadings);
   const signalValidation = validateSignalPacket(signals, inventory?.calculation);
-  const signalMarkdown = renderSignalPacket(signals, completeInventory);
+  const evidenceEntries = buildEvidenceEntries(signals);
+  const signalMarkdown = renderSignalPacket(
+    signals,
+    completeInventory,
+    cleanProseThriller ? evidenceEntries : undefined
+  );
 
   await writePrivate(join(outputDir, "chart-signals.md"), `${signalMarkdown}\n`);
 
@@ -168,6 +211,8 @@ try {
       signalValidation
     }, null, 2));
     if (signalValidation.issues.length) process.exitCode = 1;
+  } else if (cleanProseThriller) {
+    await runCleanProseExperiment({ signals, evidenceEntries, signalMarkdown, signalValidation });
   } else {
     const prompt = buildPrompt(signalMarkdown, completeInventory);
     const startedAt = Date.now();
@@ -301,7 +346,37 @@ function buildDirectSignalRequest(charts: ChartMakerRequest[]) {
   });
 }
 
-function renderSignalPacket(signals: SignalPacket, completeInventory: boolean) {
+function buildEvidenceEntries(signals: SignalPacket): EvidenceEntry[] {
+  const entries: EvidenceEntry[] = [];
+  const byLabel = new Map<string, EvidenceEntry>();
+  for (const section of signals) {
+    for (const bullet of section.evidenceBullets) {
+      const existing = byLabel.get(bullet.label);
+      if (existing) {
+        if (!existing.sections.includes(section.title)) existing.sections.push(section.title);
+        continue;
+      }
+      const entry: EvidenceEntry = {
+        id: `S${String(entries.length + 1).padStart(2, "0")}`,
+        label: bullet.label,
+        meaning: bullet.meaning,
+        sections: [section.title]
+      };
+      entries.push(entry);
+      byLabel.set(bullet.label, entry);
+    }
+  }
+  return entries;
+}
+
+function renderSignalPacket(
+  signals: SignalPacket,
+  completeInventory: boolean,
+  evidenceEntries?: EvidenceEntry[]
+) {
+  const evidenceIdByLabel = new Map(
+    (evidenceEntries ?? []).map((entry) => [entry.label, entry.id])
+  );
   return [
     completeInventory
       ? "# Complete Direct Synastry Interaspect Inventory"
@@ -315,7 +390,10 @@ function renderSignalPacket(signals: SignalPacket, completeInventory: boolean) {
     ...signals.flatMap((section) => [
       `## ${section.title}`,
       "",
-      ...section.evidenceBullets.map((bullet) => `- ${bullet.label}: ${bullet.meaning}`),
+      ...section.evidenceBullets.map((bullet) => {
+        const id = evidenceIdByLabel.get(bullet.label);
+        return `- ${id ? `[${id}] ` : ""}${bullet.label}: ${bullet.meaning}`;
+      }),
       ""
     ])
   ].join("\n").trim();
@@ -374,6 +452,394 @@ ${signalMarkdown}
 </chart_signals>
 
 Return only the finished Markdown portrait.`;
+}
+
+async function runCleanProseExperiment(input: {
+  signals: SignalPacket;
+  evidenceEntries: EvidenceEntry[];
+  signalMarkdown: string;
+  signalValidation: ReturnType<typeof validateSignalPacket>;
+}) {
+  const prompt = buildCleanProsePrompt(input.signalMarkdown, input.evidenceEntries);
+  const startedAt = Date.now();
+  const generated = await generatePortrait(prompt);
+  const latencyMs = Date.now() - startedAt;
+  const parsed = parseCleanProseOutput(generated.text);
+  const portrait = normalizeMarkdown(parsed.portraitMarkdown);
+  const validation = validateCleanProsePortrait(portrait, parsed.evidenceTrace, input.evidenceEntries);
+
+  await writePrivate(join(outputDir, "prompt.md"), `${prompt}\n`);
+  await writePrivate(join(outputDir, "writer-response.txt"), `${generated.text.trim()}\n`);
+  await writePrivate(join(outputDir, "clean-prose-portrait.md"), `${portrait}\n`);
+  await writePrivate(
+    join(outputDir, "evidence-index.json"),
+    `${JSON.stringify(input.evidenceEntries, null, 2)}\n`
+  );
+  await writePrivate(
+    join(outputDir, "evidence-trace.json"),
+    `${JSON.stringify(parsed.evidenceTrace, null, 2)}\n`
+  );
+
+  const baselinePath = resolve(blindBaselinePath);
+  if (!baselinePath.startsWith(`${privateExportRoot}${sep}`)) {
+    throw new Error("Blind baseline must stay under the private export root.");
+  }
+  const baselinePortrait = await readFile(baselinePath, "utf8");
+  const baselineManifestPath = join(dirname(baselinePath), "manifest.json");
+  const baselineManifest = JSON.parse(await readFile(baselineManifestPath, "utf8")) as {
+    signalValidation?: { labelsBySection?: unknown };
+    validation?: { groundedSignalCount?: number };
+  };
+  const baselineSignalPacketMatch = JSON.stringify(baselineManifest.signalValidation?.labelsBySection) ===
+    JSON.stringify(input.signalValidation.labelsBySection);
+  if (!baselineSignalPacketMatch) {
+    throw new Error("Blind baseline does not use the exact same strongest-15 signal packet.");
+  }
+
+  const cleanIsA = Number.parseInt(sha256(`${portrait}\n${baselinePortrait}`).slice(0, 2), 16) % 2 === 0;
+  const reportA = cleanIsA ? portrait : baselinePortrait;
+  const reportB = cleanIsA ? baselinePortrait : portrait;
+  const comparisonPrompt = buildBlindComparisonPrompt(input.signalMarkdown, reportA, reportB);
+  const comparisonStartedAt = Date.now();
+  const comparisonGenerated = await generatePortrait(comparisonPrompt);
+  const comparisonLatencyMs = Date.now() - comparisonStartedAt;
+  const blindEvaluation = parseJsonObject(comparisonGenerated.text);
+  const blindEvaluationIssues = validateBlindEvaluation(blindEvaluation);
+  const objectiveMetrics = {
+    A: proseMetrics(reportA),
+    B: proseMetrics(reportB),
+    cleanProse: {
+      ...proseMetrics(portrait),
+      tracedEvidenceCount: new Set(parsed.evidenceTrace.flatMap((entry) => entry.evidenceIds)).size
+    },
+    currentV3: {
+      ...proseMetrics(baselinePortrait),
+      visiblyGroundedSignalCount: baselineManifest.validation?.groundedSignalCount ?? null
+    }
+  };
+  const mapping = {
+    A: cleanIsA ? "clean-prose-thriller" : "current-v3",
+    B: cleanIsA ? "current-v3" : "clean-prose-thriller"
+  } as const;
+
+  await writePrivate(join(outputDir, "blind-comparison-prompt.md"), `${comparisonPrompt}\n`);
+  await writePrivate(join(outputDir, "blind-evaluation-raw.txt"), `${comparisonGenerated.text.trim()}\n`);
+  await writePrivate(join(outputDir, "blind-mapping.json"), `${JSON.stringify(mapping, null, 2)}\n`);
+  await writePrivate(
+    join(outputDir, "blind-comparison.md"),
+    `${renderBlindComparison(blindEvaluation, blindEvaluationIssues, mapping, objectiveMetrics)}\n`
+  );
+
+  const manifest = {
+    ...signalManifest(input.signalMarkdown, input.signalValidation),
+    experiment: "dual-perspective-synastry-v3-clean-prose-psychological-thriller",
+    cleanProseThriller: true,
+    model,
+    modelProfile: "production",
+    provider: "openrouter",
+    reasoningEffort,
+    temperature,
+    maxOutputTokens,
+    writerInput: {
+      directChartSignalsOnly: true,
+      sourceReportIds: [],
+      baselineReportProseIncluded: false
+    },
+    evidenceTrace: {
+      stableEvidenceIds: input.evidenceEntries.map((entry) => entry.id),
+      uniqueEvidenceCount: input.evidenceEntries.length,
+      tracedEvidenceCount: objectiveMetrics.cleanProse.tracedEvidenceCount,
+      traceSha256: sha256(JSON.stringify(parsed.evidenceTrace))
+    },
+    promptSha256: sha256(prompt),
+    portraitSha256: sha256(portrait),
+    latencyMs,
+    finishReason: generated.finishReason,
+    usage: generated.usage,
+    validation,
+    blindComparison: {
+      baselinePortraitSha256: sha256(baselinePortrait),
+      baselineSignalPacketMatch,
+      mapping,
+      evaluatorModel: model,
+      evaluatorInputPurpose: "blind-editorial-comparison-only",
+      comparisonPromptSha256: sha256(comparisonPrompt),
+      comparisonLatencyMs,
+      finishReason: comparisonGenerated.finishReason,
+      usage: comparisonGenerated.usage,
+      issues: blindEvaluationIssues,
+      result: blindEvaluation,
+      objectiveMetrics
+    }
+  };
+  await writePrivate(join(outputDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+
+  const ok = input.signalValidation.issues.length === 0 &&
+    validation.issues.length === 0 &&
+    blindEvaluationIssues.length === 0;
+  console.log(JSON.stringify({
+    ok,
+    outputDir,
+    model,
+    latencyMs,
+    usage: generated.usage,
+    signalValidation: input.signalValidation,
+    validation,
+    blindComparison: {
+      mapping,
+      usage: comparisonGenerated.usage,
+      issues: blindEvaluationIssues,
+      result: blindEvaluation,
+      objectiveMetrics
+    }
+  }, null, 2));
+  if (!ok) process.exitCode = 1;
+}
+
+function cleanProseHeadings() {
+  return [
+    "1. The Recognition",
+    "2. What Cheyenne Awakens in You",
+    "3. What You Awaken in Cheyenne",
+    "4. The Room Where Desire Turns",
+    "5. The Hidden Bargain",
+    "6. The Third Presence"
+  ];
+}
+
+function buildCleanProsePrompt(signalMarkdown: string, evidenceEntries: EvidenceEntry[]) {
+  const headings = cleanProseHeadings().map((heading) => `## ${heading}`).join("\n");
+  return `You are Astra's premium psychological portrait writer. Write one private experimental Tony Cecala + Cheyenne Autumn Lover portrait in a clean-prose psychological-thriller register.
+
+This is still direct-chart-signal generation. The packet below is the only astrological evidence. No saved report prose is supplied. Stable S-number IDs exist only so your hidden evidence trace can prove grounding without forcing astrology into the finished portrait.
+
+Rendered-prose contract:
+- Address Tony as "you" and "your," not as Tony. Refer to Cheyenne naturally by name and as she/her.
+- Preserve three protagonists: your felt experience, Cheyenne's distinct felt experience, and the relationship as a presence with its own pressure and momentum.
+- Lead every paragraph with a specific feeling, impulse, bodily response, fear, misreading, temptation, reversal, or hidden relational consequence. Let the evidence stay beneath the sentence.
+- Write with psychological-thriller propulsion: recognition that feels dangerous, warmth with a hidden cost, desire that changes shape under pressure, and intimacy that can become exposure. Do not invent crimes, literal danger, secrets, pathology, or melodramatic biography.
+- The opening must make the connection explicitly romantic and sexual, while treating consent, actual behavior, exclusivity, commitment, permanence, and history as unknown.
+- Do not claim a first look, first conversation, how they met, actual sexual contact, falling in love, shared routines, relationship duration, or current relationship state.
+- Do not turn the felt charge into fate or history. Avoid inevitability, destiny, meant-to-be language, ancient or old contracts, timeless recognition, old bones, or claims that the relationship began before the people did.
+- Do not assign one person more relational labor, stability, architecture, responsibility, giving, or cost than the other.
+- Do not give advice, action steps, compatibility verdicts, therapy language, or a stay/leave conclusion.
+- Use no technical astrology language anywhere in portraitMarkdown: no planet, sign, aspect, chart, synastry, placement, degree, orb, house, angle, node, or astrological-system terminology. Do not include evidence IDs in portraitMarkdown.
+- Target 2,000-2,600 words.
+
+Use these exact H2 headings in order:
+${headings}
+
+Place one H1 title and a short italic deck before Chapter 1. Make Chapter 6 a developed synthesis of at least 300 words.
+
+Hidden-trace contract:
+- After the portrait, return exactly one evidence-trace entry for each H2 chapter.
+- Each entry must use the exact chapter heading without the leading "## ", cite 1-5 valid evidence IDs, and state the chapter's supported feeling in one concise sentence.
+- Across the trace, use at least 10 unique IDs. Do not force an ID into prose or claim more than its source supports.
+
+Return exactly this two-block format and nothing else:
+<portrait_markdown>
+# Title
+...
+</portrait_markdown>
+<evidence_trace_json>
+[
+  {"chapter":"1. The Recognition","evidenceIds":["S01","S02"],"supportedFeeling":"..."}
+]
+</evidence_trace_json>
+
+The valid IDs are: ${evidenceEntries.map((entry) => entry.id).join(", ")}.
+
+<chart_signals>
+${signalMarkdown}
+</chart_signals>`;
+}
+
+function parseCleanProseOutput(value: string): CleanProseOutput {
+  const portrait = value.match(/<portrait_markdown>\s*([\s\S]*?)\s*<\/portrait_markdown>/i)?.[1];
+  const traceText = value.match(/<evidence_trace_json>\s*([\s\S]*?)\s*<\/evidence_trace_json>/i)?.[1];
+  if (!portrait || !traceText) throw new Error("Clean-prose writer did not return both required blocks.");
+  const trace = JSON.parse(traceText) as unknown;
+  if (!Array.isArray(trace)) throw new Error("Clean-prose evidence trace is not an array.");
+  return {
+    portraitMarkdown: portrait,
+    evidenceTrace: trace.map((entry) => {
+      const record = entry && typeof entry === "object" ? entry as Record<string, unknown> : {};
+      return {
+        chapter: clean(record.chapter),
+        evidenceIds: Array.isArray(record.evidenceIds) ? record.evidenceIds.map(clean).filter(Boolean) : [],
+        supportedFeeling: clean(record.supportedFeeling)
+      };
+    })
+  };
+}
+
+function validateCleanProsePortrait(
+  markdown: string,
+  trace: CleanProseTraceEntry[],
+  evidenceEntries: EvidenceEntry[]
+) {
+  const issues: string[] = [];
+  const words = wordCount(markdown);
+  const headings = [...markdown.matchAll(/^## (.+)$/gm)].map((match) => match[1].trim());
+  const expectedHeadings = cleanProseHeadings();
+  const technicalClaims = [...markdown.matchAll(cleanProseTechnicalPattern())].map((match) => match[0]);
+  const evidenceIdClaims = [...markdown.matchAll(/\bS\d{2}\b/g)].map((match) => match[0]);
+  const fateClaims = [...markdown.matchAll(/\b(?:inevitab\w*|destin(?:y|ed)|fated|meant to be|ancient contract|old contract|old bones|timeless recognition|began (?:somewhere )?before (?:either|they|you))\b/gi)].map((match) => match[0]);
+  const contributionLedgerClaims = [...markdown.matchAll(/\b(?:load-bearing|unequal bargain|provid(?:e|es|ing) the floor|gives? more.{0,80}receives?|more architecture.{0,80}receives?|costs? (?:him|her|them) ongoing effort|over-function(?:s|ing)?|she tempers.{0,80}you (?:widen|contain)|you (?:widen|contain).{0,80}she tempers)\b/gi)].map((match) => match[0]);
+  const biographyClaims = [...markdown.matchAll(/\b(?:first (?:look|glance|conversation|contact)|how (?:you|they) met|when (?:you|they) met|fell in love|shared (?:meal|home|routine)|years together)\b/gi)].map((match) => match[0]);
+  const validIds = new Set(evidenceEntries.map((entry) => entry.id));
+  const traceIds = trace.flatMap((entry) => entry.evidenceIds);
+  const invalidTraceIds = traceIds.filter((id) => !validIds.has(id));
+  const uniqueTraceIds = new Set(traceIds);
+  const opening = markdown.slice(0, 1_500);
+  const chapterSix = markdown.split(/^## 6\.[^\n]*$/m)[1] ?? "";
+
+  if (!/^# [^#]/m.test(markdown)) issues.push("Clean prose is missing an H1 title.");
+  if (!/^\*[^*]+\*$/m.test(markdown)) issues.push("Clean prose is missing its italic deck.");
+  if (JSON.stringify(headings) !== JSON.stringify(expectedHeadings)) issues.push("Clean prose did not follow the six-chapter heading contract.");
+  if (words < 2_000 || words > 2_600) issues.push(`Clean prose misses the 2,000-2,600 word target (${words}).`);
+  if (wordCount(chapterSix) < 300) issues.push(`The third-presence chapter is underdeveloped (${wordCount(chapterSix)} words).`);
+  if ((markdown.match(/\byou\b|\byour\b/gi) ?? []).length < 45) issues.push("Tony is not addressed directly enough as you.");
+  if (nameMentions(markdown, "Tony") > 3) issues.push("Clean prose names Tony instead of addressing him as you.");
+  if (nameMentions(markdown, "Cheyenne") < 12) issues.push("Cheyenne's distinct perspective is undernamed.");
+  if (!/\bromantic\b/i.test(opening) || !/\bsexual\b/i.test(opening)) issues.push("Lover opening does not explicitly establish romantic and sexual overtones.");
+  if (technicalClaims.length) issues.push("Rendered portrait leaks technical astrology language.");
+  if (evidenceIdClaims.length) issues.push("Rendered portrait leaks hidden evidence IDs.");
+  if (fateClaims.length) issues.push("Rendered portrait turns felt charge into unsupported fate or history.");
+  if (contributionLedgerClaims.length) issues.push("Rendered portrait assigns comparative relational labor.");
+  if (biographyClaims.length) issues.push("Rendered portrait invents relationship biography.");
+  if (trace.length !== expectedHeadings.length || trace.some((entry, index) => entry.chapter !== expectedHeadings[index])) {
+    issues.push("Evidence trace does not map one ordered entry to each chapter.");
+  }
+  if (trace.some((entry) => entry.evidenceIds.length < 1 || entry.evidenceIds.length > 5 || entry.supportedFeeling.length < 20)) {
+    issues.push("Evidence trace entries are incomplete or overstuffed.");
+  }
+  if (invalidTraceIds.length) issues.push(`Evidence trace contains invalid IDs: ${[...new Set(invalidTraceIds)].join(", ")}.`);
+  if (uniqueTraceIds.size < 10) issues.push(`Evidence trace uses too few unique signals (${uniqueTraceIds.size}).`);
+
+  return {
+    issues,
+    wordCount: words,
+    chapterHeadings: headings,
+    chapterSixWordCount: wordCount(chapterSix),
+    technicalClaims,
+    evidenceIdClaims,
+    fateClaims,
+    contributionLedgerClaims,
+    biographyClaims,
+    traceEntryCount: trace.length,
+    tracedEvidenceCount: uniqueTraceIds.size,
+    invalidTraceIds,
+    mentions: {
+      you: (markdown.match(/\byou\b|\byour\b/gi) ?? []).length,
+      Tony: nameMentions(markdown, "Tony"),
+      Cheyenne: nameMentions(markdown, "Cheyenne")
+    }
+  };
+}
+
+function cleanProseTechnicalPattern() {
+  return /[°º]|\b(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron|Aries|Taurus|Gemini|Cancer|Leo|Virgo|Libra|Scorpio|Sagittarius|Capricorn|Aquarius|Pisces|conjunction|conjunct|sextile|square|trine|opposition|opposite|aspect|synastry|astrology|astrological|chart|planet|placement|orb|degrees?|houses?|angles?|nodes?|luminary|Neptunian|Plutonian|Saturnian|Venusian|Martian)\b/gi;
+}
+
+function buildBlindComparisonPrompt(signalMarkdown: string, reportA: string, reportB: string) {
+  return `You are a blind senior editorial evaluator for a private Astra Synastry V3 experiment. You do not know which report is the control or the experimental variant. Do not infer or discuss their implementation.
+
+Both reports were intended to interpret the exact same strongest-15 direct chart-signal packet below for Tony Cecala and Cheyenne Autumn under a Lover lens. Evaluate the rendered prose, not whether it visibly names astrology. A report may remain evidence-faithful through psychologically precise paraphrase. Penalize unsupported biography, deterministic claims, unequal-labor verdicts, or themes that cannot be traced to the packet.
+
+Score each report from 1-10 on:
+- emotionalSpecificity: concrete, differentiated feelings rather than generic intensity;
+- narrativeTension: psychological-thriller propulsion, reversals, hidden costs, and forward movement without melodrama;
+- perspectiveBalance: Tony's felt experience, Cheyenne's distinct felt experience, and the relationship as a third protagonist;
+- technicalCleanliness: 10 means the portrait reads cleanly with no distracting astrology exposition;
+- evidenceFidelity: psychological claims remain supportable by the supplied packet even when evidence is not named.
+
+Then choose A, B, or Tie. Return JSON only in this exact shape:
+{"reports":{"A":{"scores":{"emotionalSpecificity":1,"narrativeTension":1,"perspectiveBalance":1,"technicalCleanliness":1,"evidenceFidelity":1},"strengths":["..."],"risks":["..."]},"B":{"scores":{"emotionalSpecificity":1,"narrativeTension":1,"perspectiveBalance":1,"technicalCleanliness":1,"evidenceFidelity":1},"strengths":["..."],"risks":["..."]}},"preferred":"A","reason":"..."}
+
+<evidence_packet>
+${signalMarkdown}
+</evidence_packet>
+
+<report_A>
+${reportA}
+</report_A>
+
+<report_B>
+${reportB}
+</report_B>`;
+}
+
+function parseJsonObject(value: string): Record<string, unknown> {
+  const normalized = value.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+  const parsed = JSON.parse(normalized) as unknown;
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("Blind evaluator did not return a JSON object.");
+  return parsed as Record<string, unknown>;
+}
+
+function validateBlindEvaluation(value: Record<string, unknown>) {
+  const issues: string[] = [];
+  const reports = value.reports && typeof value.reports === "object" ? value.reports as Record<string, unknown> : {};
+  for (const label of ["A", "B"]) {
+    const report = reports[label] && typeof reports[label] === "object" ? reports[label] as Record<string, unknown> : {};
+    const scores = report.scores && typeof report.scores === "object" ? report.scores as Record<string, unknown> : {};
+    for (const criterion of ["emotionalSpecificity", "narrativeTension", "perspectiveBalance", "technicalCleanliness", "evidenceFidelity"]) {
+      const score = scores[criterion];
+      if (typeof score !== "number" || score < 1 || score > 10) issues.push(`${label}.${criterion} is not a 1-10 score.`);
+    }
+  }
+  if (!["A", "B", "Tie"].includes(clean(value.preferred))) issues.push("Blind evaluator preference is invalid.");
+  if (clean(value.reason).length < 20) issues.push("Blind evaluator reason is too short.");
+  return issues;
+}
+
+function proseMetrics(markdown: string) {
+  const technicalTerms = [...markdown.matchAll(cleanProseTechnicalPattern())].map((match) => match[0]);
+  const feelingTerms = markdown.match(/\b(?:feel|feels|felt|want|wants|wanting|desire|fear|afraid|ache|longing|tender|tension|pull|charge|trust|hurt|anger|friction|risk|recognition|intimacy|attraction|erotic|sexual|romantic|exposed|vulnerable|safety|safe|pressure|relief)\w*\b/gi) ?? [];
+  const words = wordCount(markdown);
+  return {
+    wordCount: words,
+    chapterCount: [...markdown.matchAll(/^## /gm)].length,
+    technicalTermCount: technicalTerms.length,
+    technicalTermsPerThousandWords: Number(((technicalTerms.length / Math.max(words, 1)) * 1_000).toFixed(1)),
+    feelingTermCount: feelingTerms.length,
+    feelingTermsPerThousandWords: Number(((feelingTerms.length / Math.max(words, 1)) * 1_000).toFixed(1)),
+    TonyMentions: nameMentions(markdown, "Tony"),
+    CheyenneMentions: nameMentions(markdown, "Cheyenne"),
+    secondPersonMentions: (markdown.match(/\byou\b|\byour\b/gi) ?? []).length
+  };
+}
+
+function renderBlindComparison(
+  blindEvaluation: Record<string, unknown>,
+  issues: string[],
+  mapping: { A: string; B: string },
+  objectiveMetrics: Record<string, unknown>
+) {
+  return [
+    "# Blind Clean-Prose Comparison",
+    "",
+    "The evaluator received the same strongest-15 chart packet and two portraits labeled only A and B. Mapping was revealed after scoring.",
+    "",
+    "## Blind result",
+    "",
+    "```json",
+    JSON.stringify(blindEvaluation, null, 2),
+    "```",
+    "",
+    `Evaluator validation: ${issues.length ? `FAIL — ${issues.join("; ")}` : "PASS"}`,
+    "",
+    "## Reveal",
+    "",
+    `- Report A: ${mapping.A}`,
+    `- Report B: ${mapping.B}`,
+    "",
+    "## Objective metrics",
+    "",
+    "```json",
+    JSON.stringify(objectiveMetrics, null, 2),
+    "```"
+  ].join("\n");
 }
 
 function signalManifest(
