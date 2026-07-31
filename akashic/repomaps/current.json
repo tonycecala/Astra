@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-07-31T03:52:34.988Z",
+  "generated_at": "2026-07-31T14:34:15.694Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 424,
-  "total_symbols": 5876,
-  "total_estimated_tokens": 1136844,
+  "files_indexed": 425,
+  "total_symbols": 5888,
+  "total_estimated_tokens": 1139411,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -27197,6 +27197,93 @@
       "importance_bucket": "other"
     },
     {
+      "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+      "lang": "markdown",
+      "size": 10272,
+      "lines": 256,
+      "estimated_tokens": 2567,
+      "symbols": [
+        {
+          "name": "Continue the Dual-Perspective Synastry V3 Experiment",
+          "line": 22,
+          "type": "heading"
+        },
+        {
+          "name": "Mission",
+          "line": 24,
+          "type": "heading"
+        },
+        {
+          "name": "Start Here",
+          "line": 35,
+          "type": "heading"
+        },
+        {
+          "name": "Proven State to Preserve",
+          "line": 61,
+          "type": "heading"
+        },
+        {
+          "name": "Accepted Private Evidence",
+          "line": 90,
+          "type": "heading"
+        },
+        {
+          "name": "Verified Result",
+          "line": 116,
+          "type": "heading"
+        },
+        {
+          "name": "One Remaining Experiment",
+          "line": 139,
+          "type": "heading"
+        },
+        {
+          "name": "Commands",
+          "line": 164,
+          "type": "heading"
+        },
+        {
+          "name": "Verification and Known Tooling Issue",
+          "line": 186,
+          "type": "heading"
+        },
+        {
+          "name": "Guardrails",
+          "line": 207,
+          "type": "heading"
+        },
+        {
+          "name": "Completion Gate",
+          "line": 223,
+          "type": "heading"
+        },
+        {
+          "name": "Copy/Paste Goal for the New Thread",
+          "line": 238,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Continue the Dual-Perspective Synastry V3 Experiment",
+        "Mission",
+        "Start Here",
+        "Proven State to Preserve",
+        "Accepted Private Evidence",
+        "Verified Result",
+        "One Remaining Experiment",
+        "Commands"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 40.35,
+      "importance_bucket": "other"
+    },
+    {
       "file": "docs/decisions/ASTRA_NATAL_INTEGRATION_AND_DEEP_QUALITY.md",
       "lang": "markdown",
       "size": 15046,
@@ -41518,6 +41605,13 @@
         "type": "heading"
       }
     ],
+    "Accepted Private Evidence": [
+      {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "line": 90,
+        "type": "heading"
+      }
+    ],
     "access": [
       {
         "file": "apps/composer-web/components/ComposerShell.tsx",
@@ -48993,6 +49087,13 @@
         "type": "function"
       }
     ],
+    "Commands": [
+      {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "line": 164,
+        "type": "heading"
+      }
+    ],
     "Commands and measured cost": [
       {
         "file": "docs/evaluations/ASTRA_VERIFICATION_TIERS.md",
@@ -49210,6 +49311,11 @@
       }
     ],
     "Completion Gate": [
+      {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "line": 223,
+        "type": "heading"
+      },
       {
         "file": "docs/inbox-astra/completed/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_POST_REFACTOR_HANDOFF.md",
         "line": 180,
@@ -50696,6 +50802,13 @@
         "type": "heading"
       }
     ],
+    "Continue the Dual-Perspective Synastry V3 Experiment": [
+      {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "line": 22,
+        "type": "heading"
+      }
+    ],
     "continueButton": [
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
@@ -50823,6 +50936,11 @@
       }
     ],
     "Copy/Paste Goal for the New Thread": [
+      {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "line": 238,
+        "type": "heading"
+      },
       {
         "file": "docs/inbox-astra/completed/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_POST_REFACTOR_HANDOFF.md",
         "line": 195,
@@ -56292,6 +56410,11 @@
         "type": "heading"
       },
       {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "line": 207,
+        "type": "heading"
+      },
+      {
         "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 113,
         "type": "heading"
@@ -60240,6 +60363,11 @@
         "type": "heading"
       },
       {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "line": 24,
+        "type": "heading"
+      },
+      {
         "file": "docs/inbox-astra/completed/ASTRA_ALPHA_ROUTE_BY_ROUTE_PARITY_PROMPT.md",
         "line": 16,
         "type": "heading"
@@ -61950,6 +62078,13 @@
       {
         "file": "docs/evaluations/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_EVALUATION.md",
         "line": 1191,
+        "type": "heading"
+      }
+    ],
+    "One Remaining Experiment": [
+      {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "line": 139,
         "type": "heading"
       }
     ],
@@ -65770,6 +65905,11 @@
       }
     ],
     "Proven State to Preserve": [
+      {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "line": 61,
+        "type": "heading"
+      },
       {
         "file": "docs/inbox-astra/completed/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_5_POST_REFACTOR_HANDOFF.md",
         "line": 78,
@@ -72934,6 +73074,11 @@
     ],
     "Start Here": [
       {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "line": 35,
+        "type": "heading"
+      },
+      {
         "file": "docs/inbox-astra/completed/2026-06-16-next-clean-thread-report-writer-model-handoff.md",
         "line": 17,
         "type": "heading"
@@ -76374,6 +76519,13 @@
         "type": "heading"
       }
     ],
+    "Verification and Known Tooling Issue": [
+      {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "line": 186,
+        "type": "heading"
+      }
+    ],
     "Verification Bar": [
       {
         "file": "docs/inbox-astra/completed/ASTRA_JOURNEY_PRODUCT_REDESIGN_HANDOFF.md",
@@ -76392,6 +76544,13 @@
       {
         "file": "docs/inbox-astra/completed/ASTRA_REPORT_ENGINE_MODULARIZATION_HANDOFF.md",
         "line": 42,
+        "type": "heading"
+      }
+    ],
+    "Verified Result": [
+      {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "line": 116,
         "type": "heading"
       }
     ],
@@ -79698,6 +79857,20 @@
         },
         "dependency_in": 1,
         "dependency_out": 1,
+        "route_count": 0
+      },
+      {
+        "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+        "weight": 40.35,
+        "bucket": "other",
+        "estimated_tokens": 2567,
+        "lines": 256,
+        "symbols": 12,
+        "symbol_type_counts": {
+          "heading": 12
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -83957,9 +84130,9 @@
       }
     ],
     "coverage": {
-      "files": 424,
-      "symbols": 5876,
-      "total_estimated_tokens": 1136844
+      "files": 425,
+      "symbols": 5888,
+      "total_estimated_tokens": 1139411
     }
   }
 }

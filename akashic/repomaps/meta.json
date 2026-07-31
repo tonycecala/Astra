@@ -2127,6 +2127,20 @@
       "route_count": 0
     },
     {
+      "file": "docs/inbox-astra/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
+      "weight": 40.35,
+      "bucket": "other",
+      "estimated_tokens": 2567,
+      "lines": 256,
+      "symbols": 12,
+      "symbol_type_counts": {
+        "heading": 12
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "docs/decisions/ASTRA_NATAL_INTEGRATION_AND_DEEP_QUALITY.md",
       "weight": 40.31,
       "bucket": "other",
@@ -6383,8 +6397,8 @@
     }
   ],
   "coverage": {
-    "files": 424,
-    "symbols": 5876,
-    "total_estimated_tokens": 1136844
+    "files": 425,
+    "symbols": 5888,
+    "total_estimated_tokens": 1139411
   }
 }
