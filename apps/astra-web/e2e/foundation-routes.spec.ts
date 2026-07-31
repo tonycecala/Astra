@@ -450,7 +450,7 @@ test.describe("clean-start routes", () => {
     await page.goto("/charts");
     await expect(page.getByRole("heading", { name: "Saved charts" })).toBeVisible();
     await expect(page.getByLabel("Saved charts list").getByRole("heading", { name }).first()).toBeVisible();
-    await expect(page.getByText("Portrait ready")).toBeVisible();
+    await expect(page.getByText("Portrait written")).toBeVisible();
     const selectedChart = page.getByLabel("Selected chart");
     await expect(selectedChart.getByLabel("Full natal chart wheel")).toBeVisible();
     await expect(selectedChart.getByLabel("Aspect legend")).toBeVisible();
