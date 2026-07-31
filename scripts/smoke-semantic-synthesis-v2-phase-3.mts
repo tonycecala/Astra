@@ -61,6 +61,7 @@ function facts(
 }
 
 function assertProvenance(network: MeaningComplexNetwork) {
+  const nodeById = new Map(network.nodes.map((node) => [node.id, node]));
   for (const item of [...network.nodes, ...network.edges, ...network.complexes]) {
     assert.ok(item.provenance.sourceFactIds.length > 0, `${item.id} lacks provenance.`);
   }
@@ -69,6 +70,14 @@ function assertProvenance(network: MeaningComplexNetwork) {
       assert.ok(path.provenance.sourceFactIds.length > 0, `${path.id} lacks provenance.`);
       assert.ok(path.sourceFactIds.length > 0, `${path.id} lacks raw source facts.`);
       assert.ok(path.independentOriginIds.length > 0, `${path.id} lacks an independent origin.`);
+      const terminal = nodeById.get(path.terminalNodeId);
+      if (terminal?.type === "RulershipPath") {
+        assert.match(
+          path.mechanism,
+          /^rulership_/,
+          `${path.id} must retain its terminal rulership mechanism instead of inheriting a traversed aspect.`
+        );
+      }
     }
   }
 }

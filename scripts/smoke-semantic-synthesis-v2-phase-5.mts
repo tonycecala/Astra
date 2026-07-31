@@ -110,6 +110,223 @@ assert.ok(evaluateReportDeterministically(innerStateFailure, {
   contextIsUnspecified: true
 }).hardGateIssues.includes("another-person inner-state claim"));
 
+const familyHistoryFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Emotions"
+    ? { ...section, body: "Your early home life taught you to preserve the emotional truth of the household." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(familyHistoryFailure, {
+  key: "family-history/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("invented biography"));
+
+const socialEffectFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Gifts"
+    ? { ...section, body: "People lean in and rely on you when a group needs direction." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(socialEffectFailure, {
+  key: "social-effect/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("another-person inner-state claim"));
+
+const orbPrecisionFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Drive"
+    ? { ...section, body: "Mars square Neptune is less than one degree from exact." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(orbPrecisionFailure, {
+  key: "orb-precision/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("unnecessary orb precision"));
+assert.equal(evaluateReportDeterministically(orbPrecisionFailure, {
+  key: "historical-orb/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true,
+  historicalControl: true
+}).hardGateIssues.includes("unnecessary orb precision"), false);
+
+const orbDisclaimerFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Gifts"
+    ? { ...section, body: "Uranus conjunct Neptune is present, without any claim about its intensity or precision." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(orbDisclaimerFailure, {
+  key: "orb-disclaimer/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("unnecessary orb precision"));
+
+const genericDispositorChainFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Gifts"
+    ? { ...section, body: "The dispositor chain shows how planets hand off their expression through sign rulership." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(genericDispositorChainFailure, {
+  key: "generic-dispositor-chain/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("generic dispositor-chain narration"));
+
+const marissaLunarChainFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Relationships"
+    ? { ...section, body: "The chain tracing back to Chiron suggests this reciprocity pattern is not automatic or fully settled." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(marissaLunarChainFailure, {
+  key: "marissa-lunar-chain/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("generic dispositor-chain narration"));
+
+for (const validDirectRulership of [
+  "The Moon is disposed by Jupiter.",
+  "Jupiter is the Moon's dispositor.",
+  "Saturn is the final dispositor."
+]) {
+  const validDirectRulershipReport = report("deep", {
+    sections: deep.sections.map((section) => section.title === "Relationships"
+      ? { ...section, body: validDirectRulership }
+      : section)
+  });
+  assert.equal(evaluateReportDeterministically(validDirectRulershipReport, {
+    key: "valid-direct-rulership/deep",
+    family: "deep",
+    canonicalIdentityHash: identityHash,
+    contextIsUnspecified: true
+  }).hardGateIssues.includes("generic dispositor-chain narration"), false);
+}
+
+const currentActivationFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Growth"
+    ? { ...section, body: "A personal activation means this energy is currently pressing on something close to you." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(currentActivationFailure, {
+  key: "activation/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("natal activation presented as current timing"));
+
+const qualitativeActivationFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Gifts"
+    ? { ...section, body: "Uranus carries personal activation in this chart. This suggests unpredictability or inspiration that can clarify or destabilize the Venus pattern." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(qualitativeActivationFailure, {
+  key: "qualitative-activation/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("personal activation qualitative overreach"));
+
+const aspectChainFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Emotions"
+    ? { ...section, body: "An opposition links this lunar dispositor chain to Chiron." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(aspectChainFailure, {
+  key: "aspect-chain/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("rulership or dispositor chain rewritten as an aspect"));
+
+const rulershipLabeledAsAspectFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Gifts"
+    ? { ...section, body: "Pluto is disposed by Mars, a square aspect." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(rulershipLabeledAsAspectFailure, {
+  key: "rulership-labeled-as-aspect/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("rulership or dispositor relationship labeled as an aspect"));
+
+const privilegedPerceptionFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Blind Spots"
+    ? { ...section, body: "Neptune sextile Pluto sharpens your read of hidden group undercurrents." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(privilegedPerceptionFailure, {
+  key: "privileged-perception/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("privileged social perception inferred from symbolic evidence"));
+
+const marissaNeptunePlutoPerceptionFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Blind Spots"
+    ? {
+        ...section,
+        body: "Pluto's intensity can shape how you read a room or friend group. Neptune sextile Pluto can make a first impression feel complete and convincing. The feeling of knowing can arrive fast."
+      }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(marissaNeptunePlutoPerceptionFailure, {
+  key: "marissa-neptune-pluto-perception/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("privileged social perception inferred from symbolic evidence"));
+
+for (const boundedPerception of [
+  "Pluto in the eleventh house may make group matters feel important.",
+  "Neptune sextile Pluto does not establish accurate perception.",
+  "A strong impression is not proof of accuracy.",
+  "This aspect does not confirm that you read hidden group dynamics accurately.",
+  "It does not mean your first impression is complete or convincing."
+]) {
+  const boundedPerceptionReport = report("deep", {
+    sections: deep.sections.map((section) => section.title === "Blind Spots"
+      ? { ...section, body: boundedPerception }
+      : section)
+  });
+  assert.equal(evaluateReportDeterministically(boundedPerceptionReport, {
+    key: "bounded-perception/deep",
+    family: "deep",
+    canonicalIdentityHash: identityHash,
+    contextIsUnspecified: true
+  }).hardGateIssues.includes("privileged social perception inferred from symbolic evidence"), false);
+}
+
+const certaintyFailure = report("deep", {
+  sections: deep.sections.map((section) => section.title === "Growth"
+    ? { ...section, body: "That part of you already knows how to check a read before acting on it." }
+    : section)
+});
+assert.ok(evaluateReportDeterministically(certaintyFailure, {
+  key: "certainty/deep",
+  family: "deep",
+  canonicalIdentityHash: identityHash,
+  contextIsUnspecified: true
+}).hardGateIssues.includes("rapid certainty, wholesale change, or established self-correction inferred"));
+
+const repeatedFramingFailure = report("deep", {
+  sections: deep.sections.map((section) => {
+    if (section.title === "Work") {
+      return { ...section, body: "Mars in Cancer in the fifth house works through a final dispositor. Saturn square Mars sets the pace." };
+    }
+    if (section.title === "Drive") {
+      return { ...section, body: "Mars in Cancer in the fifth house returns to the final dispositor. Saturn square Mars sets proportion." };
+    }
+    return section;
+  })
+});
+assert.equal(crossChapterRepetition(repeatedFramingFailure).pass, false);
+
 assert.equal(assertSignsOnlyEvidenceHasNoLeakage({ label: "Sun trine Saturn" }), true);
 assert.equal(assertSignsOnlyEvidenceHasNoLeakage({ label: "Sun in the 12th house" }), false);
 
@@ -143,5 +360,30 @@ assert.equal(evaluateSemanticGate(semanticEvaluations, repetitionEvaluations).pa
 const unsafeEvaluation = semanticEvaluation("control/deep");
 unsafeEvaluation.scores.context_safety = 1;
 assert.equal(evaluateSemanticGate([semanticEvaluation("control/core"), unsafeEvaluation], repetitionEvaluations).pass, false);
+
+const historicalEvaluation = semanticEvaluation("tony/deep", 1);
+const historicalRepetition: Phase5RepetitionEvaluation = {
+  key: "tony/deep",
+  score: 1,
+  rationale: "Historical comparison retains its original weaknesses.",
+  repeatedMechanisms: ["historical mechanism"],
+  offendingExcerpts: ["historical excerpt"]
+};
+const candidateGateWithHistoricalControl = evaluateSemanticGate(
+  [...semanticEvaluations, historicalEvaluation],
+  [...repetitionEvaluations, historicalRepetition],
+  { historicalKeys: ["tony/deep"] }
+);
+assert.equal(candidateGateWithHistoricalControl.pass, true);
+assert.deepEqual(candidateGateWithHistoricalControl.candidateKeys, ["control/core", "control/deep"]);
+assert.deepEqual(candidateGateWithHistoricalControl.historicalKeys, ["tony/deep"]);
+assert.deepEqual(
+  validateSemanticEvaluation(
+    ["control/core", "control/deep", "tony/deep"],
+    [...semanticEvaluations, historicalEvaluation]
+  ),
+  [],
+  "Historical controls remain mandatory evaluator coverage even when excluded from candidate thresholds."
+);
 
 console.log("Semantic Synthesis V2 Phase 5 evaluator thresholds, hard-gate scans, repetition metric, and payload coverage checks passed.");
