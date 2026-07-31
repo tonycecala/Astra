@@ -28,3 +28,4 @@ The experiment treated measurable prompt compliance and a blind model's conserva
 3. Green-light the portrait unless more than two fatal-error categories remain.
 4. Treat direct reader judgment as the product verdict; use blind models and counts as evidence, not authority.
 5. Keep wrong evidence, technical leakage, malformed traces, fabricated quotes/biography, protagonist erasure, and severe semantic misrepresentation fatal.
+6. Make leakage scanners contextual: bare words such as `house`, `degrees`, and `opposite` have ordinary prose meanings. Treat italicized first-person monologue attributed to a named subject as fabricated speech even when it is framed as what the person “might think.”

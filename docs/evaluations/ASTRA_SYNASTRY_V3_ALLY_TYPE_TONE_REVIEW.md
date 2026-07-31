@@ -102,6 +102,12 @@ V2 turned the prose further toward feeling-first writing and received a green li
 
 V2 crossed one real line: it fabricated twelve spans of direct dialogue for Cheyenne and asserted a lifelong defense against absence as biography. That is one fatal category, within the approved maximum of two, so the experiment gate remains **green with notes**. The next step-back is narrow: retain the simple, high-density feelings and third-protagonist tension while rendering Cheyenne's interiority as possibility rather than quotation or invented life history. Private evidence is retained at `.astra-exports/dual-perspective-synastry-bakeoff/2026-07-31-cheyenne-clean-prose-thriller-v2/`.
 
+### Final clean-prose synthesis
+
+One final synthesis was generated from the exact same strongest-15 packet and stable `S01`-`S16` identities, with Undertow opened only after writing for blind comparison. It contained zero contextual astrology terms, traced all 16 evidence IDs, and scored 8 emotional specificity, 8 tension, 7 perspective balance, 10 technical cleanliness, and 8 evidence fidelity. Undertow scored 8, 8, 8, 10, and 8 respectively and won the blind preference.
+
+The synthesis remained green with one fatal category: five italicized first-person Cheyenne thoughts functioned as fabricated speech. At 1,201 words it also fell below the 1,500 ±10% band, but length remains a review note. Final experiment judgment: **keep The Undertow of Recognition as the accepted reader benchmark; do not generate another retry**. Private evidence is retained at `.astra-exports/dual-perspective-synastry-bakeoff/2026-07-31-cheyenne-clean-prose-final-synthesis/`.
+
 ## Felicia + Tony strongest-15 sample
 
 The private `felicia-tony` sample generated successfully from direct chart signals with the stored `spouse` context:

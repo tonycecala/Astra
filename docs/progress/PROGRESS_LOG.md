@@ -654,6 +654,9 @@ Continue Composer v1 quarry rebuild from the real 78-card Astrology 101 course, 
   category: fabricated Cheyenne dialogue and concrete invented biography.
 - Added ±10% numeric assessment, the more-than-two-fatal rejection threshold,
   and separate evidence-coverage and semantic-support review.
+- Generated one final synthesis against Undertow as a post-writer blind
+  benchmark. It matched Undertow on four of five editorial scores, lost by one
+  point on perspective balance, and confirmed Undertow as the accepted result.
 
 #### Tests Run
 
@@ -672,5 +675,8 @@ the experiment did not change production runtime, routes, data, or UI.
 - Green-light both private portraits as reader experiments. Keep Undertow as the
   human-approved clarity benchmark; treat V2's fabricated dialogue/biography as
   the single line to step behind while preserving its emotional density.
+- The final synthesis remained green with one fatal category—italicized
+  first-person speech attributed to Cheyenne—but did not improve the benchmark.
+  Close the bakeoff with Undertow preferred and no additional retry.
 - Production, saved reports, database state, and public/private product paths
   were unchanged.

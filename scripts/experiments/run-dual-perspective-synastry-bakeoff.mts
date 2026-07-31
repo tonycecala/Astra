@@ -122,7 +122,10 @@ const model = reportModelProfileModels.production[0];
 const reasoningEffort = "none";
 const temperature = 0.3;
 const maxOutputTokens = 16_000;
-const cleanProseExperimentVersion = "v2";
+const finalCleanProseSynthesis = process.argv.includes("--final-clean-prose-synthesis");
+const cleanProseExperimentVersion = finalCleanProseSynthesis ? "final-synthesis" : "v2";
+const cleanProseVariantLabel = finalCleanProseSynthesis ? "clean-prose-final-synthesis" : "clean-prose-v2";
+const blindBenchmarkLabel = finalCleanProseSynthesis ? "undertow-benchmark" : "current-v3";
 const cleanProseWordTarget = 1_500;
 const numericTolerance = 0.1;
 const fatalErrorLimit = 2;
@@ -134,7 +137,7 @@ const outputDir = resolve(
     `.astra-exports/dual-perspective-synastry-bakeoff/${runStamp}`
 );
 const completeInventory = process.argv.includes("--complete-inventory");
-const cleanProseThriller = process.argv.includes("--clean-prose-thriller");
+const cleanProseThriller = process.argv.includes("--clean-prose-thriller") || finalCleanProseSynthesis;
 const blindBaselinePath = option("--blind-baseline");
 const apiKey =
   clean(process.env.ASTRA_OPENROUTER_API_KEY) ||
@@ -145,6 +148,7 @@ if (process.argv.includes("--help")) {
   console.log(`Samples: ${Object.keys(sampleConfigs).join(" | ")}.`);
   console.log("Generation: --generate [--sample <sample>] [--complete-inventory] [--output].");
   console.log("Clean prose V2: --generate --sample cheyenne-tony-lover --clean-prose-thriller --blind-baseline <portrait.md> [--output].");
+  console.log("Final synthesis: --generate --sample cheyenne-tony-lover --final-clean-prose-synthesis --blind-baseline <undertow-portrait.md> [--output].");
   console.log("Reassess clean prose: --reassess-clean-prose <private-output-directory>.");
   console.log("Signals only: --signals-only [--sample <sample>] [--complete-inventory] [--output].");
   console.log("Validation only: --validate <portrait.md> [--sample <sample>].");
@@ -533,12 +537,23 @@ async function runCleanProseExperiment(input: {
   const baselineManifestPath = join(dirname(baselinePath), "manifest.json");
   const baselineManifest = JSON.parse(await readFile(baselineManifestPath, "utf8")) as {
     signalValidation?: { labelsBySection?: unknown };
-    validation?: { groundedSignalCount?: number };
   };
+  const baselineEvidenceEntries = finalCleanProseSynthesis
+    ? JSON.parse(
+        await readFile(join(dirname(baselinePath), "evidence-index.json"), "utf8")
+      ) as EvidenceEntry[]
+    : [];
   const baselineSignalPacketMatch = JSON.stringify(baselineManifest.signalValidation?.labelsBySection) ===
     JSON.stringify(input.signalValidation.labelsBySection);
   if (!baselineSignalPacketMatch) {
     throw new Error("Blind baseline does not use the exact same strongest-15 signal packet.");
+  }
+  const baselineStableEvidenceIdMatch = finalCleanProseSynthesis
+    ? JSON.stringify(baselineEvidenceEntries.map(({ id, label }) => ({ id, label }))) ===
+      JSON.stringify(input.evidenceEntries.map(({ id, label }) => ({ id, label })))
+    : null;
+  if (finalCleanProseSynthesis && !baselineStableEvidenceIdMatch) {
+    throw new Error("Blind baseline does not use the same stable evidence IDs.");
   }
 
   const cleanIsA = Number.parseInt(sha256(`${portrait}\n${baselinePortrait}`).slice(0, 2), 16) % 2 === 0;
@@ -557,14 +572,14 @@ async function runCleanProseExperiment(input: {
       ...proseMetrics(portrait),
       tracedEvidenceCount: new Set(parsed.evidenceTrace.flatMap((entry) => entry.evidenceIds)).size
     },
-    currentV3: {
-      ...proseMetrics(baselinePortrait),
-      visiblyGroundedSignalCount: baselineManifest.validation?.groundedSignalCount ?? null
+    benchmark: {
+      label: blindBenchmarkLabel,
+      ...proseMetrics(baselinePortrait)
     }
   };
   const mapping = {
-    A: cleanIsA ? "clean-prose-v2" : "current-v3",
-    B: cleanIsA ? "current-v3" : "clean-prose-v2"
+    A: cleanIsA ? cleanProseVariantLabel : blindBenchmarkLabel,
+    B: cleanIsA ? blindBenchmarkLabel : cleanProseVariantLabel
   } as const;
   const acceptance = buildCleanProseAcceptance(validation, blindEvaluation, mapping);
 
@@ -578,7 +593,9 @@ async function runCleanProseExperiment(input: {
 
   const manifest = {
     ...signalManifest(input.signalMarkdown, input.signalValidation),
-    experiment: "dual-perspective-synastry-v3-clean-prose-psychological-thriller-v2",
+    experiment: finalCleanProseSynthesis
+      ? "dual-perspective-synastry-v3-clean-prose-final-synthesis"
+      : "dual-perspective-synastry-v3-clean-prose-psychological-thriller-v2",
     experimentVersion: cleanProseExperimentVersion,
     cleanProseThriller: true,
     model,
@@ -590,7 +607,8 @@ async function runCleanProseExperiment(input: {
     writerInput: {
       directChartSignalsOnly: true,
       sourceReportIds: [],
-      baselineReportProseIncluded: false
+      baselineReportProseIncluded: false,
+      comparisonBenchmarkReadAfterWriter: true
     },
     evidenceTrace: {
       stableEvidenceIds: input.evidenceEntries.map((entry) => entry.id),
@@ -608,6 +626,7 @@ async function runCleanProseExperiment(input: {
     blindComparison: {
       baselinePortraitSha256: sha256(baselinePortrait),
       baselineSignalPacketMatch,
+      baselineStableEvidenceIdMatch,
       mapping,
       evaluatorModel: model,
       evaluatorInputPurpose: "blind-editorial-comparison-only",
@@ -658,12 +677,16 @@ function cleanProseHeadings() {
 
 function buildCleanProsePrompt(signalMarkdown: string, evidenceEntries: EvidenceEntry[]) {
   const headings = cleanProseHeadings().map((heading) => `## ${heading}`).join("\n");
-  return `You are Astra's premium psychological portrait writer. Write one private experimental Tony Cecala + Cheyenne Autumn Lover portrait in a clean-prose psychological-thriller register. This is V2: lead with the meat, then support it lightly.
+  const modeDirection = finalCleanProseSynthesis
+    ? "Write the final private synthesis. Make it simple enough to understand in one reading, emotionally dense without being ornate, and feeling-first without fabricating speech or life history."
+    : "Write the V2 private experiment: lead with the meat, then support it lightly.";
+  return `You are Astra's premium psychological portrait writer. Write one private experimental Tony Cecala + Cheyenne Autumn portrait under a Lover lens in a clean-prose psychological-thriller register. ${modeDirection}
 
 This is still direct-chart-signal generation. The packet below is the only astrological evidence. No saved report prose is supplied. Stable S-number IDs exist only so your hidden evidence trace can prove grounding without forcing astrology into the finished portrait.
 
 Rendered-prose contract:
 - Address Tony as "you" and "your," not as Tony. Refer to Cheyenne naturally by name and as she/her.
+- Lover is relationship context, not part of Cheyenne's name. Do not write "Cheyenne Autumn Lover" in the title, deck, or portrait.
 - Turn evidence-first writing around. Open each paragraph with the feeling, desire, fear, bodily response, private thought, reversal, or hidden consequence that matters. Do not begin by explaining a pattern and then arrive at the feeling.
 - Give the reader the portrait, not the proof. The Evidence drawers will hold the technical support. After the lead sentence, support it lightly through one consequence, contrast, or complication; do not explain the astrological mechanism or inventory the packet.
 - Preserve three protagonists in every chapter: what you feel, what Cheyenne independently feels, and what the relationship itself starts doing between you.
@@ -673,6 +696,7 @@ Rendered-prose contract:
 - The opening must make the connection explicitly romantic and sexual, while treating consent, actual behavior, exclusivity, commitment, permanence, and history as unknown.
 - Do not claim a first look, first conversation, how they met, actual sexual contact, falling in love, shared routines, relationship duration, or current relationship state.
 - Do not fabricate direct quotations for either person. Render interiority as possibility in the narrator's voice, not as words Tony or Cheyenne supposedly said.
+- Do not invent childhood, prior wounds, former relationships, lifelong defenses, personal vows, or anything either person supposedly said or consciously decided.
 - Do not state fate or hidden history as fact. A character may feel as if something is inevitable, ancient, or already underway, but the prose must keep that inside subjective experience rather than pronounce destiny.
 - Do not assign one person more relational labor, stability, architecture, responsibility, giving, or cost than the other. Difference is welcome; a contribution ledger is not.
 - Do not give advice, action steps, compatibility verdicts, therapy language, or a stay/leave conclusion.
@@ -744,10 +768,14 @@ function validateCleanProsePortrait(
   const expectedHeadings = cleanProseHeadings();
   const technicalClaims = [...markdown.matchAll(cleanProseTechnicalPattern())].map((match) => match[0]);
   const evidenceIdClaims = [...markdown.matchAll(/\bS\d{2}\b/g)].map((match) => match[0]);
-  const fateClaims = [...markdown.matchAll(/\b(?:(?:this|it|the relationship|the connection|the bond) (?:is|was|has been) (?:inevitab\w*|destin(?:ed|y)|fated)|meant to be|ancient contract|old contract|began (?:somewhere )?before (?:either|they|you))\b/gi)].map((match) => match[0]);
+  const allyTagAsNameClaims = [...markdown.matchAll(/\bCheyenne Autumn Lover\b/g)].map((match) => match[0]);
+  const fateClaims = [...markdown.matchAll(/\b(?:(?:this|it|the relationship|the connection|the bond) (?:is|was|has been) (?:inevitab\w*|destin(?:ed|y)|fated)|(?<!not )meant to be|ancient contract|old contract|began (?:somewhere )?before (?:either|they|you))\b/gi)].map((match) => match[0]);
   const contributionLedgerClaims = [...markdown.matchAll(/\b(?:load-bearing|unequal bargain|provid(?:e|es|ing) the floor|gives? more.{0,80}receives?|more architecture.{0,80}receives?|costs? (?:him|her|them) ongoing effort|over-function(?:s|ing)?|she tempers.{0,80}you (?:widen|contain)|you (?:widen|contain).{0,80}she tempers)\b/gi)].map((match) => match[0]);
   const biographyClaims = [...markdown.matchAll(/\b(?:first (?:look|glance|conversation|contact)|how (?:you|they) met|when (?:you|they) met|fell in love|shared (?:meal|home|routine)|years together)\b/gi)].map((match) => match[0]);
-  const fabricatedDialogueClaims = [...markdown.matchAll(/["“][^"”\n]{8,}["”]/g)].map((match) => match[0]);
+  const fabricatedDialogueClaims = [
+    ...[...markdown.matchAll(/["“][^"”\n]{8,}["”]/g)].map((match) => match[0]),
+    ...[...markdown.matchAll(/\*(?:I|I'm|I've|I'd|I'll|my|me)\b[^*\n]{8,}\*/gi)].map((match) => match[0])
+  ];
   const validIds = new Set(evidenceEntries.map((entry) => entry.id));
   const traceIds = trace.flatMap((entry) => entry.evidenceIds);
   const invalidTraceIds = traceIds.filter((id) => !validIds.has(id));
@@ -857,6 +885,9 @@ function validateCleanProsePortrait(
   if (surfaceDetails.length) {
     addFinding(fatalErrors, "technical_surface", "The rendered portrait exposes material reserved for the Evidence drawers.", surfaceDetails);
   }
+  if (allyTagAsNameClaims.length) {
+    addFinding(fatalErrors, "identity_integrity", "The portrait incorrectly treats the Lover lens as part of Cheyenne's name.", allyTagAsNameClaims);
+  }
   if (biographyClaims.length || fabricatedDialogueClaims.length) {
     addFinding(
       fatalErrors,
@@ -926,6 +957,7 @@ function validateCleanProsePortrait(
     chapterPerspectiveCoverage,
     technicalClaims,
     evidenceIdClaims,
+    allyTagAsNameClaims,
     fateClaims,
     contributionLedgerClaims,
     biographyClaims,
@@ -970,7 +1002,7 @@ function cleanProseChapterBodies(markdown: string, headings: string[]) {
 }
 
 function cleanProseTechnicalPattern() {
-  return /[°º]|\b(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron|Aries|Taurus|Gemini|Cancer|Leo|Virgo|Libra|Scorpio|Sagittarius|Capricorn|Aquarius|Pisces|conjunction|conjunct|sextile|square|trine|opposition|opposite|aspect|synastry|astrology|astrological|chart|planet|placement|orb|degrees?|houses?|angles?|nodes?|luminary|Neptunian|Plutonian|Saturnian|Venusian|Martian)\b/gi;
+  return /[°º]|\b(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron|Aries|Taurus|Gemini|Cancer|Leo|Virgo|Libra|Scorpio|Sagittarius|Capricorn|Aquarius|Pisces|conjunction|conjunct|sextile|square|trine|opposition|aspect|synastry|astrology|astrological|chart|planet|placement|orb|luminary|Neptunian|Plutonian|Saturnian|Venusian|Martian|natal|composite|Davison|zodiac)\b|\b(?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|\d+(?:st|nd|rd|th)?) house\b|\b\d+(?:\.\d+)? degrees?\b/gi;
 }
 
 function buildBlindComparisonPrompt(signalMarkdown: string, reportA: string, reportB: string) {

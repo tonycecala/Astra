@@ -386,10 +386,10 @@
     },
     {
       "file": "docs/progress/PROGRESS_LOG.md",
-      "weight": 208.22,
+      "weight": 208.21,
       "bucket": "other",
-      "estimated_tokens": 12278,
-      "lines": 677,
+      "estimated_tokens": 12391,
+      "lines": 683,
       "symbols": 68,
       "symbol_type_counts": {
         "heading": 68
@@ -2283,6 +2283,20 @@
       "route_count": 0
     },
     {
+      "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
+      "weight": 37.31,
+      "bucket": "other",
+      "estimated_tokens": 3992,
+      "lines": 123,
+      "symbols": 11,
+      "symbol_type_counts": {
+        "heading": 11
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/astra-web/lib/email/send-email.ts",
       "weight": 37.14,
       "bucket": "other",
@@ -2920,20 +2934,6 @@
       "route_count": 0
     },
     {
-      "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
-      "weight": 34.31,
-      "bucket": "other",
-      "estimated_tokens": 3751,
-      "lines": 117,
-      "symbols": 10,
-      "symbol_type_counts": {
-        "heading": 10
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
       "file": "docs/inbox-astra/tony-cecala-deep-natal-report.md",
       "weight": 34.28,
       "bucket": "other",
@@ -3506,6 +3506,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/playbooks/astra-verification-tiers.md",
+      "weight": 27.22,
+      "bucket": "akashic",
+      "estimated_tokens": 1995,
+      "lines": 71,
+      "symbols": 7,
+      "symbol_type_counts": {
+        "heading": 7
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "packages/db/src/client.ts",
       "weight": 27.21,
       "bucket": "other",
@@ -3519,20 +3533,6 @@
       },
       "dependency_in": 3,
       "dependency_out": 2,
-      "route_count": 0
-    },
-    {
-      "file": "akashic/playbooks/astra-verification-tiers.md",
-      "weight": 27.2,
-      "bucket": "akashic",
-      "estimated_tokens": 1863,
-      "lines": 69,
-      "symbols": 7,
-      "symbol_type_counts": {
-        "heading": 7
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -4567,6 +4567,34 @@
       "route_count": 0
     },
     {
+      "file": "akashic/warnings/report-instrumentation-is-not-reader-quality.md",
+      "weight": 17.62,
+      "bucket": "akashic",
+      "estimated_tokens": 548,
+      "lines": 32,
+      "symbols": 4,
+      "symbol_type_counts": {
+        "heading": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/warnings/ambiguous-prose-tokens-need-contextual-leakage-checks.md",
+      "weight": 17.61,
+      "bucket": "akashic",
+      "estimated_tokens": 441,
+      "lines": 31,
+      "symbols": 4,
+      "symbol_type_counts": {
+        "heading": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "akashic/warnings/do-not-end-a-session-with-a-known-stale-jcodemunch-index.md",
       "weight": 17.61,
       "bucket": "akashic",
@@ -4586,20 +4614,6 @@
       "bucket": "akashic",
       "estimated_tokens": 263,
       "lines": 29,
-      "symbols": 4,
-      "symbol_type_counts": {
-        "heading": 4
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
-      "file": "akashic/warnings/report-instrumentation-is-not-reader-quality.md",
-      "weight": 17.6,
-      "bucket": "akashic",
-      "estimated_tokens": 480,
-      "lines": 31,
       "symbols": 4,
       "symbol_type_counts": {
         "heading": 4
@@ -6481,8 +6495,8 @@
     }
   ],
   "coverage": {
-    "files": 431,
-    "symbols": 5924,
-    "total_estimated_tokens": 1147445
+    "files": 432,
+    "symbols": 5929,
+    "total_estimated_tokens": 1148440
   }
 }
