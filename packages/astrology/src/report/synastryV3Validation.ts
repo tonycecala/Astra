@@ -38,6 +38,7 @@ export function validateSynastryV3(input: {
   trace: SynastryV3TraceRow[];
   evidenceIndex: SynastryV3EvidenceRow[];
   tone: SynastryToneSnapshot;
+  readerName: string;
   allyName: string;
   semanticSeverity?: "none" | "minor" | "severe";
 }) {
@@ -59,9 +60,15 @@ export function validateSynastryV3(input: {
   }
 
   const observational = new Set(["observational", "symbolic", "ancestral-symbolic"]).has(input.tone.structuralLens);
-  for (const section of input.sections) {
+  for (const [index, section] of input.sections.entries()) {
     if (!new RegExp(`\\b${escapeRegExp(input.allyName)}\\b`, "i").test(section.body)) fatal.add("perspective_erasure");
     if (!observational && !/\b(?:relationship|connection|bond|between you|what forms between)\b/i.test(section.body)) fatal.add("perspective_erasure");
+    if (!/\b(?:you|your|yours)\b/i.test(section.body)) {
+      boundaryViolations.push(`Chapter ${index + 1} does not address the selected reader as you.`);
+    }
+    if (new RegExp(`\\b${escapeRegExp(input.readerName)}\\b`, "i").test(section.body)) {
+      boundaryViolations.push(`Chapter ${index + 1} names the selected reader instead of addressing them as you.`);
+    }
   }
   if (input.semanticSeverity === "severe") fatal.add("semantic_fidelity");
 

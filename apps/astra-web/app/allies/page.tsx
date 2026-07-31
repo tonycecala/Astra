@@ -19,6 +19,34 @@ function allyIdFromChartRequest(request: ChartMakerRequest) {
   return typeof allyId === "string" && allyId ? allyId : null;
 }
 
+function liveAllyForChart(request: ChartMakerRequest, alliesById: ReadonlyMap<string, Ally>) {
+  const allyId = allyIdFromChartRequest(request);
+  if (!allyId) return undefined;
+  return alliesById.get(allyId) ?? alliesById.get(allyId.startsWith("v1-ally:") ? allyId : `v1-ally:${allyId}`);
+}
+
+function hydrateChartFromLiveAlly(request: ChartMakerRequest, ally: Ally | undefined): ChartMakerRequest {
+  if (!ally) return request;
+  const subject = request.context?.subject && typeof request.context.subject === "object" && !Array.isArray(request.context.subject)
+    ? request.context.subject
+    : {};
+  return {
+    ...request,
+    subjectName: ally.name,
+    context: {
+      ...request.context,
+      subject: {
+        ...subject,
+        subjectType: "ally",
+        allyId: ally.id,
+        displayName: ally.name,
+        relationship: ally.relationship,
+        ...(ally.note ? { note: ally.note } : {})
+      }
+    }
+  };
+}
+
 function latestReportForChartRequest(
   chartRequest: ChartMakerRequest | undefined,
   requests: AstrologyReportRequest[],
@@ -91,6 +119,9 @@ function AllyCard({
   const createPortraitHref = chartRequest
     ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=report#ally-birth-onboarding`
     : "#ally-birth-onboarding";
+  const editBirthHref = chartRequest
+    ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=birth_details#ally-birth-onboarding`
+    : undefined;
   const relationshipLabel = normalizeAllyRelationshipTag(ally.relationship);
 
   return (
@@ -121,11 +152,11 @@ function AllyCard({
                 <BookOpenText aria-hidden="true" size={16} />
               </Link>
             )}
+            <AllyRelationshipEditor allyId={ally.id} allyName={ally.name} editBirthHref={editBirthHref} relationship={ally.relationship} />
             <AllyRemoveButton allyId={ally.id} allyName={ally.name} />
           </div>
         </div>
       </div>
-      <AllyRelationshipEditor allyId={ally.id} relationship={ally.relationship} />
     </article>
   );
 }
@@ -177,25 +208,25 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
     listUserAstrologyReportRequests(db, profile.userId),
     listUserAstrologyReportResults(db, profile.userId)
   ]);
-  const allyChartRequests = chartRequests.filter((request) => request.source !== "self");
+  const alliesById = new Map(allies.map((ally) => [ally.id, ally]));
+  const hydratedChartRequests = chartRequests.map((request) => hydrateChartFromLiveAlly(request, liveAllyForChart(request, alliesById)));
+  const allyChartRequests = hydratedChartRequests.filter((request) => request.source !== "self");
   const allyReportRequests = reportRequests.filter((request) => request.source === "ally");
   const allyReportRequestIds = new Set(allyReportRequests.map((request) => request.id));
   const allyReportResults = reportResults.filter((result) => allyReportRequestIds.has(result.requestId));
   const latestChartRequestByAllyId = new Map<string, ChartMakerRequest>();
   for (const request of allyChartRequests) {
-    const allyId = allyIdFromChartRequest(request);
-    if (allyId && !latestChartRequestByAllyId.has(allyId)) {
-      latestChartRequestByAllyId.set(allyId, request);
-    }
-    const importedAllyId = allyId ? `v1-ally:${allyId}` : null;
-    if (importedAllyId && !latestChartRequestByAllyId.has(importedAllyId)) {
-      latestChartRequestByAllyId.set(importedAllyId, request);
+    const ally = liveAllyForChart(request, alliesById);
+    if (ally && !latestChartRequestByAllyId.has(ally.id)) {
+      latestChartRequestByAllyId.set(ally.id, request);
     }
   }
   const selectedOnboardingChart = params.chart
     ? allyChartRequests.find((request) => request.id === params.chart)
     : undefined;
-  const initialOnboardingStep = selectedOnboardingChart ? "report" : onboardingStepFromParam(params.start);
+  const initialOnboardingStep = selectedOnboardingChart
+    ? onboardingStepFromParam(params.start) ?? "report"
+    : onboardingStepFromParam(params.start);
   const clearFilterParams = new URLSearchParams();
   if (params.chart) clearFilterParams.set("chart", params.chart);
   if (params.start) clearFilterParams.set("start", params.start);
@@ -273,11 +304,11 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
         <BirthOnboardingPanel
           displayName=""
           initialAllies={allies}
-          key={selectedOnboardingChart?.id ?? "new-ally-chart"}
+          key={selectedOnboardingChart ? `${selectedOnboardingChart.id}:${initialOnboardingStep}:${liveAllyForChart(selectedOnboardingChart, alliesById)?.relationship ?? "unknown"}` : "new-ally-chart"}
           role={profile.role}
           starBalance={profile.starBalance}
           initialRequests={allyChartRequests}
-          synastryComparisonRequests={chartRequests}
+          synastryComparisonRequests={hydratedChartRequests}
           initialReportRequests={allyReportRequests}
           initialReportResults={allyReportResults}
           initialBirthData={selectedOnboardingChart?.birthData}

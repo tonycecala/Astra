@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { allyRelationshipTags } from "@astra/contracts";
 import { synastryToneSnapshot, synastryV3Headings } from "@astra/astrology";
-import { createAlly, createAstrologyReportRequest, createAstrologyReportShare, db, recordAstrologyReportResult } from "@astra/db";
+import { createAlly, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, db, recordAstrologyReportResult } from "@astra/db";
 import { signInWithTestSession } from "./support/auth-session";
 
 test.describe("Synastry V3 production boundary", () => {
@@ -20,7 +20,16 @@ test.describe("Synastry V3 production boundary", () => {
     const email = `synastry-v3-${testInfo.project.name}-${Date.now()}@example.com`;
     const userId = await signInWithTestSession(page, { email, name: "V3 Reader" });
     const ally = await createAlly(db, { userId, name: "Cheyenne", kind: "person", relationship: "Friend" });
-
+    const allyChart = await createChartMakerRequest(db, {
+      userId,
+      subjectName: "Cheyenne",
+      birthData: { date: "1964-09-08", time: "14:15", timezone: "America/Chicago", location: "Chicago, IL, USA", latitude: 41.8781, longitude: -87.6298 },
+      source: "ally",
+      context: {
+        subject: { subjectType: "ally", subjectId: ally.id, allyId: ally.id, displayName: "Cheyenne", relationship: "Friend" },
+        chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+      }
+    });
     await page.goto("/allies#ally-birth-onboarding");
     const createSelector = page.getByLabel("Relationship").last();
     await expect(createSelector).toBeVisible();
@@ -30,12 +39,45 @@ test.describe("Synastry V3 production boundary", () => {
 
     const card = page.locator(`[id="ally-${ally.id}"]`);
     await expect(card.locator(".ally-card-badge")).toHaveText("Friend");
-    await card.getByLabel("Edit relationship").selectOption("Lover");
-    await card.getByRole("button", { name: "Save" }).click();
-    await expect(card.getByText("Relationship saved.")).toBeVisible();
+    await card.getByRole("button", { name: "Edit Ally: Cheyenne" }).click();
+    const editDialog = page.getByRole("dialog", { name: "Edit Cheyenne" });
+    await expect(editDialog).toBeVisible();
+    await editDialog.getByLabel("Relationship tag").selectOption("Lover");
+    await editDialog.getByRole("button", { name: "Save" }).click();
+    await expect(editDialog.getByText("Relationship saved.")).toBeVisible();
     await expect(card.locator(".ally-card-badge")).toHaveText("Lover");
     await page.reload();
     await expect(page.locator(`[id="ally-${ally.id}"] .ally-card-badge`)).toHaveText("Lover");
+    await createChartMakerRequest(db, {
+      userId,
+      subjectName: "V3 Reader",
+      birthData: { date: "1961-05-23", time: "09:30", timezone: "America/New_York", location: "New York, NY, USA", latitude: 40.7128, longitude: -74.006 },
+      source: "self",
+      context: {
+        subject: { subjectType: "self", subjectId: userId, displayName: "V3 Reader" },
+        chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
+      }
+    });
+    await page.locator(`[id="ally-${ally.id}"]`).getByRole("link", { name: "Create portrait" }).click();
+    const reportOrderPanel = page.locator('section[aria-label="Ally birth data onboarding"]');
+    await expect(reportOrderPanel.getByText("Lover", { exact: true })).toBeVisible();
+    const mobileReportSubmit = reportOrderPanel.locator("[data-mobile-report-submit]");
+    if (testInfo.project.name === "mobile") {
+      await reportOrderPanel.getByLabel("Synastry Report").check();
+      await reportOrderPanel.getByLabel("Comparison chart").selectOption({ index: 1 });
+      await reportOrderPanel.getByText("Reading perspective").scrollIntoViewIfNeeded();
+      await expect(mobileReportSubmit).toBeVisible();
+      await expect(mobileReportSubmit).toBeInViewport();
+    } else {
+      await expect(mobileReportSubmit).toBeHidden();
+    }
+    await page.locator(`[id="ally-${ally.id}"]`).getByRole("button", { name: "Edit Ally: Cheyenne" }).click();
+    await page.getByRole("dialog", { name: "Edit Cheyenne" }).getByRole("link", { name: "Edit birth details" }).click();
+    await expect(page).toHaveURL(new RegExp(`/allies\\?chart=${allyChart.id}&start=birth_details`));
+    const birthEditPanel = page.locator('section[aria-label="Ally birth data onboarding"]');
+    await expect(birthEditPanel.getByText("Step 1 of 2: Birth details")).toBeVisible();
+    await expect(birthEditPanel.getByLabel("Edit birth details")).toBeEnabled();
+    await expect(birthEditPanel.getByLabel("Edit birth location")).toBeEnabled();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 
     const tone = synastryToneSnapshot({ allyId: ally.id, relationship: "Lover" });

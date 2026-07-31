@@ -3079,7 +3079,8 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   color: color-mix(in srgb, var(--rose) 72%, var(--muted));
 }
 
-.ally-remove-layer {
+.ally-remove-layer,
+.ally-edit-layer {
   position: fixed;
   z-index: 90;
   inset: 0;
@@ -3089,7 +3090,8 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   background: rgba(0, 0, 0, 0.56);
 }
 
-.ally-remove-dialog {
+.ally-remove-dialog,
+.ally-edit-dialog {
   width: min(360px, 100%);
   border: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
   border-radius: 12px;
@@ -3098,13 +3100,15 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   box-shadow: var(--shadow);
 }
 
-.ally-remove-dialog h3 {
+.ally-remove-dialog h3,
+.ally-edit-dialog h3 {
   margin: 0;
   color: var(--gold);
   font-size: 1.05rem;
 }
 
-.ally-remove-dialog p {
+.ally-remove-dialog p,
+.ally-edit-dialog p {
   margin: 10px 0 0;
   color: var(--muted);
 }
@@ -3114,7 +3118,42 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   font-weight: 750;
 }
 
-.ally-remove-actions {
+.ally-edit-dialog {
+  width: min(420px, 100%);
+}
+
+.ally-edit-field {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+  color: var(--text);
+  font-weight: 750;
+}
+
+.ally-edit-field select {
+  width: 100%;
+}
+
+.ally-edit-hint {
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.ally-edit-status {
+  display: block;
+  min-height: 1.25rem;
+  margin-top: 8px;
+  color: var(--green);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.ally-edit-status-error {
+  color: var(--rose);
+}
+
+.ally-remove-actions,
+.ally-edit-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(104px, auto));
   justify-content: flex-end;
@@ -3122,14 +3161,17 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   margin-top: 16px;
 }
 
-.ally-remove-actions .button {
+.ally-remove-actions .button,
+.ally-edit-actions .button {
+  width: auto;
   min-width: 104px;
   justify-content: center;
   white-space: nowrap;
 }
 
 @media (max-width: 360px) {
-  .ally-remove-actions {
+  .ally-remove-actions,
+  .ally-edit-actions {
     grid-template-columns: 1fr;
   }
 }

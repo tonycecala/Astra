@@ -1,6 +1,7 @@
 import { synastryToneSnapshot, synastryV3Headings, technicalLeakageMatches, validateSynastryV3 } from "@astra/astrology";
 
 const allyName = "Cheyenne";
+const readerName = "Tony";
 const tone = synastryToneSnapshot({ relationship: "Lover" });
 const headings = synastryV3Headings(tone, allyName);
 const evidenceIndex = [{ id: "S01", label: "private technical label", meaning: "mutual emotional recognition", evidenceJobs: ["Attraction"] }];
@@ -20,30 +21,30 @@ function portraitWith(wordTarget: number, additions = "") {
 
 for (const boundary of [1350, 1650]) {
   const sample = portraitWith(boundary);
-  const result = validateSynastryV3({ ...sample, headings, trace, evidenceIndex, tone, allyName });
+  const result = validateSynastryV3({ ...sample, headings, trace, evidenceIndex, tone, readerName, allyName });
   if (result.wordCount !== boundary || result.reviewNotes.some((note) => note.includes("accepted range"))) {
     throw new Error(`${boundary} words must be inside the accepted numeric range.`);
   }
 }
 const short = portraitWith(1349);
-if (!validateSynastryV3({ ...short, headings, trace, evidenceIndex, tone, allyName }).reviewNotes.some((note) => note.includes("accepted range"))) {
+if (!validateSynastryV3({ ...short, headings, trace, evidenceIndex, tone, readerName, allyName }).reviewNotes.some((note) => note.includes("accepted range"))) {
   throw new Error("An out-of-band word count must produce a review note.");
 }
 
 const twoCategory = portraitWith(1500, "Venus. You carry more.");
-const twoResult = validateSynastryV3({ ...twoCategory, headings, trace, evidenceIndex, tone, allyName });
+const twoResult = validateSynastryV3({ ...twoCategory, headings, trace, evidenceIndex, tone, readerName, allyName });
 if (!twoResult.greenLight || twoResult.fatalCategories.length !== 2) throw new Error("Two editorial fatal categories must remain green.");
 const threeCategory = portraitWith(1500, "Venus. You carry more. You learned early.");
-if (validateSynastryV3({ ...threeCategory, headings, trace, evidenceIndex, tone, allyName }).greenLight) {
+if (validateSynastryV3({ ...threeCategory, headings, trace, evidenceIndex, tone, readerName, allyName }).greenLight) {
   throw new Error("Three editorial fatal categories must be rejected.");
 }
 const invalidTrace = trace.map((row) => ({ ...row }));
 invalidTrace[0]!.evidenceIds = ["S99"];
-if (validateSynastryV3({ ...portraitWith(1500), headings, trace: invalidTrace, evidenceIndex, tone, allyName }).greenLight) {
+if (validateSynastryV3({ ...portraitWith(1500), headings, trace: invalidTrace, evidenceIndex, tone, readerName, allyName }).greenLight) {
   throw new Error("Unknown Evidence IDs are a hard boundary failure.");
 }
 const italicSpeech = portraitWith(1500, "*I need you*, Cheyenne thinks.");
-if (!validateSynastryV3({ ...italicSpeech, headings, trace, evidenceIndex, tone, allyName }).fatalCategories.includes("invented_reality")) {
+if (!validateSynastryV3({ ...italicSpeech, headings, trace, evidenceIndex, tone, readerName, allyName }).fatalCategories.includes("invented_reality")) {
   throw new Error("Attributed italic first-person speech must count as fabricated dialogue.");
 }
 if (technicalLeakageMatches("Pressure grows in the house by degrees, while the opposite fear appears.").length) {
@@ -61,19 +62,26 @@ const childSections = childHeadings.map((title) => ({
 }));
 const childPortrait = childSections.map((section) => `## ${section.title}\n\n${section.body}`).join("\n\n");
 const childTrace = childHeadings.map((chapter) => ({ chapter, evidenceIds: ["S01"], supportedFeeling: "family recognition" }));
-const childResult = validateSynastryV3({ portrait: childPortrait, sections: childSections, headings: childHeadings, trace: childTrace, evidenceIndex, tone: childTone, allyName });
+const childResult = validateSynastryV3({ portrait: childPortrait, sections: childSections, headings: childHeadings, trace: childTrace, evidenceIndex, tone: childTone, readerName, allyName });
 if (childResult.greenLight || !childResult.boundaryViolations.some((message) => message.includes("prohibited"))) {
   throw new Error("Child and every prohibit lens must reject romantic framing as a hard boundary.");
 }
 const childAutonomySections = childSections.map((section) => ({ ...section, body: section.body.replace("Romantic chemistry appears.", "A desire for autonomy appears.") }));
 const childAutonomyPortrait = childAutonomySections.map((section) => `## ${section.title}\n\n${section.body}`).join("\n\n");
-if (validateSynastryV3({ portrait: childAutonomyPortrait, sections: childAutonomySections, headings: childHeadings, trace: childTrace, evidenceIndex, tone: childTone, allyName }).boundaryViolations.length) {
+if (validateSynastryV3({ portrait: childAutonomyPortrait, sections: childAutonomySections, headings: childHeadings, trace: childTrace, evidenceIndex, tone: childTone, readerName, allyName }).boundaryViolations.length) {
   throw new Error("A child's ordinary desire for autonomy must not be misclassified as romantic language.");
 }
 const burden = portraitWith(1500, "You carry her burden and fate joins you.");
-const burdenResult = validateSynastryV3({ ...burden, headings, trace, evidenceIndex, tone, allyName });
+const burdenResult = validateSynastryV3({ ...burden, headings, trace, evidenceIndex, tone, readerName, allyName });
 if (!burdenResult.fatalCategories.includes("comparative_verdict") || !burdenResult.fatalCategories.includes("invented_reality")) {
   throw new Error("Containment, burden assignment, and fate must remain strict editorial violations.");
+}
+
+const wrongReaderSections = portraitWith(1500).sections.map((section) => ({ ...section, body: section.body.replace("Cheyenne remains", "Tony watches while Cheyenne remains") }));
+const wrongReaderPortrait = wrongReaderSections.map((section) => `## ${section.title}\n\n${section.body}`).join("\n\n");
+const wrongReader = validateSynastryV3({ portrait: wrongReaderPortrait, sections: wrongReaderSections, headings, trace, evidenceIndex, tone, readerName, allyName });
+if (wrongReader.greenLight || !wrongReader.boundaryViolations.some((message) => message.includes("selected reader"))) {
+  throw new Error("Naming the selected reader in third person must fail the instruction boundary even under the fluid fatal-error policy.");
 }
 
 console.log("Synastry V3 validation smoke passed for numeric, fatal-budget, trace, dialogue, and contextual leakage rules.");

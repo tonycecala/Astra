@@ -366,7 +366,8 @@ export function BirthOnboardingPanel({
   const selectedReportCost = reportTypeCost(selectedReportType);
   const balanceAfterReport = starBalance - selectedReportCost;
   const canAffordSelectedReport = isAdmin || balanceAfterReport >= 0;
-  const isExistingChartOrderMode = isAlly && isUsingExistingChart;
+  const isExistingChartBirthEditMode = isAlly && isUsingExistingChart && requestedInitialStep === "birth_details";
+  const isExistingChartOrderMode = isAlly && isUsingExistingChart && !isExistingChartBirthEditMode;
   const isExistingChartLocked = isExistingChartOrderMode;
   const visibleSteps: readonly Step[] = isExistingChartOrderMode ? ["report"] : isUsingExistingChart ? ["birth_details", "report"] : steps;
   const visibleStepIndex = visibleSteps.indexOf(activeStep);
@@ -868,7 +869,7 @@ export function BirthOnboardingPanel({
             ))}
           </div>
         ) : null}
-        <form className={`auth-form ${styles.form}`} onSubmit={submitChartRequest}>
+        <form className={`auth-form ${styles.form} ${canSubmit ? styles.formHasMobileSubmit : ""}`} onSubmit={submitChartRequest}>
           {!isSingleStepFlow ? (
             <p className={styles.progressText} aria-live="polite">
               {isWizardComplete
@@ -892,7 +893,7 @@ export function BirthOnboardingPanel({
               </button>
             ) : null}
             {canSubmit ? (
-              <button className="button" type="submit" disabled={isSubmitting || Boolean(activeStepError)}>
+              <button className={`button ${styles.primarySubmitAction}`} type="submit" disabled={isSubmitting || Boolean(activeStepError)}>
                 {isSubmitting ? <Send aria-hidden="true" size={18} /> : null}
                 {isSubmitting
                   ? isChartArrivalFlow ? ui.self.chartArrivalReading : ui.self.chartRequestWorking
@@ -1135,6 +1136,17 @@ export function BirthOnboardingPanel({
                 <span>{isExistingChartLocked ? ui.self.birthMomentLocked : ui.self.birthMomentEditAction}</span>
               </button>
             </>
+          ) : null}
+
+          {canSubmit && !isConfirmingReport ? (
+            <div className={styles.mobileSubmitBar} data-mobile-report-submit>
+              <button className="button" disabled={isSubmitting || Boolean(activeStepError)} type="submit">
+                {isSubmitting ? <Send aria-hidden="true" size={18} /> : null}
+                {isSubmitting
+                  ? isChartArrivalFlow ? ui.self.chartArrivalReading : ui.self.chartRequestWorking
+                  : isChartArrivalFlow ? ui.self.chartArrivalReveal : ui.self.chartRequestSubmit}
+              </button>
+            </div>
           ) : null}
 
           {message ? <p className="form-status" aria-live="polite">{message}</p> : null}

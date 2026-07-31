@@ -3778,7 +3778,7 @@ async function generateSynastryV3Draft(
       );
     }
 
-    let validation = validateSynastryV3({ portrait: parsed.portrait, sections, headings, trace: parsed.trace, evidenceIndex, tone, allyName });
+    let validation = validateSynastryV3({ portrait: parsed.portrait, sections, headings, trace: parsed.trace, evidenceIndex, tone, readerName, allyName });
     if (!validation.greenLight) {
       previousErrors = [...validation.boundaryViolations, ...validation.fatalCategories.map((category) => `Fatal category: ${category}`)];
       failures.push(synastryV3RetryFailure(attempt, previousErrors, response, response.text, "unsupported_claim"));
@@ -3810,6 +3810,7 @@ async function generateSynastryV3Draft(
       trace: parsed.trace,
       evidenceIndex,
       tone,
+      readerName,
       allyName,
       semanticSeverity: semantic.severity
     });

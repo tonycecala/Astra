@@ -157,3 +157,7 @@ Before shipping, ask:
 Would this still feel respectful if Astra explained exactly what it is doing and why?
 
 If the answer is no, redesign it.
+
+## Long Mobile Choice Forms
+
+When the user must scroll through a long set of choices before acting, keep the primary action in a compact fixed bar immediately above Astra's bottom navigation. Hide the duplicate top action on phone, reserve enough scroll padding to keep the final controls readable, and remove the fixed bar when confirmation opens. Keep supporting descriptions short enough that the decision labels, prices, and required follow-up controls remain the visual priority. Verify the action stays in the phone viewport after scrolling to the final choice.

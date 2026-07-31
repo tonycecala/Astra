@@ -143,7 +143,12 @@ export async function POST(request: Request) {
     readerChart = parsed.data.reportBasis.perspective === "comparison" ? partnerChart : primaryChart;
     const allyChart = [primaryChart, partnerChart].find((chart) => chart.context?.subject?.subjectType === "ally");
     const allyId = allyChart?.context?.subject?.allyId ?? allyChart?.context?.subject?.subjectId;
-    const liveAlly = allyId ? await getUserAlly(db, { allyId, userId: profile.userId }) : null;
+    const directLiveAlly = allyId ? await getUserAlly(db, { allyId, userId: profile.userId }) : null;
+    const liveAlly = directLiveAlly ?? (
+      allyId && !allyId.startsWith("v1-ally:")
+        ? await getUserAlly(db, { allyId: `v1-ally:${allyId}`, userId: profile.userId })
+        : null
+    );
     const resolvedAllyId = liveAlly?.id ?? allyId;
     tone = synastryToneSnapshot({
       ...(resolvedAllyId ? { allyId: resolvedAllyId } : {}),

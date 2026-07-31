@@ -81,6 +81,46 @@ if (!v3 || v3.sourceReportIds.length || !v3.validation.greenLight || v3.chapterT
 if (result.sections.some((section) => /\b(?:Venus|aspect|S\d{2})\b/i.test(section.body))) throw new Error("Technical astrology leaked into V3 portrait prose.");
 if (/\b(?:zodiac|chart|aspect)\b/i.test(result.publicSignal?.summary ?? "")) throw new Error("Technical astrology leaked into the V3 public signal.");
 
+const reciprocalRequest = astrologyReportRequestSchema.parse({
+  ...request,
+  id: "synastry_v3_reciprocal_engine_smoke",
+  chartRequestId: request.reportBasis?.partner?.chartRequestId,
+  subjectName: "Partner",
+  birthData: request.reportBasis?.partner?.birthData,
+  source: "ally",
+  reportBasis: request.reportBasis?.partner
+    ? {
+        ...request.reportBasis,
+        primary: request.reportBasis.partner,
+        partner: request.reportBasis.primary
+      }
+    : undefined
+});
+const reciprocalHeadings = synastryV3Headings(tone, "Tony");
+let reciprocalCalls = 0;
+const reciprocalFetch: typeof fetch = async (_url, init) => {
+  reciprocalCalls += 1;
+  const body = JSON.parse(String(init?.body)) as { input?: string };
+  if (reciprocalCalls === 1) {
+    if (!body.input?.includes('The selected reader is Partner; address Partner only as "you". The Ally is Tony.')) {
+      throw new Error("The reciprocal writer prompt did not preserve the selected comparison reader.");
+    }
+    const sections = reciprocalHeadings.map((heading, index) => {
+      const words = `${index === 0 ? "Romantic sexual desire feels immediate. " : ""}Tony remains independently present, while the relationship between you develops its own feeling and hidden consequence.`.trim().split(/\s+/);
+      while (words.length < 240) words.push("feeling");
+      return `## ${heading}\n\n${words.join(" ")}`;
+    });
+    const trace = reciprocalHeadings.map((chapter) => ({ chapter, evidenceIds: ["S01"], supportedFeeling: "mutual recognition" }));
+    const output = `<portrait_markdown>\n# Partner + Tony\n\n${sections.join("\n\n")}\n</portrait_markdown>\n<evidence_trace_json>\n${JSON.stringify(trace)}\n</evidence_trace_json>`;
+    return new Response(JSON.stringify({ output_text: output }), { headers: { "content-type": "application/json" } });
+  }
+  return new Response(JSON.stringify({ output_text: JSON.stringify({ supportedClaims: ["mutual recognition"], unsupportedClaims: [], severity: "none" }) }), { headers: { "content-type": "application/json" } });
+};
+const reciprocalResult = await buildAstrologyReportResultAsync(reciprocalRequest, { env, fetchImpl: reciprocalFetch });
+if (reciprocalResult.status !== "completed" || reciprocalCalls !== 2 || reciprocalResult.sections.some((section) => /\bPartner\b/.test(section.body))) {
+  throw new Error("V3 did not preserve the comparison reader as you through generation and validation.");
+}
+
 let failedCalls = 0;
 const malformedFetch: typeof fetch = async () => {
   failedCalls += 1;
