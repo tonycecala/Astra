@@ -33,9 +33,42 @@ type OpenRouterUsage = {
   cost?: number;
 };
 
-const cheyenneChartId = "v1-chart:4f42aa82-c5fd-41d2-96b6-7f9143ace78c";
-const tonyChartId = "0fac9ad6-6ccd-4a30-ac0b-480892254f0f";
-const sourceChartIds = [cheyenneChartId, tonyChartId];
+type SampleConfig = {
+  key: string;
+  primaryChartId: string;
+  primaryName: string;
+  partnerChartId: string;
+  partnerName: string;
+  allyRelationship: string;
+  toneMode: "adult-romantic";
+};
+
+const sampleConfigs: Record<string, SampleConfig> = {
+  "cheyenne-tony": {
+    key: "cheyenne-tony",
+    primaryChartId: "v1-chart:4f42aa82-c5fd-41d2-96b6-7f9143ace78c",
+    primaryName: "Cheyenne Autumn",
+    partnerChartId: "0fac9ad6-6ccd-4a30-ac0b-480892254f0f",
+    partnerName: "Tony Cecala",
+    allyRelationship: "friend",
+    toneMode: "adult-romantic"
+  },
+  "felicia-tony": {
+    key: "felicia-tony",
+    primaryChartId: "v1-chart:d4eda33e-5cd8-4f24-b258-04a19887af72",
+    primaryName: "Felicia Weiss",
+    partnerChartId: "0fac9ad6-6ccd-4a30-ac0b-480892254f0f",
+    partnerName: "Tony Cecala",
+    allyRelationship: "spouse",
+    toneMode: "adult-romantic"
+  }
+};
+const sampleKey = option("--sample") || "cheyenne-tony";
+const sample = sampleConfigs[sampleKey];
+if (!sample) {
+  throw new Error(`Unknown sample ${sampleKey}. Choose one of: ${Object.keys(sampleConfigs).join(", ")}.`);
+}
+const sourceChartIds = [sample.primaryChartId, sample.partnerChartId];
 const evidenceHeadings = ["Attraction", "Friction", "Communication", "Stability"] as const;
 const reportBodyIds = new Set([
   "sun", "moon", "mercury", "venus", "mars", "jupiter",
@@ -66,9 +99,9 @@ const apiKey =
 
 if (process.argv.includes("--help")) {
   console.log("Generate one private, direct-chart-signal Dual-Perspective Synastry Portrait.");
-  console.log("Generation: --generate [--complete-inventory] [--output].");
-  console.log("Signals only: --signals-only [--complete-inventory] [--output].");
-  console.log("Validation only: --validate <portrait.md>.");
+  console.log("Generation: --generate [--sample cheyenne-tony|felicia-tony] [--complete-inventory] [--output].");
+  console.log("Signals only: --signals-only [--sample cheyenne-tony|felicia-tony] [--complete-inventory] [--output].");
+  console.log("Validation only: --validate <portrait.md> [--sample cheyenne-tony|felicia-tony].");
   process.exit(0);
 }
 
@@ -198,17 +231,29 @@ async function loadSourceCharts() {
 }
 
 function buildDirectSignalRequest(charts: ChartMakerRequest[]) {
-  const cheyenne = charts.find((chart) => chart.id === cheyenneChartId);
-  const tony = charts.find((chart) => chart.id === tonyChartId);
-  if (!cheyenne || !tony) throw new Error("Tony and Cheyenne source charts are required.");
-  if (cheyenne.userId !== tony.userId) throw new Error("Source charts must share an owner.");
+  const primary = charts.find((chart) => chart.id === sample.primaryChartId);
+  const partner = charts.find((chart) => chart.id === sample.partnerChartId);
+  if (!primary || !partner) throw new Error(`${sample.primaryName} and ${sample.partnerName} source charts are required.`);
+  if (primary.userId !== partner.userId) throw new Error("Source charts must share an owner.");
+  if (
+    firstName(primary.subjectName) !== firstName(sample.primaryName) ||
+    firstName(partner.subjectName) !== firstName(sample.partnerName)
+  ) {
+    throw new Error("Source chart names no longer match the selected sample.");
+  }
+  const storedRelationship = chartRelationship(primary);
+  if (storedRelationship.toLowerCase() !== sample.allyRelationship.toLowerCase()) {
+    throw new Error(
+      `Selected sample expects Ally relationship ${sample.allyRelationship}, found ${storedRelationship || "none"}.`
+    );
+  }
   return astrologyReportRequestSchema.parse({
     id: randomUUID(),
-    userId: cheyenne.userId,
-    chartRequestId: cheyenne.id,
+    userId: primary.userId,
+    chartRequestId: primary.id,
     reportType: "synastry",
-    subjectName: "Cheyenne Autumn + Tony Cecala",
-    birthData: cheyenne.birthData,
+    subjectName: `${sample.primaryName} + ${sample.partnerName}`,
+    birthData: primary.birthData,
     question: "What is the distinct psychological experience of each person and of this relationship?",
     intent: "experimental-direct-chart-signal-dual-perspective-synastry-v3",
     context: {},
@@ -221,19 +266,19 @@ function buildDirectSignalRequest(charts: ChartMakerRequest[]) {
       type: "synastry",
       chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" },
       primary: {
-        chartRequestId: cheyenne.id,
+        chartRequestId: primary.id,
         subjectType: "ally",
-        subjectId: cheyenne.id,
-        subjectName: "Cheyenne Autumn",
-        birthData: cheyenne.birthData,
+        subjectId: primary.id,
+        subjectName: sample.primaryName,
+        birthData: primary.birthData,
         calculationMode: "full"
       },
       partner: {
-        chartRequestId: tony.id,
+        chartRequestId: partner.id,
         subjectType: "self",
-        subjectId: tony.userId,
-        subjectName: "Tony Cecala",
-        birthData: tony.birthData,
+        subjectId: partner.userId,
+        subjectName: sample.partnerName,
+        birthData: partner.birthData,
         calculationMode: "full"
       }
     },
@@ -263,23 +308,30 @@ function renderSignalPacket(signals: SignalPacket, completeInventory: boolean) {
 }
 
 function buildPrompt(signalMarkdown: string, completeInventory: boolean) {
+  const primaryFirstName = firstName(sample.primaryName);
+  const partnerFirstName = firstName(sample.partnerName);
   const packetContract = completeInventory
     ? `The packet is the complete calculated inventory of supported major interaspects between Astra's standard report bodies. Do not treat contact count as a vote, give wide-orb or outer-planet contacts equal weight by default, or force every contact into the portrait. Select load-bearing evidence by exactness, personal-planet relevance, recurrence, and explanatory value. The inventory excludes house overlays, angles, nodes, asteroids, midpoints, Yods, composite charts, and Davison charts; do not infer anything about those excluded systems.`
     : `The packet is a curated selection of the strongest contacts, not an exhaustive list. Never infer that an unlisted reciprocal contact does not exist, and never rank which person contributes more by treating omitted signals as negative evidence.`;
   return `You are Astra's premium psychological-astrology portrait writer.
 
-Write one experimental Dual-Perspective Synastry Portrait for Tony Cecala and Cheyenne Autumn. This is a private shadow-generation bakeoff, not a production report.
+Write one experimental Dual-Perspective Synastry Portrait for ${sample.partnerName} and ${sample.primaryName}. This is a private shadow-generation bakeoff, not a production report.
+
+Relationship context:
+- ${sample.primaryName} is stored as ${sample.partnerName}'s Ally with relationship type "${sample.allyRelationship}."
+- Tone mode: ${sample.toneMode}. Romantic, erotic, and sexual-attraction themes are allowed only when supported by the supplied interaspects. Do not infer monogamy, permanence, relationship satisfaction, or a stay/leave conclusion from the Ally type.
+- The Ally relationship label is routing context, not evidence of relationship history. Do not claim how they met, fell in love, built a life, divided marital labor, or what their current relationship is like unless the selected interaspects can support a clearly conditional possibility.
 
 Purpose:
 - Produce psychologically dense, specific, restrained, literary writing without relying on any prior report prose.
-- Make the asymmetry of lived experience central: show Tony's experience, Cheyenne's experience, and the relationship itself as three distinct protagonists.
+- Make the asymmetry of lived experience central: show ${partnerFirstName}'s experience, ${primaryFirstName}'s experience, and the relationship itself as three distinct protagonists.
 - Create meaning, not a list of aspects. The astrology should operate as load-bearing evidence beneath the prose.
-- Be emotionally candid and interesting. Do not sand down contradiction, desire, anger, projection, power, dependency, erotic charge, or unequal relational labor.
+- Be emotionally candid and interesting. Do not sand down contradiction, desire, anger, projection, power, dependency, erotic charge, or differences in how each person may experience relational effort. Do not rank who contributes, earns, carries, gives, or receives more.
 
 Required structure — use these exact H2 headings, in this order:
 ## 1. The Recognition
-## 2. Cheyenne Inside Tony
-## 3. Tony Inside Cheyenne
+## 2. ${primaryFirstName} Inside ${partnerFirstName}
+## 3. ${partnerFirstName} Inside ${primaryFirstName}
 ## 4. The Spell and the Projection
 ## 5. Desire, Anger, and Pursuit
 ## 6. The Love Language Under Pressure
@@ -289,14 +341,15 @@ Required structure — use these exact H2 headings, in this order:
 Write an H1 title before Chapter 1 and a short italic deck that states the portrait's central thesis. Do not add any other H2 sections. Target 4,200-5,800 words total, with fully developed chapters rather than padded repetition.
 
 Perspective discipline:
-- When describing Tony's experience, explicitly say Tony and ground the claim in contacts to Tony's chart.
-- When describing Cheyenne's experience, explicitly say Cheyenne and ground the claim in contacts to Cheyenne's chart.
+- When describing ${partnerFirstName}'s experience, explicitly say ${partnerFirstName} and ground the claim in contacts to ${partnerFirstName}'s chart.
+- When describing ${primaryFirstName}'s experience, explicitly say ${primaryFirstName} and ground the claim in contacts to ${primaryFirstName}'s chart.
 - When describing the relationship as a third being, clearly label it as a synthesis of reciprocal interaspects. Do not invent a composite or Davison chart.
 - Do not flatten reciprocal aspects into identical experiences. The same contact can land differently on the planet person and the planet receiving it.
 - Treat interpretations as chart-grounded possibilities, not verified biography. Avoid generic advice, therapy language, safety disclaimers, and canned compatibility verdicts.
 
 Evidence contract:
 - The chart-signal packet below is the only astrological evidence supplied. Use no aspect, placement, house, angle, node, asteroid, midpoint, Yod, composite chart, or Davison claim that is absent from it.
+- Degree and orb values are calculation trace only. Do not reproduce numerical degrees or orbs in the portrait, and never convert decimal degrees into degree-minute notation.
 - Do not import a conclusion from an earlier report; none is provided.
 - ${packetContract}
 - An interaspect is reciprocal even when its two people experience the contacted planets differently. Do not describe the aspect itself as energy flowing only one way.
@@ -304,7 +357,7 @@ Evidence contract:
 - Build Chapters 2 and 3 from how the same interaspects land differently for each named person.
 - Build Chapter 4 only from supplied signals that support idealization, ambiguity, permeability, or projection.
 - Build Chapters 5 and 6 from supplied desire/conflict and communication/emotional signals respectively.
-- Build Chapter 7 from asymmetries, power, cost, or unequal relational work within the supplied interaspects, while keeping those interpretations as hypotheses rather than verdicts about who carries the whole relationship.
+- Build Chapter 7 from differences in lived experience, power, or cost within the supplied interaspects. Keep them as hypotheses and do not turn aspect counts or one person's contacted planets into a verdict about who carries, earns, gives, or receives more.
 - Build Chapter 8 only by synthesizing reciprocal interaspects as a relationship pattern.
 - If a desired theme is not supported by a supplied signal, omit that theme rather than filling the gap.
 
@@ -329,6 +382,9 @@ function signalManifest(
     databaseMode: "read-only",
     sourceReportIds: [],
     sourceChartIds,
+    sample: sample.key,
+    allyRelationship: sample.allyRelationship,
+    toneMode: sample.toneMode,
     reportProseInput: false,
     signalSource: inventoryCalculation
       ? "buildAstrologyChartSnapshot cross-chart enumeration"
@@ -446,8 +502,8 @@ function buildCompleteInteraspectInventory(request: ReturnType<typeof buildDirec
   if (!basis || basis.schemaVersion !== 2 || basis.type !== "synastry" || !basis.partner) {
     throw new Error("Complete interaspect inventory requires a V2 synastry basis.");
   }
-  const cheyenneSnapshot = buildAstrologyChartSnapshot(request);
-  const tonyRequest = astrologyReportRequestSchema.parse({
+  const primarySnapshot = buildAstrologyChartSnapshot(request);
+  const partnerRequest = astrologyReportRequestSchema.parse({
     ...request,
     id: randomUUID(),
     chartRequestId: basis.partner.chartRequestId,
@@ -459,18 +515,18 @@ function buildCompleteInteraspectInventory(request: ReturnType<typeof buildDirec
       partner: basis.primary
     }
   });
-  const tonySnapshot = buildAstrologyChartSnapshot(tonyRequest);
+  const partnerSnapshot = buildAstrologyChartSnapshot(partnerRequest);
   const byJob = new Map<string, SignalBullet[]>(
     evidenceHeadings.map((heading) => [heading, []])
   );
 
-  for (const left of cheyenneSnapshot.placements.filter(isReportBody)) {
-    for (const right of tonySnapshot.placements.filter(isReportBody)) {
+  for (const left of primarySnapshot.placements.filter(isReportBody)) {
+    for (const right of partnerSnapshot.placements.filter(isReportBody)) {
       const match = majorAspectMatch(Math.abs(left.angle - right.angle));
       if (!match) continue;
       const job = synastryEditorialJob(left.bodyId, right.bodyId, match.type);
       byJob.get(job)?.push({
-        label: `Cheyenne ${bodyDisplayName(left.bodyId)} ${match.type} Tony ${bodyDisplayName(right.bodyId)}`,
+        label: `${firstName(sample.primaryName)} ${bodyDisplayName(left.bodyId)} ${match.type} ${firstName(sample.partnerName)} ${bodyDisplayName(right.bodyId)}`,
         meaning: `${bodyDisplayName(left.bodyId)} ${match.type} ${bodyDisplayName(right.bodyId)}; ${degreeInSign(left.angle)} degrees ${left.sign}; ${degreeInSign(right.angle)} degrees ${right.sign}; orb ${match.orb} degrees`
       });
     }
@@ -487,11 +543,11 @@ function buildCompleteInteraspectInventory(request: ReturnType<typeof buildDirec
   return {
     signals,
     calculation: {
-      leftBodyCount: cheyenneSnapshot.placements.filter(isReportBody).length,
-      rightBodyCount: tonySnapshot.placements.filter(isReportBody).length,
+      leftBodyCount: primarySnapshot.placements.filter(isReportBody).length,
+      rightBodyCount: partnerSnapshot.placements.filter(isReportBody).length,
       evaluatedBodyPairs:
-        cheyenneSnapshot.placements.filter(isReportBody).length *
-        tonySnapshot.placements.filter(isReportBody).length,
+        primarySnapshot.placements.filter(isReportBody).length *
+        partnerSnapshot.placements.filter(isReportBody).length,
       eligibleInteraspectCount,
       aspectOrbsDegrees: Object.fromEntries(majorAspectRules.map(([type, , orb]) => [type, orb]))
     }
@@ -546,10 +602,12 @@ function validatePortrait(
   signals?: SignalPacket,
   completeInventory = false
 ) {
+  const primaryFirstName = firstName(sample.primaryName);
+  const partnerFirstName = firstName(sample.partnerName);
   const expectedHeadings = [
     "1. The Recognition",
-    "2. Cheyenne Inside Tony",
-    "3. Tony Inside Cheyenne",
+    `2. ${primaryFirstName} Inside ${partnerFirstName}`,
+    `3. ${partnerFirstName} Inside ${primaryFirstName}`,
     "4. The Spell and the Projection",
     "5. Desire, Anger, and Pursuit",
     "6. The Love Language Under Pressure",
@@ -568,11 +626,11 @@ function validatePortrait(
   }
   if (words < 3_500) issues.push(`Portrait is too short (${words} words).`);
   if (words > 6_500) issues.push(`Portrait is too long (${words} words).`);
-  if ((markdown.match(/\bTony\b/g) ?? []).length < 20) {
-    issues.push("Tony's perspective is not explicit enough.");
+  if (nameMentions(markdown, partnerFirstName) < 20) {
+    issues.push(`${partnerFirstName}'s perspective is not explicit enough.`);
   }
-  if ((markdown.match(/\bCheyenne\b/g) ?? []).length < 20) {
-    issues.push("Cheyenne's perspective is not explicit enough.");
+  if (nameMentions(markdown, primaryFirstName) < 20) {
+    issues.push(`${primaryFirstName}'s perspective is not explicit enough.`);
   }
   if ((markdown.match(/\brelationship\b/gi) ?? []).length < 12) {
     issues.push("The relationship-as-third-being perspective is underdeveloped.");
@@ -593,6 +651,12 @@ function validatePortrait(
   }
   if (/\bYod\b/i.test(markdown)) {
     issues.push("Portrait discusses a Yod without a supplied Yod signal.");
+  }
+  const rawCalculationClaims = [
+    ...markdown.matchAll(/[°º]|\borb(?: of)?\s+\d|\b\d+(?:\.\d+)?-degree\b/gi)
+  ].map((match) => match[0]);
+  if (rawCalculationClaims.length) {
+    issues.push("Portrait reproduces raw degree or orb calculation trace.");
   }
   const contributionLedgerClaims = completeInventory
     ? [
@@ -617,9 +681,10 @@ function validatePortrait(
     chapterHeadings: headings,
     groundedSignalCount,
     contributionLedgerClaims,
+    rawCalculationClaims,
     mentions: {
-      Tony: (markdown.match(/\bTony\b/g) ?? []).length,
-      Cheyenne: (markdown.match(/\bCheyenne\b/g) ?? []).length,
+      [partnerFirstName]: nameMentions(markdown, partnerFirstName),
+      [primaryFirstName]: nameMentions(markdown, primaryFirstName),
       relationship: (markdown.match(/\brelationship\b/gi) ?? []).length
     }
   };
@@ -652,8 +717,10 @@ function isNamedInteraspect(label: string) {
 }
 
 function parseInteraspect(bullet: SignalBullet) {
+  const primaryFirstName = escapeRegex(firstName(sample.primaryName));
+  const partnerFirstName = escapeRegex(firstName(sample.partnerName));
   const match = bullet.label.match(
-    /^(Cheyenne|Tony) (Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron) (conjunction|opposition|square|trine|sextile|quincunx) (Cheyenne|Tony) (Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)$/
+    new RegExp(`^(${primaryFirstName}|${partnerFirstName}) (Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron) (conjunction|opposition|square|trine|sextile|quincunx) (${primaryFirstName}|${partnerFirstName}) (Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Chiron)$`)
   );
   if (!match) return null;
   return {
@@ -688,6 +755,23 @@ function option(name: string) {
 
 function clean(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function firstName(value: string) {
+  return value.trim().split(/\s+/)[0] || value.trim();
+}
+
+function chartRelationship(chart: ChartMakerRequest) {
+  const subject = chart.context?.subject;
+  return subject && typeof subject.relationship === "string" ? subject.relationship.trim() : "";
+}
+
+function nameMentions(markdown: string, name: string) {
+  return (markdown.match(new RegExp(`\\b${escapeRegex(name)}\\b`, "g")) ?? []).length;
+}
+
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 async function createPrivateDirectory(path: string) {

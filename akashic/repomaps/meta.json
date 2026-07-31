@@ -3798,6 +3798,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/playbooks/astra-verification-tiers.md",
+      "weight": 24.13,
+      "bucket": "akashic",
+      "estimated_tokens": 1491,
+      "lines": 63,
+      "symbols": 6,
+      "symbol_type_counts": {
+        "heading": 6
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/astra-web/app/journey/page.tsx",
       "weight": 24.11,
       "bucket": "other",
@@ -3810,20 +3824,6 @@
       },
       "dependency_in": 0,
       "dependency_out": 5,
-      "route_count": 0
-    },
-    {
-      "file": "akashic/playbooks/astra-verification-tiers.md",
-      "weight": 23.98,
-      "bucket": "akashic",
-      "estimated_tokens": 972,
-      "lines": 51,
-      "symbols": 6,
-      "symbol_type_counts": {
-        "heading": 6
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -3889,6 +3889,20 @@
       "weight": 22.25,
       "bucket": "other",
       "estimated_tokens": 1020,
+      "lines": 69,
+      "symbols": 6,
+      "symbol_type_counts": {
+        "heading": 6
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "docs/evaluations/ASTRA_SYNASTRY_V3_ALLY_TYPE_TONE_REVIEW.md",
+      "weight": 22.21,
+      "bucket": "other",
+      "estimated_tokens": 1530,
       "lines": 69,
       "symbols": 6,
       "symbol_type_counts": {
@@ -4600,6 +4614,20 @@
       "bucket": "akashic",
       "estimated_tokens": 455,
       "lines": 29,
+      "symbols": 4,
+      "symbol_type_counts": {
+        "heading": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/warnings/ally-relationship-labels-route-tone-but-do-not-prove-biography.md",
+      "weight": 17.49,
+      "bucket": "akashic",
+      "estimated_tokens": 469,
+      "lines": 27,
       "symbols": 4,
       "symbol_type_counts": {
         "heading": 4
@@ -6411,8 +6439,8 @@
     }
   ],
   "coverage": {
-    "files": 426,
-    "symbols": 5893,
-    "total_estimated_tokens": 1140342
+    "files": 428,
+    "symbols": 5903,
+    "total_estimated_tokens": 1142860
   }
 }
