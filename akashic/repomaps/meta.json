@@ -3452,8 +3452,8 @@
       "file": "akashic/playbooks/astra-verification-tiers.md",
       "weight": 30.33,
       "bucket": "akashic",
-      "estimated_tokens": 3141,
-      "lines": 94,
+      "estimated_tokens": 3254,
+      "lines": 96,
       "symbols": 8,
       "symbol_type_counts": {
         "heading": 8
@@ -3795,6 +3795,20 @@
       "bucket": "akashic",
       "estimated_tokens": 208,
       "lines": 34,
+      "symbols": 7,
+      "symbol_type_counts": {
+        "heading": 7
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/decisions/ADR-20260731-synastry-prose-lets-psychology-lead-while-allowing-occasional-astrology.md",
+      "weight": 26.7,
+      "bucket": "akashic",
+      "estimated_tokens": 544,
+      "lines": 35,
       "symbols": 7,
       "symbol_type_counts": {
         "heading": 7
@@ -6684,8 +6698,8 @@
     }
   ],
   "coverage": {
-    "files": 446,
-    "symbols": 6148,
-    "total_estimated_tokens": 1174779
+    "files": 447,
+    "symbols": 6155,
+    "total_estimated_tokens": 1175436
   }
 }

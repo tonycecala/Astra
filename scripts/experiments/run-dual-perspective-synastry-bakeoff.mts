@@ -1091,6 +1091,14 @@ function validateCleanProsePortrait(
   const headings = [...markdown.matchAll(/^## (.+)$/gm)].map((match) => match[1].trim());
   const expectedHeadings = cleanProseHeadings();
   const technicalClaims = [...markdown.matchAll(cleanProseTechnicalPattern())].map((match) => match[0]);
+  const technicalTermsPerThousandWords = Number(((technicalClaims.length / Math.max(words, 1)) * 1_000).toFixed(1));
+  const technicalHeavyParagraphs = markdown
+    .split(/\n\s*\n/)
+    .map((paragraph) => ({
+      paragraph,
+      terms: [...paragraph.matchAll(cleanProseTechnicalPattern())].map((match) => match[0])
+    }))
+    .filter((entry) => entry.terms.length >= 3);
   const evidenceIdClaims = [...markdown.matchAll(/\bS\d{2}\b/g)].map((match) => match[0]);
   const counterpart = counterpartName();
   const reader = readerName();
@@ -1215,8 +1223,20 @@ function validateCleanProsePortrait(
     ...(technicalClaims.length ? [`technical terms: ${[...new Set(technicalClaims)].join(", ")}`] : []),
     ...(evidenceIdClaims.length ? [`visible evidence IDs: ${[...new Set(evidenceIdClaims)].join(", ")}`] : [])
   ];
-  if (surfaceDetails.length) {
+  const astrologyDominatesSurface = technicalTermsPerThousandWords > 8 || technicalHeavyParagraphs.length > 0;
+  if (evidenceIdClaims.length || astrologyDominatesSurface) {
     addFinding(fatalErrors, "technical_surface", "The rendered portrait exposes material reserved for the Evidence drawers.", surfaceDetails);
+  } else if (technicalClaims.length) {
+    addFinding(
+      reviewNotes,
+      "contextual_astrology",
+      "The portrait uses occasional astrology references while keeping the psychology in the foreground.",
+      [
+        `technical terms: ${[...new Set(technicalClaims)].join(", ")}`,
+        `${technicalTermsPerThousandWords} technical terms per 1,000 words; fatal density threshold is above 8`,
+        "no prose paragraph contains three or more technical terms"
+      ]
+    );
   }
   if (allyTagAsNameClaims.length) {
     addFinding(fatalErrors, "identity_integrity", `The portrait incorrectly treats the ${sample.experimentalAllyTag} lens as part of ${firstName(counterpart)}'s name.`, allyTagAsNameClaims);
@@ -1327,6 +1347,8 @@ function validateCleanProsePortrait(
     chapterSixWordCount: chapterSixWords,
     chapterPerspectiveCoverage,
     technicalClaims,
+    technicalTermsPerThousandWords,
+    technicalHeavyParagraphCount: technicalHeavyParagraphs.length,
     evidenceIdClaims,
     allyTagAsNameClaims,
     fateClaims,

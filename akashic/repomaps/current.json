@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-08-01T00:23:01.831Z",
+  "generated_at": "2026-08-01T00:35:49.575Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 446,
-  "total_symbols": 6148,
-  "total_estimated_tokens": 1174779,
+  "files_indexed": 447,
+  "total_symbols": 6155,
+  "total_estimated_tokens": 1175436,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -34415,9 +34415,9 @@
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
       "lang": "markdown",
-      "size": 12567,
-      "lines": 94,
-      "estimated_tokens": 3141,
+      "size": 13018,
+      "lines": 96,
+      "estimated_tokens": 3254,
       "symbols": [
         {
           "name": "Astra Verification Tiers",
@@ -34456,7 +34456,7 @@
         },
         {
           "name": "Private OpenRouter bakeoff credential",
-          "line": 91,
+          "line": 93,
           "type": "heading"
         }
       ],
@@ -35730,6 +35730,67 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 26.75,
+      "importance_bucket": "akashic"
+    },
+    {
+      "file": "akashic/decisions/ADR-20260731-synastry-prose-lets-psychology-lead-while-allowing-occasional-astrology.md",
+      "lang": "markdown",
+      "size": 2173,
+      "lines": 35,
+      "estimated_tokens": 544,
+      "symbols": [
+        {
+          "name": "ADR: Synastry prose lets psychology lead while allowing occasional astrology",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "Date",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Status",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "Decision",
+          "line": 23,
+          "type": "heading"
+        },
+        {
+          "name": "Context",
+          "line": 26,
+          "type": "heading"
+        },
+        {
+          "name": "Alternatives",
+          "line": 29,
+          "type": "heading"
+        },
+        {
+          "name": "Consequences",
+          "line": 33,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "ADR: Synastry prose lets psychology lead while allowing occasional astrology",
+        "Date",
+        "Status",
+        "Decision",
+        "Context",
+        "Alternatives",
+        "Consequences"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 26.7,
       "importance_bucket": "akashic"
     },
     {
@@ -44090,6 +44151,13 @@
         "type": "heading"
       }
     ],
+    "ADR: Synastry prose lets psychology lead while allowing occasional astrology": [
+      {
+        "file": "akashic/decisions/ADR-20260731-synastry-prose-lets-psychology-lead-while-allowing-occasional-astrology.md",
+        "line": 15,
+        "type": "heading"
+      }
+    ],
     "affinityNodeId": [
       {
         "file": "packages/astrology/src/meaningComplexNetwork.ts",
@@ -44606,6 +44674,11 @@
       {
         "file": "akashic/decisions/ADR-20260717-report-prose-budgets-and-prompt-contracts.md",
         "line": 31,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/decisions/ADR-20260731-synastry-prose-lets-psychology-lead-while-allowing-occasional-astrology.md",
+        "line": 29,
         "type": "heading"
       },
       {
@@ -52723,6 +52796,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/decisions/ADR-20260731-synastry-prose-lets-psychology-lead-while-allowing-occasional-astrology.md",
+        "line": 33,
+        "type": "heading"
+      },
+      {
         "file": "akashic/templates/adr-template.md",
         "line": 27,
         "type": "heading"
@@ -52857,6 +52935,11 @@
       {
         "file": "akashic/decisions/ADR-20260717-report-prose-budgets-and-prompt-contracts.md",
         "line": 28,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/decisions/ADR-20260731-synastry-prose-lets-psychology-lead-while-allowing-occasional-astrology.md",
+        "line": 26,
         "type": "heading"
       },
       {
@@ -54528,6 +54611,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/decisions/ADR-20260731-synastry-prose-lets-psychology-lead-while-allowing-occasional-astrology.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
         "file": "akashic/templates/adr-template.md",
         "line": 12,
         "type": "heading"
@@ -54690,6 +54778,11 @@
       {
         "file": "akashic/decisions/ADR-20260717-report-prose-budgets-and-prompt-contracts.md",
         "line": 25,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/decisions/ADR-20260731-synastry-prose-lets-psychology-lead-while-allowing-occasional-astrology.md",
+        "line": 23,
         "type": "heading"
       },
       {
@@ -67898,7 +67991,7 @@
     "Private OpenRouter bakeoff credential": [
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "line": 91,
+        "line": 93,
         "type": "heading"
       }
     ],
@@ -76184,6 +76277,11 @@
       {
         "file": "akashic/decisions/ADR-20260717-report-prose-budgets-and-prompt-contracts.md",
         "line": 22,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/decisions/ADR-20260731-synastry-prose-lets-psychology-lead-while-allowing-occasional-astrology.md",
+        "line": 20,
         "type": "heading"
       },
       {
@@ -84641,8 +84739,8 @@
         "file": "akashic/playbooks/astra-verification-tiers.md",
         "weight": 30.33,
         "bucket": "akashic",
-        "estimated_tokens": 3141,
-        "lines": 94,
+        "estimated_tokens": 3254,
+        "lines": 96,
         "symbols": 8,
         "symbol_type_counts": {
           "heading": 8
@@ -84984,6 +85082,20 @@
         "bucket": "akashic",
         "estimated_tokens": 208,
         "lines": 34,
+        "symbols": 7,
+        "symbol_type_counts": {
+          "heading": 7
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "akashic/decisions/ADR-20260731-synastry-prose-lets-psychology-lead-while-allowing-occasional-astrology.md",
+        "weight": 26.7,
+        "bucket": "akashic",
+        "estimated_tokens": 544,
+        "lines": 35,
         "symbols": 7,
         "symbol_type_counts": {
           "heading": 7
@@ -87873,9 +87985,9 @@
       }
     ],
     "coverage": {
-      "files": 446,
-      "symbols": 6148,
-      "total_estimated_tokens": 1174779
+      "files": 447,
+      "symbols": 6155,
+      "total_estimated_tokens": 1175436
     }
   }
 }
