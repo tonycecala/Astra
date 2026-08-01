@@ -4,13 +4,14 @@ Status: Approved by measured bakeoff
 
 ## Decision
 
-- Production writer: `anthropic/claude-sonnet-5`
+- Production writer for Identity, Core, Deep, Progressed, and other non-Synastry reports: `anthropic/claude-sonnet-5`
+- Production writer for Synastry: `anthropic/claude-sonnet-4.6`
 - Operational fallback: `google/gemini-3.5-flash`
 - No customer-facing model selector or premium model tier
 - Keep `openai/gpt-5.6-terra`, `openai/gpt-5.6-sol`, `anthropic/claude-opus-4.8`, and `anthropic/claude-fable-5` available only for admin bakeoffs
 - Keep chart evidence, section requirements, validation, and provenance owned by Astra code. The model remains the prose writer.
 
-The production profile selects Sonnet 5 by default. Gemini 3.5 Flash is the approved explicit override when Sonnet is unavailable or a controlled cost/latency fallback is needed; runtime provider failover is not automatic.
+The request-level production policy selects Sonnet 5 by default and Sonnet 4.6 for Synastry. This is intentional: the August 1 TC + CA V3.1.1 comparison found Sonnet 4.6 cleaner in Tony's blinded reader review, one-pass reliable, 31.9% faster end-to-end, and 38.7% cheaper than Sonnet 5 under the same current contract. Sonnet 5 retained materially faster raw token throughput, but its first draft required a corrective retry. Gemini 3.5 Flash remains the approved explicit non-Synastry fallback; runtime provider failover is not automatic.
 
 ## Evaluation Design
 
@@ -69,12 +70,13 @@ The resulting product ladder is proportionate: Welcome 260 words, Identity 363, 
 1. Persist actual provider, model, profile, prompt version, attempts, tokens, spend, and latency with every generated result.
 2. Show compact provenance in Library; keep detailed generation telemetry admin-only.
 3. Time out an individual provider call after 90 seconds.
-4. Re-run this bakeoff on the same fixture before changing the production writer or prompt contract.
+4. Re-run the relevant family bakeoff on the same fixture before changing its production writer or prompt contract. Synastry's current confirmation fixture is TC + CA under V3.1.1.
 5. Judge new candidates blind on psychological usefulness, specificity, freshness, section differentiation, and whether tier depth earns the price.
 6. Submit an explicit reasoning policy on every OpenRouter prose call. Use `none` for Sonnet and other prose-first writers; use `minimal` only where the provider requires it.
 7. Retain rejected monolithic and sectioned prose, validation reasons, provider usage, and latency in private telemetry.
 8. Treat reasoning effort and visible-output budget as part of the report contract. Diagnose them before enlarging prompts, changing models, or weakening a valid depth gate.
 9. Keep voice, evidence, practical usefulness, and product depth in one authoritative contract each. Repeated near-duplicate instructions make prose more mechanical without adding safety.
+10. Keep `ASTRA_REPORT_MODEL` unset in hosted production. The request-level resolver owns the approved family policy; use admin replay with an explicit model only for controlled comparisons.
 
 ## Pricing Sources Reviewed
 

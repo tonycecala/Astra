@@ -13,6 +13,29 @@ summary: "Durable session-by-session memory for Astra repo work."
 
 ## Entries
 
+### 2026-08-01 - Explicit Synastry Production Writer Policy
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** production writer-policy alignment
+**Status:** complete
+
+#### What Changed
+
+- Made `anthropic/claude-sonnet-4.6` the named production default for new Synastry reports and retained `anthropic/claude-sonnet-5` as the named default for all non-Synastry reports.
+- Aligned the strategy decision, runtime resolver, hosted deployment guard, and regression smoke; no saved report record or content was changed.
+- Recorded the TC + CA V3.1.1 controlled comparison and owner-reviewed result: Sonnet 4.6 completed in one pass at 1,441 words, while Sonnet 5 required a corrective retry and finished below the target word range.
+
+#### Validation And Steward Review
+
+- Passed model-strategy, Synastry engine, Synastry validation, TypeScript, lint, and production build checks. Lint retains one unrelated pre-existing warning in `scripts/repair-imported-ally-contexts.mts`.
+- Browser QA on the existing private Synastry report confirmed rendered report integrity, no console errors, and no horizontal overflow at phone and tablet widths without triggering a regeneration or write.
+- Steward judgment: **accept**. Policy, code, test, deployment boundary, and durable decision record agree; saved-report immutability and the non-Synastry Sonnet 5 default remain preserved.
+
+#### Next Copy/Paste Goal
+
+Generate one new private Synastry report from the normal flow, confirm its debug details show `anthropic/claude-sonnet-4.6`, then compare it with one new non-Synastry report confirming `anthropic/claude-sonnet-5`; do not modify or regenerate any saved report.
+
 ### 2026-07-31 - Synastry V3.1 Production Reliability
 
 **Report Level:** 3 - Workflow & QA View

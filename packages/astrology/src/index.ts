@@ -155,6 +155,8 @@ export const DEBUG_MODEL_REPORT_WRITER = "debug-model-writer";
 export const OPENAI_REPORT_MODEL_PROVIDER = "openai";
 export const OPENROUTER_REPORT_MODEL_PROVIDER = "openrouter";
 export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
+export const ASTRA_DEFAULT_PRODUCTION_REPORT_MODEL = "anthropic/claude-sonnet-5";
+export const ASTRA_SYNASTRY_PRODUCTION_REPORT_MODEL = "anthropic/claude-sonnet-4.6";
 export const ASTRA_CHART_ROUTINE = "circular-natal-horoscope-js";
 export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
@@ -236,7 +238,7 @@ export const reportModelProfileModels: Record<ReportModelProfile, string[]> = {
   smoke: ["openai/gpt-5.6-luna"],
   debug: ["anthropic/claude-haiku-4.5"],
   debug_alt: ["google/gemini-3.5-flash"],
-  production: ["anthropic/claude-sonnet-5", "anthropic/claude-sonnet-4.6", "google/gemini-3.5-flash"],
+  production: [ASTRA_DEFAULT_PRODUCTION_REPORT_MODEL, ASTRA_SYNASTRY_PRODUCTION_REPORT_MODEL, "google/gemini-3.5-flash"],
   premium_bakeoff: [
     "anthropic/claude-sonnet-5",
     "openai/gpt-5.6-terra",
@@ -872,7 +874,7 @@ export function resolveAstrologyReportGenerationConfigForRequest(
     return {
       ...config,
       reportModelProvider: OPENROUTER_REPORT_MODEL_PROVIDER,
-      reportModel: "anthropic/claude-sonnet-4.6"
+      reportModel: ASTRA_SYNASTRY_PRODUCTION_REPORT_MODEL
     };
   }
   if (request.reportType !== "identity" || modelPilot !== "gemini-intro-identity" || config.reportWriter !== DEBUG_MODEL_REPORT_WRITER) return config;

@@ -61,8 +61,8 @@ if (reportModelProvider && reportModelProvider !== "openrouter") {
   errors.push("ASTRA_REPORT_MODEL_PROVIDER must be openrouter when explicitly set for alpha.");
 }
 const reportModel = clean("ASTRA_REPORT_MODEL");
-if (reportModel && reportModel !== "anthropic/claude-sonnet-5") {
-  errors.push("ASTRA_REPORT_MODEL must be anthropic/claude-sonnet-5 when explicitly set for alpha; use the admin replay path for fallback bakeoffs.");
+if (reportModel) {
+  errors.push("ASTRA_REPORT_MODEL must be unset in alpha so the request-level production policy keeps Sonnet 5 for non-Synastry and Sonnet 4.6 for Synastry; use the admin replay path for controlled model overrides.");
 }
 requireExact("ASTRA_ADMIN_ENABLED", "1");
 if (!clean("ASTRA_OPENROUTER_API_KEY") && !clean("OPENROUTER_API_KEY")) {

@@ -10,14 +10,14 @@
   "ranked_files": [
     {
       "file": "packages/astrology/src/index.ts",
-      "weight": 2851.11,
+      "weight": 2857.11,
       "bucket": "other",
-      "estimated_tokens": 45876,
-      "lines": 4318,
-      "symbols": 667,
+      "estimated_tokens": 45925,
+      "lines": 4320,
+      "symbols": 669,
       "symbol_type_counts": {
         "class": 5,
-        "constant": 429,
+        "constant": 431,
         "function": 168,
         "type": 65
       },
@@ -302,6 +302,20 @@
       "route_count": 0
     },
     {
+      "file": "docs/progress/PROGRESS_LOG.md",
+      "weight": 244.2,
+      "bucket": "other",
+      "estimated_tokens": 14532,
+      "lines": 773,
+      "symbols": 80,
+      "symbol_type_counts": {
+        "heading": 80
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "packages/astrology/src/report/evidencePlanning.ts",
       "weight": 236.31,
       "bucket": "other",
@@ -332,20 +346,6 @@
       },
       "dependency_in": 0,
       "dependency_out": 4,
-      "route_count": 0
-    },
-    {
-      "file": "docs/progress/PROGRESS_LOG.md",
-      "weight": 232.2,
-      "bucket": "other",
-      "estimated_tokens": 14109,
-      "lines": 750,
-      "symbols": 76,
-      "symbol_type_counts": {
-        "heading": 76
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -3107,8 +3107,8 @@
       "file": "akashic/playbooks/astra-verification-tiers.md",
       "weight": 33.3,
       "bucket": "akashic",
-      "estimated_tokens": 4329,
-      "lines": 112,
+      "estimated_tokens": 4417,
+      "lines": 113,
       "symbols": 9,
       "symbol_type_counts": {
         "heading": 9
@@ -3374,11 +3374,11 @@
       "route_count": 0
     },
     {
-      "file": "docs/decisions/ASTRA_REPORT_MODEL_STRATEGY_2026-07.md",
+      "file": "docs/operations/2026-07-16-alpha-milestones.md",
       "weight": 31.38,
       "bucket": "other",
-      "estimated_tokens": 1672,
-      "lines": 84,
+      "estimated_tokens": 1624,
+      "lines": 87,
       "symbols": 9,
       "symbol_type_counts": {
         "heading": 9
@@ -3388,11 +3388,11 @@
       "route_count": 0
     },
     {
-      "file": "docs/operations/2026-07-16-alpha-milestones.md",
-      "weight": 31.38,
+      "file": "docs/decisions/ASTRA_REPORT_MODEL_STRATEGY_2026-07.md",
+      "weight": 31.37,
       "bucket": "other",
-      "estimated_tokens": 1624,
-      "lines": 87,
+      "estimated_tokens": 1852,
+      "lines": 86,
       "symbols": 9,
       "symbol_type_counts": {
         "heading": 9
@@ -3792,6 +3792,20 @@
       "weight": 26.93,
       "bucket": "akashic",
       "estimated_tokens": 190,
+      "lines": 41,
+      "symbols": 7,
+      "symbol_type_counts": {
+        "heading": 7
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/decisions/ADR-20260731-synastry-production-writer-policy.md",
+      "weight": 26.84,
+      "bucket": "akashic",
+      "estimated_tokens": 565,
       "lines": 41,
       "symbols": 7,
       "symbol_type_counts": {
@@ -5155,7 +5169,7 @@
       "file": "docs/architecture/RISK_REGISTER.md",
       "weight": 15.74,
       "bucket": "other",
-      "estimated_tokens": 779,
+      "estimated_tokens": 839,
       "lines": 38,
       "symbols": 4,
       "symbol_type_counts": {
@@ -6536,21 +6550,21 @@
     {
       "name": "top-weighted",
       "budget_tokens": 32000,
-      "estimated_tokens": 45876,
+      "estimated_tokens": 45925,
       "file_count": 1,
-      "symbol_count": 667,
+      "symbol_count": 669,
       "files": [
         {
           "rank": 1,
           "file": "packages/astrology/src/index.ts",
-          "weight": 2851.11,
+          "weight": 2857.11,
           "bucket": "other",
-          "estimated_tokens": 45876,
-          "lines": 4318,
-          "symbols": 667,
+          "estimated_tokens": 45925,
+          "lines": 4320,
+          "symbols": 669,
           "symbol_type_counts": {
             "class": 5,
-            "constant": 429,
+            "constant": 431,
             "function": 168,
             "type": 65
           },
@@ -6563,21 +6577,21 @@
     {
       "name": "top-weighted",
       "budget_tokens": 64000,
-      "estimated_tokens": 65771,
+      "estimated_tokens": 65820,
       "file_count": 2,
-      "symbol_count": 892,
+      "symbol_count": 894,
       "files": [
         {
           "rank": 1,
           "file": "packages/astrology/src/index.ts",
-          "weight": 2851.11,
+          "weight": 2857.11,
           "bucket": "other",
-          "estimated_tokens": 45876,
-          "lines": 4318,
-          "symbols": 667,
+          "estimated_tokens": 45925,
+          "lines": 4320,
+          "symbols": 669,
           "symbol_type_counts": {
             "class": 5,
-            "constant": 429,
+            "constant": 431,
             "function": 168,
             "type": 65
           },
@@ -6607,21 +6621,21 @@
     {
       "name": "top-weighted",
       "budget_tokens": 128000,
-      "estimated_tokens": 138127,
+      "estimated_tokens": 138176,
       "file_count": 8,
-      "symbol_count": 1899,
+      "symbol_count": 1901,
       "files": [
         {
           "rank": 1,
           "file": "packages/astrology/src/index.ts",
-          "weight": 2851.11,
+          "weight": 2857.11,
           "bucket": "other",
-          "estimated_tokens": 45876,
-          "lines": 4318,
-          "symbols": 667,
+          "estimated_tokens": 45925,
+          "lines": 4320,
+          "symbols": 669,
           "symbol_type_counts": {
             "class": 5,
-            "constant": 429,
+            "constant": 431,
             "function": 168,
             "type": 65
           },
@@ -6754,8 +6768,8 @@
     }
   ],
   "coverage": {
-    "files": 451,
-    "symbols": 6212,
-    "total_estimated_tokens": 1181663
+    "files": 452,
+    "symbols": 6225,
+    "total_estimated_tokens": 1183028
   }
 }
