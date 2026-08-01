@@ -13,6 +13,29 @@ summary: "Durable session-by-session memory for Astra repo work."
 
 ## Entries
 
+### 2026-08-01 - Core and Deep Evidence-to-Prose Contract
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** owner-approved prompt-layer promotion
+**Status:** complete
+
+#### What Changed
+
+- Promoted the owner-selected Evidence-to-Prose writer guidance for new Core and Deep reports only, covering both monolithic and enriched sectioned Core paths plus Deep chapter writers.
+- Preserved Identity/Welcome prompts, Deep's private thesis planner, selected-evidence boundary, Plainspoken voice, word bands, claim validators, one corrective retry, resolver/model policy, and saved reports.
+- Added family-specific provenance: new Core/Deep model-written results identify `astra-report-writer-2026-08-evidence-to-prose-v1`; unchanged Identity and other families retain their prior prompt version.
+
+#### Validation And Steward Review
+
+- Focused Deep/Core/Identity prompt fixtures passed alongside TypeScript, lint, model-strategy, and production-build validation. Lint retains one unrelated pre-existing warning in `scripts/repair-imported-ally-contexts.mts`.
+- Browser QA rendered the existing private Library report at `/library?reportId=af0f95ce-8a84-4638-8152-a025a4762ea2` with no console errors and without triggering regeneration or a write.
+- Steward judgment: **accept**. The contract is family-scoped, private support remains private, deterministic validation stays independent of editorial quality, and excluded Identity behavior is regression-tested.
+
+#### Next Copy/Paste Goal
+
+Generate one new private Core and one new private Deep report through the normal flow, verify their debug details show `astra-report-writer-2026-08-evidence-to-prose-v1`, read both against their selected evidence, and confirm Identity retains its prior prompt version; do not regenerate any saved report.
+
 ### 2026-08-01 - Explicit Synastry Production Writer Policy
 
 **Report Level:** 3 - Workflow & QA View

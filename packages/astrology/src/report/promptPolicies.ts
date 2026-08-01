@@ -88,6 +88,20 @@ export function editorialRoleInstruction(request: AstrologyReportRequest) {
   ].join("\n");
 }
 
+/** Writer-only guidance. Evidence selection and validation remain deterministic runtime work. */
+export function evidenceToProseContract(request: Pick<AstrologyReportRequest, "reportType">) {
+  if (request.reportType !== "core" && request.reportType !== "core_self" && request.reportType !== "chart_interpretation" && request.reportType !== "deep") return [];
+  return [
+    "Evidence-to-Prose Contract (private writer guidance):",
+    "- Use only the selected evidence in this writer packet. Do not recover, infer, or import omitted chart facts.",
+    "- Lead visible prose with a human pattern, tension, desire, cost, resource, choice, or consequence. Do not lead with astrology exposition.",
+    "- Before each paragraph, silently choose one or two selected signals. Translate them into a plain-language mechanism, a conditional lived expression, and a consequence, recognition, or useful condition. Blend that support naturally; never expose the support plan, reasoning, metadata, or a trace.",
+    "- Mention technical astrology only when it sharpens the human mechanism. Keep it occasional and contextual; never turn a chapter into a lesson about signs, houses, planets, or aspects.",
+    "- Keep this chapter within its assigned editorial ownership and arrive at a conclusion distinct from the other chapters' mechanism, practical rule, and closing move.",
+    "- Astra validates factual and structural correctness separately from editorial cleanliness. Return reader-ready prose only; on a retry, correct the named issue directly without adding explanation, planning, JSON, or metadata."
+  ];
+}
+
 export function voicePlanForSection(title: string) {
   return reportRuleCatalog.voice.sectionClosings[title] ?? "Use a distinct, natural closing that belongs only to this chapter.";
 }

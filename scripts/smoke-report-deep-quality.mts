@@ -5,6 +5,8 @@ import {
   ASTRA_REPORT_MODEL_ENV,
   ASTRA_REPORT_MODEL_PROFILE_ENV,
   ASTRA_REPORT_WRITER_ENV,
+  ASTRA_EVIDENCE_TO_PROSE_PROMPT_VERSION,
+  ASTRA_REPORT_PROMPT_VERSION,
   ASTRA_SEMANTIC_SYNTHESIS_VERSION,
   DEBUG_MODEL_REPORT_WRITER,
   LOCAL_CHART_ROUTINE_ENGINE,
@@ -21,6 +23,7 @@ import {
   auditWriterClaimMarkers,
   buildWriterChapterClaimPlan
 } from "../packages/astrology/src/report/writerClaimPlanning";
+import { evidenceToProseContract } from "../packages/astrology/src/report/promptPolicies";
 
 assert.equal(ASTRA_SEMANTIC_SYNTHESIS_VERSION, "2.0.0-phase-4");
 
@@ -156,6 +159,24 @@ function sectionedProvider(options: { retryEmotions?: boolean; retryWorkTranspor
   return { fetchImpl, calls, prompts, requestBodies, requestHeaders, maxActive: () => maxActive };
 }
 
+function monolithicPromptFixtureProvider() {
+  const prompts: string[] = [];
+  const fetchImpl = async (_url: string | URL | Request, init?: RequestInit) => {
+    const body = JSON.parse(String(init?.body)) as { messages?: Array<{ content?: string }> };
+    const prompt = body.messages?.map((message) => message.content ?? "").join("\n") ?? "";
+    prompts.push(prompt);
+    const isCore = /Selected report depth: core\b/.test(prompt);
+    const sections = isCore
+      ? ["Identity", "Relationships", "Work", "Integration"].map((title) => `## ${title}\n\n${prose(title, title === "Identity" ? 370 : title === "Integration" ? 200 : 260)}`).join("\n\n")
+      : `## Identity\n\n${prose("Identity", 390)}`;
+    return new Response(JSON.stringify({
+      choices: [{ finish_reason: "stop", message: { content: `# Astra Report - Prompt Fixture\n\n${sections}` } }],
+      usage: { prompt_tokens: 1, completion_tokens: 1, completion_tokens_details: { reasoning_tokens: 0 }, total_tokens: 2, cost: 0 }
+    }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  return { fetchImpl, prompts };
+}
+
 const provider = sectionedProvider({ retryEmotions: true, retryWorkTransport: true });
 const completed = await buildAstrologyReportResultAsync(request, {
   env,
@@ -163,6 +184,7 @@ const completed = await buildAstrologyReportResultAsync(request, {
 });
 assert.equal(completed.status, "completed");
 assert.equal(completed.generationMetadata?.orchestration, "sectioned-v1");
+assert.equal(completed.generationMetadata?.promptVersion, ASTRA_EVIDENCE_TO_PROSE_PROMPT_VERSION);
 assert.equal(completed.generationMetadata?.attemptCount, 10);
 assert.equal(completed.generationMetadata?.reasoningEffort, "none");
 assert.equal(completed.generationMetadata?.reasoningTokens, 0);
@@ -204,6 +226,9 @@ assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Plain does not mean c
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Write each chapter in 2 or 3 paragraphs/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Open each section with a direct second-person statement using You or Your/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Vary the sentence shape across sections/);
+assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Evidence-to-Prose Contract \(private writer guidance\):/);
+assert.match(provider.prompts.get("Identity")?.[0] ?? "", /silently choose one or two selected signals/i);
+assert.match(provider.prompts.get("Identity")?.[0] ?? "", /validates factual and structural correctness separately from editorial cleanliness/i);
 assert.match(completed.sections.find((section) => section.title === "Relationships")?.body ?? "", /The person you choose/);
 assert.doesNotMatch(provider.prompts.get("Thesis")?.[0] ?? "", /Reader question:/);
 assert.doesNotMatch(provider.prompts.get("Thesis")?.[0] ?? "", /Supplied context only:/);
@@ -641,14 +666,33 @@ const enrichedCoreRequest = astrologyReportRequestSchema.parse({
 const enrichedCoreResult = await buildAstrologyReportResultAsync(enrichedCoreRequest, { env, fetchImpl: enrichedCoreProvider.fetchImpl });
 assert.equal(enrichedCoreResult.status, "completed", enrichedCoreResult.error);
 assert.equal(enrichedCoreResult.generationMetadata?.orchestration, "sectioned-v1");
+assert.equal(enrichedCoreResult.generationMetadata?.promptVersion, ASTRA_EVIDENCE_TO_PROSE_PROMPT_VERSION);
 assert.equal(enrichedCoreResult.generationMetadata?.sections?.length, 3);
 assert.equal(enrichedCoreProvider.calls.get("Identity"), undefined);
 assert.equal(enrichedCoreProvider.calls.get("Thesis"), undefined);
 const enrichedCoreWorkPrompt = enrichedCoreProvider.prompts.get("Work")?.[0] ?? "";
 const enrichedCoreIntegrationPrompt = enrichedCoreProvider.prompts.get("Integration")?.[0] ?? "";
 assert.match(enrichedCoreWorkPrompt, /Canonical Identity bridge:/);
+assert.match(enrichedCoreWorkPrompt, /Evidence-to-Prose Contract \(private writer guidance\):/);
+assert.match(enrichedCoreWorkPrompt, /Lead visible prose with a human pattern/i);
 assert.doesNotMatch(enrichedCoreWorkPrompt, /- Identity:|Sun in Gemini in the 12th house|Mercury in Gemini in the 12th house/i);
 assert.doesNotMatch(enrichedCoreIntegrationPrompt, /- Identity:|Sun in Gemini in the 12th house|Moon in Virgo in the 3rd house|Mercury in Gemini/i);
+
+assert.equal(evidenceToProseContract({ reportType: "identity" }).length, 0, "Identity must retain its current prompt contract.");
+assert.equal(evidenceToProseContract({ reportType: "core" }).length > 0, true, "Core must receive the shared Evidence-to-Prose contract.");
+assert.equal(evidenceToProseContract({ reportType: "deep" }).length > 0, true, "Deep must receive the shared Evidence-to-Prose contract.");
+
+const monolithicFixtureProvider = monolithicPromptFixtureProvider();
+const monolithicCoreRequest = astrologyReportRequestSchema.parse({ ...request, id: "61111111-1111-4111-8111-000000000201", reportType: "core", context: undefined });
+const monolithicIdentityRequest = astrologyReportRequestSchema.parse({ ...request, id: "61111111-1111-4111-8111-000000000202", reportType: "identity", context: undefined });
+const monolithicCoreResult = await buildAstrologyReportResultAsync(monolithicCoreRequest, { env, fetchImpl: monolithicFixtureProvider.fetchImpl });
+const monolithicIdentityResult = await buildAstrologyReportResultAsync(monolithicIdentityRequest, { env, fetchImpl: monolithicFixtureProvider.fetchImpl });
+const monolithicCorePrompt = monolithicFixtureProvider.prompts.find((prompt) => /Selected report depth: core\b/.test(prompt)) ?? "";
+const monolithicIdentityPrompt = monolithicFixtureProvider.prompts.find((prompt) => /Selected report depth: identity\b/.test(prompt)) ?? "";
+assert.match(monolithicCorePrompt, /Evidence-to-Prose Contract \(private writer guidance\):/);
+assert.doesNotMatch(monolithicIdentityPrompt, /Evidence-to-Prose Contract \(private writer guidance\):/);
+assert.equal(monolithicCoreResult.generationMetadata?.promptVersion, ASTRA_EVIDENCE_TO_PROSE_PROMPT_VERSION);
+assert.equal(monolithicIdentityResult.generationMetadata?.promptVersion, ASTRA_REPORT_PROMPT_VERSION);
 
 assert.throws(
   () => assertDistinctChapterConclusions([

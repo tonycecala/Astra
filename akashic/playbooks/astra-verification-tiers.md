@@ -4,7 +4,7 @@ type: "playbook"
 description: "Select fast, focused, responsive, security, and release verification by changed boundary."
 status: "active"
 project: "astra"
-updated: "2026-07-31"
+updated: "2026-08-01"
 tags: ["verification", "playwright", "performance"]
 ---
 
@@ -110,3 +110,7 @@ Treat an editable Ally relationship tag as live routing data. Imported chart con
 ### Private OpenRouter bakeoff credential
 
 Standalone experiment scripts do not automatically load Next.js environment files. On Tony's current machine, the usable local OpenRouter secret is stored in the canonical Astra app's ignored file at `/Users/tony/Documents/Projects/Astra/apps/astra-web/.env.local`. Source that file in the bakeoff subprocess before running `tsx`; never print, copy into tracked files, or record the value. Do not use `vercel env pull` to recover it: sensitive production values are returned as `[SENSITIVE]`, and sourcing that redacted file can also replace a valid local database URL.
+
+## Family-scoped writer contract promotion
+
+When an editorial contract wins a controlled bakeoff for only some report families, place it in the shared prompt-policy layer but gate it by report type. Wire every production prompt shape for each approved family (for example, both monolithic and sectioned Core) and keep excluded families returning an empty contract. Preserve private evidence selection, thesis planning, retry policy, and validation behavior unless separately approved. Add a focused fixture that captures each affected prompt shape, asserts the contract is present where approved and absent where excluded, and asserts new-generation provenance identifies the contract version without changing saved reports.

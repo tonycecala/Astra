@@ -62,6 +62,7 @@ import { reportRuleCatalog } from "./report/rules/catalog";
 import { reportDetectors } from "./report/rules/detectors";
 import {
   editorialRoleInstruction,
+  evidenceToProseContract,
   enrichedChapterOwnershipInstruction,
   enrichedProseBoundaryInstruction,
   enrichedSynthesisVoicePlan,
@@ -162,6 +163,7 @@ export const ASTRA_DEFAULT_ZODIAC_MODE = "tropical";
 export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
 export const ASTRA_SEMANTIC_SYNTHESIS_VERSION = "2.0.0-phase-4";
 export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-semantic-synthesis-v2-claim-planned";
+export const ASTRA_EVIDENCE_TO_PROSE_PROMPT_VERSION = "astra-report-writer-2026-08-evidence-to-prose-v1";
 export const GEMINI_INTRO_IDENTITY_REPORT_MODEL = "google/gemini-3.5-flash";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
@@ -2680,6 +2682,7 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     canonicalIdentityFromRequest,
     plainspokenContract: astraPlainspokenVoiceContract,
     plainspokenParagraphRule,
+    evidenceToProseContract,
     interpretiveContractFor,
     psychologicalSafetyContract: astraPsychologicalSafetyContract,
     reportVoicePlan,
@@ -2810,6 +2813,7 @@ function buildDeepSectionPrompt(input: {
     deepChapterFocusInstruction,
     plainspokenContract: astraPlainspokenVoiceContract,
     plainspokenParagraphRule,
+    evidenceToProseContract,
     interpretiveContractFor,
     psychologicalSafetyContract: astraPsychologicalSafetyContract,
     voicePlanForSection,
@@ -2834,6 +2838,7 @@ function buildEnrichedCoreSectionPrompt(input: {
     deepChapterFocusInstruction,
     plainspokenContract: astraPlainspokenVoiceContract,
     plainspokenParagraphRule,
+    evidenceToProseContract,
     interpretiveContractFor,
     psychologicalSafetyContract: astraPsychologicalSafetyContract,
     voicePlanForSection,
@@ -4061,6 +4066,12 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: Rep
   });
 }
 
+function reportPromptVersionFor(request: AstrologyReportRequest) {
+  return request.reportType === "core" || request.reportType === "core_self" || request.reportType === "chart_interpretation" || request.reportType === "deep"
+    ? ASTRA_EVIDENCE_TO_PROSE_PROMPT_VERSION
+    : ASTRA_REPORT_PROMPT_VERSION;
+}
+
 async function buildDebugModelReportResult(
   input: AstrologyReportRequest,
   config: AstrologyReportGenerationConfig,
@@ -4187,7 +4198,7 @@ async function buildDebugModelReportResult(
         ...(config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
           ? { reasoningEffort: reportReasoningEffortForModel(config.reportModel) }
           : {}),
-        promptVersion: ASTRA_REPORT_PROMPT_VERSION,
+        promptVersion: reportPromptVersionFor(request),
         attemptCount: error.generation.attemptCount,
         ...error.generation.usage,
         latencyMs: error.generation.latencyMs,
@@ -4209,7 +4220,7 @@ async function buildDebugModelReportResult(
         ...(config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
           ? { reasoningEffort: reportReasoningEffortForModel(config.reportModel) }
           : {}),
-        promptVersion: ASTRA_REPORT_PROMPT_VERSION,
+        promptVersion: reportPromptVersionFor(request),
         attemptCount: error.generation.attemptCount,
         ...error.generation.usage,
         latencyMs: error.generation.latencyMs,
@@ -4235,7 +4246,7 @@ async function buildDebugModelReportResult(
       ...(config.reportModelProvider === OPENROUTER_REPORT_MODEL_PROVIDER
         ? { reasoningEffort: reportReasoningEffortForModel(config.reportModel) }
         : {}),
-      promptVersion: synastryGeneration ? ASTRA_SYNASTRY_V3_PROMPT_VERSION : ASTRA_REPORT_PROMPT_VERSION,
+      promptVersion: synastryGeneration ? ASTRA_SYNASTRY_V3_PROMPT_VERSION : reportPromptVersionFor(request),
       attemptCount: generation.attemptCount,
       ...generation.usage,
       latencyMs: generation.latencyMs,

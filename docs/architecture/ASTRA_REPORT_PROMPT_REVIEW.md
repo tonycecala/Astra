@@ -2,7 +2,7 @@
 
 **Status:** approved v6 runtime prompt contract as of 2026-07-17
 **Source:** `packages/astrology/src/index.ts`
-**Current prompt version:** `astra-report-writer-2026-07-plainspoken-v6`
+**Current prompt versions:** `astra-report-writer-2026-08-evidence-to-prose-v1` for Core/Deep; `astra-report-writer-2026-07-semantic-synthesis-v2-claim-planned` for Identity and other unchanged families.
 
 This is a readable representation of what Astra sends to its report writer. It is deliberately free of private user data, API credentials, and generated report prose.
 
@@ -178,6 +178,21 @@ For both Welcome and Identity, if Sun evidence exists, Astra also requires:
 ```text
 For this chart, the required Sun opening phrase is either "{SIGN} Sun" or "Sun in {SIGN}". Use one of those exact phrases in the first or second sentence of Identity.
 ```
+
+## Evidence-to-Prose Contract (Core and Deep Only)
+
+Core and Deep add one private writer layer to the existing Plainspoken, claim-boundary, evidence-ownership, word-band, and retry contracts. Identity and Welcome do not receive it.
+
+```text
+Use only the selected evidence in this writer packet.
+Lead visible prose with a human pattern, tension, desire, cost, resource, choice, or consequence.
+Before each paragraph, silently map one or two selected signals to a plain-language mechanism, conditional lived expression, and consequence, recognition, or useful condition.
+Mention technical astrology only when it sharpens that human mechanism.
+Keep each chapter within its editorial ownership and arrive at a distinct conclusion.
+Keep this support plan private: return reader-ready prose only. Astra separately evaluates deterministic validity and editorial cleanliness; a retry corrects the named issue only.
+```
+
+For Deep, the contract reaches chapter writers only; its private human-pattern thesis planner remains unchanged. No writer-returned JSON trace is required.
 
 ## Core Report
 
