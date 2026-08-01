@@ -6,6 +6,7 @@ import {
   ASTRA_REPORT_MODEL_PROFILE_ENV,
   ASTRA_REPORT_WRITER_ENV,
   ASTRA_EVIDENCE_TO_PROSE_PROMPT_VERSION,
+  ASTRA_PROGRESSED_EVIDENCE_TO_PROSE_PROMPT_VERSION,
   ASTRA_REPORT_PROMPT_VERSION,
   ASTRA_SEMANTIC_SYNTHESIS_VERSION,
   DEBUG_MODEL_REPORT_WRITER,
@@ -23,7 +24,7 @@ import {
   auditWriterClaimMarkers,
   buildWriterChapterClaimPlan
 } from "../packages/astrology/src/report/writerClaimPlanning";
-import { evidenceToProseContract } from "../packages/astrology/src/report/promptPolicies";
+import { evidenceToProseContract, progressedEvidenceToProseContract } from "../packages/astrology/src/report/promptPolicies";
 
 assert.equal(ASTRA_SEMANTIC_SYNTHESIS_VERSION, "2.0.0-phase-4");
 
@@ -227,6 +228,7 @@ assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Write each chapter in
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Open each section with a direct second-person statement using You or Your/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Vary the sentence shape across sections/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /Evidence-to-Prose Contract \(private writer guidance\):/);
+assert.doesNotMatch(provider.prompts.get("Identity")?.[0] ?? "", /Private Astra Progressed Evidence-to-Prose Contract/);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /silently choose one or two selected signals/i);
 assert.match(provider.prompts.get("Identity")?.[0] ?? "", /validates factual and structural correctness separately from editorial cleanliness/i);
 assert.match(completed.sections.find((section) => section.title === "Relationships")?.body ?? "", /The person you choose/);
@@ -681,6 +683,11 @@ assert.doesNotMatch(enrichedCoreIntegrationPrompt, /- Identity:|Sun in Gemini in
 assert.equal(evidenceToProseContract({ reportType: "identity" }).length, 0, "Identity must retain its current prompt contract.");
 assert.equal(evidenceToProseContract({ reportType: "core" }).length > 0, true, "Core must receive the shared Evidence-to-Prose contract.");
 assert.equal(evidenceToProseContract({ reportType: "deep" }).length > 0, true, "Deep must receive the shared Evidence-to-Prose contract.");
+assert.equal(progressedEvidenceToProseContract({ reportType: "progressed" }).length > 0, true, "Progressed must receive its approved Evidence-to-Prose contract.");
+for (const reportType of ["identity", "core", "deep", "synastry"] as const) {
+  assert.equal(progressedEvidenceToProseContract({ reportType }).length, 0, `${reportType} must not receive the Progressed-only contract.`);
+}
+assert.match(ASTRA_PROGRESSED_EVIDENCE_TO_PROSE_PROMPT_VERSION, /progressed-evidence-to-prose-v1$/);
 
 const monolithicFixtureProvider = monolithicPromptFixtureProvider();
 const monolithicCoreRequest = astrologyReportRequestSchema.parse({ ...request, id: "61111111-1111-4111-8111-000000000201", reportType: "core", context: undefined });

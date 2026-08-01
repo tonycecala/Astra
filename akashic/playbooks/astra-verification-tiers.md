@@ -68,6 +68,10 @@ Use a private shadow-generation bakeoff when the question is editorial or model-
 6. Run targeted lint, typecheck, and executable harness checks when the experiment adds code. Add `npm run check` only when the experiment changes shared runtime or another broad production boundary. Browser E2E is not required when no route, runtime, database write, or product prompt changes.
 7. Refresh REPOMAP and the incremental JCodeMunch index at closeout. If JCodeMunch cannot index the experiment's file type, report the exact limitation and use REPOMAP plus targeted source validation rather than calling the index current for that file.
 
+## Family-scoped prompt promotion
+
+When a blind reading identifies a clearer behavior, promote only the winning tested contract. Do not turn an incidental quality from one generation into a compulsory rule when its focused refinement loses blind review. Keep the prompt report-family gated, give model-written output a family-specific provenance version, and regress both the intended prompt presence and explicit exclusions before release.
+
 For a new report architecture, prefer direct chart-signal generation over feeding prior report prose back into the writer. Persist source chart IDs, the exact calculated signal packet, and `sourceReportIds: []` in the private manifest. Treat a selected signal packet as affirmative evidence, not an exhaustive chart: the writer must not infer that unlisted contacts are absent or use omissions to rank which person contributes more.
 
 When comparing ranked evidence with a complete calculated inventory, define the editorial question before the paid call and keep model, structure, privacy, and provider controls fixed. Blind the portrait labels before editorial scoring, then reveal the mapping and reconcile that judgment with evidence density, repetition, named-perspective balance, cost, and latency. Treat completeness as an audit surface, not an automatic writer improvement: reject prose that turns contact counts into a contribution ledger, and verify that the writer does not reverse which person's natal bodies form a contact.

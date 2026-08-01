@@ -13,6 +13,29 @@ summary: "Durable session-by-session memory for Astra repo work."
 
 ## Entries
 
+### 2026-08-01 - Progressed Evidence-to-Prose B Contract
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** owner-approved prompt-layer promotion
+**Status:** complete
+
+#### What Changed
+
+- Promoted the owner-selected Progressed B writer guidance for new Progressed reports only: selected progressed and progressed-to-natal evidence, psychology-first prose, private support, mechanism/conditional expression/consequence, occasional contextual astrology, distinct chapter conclusions, and supported dated timing.
+- Preserved Plainspoken voice, word bands, claim boundaries, provenance, one corrective retry, resolver/model policy, deployment behavior, and every saved report. The rejected B+ prescriptive house rule is explicitly absent.
+- Added the family-specific provenance version `astra-report-writer-2026-08-progressed-evidence-to-prose-v1` and regressions for prompt presence plus Identity/Core/Deep/Synastry exclusion.
+
+#### Validation And Steward Review
+
+- Focused Progressed/Core/Deep/Identity/Synastry prompt fixtures, TypeScript, lint, production build, and full repository checks passed. Lint retains one unrelated pre-existing warning in `scripts/repair-imported-ally-contexts.mts`.
+- Browser QA rendered the existing private Progressed Library report at `/library?reportId=a435e562-ace0-430e-aa3f-0f8476c01880` at 390, 820, and 1440 px with no horizontal overflow or console errors; it did not regenerate or modify the saved report.
+- Steward judgment: **accept**. The prompt is gated solely to Progressed, preserves the tested B boundary and one-retry behavior, excludes the rejected B+ house rule, records family-specific provenance, and keeps resolver, deployment, persistence, and non-Progressed writer behavior unchanged.
+
+#### Next Copy/Paste Goal
+
+Generate one new private Progressed report through the normal flow, verify its debug details show `astra-report-writer-2026-08-progressed-evidence-to-prose-v1`, confirm each chapter remains within selected evidence and dated timing is supported, and do not regenerate any saved report.
+
 ### 2026-08-01 - Core and Deep Evidence-to-Prose Contract
 
 **Report Level:** 3 - Workflow & QA View

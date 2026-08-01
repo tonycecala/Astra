@@ -10,15 +10,15 @@
   "ranked_files": [
     {
       "file": "packages/astrology/src/index.ts",
-      "weight": 2857.11,
+      "weight": 2871.11,
       "bucket": "other",
-      "estimated_tokens": 45925,
-      "lines": 4320,
-      "symbols": 669,
+      "estimated_tokens": 46136,
+      "lines": 4335,
+      "symbols": 672,
       "symbol_type_counts": {
         "class": 5,
-        "constant": 431,
-        "function": 168,
+        "constant": 433,
+        "function": 169,
         "type": 65
       },
       "dependency_in": 0,
@@ -256,11 +256,25 @@
       "route_count": 2
     },
     {
+      "file": "docs/progress/PROGRESS_LOG.md",
+      "weight": 265.2,
+      "bucket": "other",
+      "estimated_tokens": 15307,
+      "lines": 813,
+      "symbols": 87,
+      "symbol_type_counts": {
+        "heading": 87
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "packages/astrology/src/report/promptBuilderContracts.ts",
       "weight": 251.24,
       "bucket": "other",
-      "estimated_tokens": 8831,
-      "lines": 465,
+      "estimated_tokens": 8952,
+      "lines": 470,
       "symbols": 58,
       "symbol_type_counts": {
         "constant": 35,
@@ -298,20 +312,6 @@
         "type": 5
       },
       "dependency_in": 4,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
-      "file": "docs/progress/PROGRESS_LOG.md",
-      "weight": 244.2,
-      "bucket": "other",
-      "estimated_tokens": 14532,
-      "lines": 773,
-      "symbols": 80,
-      "symbol_type_counts": {
-        "heading": 80
-      },
-      "dependency_in": 0,
       "dependency_out": 0,
       "route_count": 0
     },
@@ -610,6 +610,20 @@
       "route_count": 2
     },
     {
+      "file": "docs/architecture/ASTRA_REPORT_PROMPT_REVIEW.md",
+      "weight": 136.28,
+      "bucket": "other",
+      "estimated_tokens": 5973,
+      "lines": 415,
+      "symbols": 44,
+      "symbol_type_counts": {
+        "heading": 44
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/composer-web/app/api/cards/publish-plan/route.ts",
       "weight": 135.82,
       "bucket": "app/api",
@@ -709,20 +723,6 @@
       "dependency_in": 0,
       "dependency_out": 1,
       "route_count": 2
-    },
-    {
-      "file": "docs/architecture/ASTRA_REPORT_PROMPT_REVIEW.md",
-      "weight": 130.29,
-      "bucket": "other",
-      "estimated_tokens": 5286,
-      "lines": 385,
-      "symbols": 42,
-      "symbol_type_counts": {
-        "heading": 42
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
     },
     {
       "file": "apps/astra-web/components/BirthDateTimeSheet.tsx",
@@ -858,6 +858,22 @@
       "dependency_in": 0,
       "dependency_out": 1,
       "route_count": 1
+    },
+    {
+      "file": "packages/astrology/src/report/promptPolicies.ts",
+      "weight": 108.3,
+      "bucket": "other",
+      "estimated_tokens": 4445,
+      "lines": 206,
+      "symbols": 16,
+      "symbol_type_counts": {
+        "constant": 4,
+        "function": 11,
+        "type": 1
+      },
+      "dependency_in": 0,
+      "dependency_out": 2,
+      "route_count": 0
     },
     {
       "file": "apps/astra-web/components/ReportReaderActions.tsx",
@@ -1148,22 +1164,6 @@
       },
       "dependency_in": 8,
       "dependency_out": 1,
-      "route_count": 0
-    },
-    {
-      "file": "packages/astrology/src/report/promptPolicies.ts",
-      "weight": 92.32,
-      "bucket": "other",
-      "estimated_tokens": 3532,
-      "lines": 176,
-      "symbols": 14,
-      "symbol_type_counts": {
-        "constant": 4,
-        "function": 9,
-        "type": 1
-      },
-      "dependency_in": 0,
-      "dependency_out": 2,
       "route_count": 0
     },
     {
@@ -2263,6 +2263,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/playbooks/astra-verification-tiers.md",
+      "weight": 39.3,
+      "bucket": "akashic",
+      "estimated_tokens": 4709,
+      "lines": 121,
+      "symbols": 11,
+      "symbol_type_counts": {
+        "heading": 11
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "apps/composer-web/proxy.ts",
       "weight": 38.72,
       "bucket": "other",
@@ -3104,20 +3118,6 @@
       "route_count": 0
     },
     {
-      "file": "akashic/playbooks/astra-verification-tiers.md",
-      "weight": 33.3,
-      "bucket": "akashic",
-      "estimated_tokens": 4417,
-      "lines": 113,
-      "symbols": 9,
-      "symbol_type_counts": {
-        "heading": 9
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "route_count": 0
-    },
-    {
       "file": "akashic/skills/private-shadow-generation-bakeoff-parity.md",
       "weight": 33.27,
       "bucket": "akashic",
@@ -3158,6 +3158,20 @@
       },
       "dependency_in": 0,
       "dependency_out": 4,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/skills/family-scoped-evidence-to-prose-prompt-promotion.md",
+      "weight": 33.12,
+      "bucket": "akashic",
+      "estimated_tokens": 599,
+      "lines": 57,
+      "symbols": 9,
+      "symbol_type_counts": {
+        "heading": 9
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -5167,9 +5181,9 @@
     },
     {
       "file": "docs/architecture/RISK_REGISTER.md",
-      "weight": 15.74,
+      "weight": 15.73,
       "bucket": "other",
-      "estimated_tokens": 839,
+      "estimated_tokens": 871,
       "lines": 38,
       "symbols": 4,
       "symbol_type_counts": {
@@ -6550,22 +6564,22 @@
     {
       "name": "top-weighted",
       "budget_tokens": 32000,
-      "estimated_tokens": 45925,
+      "estimated_tokens": 46136,
       "file_count": 1,
-      "symbol_count": 669,
+      "symbol_count": 672,
       "files": [
         {
           "rank": 1,
           "file": "packages/astrology/src/index.ts",
-          "weight": 2857.11,
+          "weight": 2871.11,
           "bucket": "other",
-          "estimated_tokens": 45925,
-          "lines": 4320,
-          "symbols": 669,
+          "estimated_tokens": 46136,
+          "lines": 4335,
+          "symbols": 672,
           "symbol_type_counts": {
             "class": 5,
-            "constant": 431,
-            "function": 168,
+            "constant": 433,
+            "function": 169,
             "type": 65
           },
           "dependency_in": 0,
@@ -6577,22 +6591,22 @@
     {
       "name": "top-weighted",
       "budget_tokens": 64000,
-      "estimated_tokens": 65820,
+      "estimated_tokens": 66031,
       "file_count": 2,
-      "symbol_count": 894,
+      "symbol_count": 897,
       "files": [
         {
           "rank": 1,
           "file": "packages/astrology/src/index.ts",
-          "weight": 2857.11,
+          "weight": 2871.11,
           "bucket": "other",
-          "estimated_tokens": 45925,
-          "lines": 4320,
-          "symbols": 669,
+          "estimated_tokens": 46136,
+          "lines": 4335,
+          "symbols": 672,
           "symbol_type_counts": {
             "class": 5,
-            "constant": 431,
-            "function": 168,
+            "constant": 433,
+            "function": 169,
             "type": 65
           },
           "dependency_in": 0,
@@ -6621,22 +6635,22 @@
     {
       "name": "top-weighted",
       "budget_tokens": 128000,
-      "estimated_tokens": 138176,
+      "estimated_tokens": 138387,
       "file_count": 8,
-      "symbol_count": 1901,
+      "symbol_count": 1904,
       "files": [
         {
           "rank": 1,
           "file": "packages/astrology/src/index.ts",
-          "weight": 2857.11,
+          "weight": 2871.11,
           "bucket": "other",
-          "estimated_tokens": 45925,
-          "lines": 4320,
-          "symbols": 669,
+          "estimated_tokens": 46136,
+          "lines": 4335,
+          "symbols": 672,
           "symbol_type_counts": {
             "class": 5,
-            "constant": 431,
-            "function": 168,
+            "constant": 433,
+            "function": 169,
             "type": 65
           },
           "dependency_in": 0,
@@ -6768,8 +6782,8 @@
     }
   ],
   "coverage": {
-    "files": 452,
-    "symbols": 6225,
-    "total_estimated_tokens": 1183028
+    "files": 453,
+    "symbols": 6250,
+    "total_estimated_tokens": 1186658
   }
 }

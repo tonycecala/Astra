@@ -102,6 +102,22 @@ export function evidenceToProseContract(request: Pick<AstrologyReportRequest, "r
   ];
 }
 
+/** Writer-only guidance for dated secondary progressions. Selection and validation remain deterministic runtime work. */
+export function progressedEvidenceToProseContract(request: Pick<AstrologyReportRequest, "reportType">) {
+  if (request.reportType !== "progressed") return [];
+  return [
+    "Private Astra Progressed Evidence-to-Prose Contract for this draft:",
+    "- Use only the selected progressed placements and progressed-to-natal contacts supplied for this report. Do not recover, infer, or import omitted chart facts.",
+    "- Lead every prose paragraph with a human pattern, tension, desire, cost, resource, or choice. Do not lead with astrology exposition.",
+    "- Before writing each paragraph, silently choose the one or two supplied signals that support it. Translate them into one plain-language mechanism, one conditional lived expression, and one consequence, recognition, or useful condition. Blend these naturally; never label or expose this private support plan.",
+    "- Mention astrology only when it sharpens the human mechanism. Keep it occasional, contextual, and non-leading; do not explain signs, houses, planets, or aspects as a lesson.",
+    "- Make Current Chapter, Progressed Sun, Progressed Moon, and Integration do distinct jobs and arrive at distinct conclusions. Do not turn this into a natal personality reading or repeat the same timing claim under a new heading.",
+    "- Treat the supplied as-of date as the only time basis. Use dated timing language only where the supplied progressed evidence supports it; do not predict outcomes, invent current activations, or claim a life event is already happening.",
+    "- Preserve the existing Plainspoken voice, claim boundaries, word bands, headings, and safety rules. This contract does not authorize biography, history, diagnosis, certainty, or claims about other people.",
+    "- If a correction is requested, address the named defect directly. Do not add reasoning, analysis, a planning block, JSON, metadata, or a hidden trace to the response."
+  ];
+}
+
 export function voicePlanForSection(title: string) {
   return reportRuleCatalog.voice.sectionClosings[title] ?? "Use a distinct, natural closing that belongs only to this chapter.";
 }

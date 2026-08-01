@@ -66,6 +66,7 @@ import {
   enrichedChapterOwnershipInstruction,
   enrichedProseBoundaryInstruction,
   enrichedSynthesisVoicePlan,
+  progressedEvidenceToProseContract,
   readerFocusInstruction,
   relationshipContextInstruction,
   reportEvidenceOwnershipPlan,
@@ -164,6 +165,7 @@ export const ASTRA_DEFAULT_HOUSE_SYSTEM = "whole-sign";
 export const ASTRA_SEMANTIC_SYNTHESIS_VERSION = "2.0.0-phase-4";
 export const ASTRA_REPORT_PROMPT_VERSION = "astra-report-writer-2026-07-semantic-synthesis-v2-claim-planned";
 export const ASTRA_EVIDENCE_TO_PROSE_PROMPT_VERSION = "astra-report-writer-2026-08-evidence-to-prose-v1";
+export const ASTRA_PROGRESSED_EVIDENCE_TO_PROSE_PROMPT_VERSION = "astra-report-writer-2026-08-progressed-evidence-to-prose-v1";
 export const GEMINI_INTRO_IDENTITY_REPORT_MODEL = "google/gemini-3.5-flash";
 const ASTRA_REPORT_MODEL_TIMEOUT_MS = 90_000;
 const ASTRA_DEEP_REPORT_MODEL_TIMEOUT_MS = 240_000;
@@ -2683,6 +2685,7 @@ function buildDebugModelPrompt(request: AstrologyReportRequest, chartSignature: 
     plainspokenContract: astraPlainspokenVoiceContract,
     plainspokenParagraphRule,
     evidenceToProseContract,
+    progressedEvidenceToProseContract,
     interpretiveContractFor,
     psychologicalSafetyContract: astraPsychologicalSafetyContract,
     reportVoicePlan,
@@ -4067,6 +4070,7 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: Rep
 }
 
 function reportPromptVersionFor(request: AstrologyReportRequest) {
+  if (request.reportType === "progressed") return ASTRA_PROGRESSED_EVIDENCE_TO_PROSE_PROMPT_VERSION;
   return request.reportType === "core" || request.reportType === "core_self" || request.reportType === "chart_interpretation" || request.reportType === "deep"
     ? ASTRA_EVIDENCE_TO_PROSE_PROMPT_VERSION
     : ASTRA_REPORT_PROMPT_VERSION;

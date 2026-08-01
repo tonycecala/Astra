@@ -6,6 +6,7 @@ import {
   ASTRA_REPORT_MODEL_PROFILE_ENV,
   ASTRA_REPORT_MODEL_PROVIDER_ENV,
   ASTRA_REPORT_PROMPT_VERSION,
+  ASTRA_PROGRESSED_EVIDENCE_TO_PROSE_PROMPT_VERSION,
   ASTRA_REPORT_WRITER_ENV,
   ASTRA_SYNASTRY_PRODUCTION_REPORT_MODEL,
   DEBUG_MODEL_REPORT_WRITER,
@@ -172,9 +173,21 @@ assert.match(corePrompt, /Identity: target 350-425 words; remain between 325 and
 assert.match(corePrompt, /Relationships: target 225-300 words; remain between 200 and 340 words/);
 assert.match(corePrompt, /Core earns its value through four distinct chapters/);
 
-const progressedPrompt = await completedPromptFor(progressedRequest, { "Current Chapter": 250, "Progressed Sun": 225, "Progressed Moon": 225, Integration: 180 });
+const progressedGenerated = await modelResultFor(progressedRequest, { "Current Chapter": 250, "Progressed Sun": 225, "Progressed Moon": 225, Integration: 180 });
+assert.equal(progressedGenerated.result.status, "completed", progressedGenerated.result.error);
+const progressedPrompt = progressedGenerated.prompt;
 assert.match(progressedPrompt, /Current Chapter: target 225-300 words; remain between 200 and 340 words/);
 assert.match(progressedPrompt, /Integration: target 150-225 words; remain between 140 and 260 words/);
+assert.match(progressedPrompt, /Private Astra Progressed Evidence-to-Prose Contract for this draft:/);
+assert.match(progressedPrompt, /selected progressed placements and progressed-to-natal contacts supplied for this report/i);
+assert.match(progressedPrompt, /supplied as-of date as the only time basis/i);
+assert.doesNotMatch(progressedPrompt, /When a selected house supports the mechanism/i, "The rejected B+ house rule must not be promoted.");
+assert.equal(progressedGenerated.result.generationMetadata?.promptVersion, ASTRA_PROGRESSED_EVIDENCE_TO_PROSE_PROMPT_VERSION);
+assert.doesNotMatch(identityPrompt, /Private Astra Progressed Evidence-to-Prose Contract/);
+assert.doesNotMatch(corePrompt, /Private Astra Progressed Evidence-to-Prose Contract/);
+
+const synastryGenerated = await modelResultFor(synastryRequest, { Attraction: 250, Friction: 250, Communication: 250, Stability: 180 });
+assert.doesNotMatch(synastryGenerated.prompt, /Private Astra Progressed Evidence-to-Prose Contract/);
 
 const undersizedCore = await modelResultFor(coreRequest, Object.fromEntries(buildAstrologyReportResult(coreRequest).sections.map((section) => [section.title, 100])));
 assert.equal(undersizedCore.result.status, "completed");

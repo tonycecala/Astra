@@ -2,7 +2,7 @@
 
 **Status:** approved v6 runtime prompt contract as of 2026-07-17
 **Source:** `packages/astrology/src/index.ts`
-**Current prompt versions:** `astra-report-writer-2026-08-evidence-to-prose-v1` for Core/Deep; `astra-report-writer-2026-07-semantic-synthesis-v2-claim-planned` for Identity and other unchanged families.
+**Current prompt versions:** `astra-report-writer-2026-08-evidence-to-prose-v1` for Core/Deep; `astra-report-writer-2026-08-progressed-evidence-to-prose-v1` for Progressed; `astra-report-writer-2026-07-semantic-synthesis-v2-claim-planned` for Identity and other unchanged families.
 
 This is a readable representation of what Astra sends to its report writer. It is deliberately free of private user data, API credentials, and generated report prose.
 
@@ -179,7 +179,7 @@ For both Welcome and Identity, if Sun evidence exists, Astra also requires:
 For this chart, the required Sun opening phrase is either "{SIGN} Sun" or "Sun in {SIGN}". Use one of those exact phrases in the first or second sentence of Identity.
 ```
 
-## Evidence-to-Prose Contract (Core and Deep Only)
+## Evidence-to-Prose Contract (Core and Deep)
 
 Core and Deep add one private writer layer to the existing Plainspoken, claim-boundary, evidence-ownership, word-band, and retry contracts. Identity and Welcome do not receive it.
 
@@ -193,6 +193,21 @@ Keep this support plan private: return reader-ready prose only. Astra separately
 ```
 
 For Deep, the contract reaches chapter writers only; its private human-pattern thesis planner remains unchanged. No writer-returned JSON trace is required.
+
+## Progressed Evidence-to-Prose Contract
+
+Progressed adds its own private writer layer to the existing Plainspoken, claim-boundary, evidence-ownership, word-band, and retry contracts. It is limited to selected progressed placements and progressed-to-natal contacts supplied in that report's section cards; it does not authorize recovery of omitted chart facts.
+
+```text
+Lead each paragraph with a human pattern, tension, desire, cost, resource, or choice.
+Silently support each paragraph with one or two selected signals, expressed as a mechanism, conditional lived expression, and consequence.
+Use astrology occasionally and contextually only when it sharpens that human mechanism.
+Keep Current Chapter, Progressed Sun, Progressed Moon, and Integration in distinct editorial jobs with distinct conclusions.
+Treat the supplied as-of date as the only time basis. Use dated timing only when supplied evidence supports it; do not predict outcomes or invent activations.
+Keep support private and return reader-ready prose only. Astra validates deterministic validity separately from editorial cleanliness; one retry corrects the named issue directly.
+```
+
+The contract deliberately excludes the rejected B+ prescriptive house-translation rule. A contextual house reference remains allowed only when it is present in selected evidence and sharpens a specific human mechanism; it is never a required explanatory move. It does not add Synastry mechanics or a writer-returned trace.
 
 ## Core Report
 
