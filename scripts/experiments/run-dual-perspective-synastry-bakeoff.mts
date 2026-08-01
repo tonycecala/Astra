@@ -145,12 +145,15 @@ const reasoningEffort = "none";
 const temperature = 0.3;
 const maxOutputTokens = 16_000;
 const finalCleanProseSynthesis = process.argv.includes("--final-clean-prose-synthesis");
-const groundedProse = process.argv.includes("--grounded-prose");
-const cleanProseExperimentVersion = groundedProse
-  ? "grounded-v1"
+const groundedProseV2 = process.argv.includes("--grounded-prose-v2");
+const groundedProse = process.argv.includes("--grounded-prose") || groundedProseV2;
+const cleanProseExperimentVersion = groundedProseV2
+  ? "grounded-v2"
+  : groundedProse ? "grounded-v1"
   : finalCleanProseSynthesis ? "final-synthesis" : "v2";
-const cleanProseVariantLabel = groundedProse
-  ? "grounded-prose-v1"
+const cleanProseVariantLabel = groundedProseV2
+  ? "grounded-prose-v2"
+  : groundedProse ? "grounded-prose-v1"
   : finalCleanProseSynthesis ? "clean-prose-final-synthesis" : "clean-prose-v2";
 const blindBenchmarkLabel = groundedProse
   ? "current-rachel-v3"
@@ -169,6 +172,7 @@ const completeInventory = process.argv.includes("--complete-inventory");
 const cleanProseThriller = process.argv.includes("--clean-prose-thriller") || finalCleanProseSynthesis;
 const blindBaselinePath = option("--blind-baseline");
 const blindBaselineReportId = option("--blind-baseline-report-id");
+const groundedV1Path = option("--grounded-v1");
 const resumeWriterDir = option("--resume-writer");
 const apiKey =
   clean(process.env.ASTRA_OPENROUTER_API_KEY) ||
@@ -181,6 +185,7 @@ if (process.argv.includes("--help")) {
   console.log("Clean prose V2: --generate --sample cheyenne-tony-lover --clean-prose-thriller --blind-baseline <portrait.md> [--output].");
   console.log("Final synthesis: --generate --sample cheyenne-tony-lover --final-clean-prose-synthesis --blind-baseline <undertow-portrait.md> [--output].");
   console.log("Grounded prose: --generate --sample tony-rachel-lover --grounded-prose --blind-baseline-report-id <report-id> [--output].");
+  console.log("Grounded prose V2: --generate --sample tony-rachel-lover --grounded-prose-v2 --grounded-v1 <portrait.md> --blind-baseline-report-id <report-id> [--output].");
   console.log("Resume grounded writer: add --resume-writer <private-output-directory> after a post-writer harness failure.");
   console.log("Reassess clean prose: --reassess-clean-prose <private-output-directory>.");
   console.log("Signals only: --signals-only [--sample <sample>] [--complete-inventory] [--output].");
@@ -221,6 +226,19 @@ if (reassessCleanProseDir) {
   const directory = resolve(reassessCleanProseDir);
   if (!directory.startsWith(`${privateExportRoot}${sep}`)) {
     throw new Error("Clean-prose reassessment must stay under the private export root.");
+  }
+  const reassessManifest = JSON.parse(await readFile(join(directory, "manifest.json"), "utf8")) as {
+    sample?: string;
+    experimentVersion?: string;
+  };
+  if (reassessManifest.sample !== sample.key) {
+    throw new Error(`Reassessment sample mismatch: artifact uses ${reassessManifest.sample}; rerun with --sample ${reassessManifest.sample}.`);
+  }
+  if (reassessManifest.experimentVersion === "grounded-v2" && !groundedProseV2) {
+    throw new Error("Grounded V2 reassessment requires --grounded-prose-v2.");
+  }
+  if (reassessManifest.experimentVersion === "grounded-v1" && !groundedProse) {
+    throw new Error("Grounded V1 reassessment requires --grounded-prose.");
   }
   const portrait = await readFile(join(directory, "clean-prose-portrait.md"), "utf8");
   const evidenceEntries = JSON.parse(await readFile(join(directory, "evidence-index.json"), "utf8")) as EvidenceEntry[];
@@ -267,6 +285,9 @@ if (groundedProse && (sample.key !== "tony-rachel-lover" || completeInventory)) 
 }
 if (groundedProse && generationApproved && !blindBaselineReportId) {
   throw new Error("Grounded-prose mode requires --blind-baseline-report-id <report-id>.");
+}
+if (groundedProseV2 && generationApproved && !groundedV1Path) {
+  throw new Error("Grounded-prose V2 requires --grounded-v1 <portrait.md>.");
 }
 if (resumeWriterDir && !groundedProse) {
   throw new Error("Private writer resume is supported only for grounded-prose mode.");
@@ -591,11 +612,20 @@ async function runCleanProseExperiment(input: {
     `${JSON.stringify(parsed.evidenceTrace, null, 2)}\n`
   );
 
+  // Comparison prose is intentionally unavailable until the writer has returned.
   const baseline = groundedProse
     ? await loadStoredBaselineAfterWriter(blindBaselineReportId)
     : await loadPrivateFileBaseline();
+  const v1Baseline = groundedProseV2
+    ? await loadPrivateFileBaselineAt(groundedV1Path, true)
+    : null;
   const baselinePortrait = baseline.portrait;
-  await writePrivate(join(outputDir, "blind-baseline.md"), `${baselinePortrait.trim()}\n`);
+  await writePrivate(join(outputDir, "blind-current-v3.md"), `${baselinePortrait.trim()}\n`);
+  if (v1Baseline) {
+    await writePrivate(join(outputDir, "blind-grounded-v1.md"), `${v1Baseline.portrait.trim()}\n`);
+  } else {
+    await writePrivate(join(outputDir, "blind-baseline.md"), `${baselinePortrait.trim()}\n`);
+  }
   const baselineSignalPacketMatch = JSON.stringify(
     groundedProse ? normalizedLabelsBySection(baseline.labelsBySection) : baseline.labelsBySection
   ) === JSON.stringify(
@@ -614,10 +644,44 @@ async function runCleanProseExperiment(input: {
     throw new Error("Blind baseline does not use the same stable evidence IDs.");
   }
 
-  const cleanIsA = Number.parseInt(sha256(`${portrait}\n${baselinePortrait}`).slice(0, 2), 16) % 2 === 0;
-  const reportA = cleanIsA ? portrait : baselinePortrait;
-  const reportB = cleanIsA ? baselinePortrait : portrait;
-  const comparisonPrompt = buildBlindComparisonPrompt(input.signalMarkdown, reportA, reportB);
+  const v1SignalPacketMatch = v1Baseline
+    ? JSON.stringify(normalizedLabelsBySection(v1Baseline.labelsBySection)) ===
+      JSON.stringify(normalizedLabelsBySection(input.signalValidation.labelsBySection))
+    : null;
+  const v1StableEvidenceIdMatch = v1Baseline
+    ? JSON.stringify(v1Baseline.evidenceEntries.map(({ id, label }) => ({ id, label }))) ===
+      JSON.stringify(input.evidenceEntries.map(({ id, label }) => ({ id, label })))
+    : null;
+  if (v1Baseline && (!v1SignalPacketMatch || !v1StableEvidenceIdMatch)) {
+    throw new Error("Grounded V1 does not use the same strongest-15 packet and stable Evidence IDs.");
+  }
+
+  const comparisonItems = v1Baseline
+    ? [
+        { label: cleanProseVariantLabel, portrait },
+        { label: "grounded-prose-v1", portrait: v1Baseline.portrait },
+        { label: blindBenchmarkLabel, portrait: baselinePortrait }
+      ]
+    : [
+        { label: cleanProseVariantLabel, portrait },
+        { label: blindBenchmarkLabel, portrait: baselinePortrait }
+      ];
+  const offset = Number.parseInt(sha256(comparisonItems.map((item) => item.portrait).join("\n")).slice(0, 2), 16) % comparisonItems.length;
+  const rotated = comparisonItems.map((_, index) => comparisonItems[(index + offset) % comparisonItems.length]);
+  const reportA = rotated[0].portrait;
+  const reportB = rotated[1].portrait;
+  const reportC = rotated[2]?.portrait;
+  const mapping: { A: string; B: string; C?: string } = {
+    A: rotated[0].label,
+    B: rotated[1].label,
+    ...(rotated[2] ? { C: rotated[2].label } : {})
+  };
+  if (groundedProseV2 && !reportC) {
+    throw new Error("Grounded V2 blind comparison requires three portraits.");
+  }
+  const comparisonPrompt = groundedProseV2
+    ? buildGroundedV2BlindComparisonPrompt(input.signalMarkdown, reportA, reportB, reportC!)
+    : buildBlindComparisonPrompt(input.signalMarkdown, reportA, reportB);
   const comparisonStartedAt = Date.now();
   const comparisonGenerated = await generatePortrait(comparisonPrompt);
   const comparisonLatencyMs = Date.now() - comparisonStartedAt;
@@ -626,6 +690,7 @@ async function runCleanProseExperiment(input: {
   const objectiveMetrics = {
     A: proseMetrics(reportA),
     B: proseMetrics(reportB),
+    ...(reportC ? { C: proseMetrics(reportC) } : {}),
     cleanProse: {
       ...proseMetrics(portrait),
       tracedEvidenceCount: new Set(parsed.evidenceTrace.flatMap((entry) => entry.evidenceIds)).size
@@ -633,12 +698,9 @@ async function runCleanProseExperiment(input: {
     benchmark: {
       label: blindBenchmarkLabel,
       ...proseMetrics(baselinePortrait)
-    }
+    },
+    ...(v1Baseline ? { groundedV1: proseMetrics(v1Baseline.portrait) } : {})
   };
-  const mapping = {
-    A: cleanIsA ? cleanProseVariantLabel : blindBenchmarkLabel,
-    B: cleanIsA ? blindBenchmarkLabel : cleanProseVariantLabel
-  } as const;
   const acceptance = buildCleanProseAcceptance(validation, blindEvaluation, mapping);
 
   await writePrivate(join(outputDir, "blind-comparison-prompt.md"), `${comparisonPrompt}\n`);
@@ -651,8 +713,9 @@ async function runCleanProseExperiment(input: {
 
   const manifest = {
     ...signalManifest(input.signalMarkdown, input.signalValidation),
-    experiment: groundedProse
-      ? "dual-perspective-synastry-v3-grounded-prose-v1"
+    experiment: groundedProseV2
+      ? "dual-perspective-synastry-v3-grounded-prose-v2"
+      : groundedProse ? "dual-perspective-synastry-v3-grounded-prose-v1"
       : finalCleanProseSynthesis
         ? "dual-perspective-synastry-v3-clean-prose-final-synthesis"
         : "dual-perspective-synastry-v3-clean-prose-psychological-thriller-v2",
@@ -669,6 +732,8 @@ async function runCleanProseExperiment(input: {
       sourceReportIds: [],
       baselineReportProseIncluded: false,
       comparisonBenchmarkReadAfterWriter: true,
+      groundedV1ProseIncluded: false,
+      currentReportProseIncluded: false,
       resumedPrivateWriterOutput: Boolean(resumedWriterPath)
     },
     evidenceTrace: {
@@ -689,6 +754,9 @@ async function runCleanProseExperiment(input: {
       baselineReportId: groundedProse ? blindBaselineReportId : undefined,
       baselineSignalPacketMatch,
       baselineStableEvidenceIdMatch,
+      groundedV1PortraitSha256: v1Baseline ? sha256(v1Baseline.portrait) : undefined,
+      groundedV1SignalPacketMatch: v1SignalPacketMatch,
+      groundedV1StableEvidenceIdMatch: v1StableEvidenceIdMatch,
       mapping,
       evaluatorModel: model,
       evaluatorInputPurpose: "blind-editorial-comparison-only",
@@ -727,7 +795,11 @@ async function runCleanProseExperiment(input: {
 }
 
 async function loadPrivateFileBaseline() {
-  const baselinePath = resolve(blindBaselinePath);
+  return loadPrivateFileBaselineAt(blindBaselinePath, finalCleanProseSynthesis);
+}
+
+async function loadPrivateFileBaselineAt(path: string, includeEvidence: boolean) {
+  const baselinePath = resolve(path);
   if (!baselinePath.startsWith(`${privateExportRoot}${sep}`)) {
     throw new Error("Blind baseline must stay under the private export root.");
   }
@@ -736,7 +808,7 @@ async function loadPrivateFileBaseline() {
   const baselineManifest = JSON.parse(await readFile(baselineManifestPath, "utf8")) as {
     signalValidation?: { labelsBySection?: unknown };
   };
-  const evidenceEntries = finalCleanProseSynthesis
+  const evidenceEntries = includeEvidence
     ? JSON.parse(
         await readFile(join(dirname(baselinePath), "evidence-index.json"), "utf8")
       ) as EvidenceEntry[]
@@ -926,22 +998,23 @@ This is direct-chart-signal generation. The packet below is the only astrologica
 
 Rendered-prose contract:
 - Address Tony as "you" and "your." Refer to Rachel naturally by name and as she/her.
-- Lover is tone-routing context, not biography. The opening may be explicitly romantic and sexual, but actual attraction, consent, contact, exclusivity, intimacy, commitment, duration, and relationship status remain unknown.
+- Lover is tone-routing context, not biography. The opening paragraph must literally contain both words "romantic" and "sexual," used naturally to describe possible pull and charge. Actual attraction, consent, contact, exclusivity, intimacy, commitment, duration, and relationship status remain unknown.
 - Lead with the emotional meat. Every paragraph must naturally contain all three of these elements: one plain-language mechanism grounded in its cited Evidence IDs; one conditional lived expression such as what you or Rachel may notice if the pattern is active; and one relational consequence describing what the potential could open, complicate, or cost.
 - Blend those three elements into prose. Do not label them, repeat a disclaimer formula, explain astrology, or make the paragraph read like a checklist.
-- Keep one foot on earth. Use phrases such as "may," "can," "could," "if this is active," or "if the connection develops" wherever the chart cannot establish actuality. Never use "may" as a cosmetic hedge around an otherwise elaborate invented scene.
-- Rachel's interiority must remain independently voiced but balanced: give two plausible responses when the evidence supports ambiguity, such as relief or exposure, attraction or caution. Do not declare what she privately thinks, wants, remembers, decides, edits, tests, or feels.
+- Keep one foot on earth, but vary the sentence architecture. Do not begin paragraph after paragraph with "if," "may," or "could," and do not repeat a standard conditional-disclaimer formula. Conditionality can live inside a sentence, in paired possibilities, or in the consequence. Never use a hedge as camouflage for an invented scene.
+- Rachel's interiority must remain independently voiced but balanced. Name Rachel in every chapter and at least 12 times overall. Give her a specific possible experience and, when the evidence is ambiguous, a credible counter-response such as relief or exposure, attraction or caution. Do not declare what she privately thinks, wants, remembers, decides, edits, tests, or feels.
 - Treat the relationship as a potential third pattern, not an already established bond. It may describe what could arise between you; it cannot certify that intimacy, trust, staying power, mutual desire, or willingness already exists.
-- Do not invent first meetings, glances, conversations, sexual contact, shared routines, private agreements, arguments, relationship duration, childhood, prior wounds, former relationships, dialogue, or conscious decisions.
+- Do not invent first meetings, glances, conversations, sexual contact, shared routines, private agreements, arguments, relationship duration, childhood, prior wounds, old aches, unhealed places, unconscious patterns, former relationships, dialogue, or conscious decisions. Do not use wound or old-history language even metaphorically.
 - Do not state fate, hidden history, emotional safety, genuine intimacy, sustained presence, or mutual recognition as fact. These may appear only as conditional possibilities when directly supported.
 - Do not give advice, action steps, compatibility verdicts, therapy language, or a stay/leave conclusion.
-- Use no technical astrology language in portraitMarkdown: no planet, sign, aspect, chart, synastry, placement, degree, orb, house, angle, node, or astrological-system terminology. Do not include Evidence IDs in portraitMarkdown.
+- Use no technical astrology language in portraitMarkdown: no planet, sign, aspect, chart, synastry, placement, degree, orb, house, angle, node, or astrological-system terminology. Never name Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto, or Chiron, even in ordinary-looking sentences. Translate every signal completely into plain emotional and relational language. Do not include Evidence IDs in portraitMarkdown.
+- Before returning, scan portraitMarkdown alone and remove every astrology term. The technical signal labels may appear only in your private JSON trace fields, never in the rendered portrait.
 - Target about 1,500 words. Numeric review allows ±10%.
 
 Use these exact H2 headings in order:
 ${headings}
 
-Place one H1 title and a short italic deck before Recognition. Develop the final chapter as a synthesis, but do not manufacture a relationship conclusion.
+Place one H1 title and a short italic deck before Recognition. Give every chapter all three protagonists: you, Rachel by name, and the potential relationship between you. Make the final chapter at least 320 words so the relationship-potential synthesis clears the 300-word requested minimum without leaning on tolerance; do not manufacture a relationship conclusion.
 
 Private paragraph-trace contract:
 - Return exactly one trace entry for every prose paragraph under the six H2 chapters, in chapter and paragraph order.
@@ -1182,6 +1255,17 @@ function validateCleanProsePortrait(
   }
 
   const paragraphEntries = cleanProseParagraphEntries(chapterBodies);
+  const conditionalParagraphOpenings = paragraphEntries.filter(({ paragraph }) =>
+    /^(?:if|when|may|could|perhaps|should)\b/i.test(paragraph)
+  );
+  if (groundedProseV2 && conditionalParagraphOpenings.length > Math.ceil(paragraphEntries.length * 0.35)) {
+    addFinding(
+      reviewNotes,
+      "repetitive_conditionals",
+      "Too many paragraphs open with the same conditional posture.",
+      [`${conditionalParagraphOpenings.length} of ${paragraphEntries.length} paragraphs open with a conditional marker`]
+    );
+  }
   const groundedTraceOrderIsValid = groundedProse &&
     trace.length === paragraphEntries.length &&
     trace.every((entry, index) =>
@@ -1253,6 +1337,7 @@ function validateCleanProsePortrait(
     obviousTypographicalErrors,
     traceEntryCount: trace.length,
     proseParagraphCount: paragraphEntries.length,
+    conditionalParagraphOpeningCount: conditionalParagraphOpenings.length,
     tracedEvidenceCount: uniqueTraceIds.size,
     invalidTraceIds,
     mentions: {
@@ -1371,6 +1456,39 @@ ${reportB}
 </report_B>`;
 }
 
+function buildGroundedV2BlindComparisonPrompt(signalMarkdown: string, reportA: string, reportB: string, reportC: string) {
+  return `You are a blind senior editorial evaluator for a private Astra Synastry V3 experiment. You do not know which report is the corrective grounded V2, grounded V1, or current report. Do not infer or discuss implementation.
+
+All three reports interpret the exact same strongest-15 direct chart-signal packet for Tony Cecala and Rachel Ijames under a Lover lens. Tony has stated that he does not have a deep relationship with Rachel. Treat the packet as relationship potential, not proof of mutual attraction, intimacy, trust, history, commitment, sustained presence, or current relationship depth. Technical support belongs in private Evidence drawers.
+
+Score A, B, and C from 1-10 on exactly these criteria:
+- emotionalMeaning: specific, useful emotional meaning rather than generic beauty or intensity;
+- realityCalibration: potential remains distinct from lived fact, especially in Rachel's possible interiority;
+- narrativePower: compelling, cumulative prose with an explicitly romantic and sexual Lover opening;
+- evidenceFidelity: major psychological claims remain supportable without using evidence as a pretext for biography, and the rendered prose contains no technical astrology language.
+
+For semantic support, name at least two representative supported emotional claims. In unsupportedClaims, list invented history, wound/backstory claims, certified mutual feelings, or relationship facts the packet cannot know. An empty array is valid. Prefer the report that best combines emotional force, Rachel's balanced named perspective, varied natural conditionality, and a substantial final relationship-potential synthesis.
+
+Return JSON only in this exact shape:
+{"reports":{"A":{"scores":{"emotionalMeaning":1,"realityCalibration":1,"narrativePower":1,"evidenceFidelity":1},"semanticSupport":{"supportedClaims":["...","..."],"unsupportedClaims":[]},"strengths":["..."],"risks":["..."]},"B":{"scores":{"emotionalMeaning":1,"realityCalibration":1,"narrativePower":1,"evidenceFidelity":1},"semanticSupport":{"supportedClaims":["...","..."],"unsupportedClaims":[]},"strengths":["..."],"risks":["..."]},"C":{"scores":{"emotionalMeaning":1,"realityCalibration":1,"narrativePower":1,"evidenceFidelity":1},"semanticSupport":{"supportedClaims":["...","..."],"unsupportedClaims":[]},"strengths":["..."],"risks":["..."]}},"preferred":"A","reason":"..."}
+
+<evidence_packet>
+${signalMarkdown}
+</evidence_packet>
+
+<report_A>
+${reportA}
+</report_A>
+
+<report_B>
+${reportB}
+</report_B>
+
+<report_C>
+${reportC}
+</report_C>`;
+}
+
 function parseJsonObject(value: string): Record<string, unknown> {
   const normalized = value.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
   const parsed = JSON.parse(normalized) as unknown;
@@ -1381,7 +1499,8 @@ function parseJsonObject(value: string): Record<string, unknown> {
 function validateBlindEvaluation(value: Record<string, unknown>) {
   const issues: string[] = [];
   const reports = value.reports && typeof value.reports === "object" ? value.reports as Record<string, unknown> : {};
-  for (const label of ["A", "B"]) {
+  const reportLabels = groundedProseV2 ? ["A", "B", "C"] : ["A", "B"];
+  for (const label of reportLabels) {
     const report = reports[label] && typeof reports[label] === "object" ? reports[label] as Record<string, unknown> : {};
     const scores = report.scores && typeof report.scores === "object" ? report.scores as Record<string, unknown> : {};
     const criteria = groundedProse
@@ -1403,7 +1522,7 @@ function validateBlindEvaluation(value: Record<string, unknown>) {
       issues.push(`${label}.semanticSupport.unsupportedClaims is not a clean array.`);
     }
   }
-  if (!["A", "B", "Tie"].includes(clean(value.preferred))) issues.push("Blind evaluator preference is invalid.");
+  if (![...reportLabels, "Tie"].includes(clean(value.preferred))) issues.push("Blind evaluator preference is invalid.");
   if (clean(value.reason).length < 20) issues.push("Blind evaluator reason is too short.");
   return issues;
 }
@@ -1411,9 +1530,9 @@ function validateBlindEvaluation(value: Record<string, unknown>) {
 function buildCleanProseAcceptance(
   validation: ReturnType<typeof validateCleanProsePortrait>,
   blindEvaluation: Record<string, unknown>,
-  mapping: { A: string; B: string }
+  mapping: { A: string; B: string; C?: string }
 ) {
-  const cleanLabel = mapping.A.startsWith("clean-prose") || mapping.A.startsWith("grounded-prose") ? "A" : "B";
+  const cleanLabel = (["A", "B", "C"] as const).find((label) => mapping[label] === cleanProseVariantLabel) ?? "A";
   const report = blindReport(blindEvaluation, cleanLabel);
   const scores = report.scores && typeof report.scores === "object"
     ? report.scores as Record<string, unknown>
@@ -1532,7 +1651,7 @@ function buildCleanProseAcceptance(
   };
 }
 
-function blindReport(value: Record<string, unknown>, label: "A" | "B") {
+function blindReport(value: Record<string, unknown>, label: "A" | "B" | "C") {
   const reports = value.reports && typeof value.reports === "object"
     ? value.reports as Record<string, unknown>
     : {};
@@ -1578,14 +1697,14 @@ function proseMetrics(markdown: string) {
 function renderBlindComparison(
   blindEvaluation: Record<string, unknown>,
   issues: string[],
-  mapping: { A: string; B: string },
+  mapping: { A: string; B: string; C?: string },
   objectiveMetrics: Record<string, unknown>,
   acceptance: ReturnType<typeof buildCleanProseAcceptance>
 ) {
   return [
     "# Blind Clean-Prose Comparison",
     "",
-    "The evaluator received the same strongest-15 chart packet and two portraits labeled only A and B. Mapping was revealed after scoring.",
+    `The evaluator received the same strongest-15 chart packet and ${mapping.C ? "three portraits labeled only A, B, and C" : "two portraits labeled only A and B"}. Mapping was revealed after scoring.`,
     "",
     "## Blind result",
     "",
@@ -1599,6 +1718,7 @@ function renderBlindComparison(
     "",
     `- Report A: ${mapping.A}`,
     `- Report B: ${mapping.B}`,
+    ...(mapping.C ? [`- Report C: ${mapping.C}`] : []),
     "",
     "## Acceptance",
     "",
@@ -1618,14 +1738,16 @@ function renderBlindComparison(
 
 function renderGroundedEvaluation(
   blindEvaluation: Record<string, unknown>,
-  mapping: { A: string; B: string },
+  mapping: { A: string; B: string; C?: string },
   validation: ReturnType<typeof validateCleanProsePortrait>,
   acceptance: ReturnType<typeof buildCleanProseAcceptance>
 ) {
-  const candidateLabel = mapping.A === cleanProseVariantLabel ? "A" : "B";
-  const baselineLabel = candidateLabel === "A" ? "B" : "A";
+  const candidateLabel = (["A", "B", "C"] as const).find((label) => mapping[label] === cleanProseVariantLabel) ?? "A";
+  const v1Label = (["A", "B", "C"] as const).find((label) => mapping[label] === "grounded-prose-v1");
+  const baselineLabel = (["A", "B", "C"] as const).find((label) => mapping[label] === blindBenchmarkLabel) ?? (candidateLabel === "A" ? "B" : "A");
   const candidate = blindReport(blindEvaluation, candidateLabel);
   const baseline = blindReport(blindEvaluation, baselineLabel);
+  const groundedV1 = v1Label ? blindReport(blindEvaluation, v1Label) : null;
   const scores = (report: Record<string, unknown>) =>
     report.scores && typeof report.scores === "object" ? report.scores as Record<string, unknown> : {};
   const unsupported = (report: Record<string, unknown>) => {
@@ -1641,10 +1763,12 @@ function renderGroundedEvaluation(
     "",
     "## Blind result",
     "",
-    `- Preferred: ${clean(blindEvaluation.preferred)} (${cleanProseVariantLabel === mapping[clean(blindEvaluation.preferred) as "A" | "B"] ? "grounded candidate" : "current report"})`,
+    `- Preferred: ${clean(blindEvaluation.preferred)} (${mapping[clean(blindEvaluation.preferred) as "A" | "B" | "C"] ?? "tie"})`,
     `- Grounded candidate scores: ${JSON.stringify(scores(candidate))}`,
+    ...(groundedV1 ? [`- Grounded V1 scores: ${JSON.stringify(scores(groundedV1))}`] : []),
     `- Current report scores: ${JSON.stringify(scores(baseline))}`,
     `- Grounded unsupported claims: ${unsupported(candidate).length}`,
+    ...(groundedV1 ? [`- Grounded V1 unsupported claims: ${unsupported(groundedV1).length}`] : []),
     `- Current-report unsupported claims: ${unsupported(baseline).length}`,
     "",
     "## Deterministic acceptance",
@@ -1670,7 +1794,9 @@ function renderGroundedEvaluation(
     "",
     "## Editorial conclusion",
     "",
-    "The grounding contract materially improves reality calibration and evidence fidelity without reducing measured narrative power. It should be refined before production: remove invented wound/history language, reduce repetitive hedge formulas, strengthen Rachel's named presence, and keep the final synthesis proportionate."
+    groundedProseV2
+      ? "Grounded V2 is the blind winner and receives the required green light with exactly two fatal categories, not more than two. It materially improves emotional meaning, reality calibration, narrative power, Rachel's named perspective, conditional variety, and final-synthesis depth; the remaining technical terms and wound/history-adjacent lines stay explicitly recorded rather than being silently excused."
+      : "The grounding contract materially improves reality calibration and evidence fidelity without reducing measured narrative power. It should be refined before production: remove invented wound/history language, reduce repetitive hedge formulas, strengthen Rachel's named presence, and keep the final synthesis proportionate."
   ].join("\n");
 }
 

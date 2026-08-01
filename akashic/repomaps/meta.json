@@ -3452,8 +3452,8 @@
       "file": "akashic/playbooks/astra-verification-tiers.md",
       "weight": 30.33,
       "bucket": "akashic",
-      "estimated_tokens": 3063,
-      "lines": 92,
+      "estimated_tokens": 3141,
+      "lines": 94,
       "symbols": 8,
       "symbol_type_counts": {
         "heading": 8
@@ -4875,6 +4875,20 @@
       "weight": 17.47,
       "bucket": "akashic",
       "estimated_tokens": 245,
+      "lines": 25,
+      "symbols": 4,
+      "symbol_type_counts": {
+        "heading": 4
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/warnings/private-portrait-reassessment-must-match-saved-sample-and-mode.md",
+      "weight": 17.45,
+      "bucket": "akashic",
+      "estimated_tokens": 335,
       "lines": 25,
       "symbols": 4,
       "symbol_type_counts": {
@@ -6670,8 +6684,8 @@
     }
   ],
   "coverage": {
-    "files": 445,
-    "symbols": 6144,
-    "total_estimated_tokens": 1174366
+    "files": 446,
+    "symbols": 6148,
+    "total_estimated_tokens": 1174779
   }
 }

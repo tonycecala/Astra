@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-08-01T00:01:14.151Z",
+  "generated_at": "2026-08-01T00:23:01.831Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 445,
-  "total_symbols": 6144,
-  "total_estimated_tokens": 1174366,
+  "files_indexed": 446,
+  "total_symbols": 6148,
+  "total_estimated_tokens": 1174779,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -34415,9 +34415,9 @@
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
       "lang": "markdown",
-      "size": 12256,
-      "lines": 92,
-      "estimated_tokens": 3063,
+      "size": 12567,
+      "lines": 94,
+      "estimated_tokens": 3141,
       "symbols": [
         {
           "name": "Astra Verification Tiers",
@@ -34456,7 +34456,7 @@
         },
         {
           "name": "Private OpenRouter bakeoff credential",
-          "line": 89,
+          "line": 91,
           "type": "heading"
         }
       ],
@@ -39279,6 +39279,49 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 17.47,
+      "importance_bucket": "akashic"
+    },
+    {
+      "file": "akashic/warnings/private-portrait-reassessment-must-match-saved-sample-and-mode.md",
+      "lang": "markdown",
+      "size": 1337,
+      "lines": 25,
+      "estimated_tokens": 335,
+      "symbols": [
+        {
+          "name": "Private portrait reassessment must match saved sample and mode",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "What Happened",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Why It Happened",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "How To Avoid It",
+          "line": 23,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Private portrait reassessment must match saved sample and mode",
+        "What Happened",
+        "Why It Happened",
+        "How To Avoid It"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 17.45,
       "importance_bucket": "akashic"
     },
     {
@@ -59488,6 +59531,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/warnings/private-portrait-reassessment-must-match-saved-sample-and-mode.md",
+        "line": 23,
+        "type": "heading"
+      },
+      {
         "file": "akashic/warnings/report-instrumentation-is-not-reader-quality.md",
         "line": 24,
         "type": "heading"
@@ -67850,7 +67898,7 @@
     "Private OpenRouter bakeoff credential": [
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "line": 89,
+        "line": 91,
         "type": "heading"
       }
     ],
@@ -67858,6 +67906,13 @@
       {
         "file": "docs/architecture/stream-read-model-cache-boundary.md",
         "line": 1,
+        "type": "heading"
+      }
+    ],
+    "Private portrait reassessment must match saved sample and mode": [
+      {
+        "file": "akashic/warnings/private-portrait-reassessment-must-match-saved-sample-and-mode.md",
+        "line": 15,
         "type": "heading"
       }
     ],
@@ -80250,6 +80305,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/warnings/private-portrait-reassessment-must-match-saved-sample-and-mode.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
         "file": "akashic/warnings/report-instrumentation-is-not-reader-quality.md",
         "line": 17,
         "type": "heading"
@@ -80427,6 +80487,11 @@
       {
         "file": "akashic/warnings/preventable-implementation-hiccups-from-composer-private-feed-workflow.md",
         "line": 23,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/warnings/private-portrait-reassessment-must-match-saved-sample-and-mode.md",
+        "line": 20,
         "type": "heading"
       },
       {
@@ -84576,8 +84641,8 @@
         "file": "akashic/playbooks/astra-verification-tiers.md",
         "weight": 30.33,
         "bucket": "akashic",
-        "estimated_tokens": 3063,
-        "lines": 92,
+        "estimated_tokens": 3141,
+        "lines": 94,
         "symbols": 8,
         "symbol_type_counts": {
           "heading": 8
@@ -85999,6 +86064,20 @@
         "weight": 17.47,
         "bucket": "akashic",
         "estimated_tokens": 245,
+        "lines": 25,
+        "symbols": 4,
+        "symbol_type_counts": {
+          "heading": 4
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "akashic/warnings/private-portrait-reassessment-must-match-saved-sample-and-mode.md",
+        "weight": 17.45,
+        "bucket": "akashic",
+        "estimated_tokens": 335,
         "lines": 25,
         "symbols": 4,
         "symbol_type_counts": {
@@ -87794,9 +87873,9 @@
       }
     ],
     "coverage": {
-      "files": 445,
-      "symbols": 6144,
-      "total_estimated_tokens": 1174366
+      "files": 446,
+      "symbols": 6148,
+      "total_estimated_tokens": 1174779
     }
   }
 }
