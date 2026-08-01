@@ -3217,6 +3217,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/skills/ground-synastry-potential-paragraph-by-paragraph.md",
+      "weight": 32.88,
+      "bucket": "akashic",
+      "estimated_tokens": 271,
+      "lines": 40,
+      "symbols": 9,
+      "symbol_type_counts": {
+        "heading": 9
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "akashic/templates/skill-template.md",
       "weight": 32.83,
       "bucket": "akashic",
@@ -3436,10 +3450,10 @@
     },
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
-      "weight": 30.34,
+      "weight": 30.33,
       "bucket": "akashic",
-      "estimated_tokens": 2834,
-      "lines": 90,
+      "estimated_tokens": 3063,
+      "lines": 92,
       "symbols": 8,
       "symbol_type_counts": {
         "heading": 8
@@ -6656,8 +6670,8 @@
     }
   ],
   "coverage": {
-    "files": 444,
-    "symbols": 6135,
-    "total_estimated_tokens": 1173866
+    "files": 445,
+    "symbols": 6144,
+    "total_estimated_tokens": 1174366
   }
 }
