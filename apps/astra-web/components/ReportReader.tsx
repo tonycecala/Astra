@@ -309,13 +309,20 @@ function buildReportEvidenceByTitle(request: AstrologyReportRequest | null, repo
   const v3 = report.generationMetadata?.synastryV3;
   if (v3) {
     const evidenceById = new Map(v3.evidenceIndex.map((item) => [item.id, item]));
-    return Object.fromEntries(v3.chapterTrace.map((trace) => [
-      trace.chapter,
-      trace.evidenceIds.flatMap((id) => {
+    const byChapter: ReportEvidenceByTitle = {};
+    for (const trace of v3.chapterTrace) {
+      const existing = byChapter[trace.chapter] ?? [];
+      const seen = new Set(existing.map((item) => item.id));
+      for (const id of trace.evidenceIds) {
         const item = evidenceById.get(id);
-        return item ? [{ id: item.id, label: item.label, meaning: item.meaning }] : [];
-      })
-    ]));
+        if (item && !seen.has(item.id)) {
+          existing.push({ id: item.id, label: item.label, meaning: item.meaning });
+          seen.add(item.id);
+        }
+      }
+      byChapter[trace.chapter] = existing;
+    }
+    return byChapter;
   }
   try {
     return Object.fromEntries(

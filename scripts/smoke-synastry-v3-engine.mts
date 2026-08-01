@@ -6,11 +6,17 @@ import {
   ASTRA_REPORT_WRITER_ENV,
   DEBUG_MODEL_REPORT_WRITER,
   LOCAL_CHART_ROUTINE_ENGINE,
+  ASTRA_SYNASTRY_V3_PROMPT_VERSION,
   buildAstrologyReportResultAsync,
   synastryToneSnapshot,
   synastryV3Headings
 } from "@astra/astrology";
 import { astrologyReportRequestSchema } from "@astra/contracts";
+import { reportModelTimeoutMsFor } from "../packages/astrology/src/report/providerUsage";
+
+if (reportModelTimeoutMsFor("synastry", 90_000, 240_000) !== 240_000) {
+  throw new Error("Long-form Synastry V3.1 generation must use the bounded deep-report timeout.");
+}
 
 const tone = synastryToneSnapshot({ allyId: "ally_partner", relationship: "Lover" });
 const request = astrologyReportRequestSchema.parse({
@@ -57,7 +63,15 @@ function portraitBlock() {
     while (words.length < 240) words.push("feeling");
     return `## ${heading}\n\n${words.join(" ")}`;
   });
-  const trace = headings.map((chapter) => ({ chapter, evidenceIds: ["S01"], supportedFeeling: "mutual recognition" }));
+  const trace = headings.map((chapter) => ({
+    chapter,
+    paragraphIndex: 1,
+    evidenceIds: ["S01"],
+    mechanism: "Emotional recognition creates quick interpersonal legibility.",
+    livedExpression: "If active, each person may feel unusually understood.",
+    relationalConsequence: "The potential can open closeness or complicate pacing.",
+    supportedFeeling: "mutual recognition"
+  }));
   return `<portrait_markdown>\n# Tony + Partner\n\n${sections.join("\n\n")}\n</portrait_markdown>\n<evidence_trace_json>\n${JSON.stringify(trace)}\n</evidence_trace_json>`;
 }
 
@@ -68,16 +82,18 @@ const successfulFetch: typeof fetch = async (_url, init) => {
   if (calls === 1) {
     if (!body.input?.includes("Private Evidence packet:") || !body.input.includes("S01")) throw new Error("Writer did not receive the stable selected packet.");
     if (/saved report|complete inventory/i.test(body.input)) throw new Error("Writer prompt referenced forbidden input.");
+    if (body.max_output_tokens !== 8_000) throw new Error("V3.1 writer must reserve capacity for both portrait prose and its private paragraph trace.");
     return new Response(JSON.stringify({ output_text: portraitBlock() }), { headers: { "content-type": "application/json" } });
   }
-  if (body.max_output_tokens !== 700) throw new Error("Semantic support call must use the 700-token ceiling.");
+  if (body.max_output_tokens !== 1_400) throw new Error("Semantic support call must use the 1,400-token ceiling.");
   return new Response(JSON.stringify({ output_text: JSON.stringify({ supportedClaims: ["mutual recognition"], unsupportedClaims: [], severity: "none" }) }), { headers: { "content-type": "application/json" } });
 };
 
 const result = await buildAstrologyReportResultAsync(request, { env, fetchImpl: successfulFetch });
 if (result.status !== "completed" || result.sections.length !== 6 || calls !== 2) throw new Error(`V3 engine did not complete its writer and independent semantic check: ${result.error ?? "unknown"}`);
 const v3 = result.generationMetadata?.synastryV3;
-if (!v3 || v3.sourceReportIds.length || !v3.validation.greenLight || v3.chapterTrace.length !== 6) throw new Error("V3 immutable result metadata was incomplete.");
+if (!v3 || v3.schemaVersion !== 2 || v3.sourceReportIds.length || !v3.validation.greenLight || v3.chapterTrace.length !== 6) throw new Error("V3.1 immutable result metadata was incomplete.");
+if (result.generationMetadata?.promptVersion !== ASTRA_SYNASTRY_V3_PROMPT_VERSION) throw new Error("V3.1 prompt version was not persisted.");
 if (result.sections.some((section) => /\b(?:Venus|aspect|S\d{2})\b/i.test(section.body))) throw new Error("Technical astrology leaked into V3 portrait prose.");
 if (/\b(?:zodiac|chart|aspect)\b/i.test(result.publicSignal?.summary ?? "")) throw new Error("Technical astrology leaked into the V3 public signal.");
 
@@ -110,7 +126,15 @@ const reciprocalFetch: typeof fetch = async (_url, init) => {
       while (words.length < 240) words.push("feeling");
       return `## ${heading}\n\n${words.join(" ")}`;
     });
-    const trace = reciprocalHeadings.map((chapter) => ({ chapter, evidenceIds: ["S01"], supportedFeeling: "mutual recognition" }));
+    const trace = reciprocalHeadings.map((chapter) => ({
+      chapter,
+      paragraphIndex: 1,
+      evidenceIds: ["S01"],
+      mechanism: "Recognition creates quick interpersonal legibility.",
+      livedExpression: "If active, each person may feel understood.",
+      relationalConsequence: "The potential can open closeness or complicate pacing.",
+      supportedFeeling: "mutual recognition"
+    }));
     const output = `<portrait_markdown>\n# Partner + Tony\n\n${sections.join("\n\n")}\n</portrait_markdown>\n<evidence_trace_json>\n${JSON.stringify(trace)}\n</evidence_trace_json>`;
     return new Response(JSON.stringify({ output_text: output }), { headers: { "content-type": "application/json" } });
   }
@@ -132,4 +156,23 @@ if (failed.generationMetadata?.failures?.length !== 2 || failed.generationMetada
   throw new Error("Rejected V3 attempts must remain in private generation metadata.");
 }
 
-console.log("Synastry V3 engine smoke passed for direct packet input, private metadata, semantic support, and one retry.");
+let unavailableCalls = 0;
+const unavailableSemanticFetch: typeof fetch = async (_url, init) => {
+  unavailableCalls += 1;
+  if (unavailableCalls === 1) return new Response(JSON.stringify({ output_text: portraitBlock() }), { headers: { "content-type": "application/json" } });
+  const body = JSON.parse(String(init?.body)) as { max_output_tokens?: number };
+  if (body.max_output_tokens !== 1_400) throw new Error("Reviewer-only retry changed its token ceiling.");
+  return new Response(JSON.stringify({ output_text: "reviewer prose without JSON" }), { headers: { "content-type": "application/json" } });
+};
+const reviewerUnavailable = await buildAstrologyReportResultAsync(request, { env, fetchImpl: unavailableSemanticFetch });
+if (reviewerUnavailable.status !== "completed" || unavailableCalls !== 3) {
+  throw new Error("A semantic-reviewer formatting failure must not discard a deterministically accepted report.");
+}
+if (reviewerUnavailable.generationMetadata?.synastryV3?.semanticSupport?.reviewStatus !== "unavailable") {
+  throw new Error("Semantic-reviewer unavailability must remain visible in private metadata.");
+}
+if (!reviewerUnavailable.generationMetadata?.reviewNotes?.some((note) => note.code === "provider_no_text")) {
+  throw new Error("Semantic-reviewer unavailability must create a private review note.");
+}
+
+console.log("Synastry V3.1 engine smoke passed for direct packet input, paragraph Evidence, reviewer-only retry, and fail-open review notes.");

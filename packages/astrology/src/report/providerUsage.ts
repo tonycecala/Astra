@@ -32,12 +32,17 @@ export function mergeProviderUsage(left: ProviderUsage, right: ProviderUsage): P
 }
 
 export function reportModelTimeoutMsFor(reportType: string, standardTimeoutMs: number, deepTimeoutMs: number) {
-  return reportType === "deep" ? deepTimeoutMs : standardTimeoutMs;
+  // Synastry V3.1 asks the provider for a long-form portrait plus a private
+  // paragraph trace, so it needs the same bounded generation window as Deep.
+  return reportType === "deep" || reportType === "synastry" ? deepTimeoutMs : standardTimeoutMs;
 }
 
 export function maxModelOutputTokensFor(reportType: string) {
   if (reportType === "deep") return 8000;
+  // The visible portrait is about 1,500 words, and its private paragraph-level
+  // Evidence trace adds substantial structured output after the prose.
+  if (reportType === "synastry") return 8000;
   if (reportType === "core" || reportType === "core_self") return 4200;
-  if (reportType === "progressed" || reportType === "synastry") return 4200;
+  if (reportType === "progressed") return 4200;
   return 3200;
 }

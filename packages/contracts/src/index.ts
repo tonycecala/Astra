@@ -818,14 +818,20 @@ const synastryV3EvidenceItemSchema = z.object({
 
 const synastryV3ChapterTraceSchema = z.object({
   chapter: z.string().min(1),
+  paragraphIndex: z.number().int().positive().optional(),
   evidenceIds: z.array(z.string().regex(/^S\d{2,}$/)).min(1),
-  supportedFeeling: z.string().min(1)
+  supportedFeeling: z.string().min(1),
+  mechanism: z.string().min(1).optional(),
+  livedExpression: z.string().min(1).optional(),
+  relationalConsequence: z.string().min(1).optional()
 });
 
 const synastryV3SemanticSupportSchema = z.object({
   supportedClaims: z.array(z.string()).default([]),
   unsupportedClaims: z.array(z.string()).default([]),
   severity: z.enum(["none", "minor", "severe"]),
+  reviewStatus: z.enum(["completed", "unavailable"]).optional(),
+  error: z.string().min(1).optional(),
   inputTokens: z.number().int().nonnegative().optional(),
   outputTokens: z.number().int().nonnegative().optional(),
   reasoningTokens: z.number().int().nonnegative().optional(),
@@ -835,18 +841,25 @@ const synastryV3SemanticSupportSchema = z.object({
 });
 
 export const synastryV3MetadataSchema = z.object({
-  schemaVersion: z.literal(1),
+  schemaVersion: z.union([z.literal(1), z.literal(2)]),
   sourceReportIds: z.array(z.string()).length(0),
   tone: synastryToneSnapshotSchema,
   evidenceIndex: z.array(synastryV3EvidenceItemSchema).min(1),
-  chapterTrace: z.array(synastryV3ChapterTraceSchema).length(6),
+  chapterTrace: z.array(synastryV3ChapterTraceSchema).min(6),
   validation: z.object({
     wordCount: z.number().int().nonnegative(),
     acceptedWordRange: z.object({ minimum: z.literal(1350), maximum: z.literal(1650) }),
     boundaryViolations: z.array(z.string()),
     fatalCategories: z.array(z.string()),
     reviewNotes: z.array(z.string()),
-    greenLight: z.boolean()
+    greenLight: z.boolean(),
+    paragraphCount: z.number().int().nonnegative().optional(),
+    finalChapterWords: z.number().int().nonnegative().optional(),
+    technicalMetrics: z.object({
+      terms: z.array(z.string()),
+      termsPerThousandWords: z.number().nonnegative(),
+      heavyParagraphCount: z.number().int().nonnegative()
+    }).optional()
   }),
   semanticSupport: synastryV3SemanticSupportSchema.optional()
 });

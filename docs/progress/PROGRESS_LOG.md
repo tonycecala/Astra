@@ -13,6 +13,37 @@ summary: "Durable session-by-session memory for Astra repo work."
 
 ## Entries
 
+### 2026-07-31 - Synastry V3.1 Production Reliability
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** report-generation production implementation and live diagnosis
+**Status:** complete with editorial notes
+
+#### What Changed
+
+- Promoted the approved psychology-first V3.1 contract for new Synastry reports while preserving strongest-15 direct chart signals, stable private Evidence IDs, immutable saved reports, server-derived Ally tone, and public-share suppression.
+- Added one private mechanism, conditional lived expression, and relational consequence trace for every rendered paragraph.
+- Separated semantic-review formatting failure from writer acceptance, raised the reviewer JSON allowance, and preserved valid portraits with a private reviewer-unavailable note after one reviewer-only retry.
+- Moved Synastry to the existing Deep report bounds of 240 seconds and 8,000 output tokens so the 1,500-word portrait and private trace can complete together; corrective prompts prohibit analysis or thinking blocks.
+
+#### Live Failure Evidence
+
+- Request `8bf2116b-8730-4214-b13c-84018810dd74` contained complete writer prose but failed because both 700-token semantic reviews ended at the output limit without parseable JSON.
+- Request `7c2363f2-080d-4238-b54b-a981bd55e05c` failed at 90.7 seconds before a writer draft returned, proving the standard timeout was too short.
+- Requests `a7f37138-9e28-441a-9787-01221597fa8d` and `dcc3edeb-3658-44b9-8c10-7bcd9008ee6f` proved that 4,200 and 6,500 tokens could truncate the required private trace or a corrective response.
+- Request `48db9887-11df-4f5c-9d7b-0bc90348e3c4` completed with prompt `astra-synastry-v3.1-psychology-first-2026-08`, schema 2, 1,428 words, 14 paragraph traces, completed semantic review, and six owner Evidence drawers.
+
+#### Validation And Steward Review
+
+- Synastry packet, engine, and validation smokes passed; targeted ESLint, TypeScript, and the Astra production build passed.
+- Focused Playwright desktop and mobile journeys passed for Ally edit/tone routing, responsive report ordering, owner-only Evidence, public-share suppression, and console/page errors.
+- Steward judgment: **accept-with-notes**. Reliability and privacy boundaries are accepted. Editorial cleanliness remains a monitored risk because the live report green-lit under the approved `more than two fatal categories` rule while retaining exactly `technical_surface` and `perspective_erasure`.
+
+#### Next Copy/Paste Goal
+
+Review Michelle report `48db9887-11df-4f5c-9d7b-0bc90348e3c4` as the first live Synastry V3.1 portrait, then decide whether V3.1.1 should reduce technical astrology density and strengthen second-person perspective while preserving strongest-15 evidence, paragraph traces, and the current acceptance arithmetic.
+
 ### 2026-07-30 - TypeScript 7 Throughput Trial
 
 **Report Level:** 4 - Implementation / Debug Handoff

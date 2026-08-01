@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { allyRelationshipTags } from "@astra/contracts";
-import { synastryToneSnapshot, synastryV3Headings } from "@astra/astrology";
+import { ASTRA_SYNASTRY_V3_PROMPT_VERSION, synastryToneSnapshot, synastryV3Headings } from "@astra/astrology";
 import { createAlly, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, db, recordAstrologyReportResult } from "@astra/db";
 import { signInWithTestSession } from "./support/auth-session";
 
@@ -110,14 +110,22 @@ test.describe("Synastry V3 production boundary", () => {
         reportId: `${requestId}:signal`, requestId, reportType: "synastry", headline: "V3 Reader + Cheyenne", summary: "A feeling-first relationship portrait.", tone: "grounded", boundary: "public_signal", provenanceSummary: "Feeling-first portrait."
       },
       generationMetadata: {
-        writer: "debug-model-writer", promptVersion: "astra-synastry-v3-feeling-first-2026-07", attemptCount: 1, orchestration: "synastry-v3",
+        writer: "debug-model-writer", promptVersion: ASTRA_SYNASTRY_V3_PROMPT_VERSION, attemptCount: 1, orchestration: "synastry-v3",
         reviewNotes: [{ code: "unsupported_claim", message: "INTERNAL_REVIEW_NOTE" }],
         synastryV3: {
-          schemaVersion: 1,
+          schemaVersion: 2,
           sourceReportIds: [],
           tone,
           evidenceIndex: [{ id: "S01", label: "PRIVATE_TECHNICAL_EVIDENCE", meaning: "Exact private evidence meaning", evidenceJobs: ["Attraction"] }],
-          chapterTrace: headings.map((chapter) => ({ chapter, evidenceIds: ["S01"], supportedFeeling: "a distinct feeling" })),
+          chapterTrace: headings.map((chapter) => ({
+            chapter,
+            paragraphIndex: 1,
+            evidenceIds: ["S01"],
+            mechanism: "A private evidence-grounded mechanism.",
+            livedExpression: "A conditional possible experience.",
+            relationalConsequence: "A possible relational consequence.",
+            supportedFeeling: "a distinct feeling"
+          })),
           validation: { wordCount: 1500, acceptedWordRange: { minimum: 1350, maximum: 1650 }, boundaryViolations: [], fatalCategories: [], reviewNotes: ["PRIVATE_V3_REVIEW_NOTE"], greenLight: true },
           semanticSupport: { supportedClaims: ["a distinct feeling"], unsupportedClaims: [], severity: "none", latencyMs: 1 }
         }

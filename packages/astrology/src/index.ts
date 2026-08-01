@@ -3736,6 +3736,47 @@ class SynastryV3GenerationError extends Error {
   }
 }
 
+async function reviewSynastryV3SemanticSupport(
+  portrait: string,
+  evidenceIndex: ReturnType<typeof buildSynastryV3EvidenceIndex>,
+  writer: PromptModelWriter
+) {
+  let usage: ModelUsage = {};
+  let latencyMs = 0;
+  let previousError = "";
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const response = await writer(
+      buildSynastryV3SemanticPrompt({ portrait, evidenceIndex, ...(previousError ? { previousError } : {}) }),
+      1_400
+    );
+    usage = mergeModelUsage(usage, response.usage);
+    latencyMs += response.latencyMs;
+    try {
+      return {
+        semantic: { ...parseSynastryV3SemanticResponse(response.text), reviewStatus: "completed" as const },
+        usage,
+        latencyMs,
+        unavailableError: ""
+      };
+    } catch (error) {
+      previousError = error instanceof Error ? error.message : "Semantic support response was invalid.";
+      if (attempt === 1) continue;
+    }
+  }
+  return {
+    semantic: {
+      supportedClaims: [],
+      unsupportedClaims: [],
+      severity: "minor" as const,
+      reviewStatus: "unavailable" as const,
+      error: previousError
+    },
+    usage,
+    latencyMs,
+    unavailableError: previousError
+  };
+}
+
 async function generateSynastryV3Draft(
   input: ReportWriterInput,
   writer: PromptModelWriter
@@ -3789,20 +3830,9 @@ async function generateSynastryV3Draft(
       );
     }
 
-    const semanticResponse = await writer(buildSynastryV3SemanticPrompt({ portrait: parsed.portrait, evidenceIndex }), 700);
-    usage = mergeModelUsage(usage, semanticResponse.usage);
-    let semantic: ReturnType<typeof parseSynastryV3SemanticResponse>;
-    try {
-      semantic = parseSynastryV3SemanticResponse(semanticResponse.text);
-    } catch (error) {
-      previousErrors = [error instanceof Error ? error.message : "Semantic support response was invalid."];
-      failures.push(synastryV3RetryFailure(attempt, previousErrors, semanticResponse, response.text, "provider_no_text"));
-      if (attempt === 1) continue;
-      throw new SynastryV3GenerationError(
-        `Synastry V3 semantic support check failed after one corrective retry: ${previousErrors.join(" ")}`,
-        { attemptCount: attempt, usage, latencyMs: Date.now() - startedAt, failures }
-      );
-    }
+    const semanticReview = await reviewSynastryV3SemanticSupport(parsed.portrait, evidenceIndex, writer);
+    usage = mergeModelUsage(usage, semanticReview.usage);
+    const semantic = semanticReview.semantic;
     validation = validateSynastryV3({
       portrait: parsed.portrait,
       sections,
@@ -3812,7 +3842,8 @@ async function generateSynastryV3Draft(
       tone,
       readerName,
       allyName,
-      semanticSeverity: semantic.severity
+      semanticSeverity: semantic.severity,
+      semanticReviewUnavailable: semantic.reviewStatus === "unavailable"
     });
     if (!validation.greenLight) {
       previousErrors = [...validation.boundaryViolations, ...validation.fatalCategories.map((category) => `Fatal category: ${category}`)];
@@ -3843,10 +3874,12 @@ async function generateSynastryV3Draft(
       attemptCount: attempt,
       usage,
       latencyMs: Date.now() - startedAt,
-      reviewNotes: [],
+      reviewNotes: semanticReview.unavailableError
+        ? [{ code: "provider_no_text", message: `Semantic support reviewer unavailable: ${semanticReview.unavailableError}` }]
+        : [],
       failures,
       synastryV3: {
-        schemaVersion: 1,
+        schemaVersion: 2,
         sourceReportIds: [],
         tone,
         evidenceIndex,
@@ -3854,8 +3887,8 @@ async function generateSynastryV3Draft(
         validation,
         semanticSupport: {
           ...semantic,
-          ...semanticResponse.usage,
-          latencyMs: semanticResponse.latencyMs
+          ...semanticReview.usage,
+          latencyMs: semanticReview.latencyMs
         }
       }
     };
@@ -4209,6 +4242,7 @@ async function buildDebugModelReportResult(
             orchestration: "synastry-v3" as const,
             synastryV3: synastryGeneration.synastryV3,
             ...(synastryGeneration.failures.length ? { failures: synastryGeneration.failures } : {}),
+            ...(synastryGeneration.reviewNotes.length ? { reviewNotes: synastryGeneration.reviewNotes } : {}),
             readability: reportReadabilityMetadata(draft.sections)
           }
         : sectionedGeneration

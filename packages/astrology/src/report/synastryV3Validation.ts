@@ -1,6 +1,14 @@
 import type { SynastryToneSnapshot } from "@astra/contracts";
 
-export type SynastryV3TraceRow = { chapter: string; evidenceIds: string[]; supportedFeeling: string };
+export type SynastryV3TraceRow = {
+  chapter: string;
+  paragraphIndex: number;
+  evidenceIds: string[];
+  supportedFeeling: string;
+  mechanism: string;
+  livedExpression: string;
+  relationalConsequence: string;
+};
 export type SynastryV3EvidenceRow = { id: string; label: string; meaning: string; evidenceJobs: string[] };
 export type SynastryV3FatalCategory =
   | "format_integrity"
@@ -12,10 +20,11 @@ export type SynastryV3FatalCategory =
   | "identity_integrity";
 
 const technicalTermPattern = /\b(?:astrology|astrological|chart|planet|sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven|zodiac|natal|synastry|interaspect|aspect|conjunction|conjunct|trine|square|sextile|quincunx|opposition|orb|aries|taurus|gemini|cancer|leo|virgo|libra|scorpio|sagittarius|capricorn|aquarius|pisces)\b/i;
+const technicalTermsPattern = /\b(?:astrology|astrological|chart|planet|sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven|zodiac|natal|synastry|interaspect|aspect|conjunction|conjunct|trine|square|sextile|quincunx|opposition|orb|aries|taurus|gemini|cancer|leo|virgo|libra|scorpio|sagittarius|capricorn|aquarius|pisces)\b|\b(?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|\d+(?:st|nd|rd|th)?)\s+house\b|\b\d+(?:\.\d+)?\s*(?:degrees?|°)\b/gi;
 const technicalHousePattern = /\b(?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|\d+(?:st|nd|rd|th)?)\s+house\b/i;
 const technicalDegreePattern = /\b\d+(?:\.\d+)?\s*(?:degrees?|°)\b/i;
 const technicalOppositePattern = /\b(?:sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven)\s+(?:is\s+)?opposite\b|\bopposite\s+(?:the\s+)?(?:sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven)\b/i;
-const inventedHistoryPattern = /\b(?:you learned (?:early|in childhood)|when you (?:first met|fell in love)|throughout your (?:marriage|relationship)|always have|never have|built to last|meant to be|fate|destiny|destined|fated|past lives?|ancient bond|what happened between you|after the breakup)\b/i;
+const inventedHistoryPattern = /\b(?:you learned (?:early|in childhood)|when you (?:first met|fell in love)|throughout your (?:marriage|relationship)|always have|never have|built to last|meant to be|fate|destiny|destined|fated|past lives?|ancient bond|what happened between you|after the breakup|old (?:wounds?|ache|sensitivity|history|defenses?)|unhealed (?:place|wound)|inherited expectations?|unconscious (?:pattern|history))\b/i;
 const fabricatedDialoguePattern = /(?:["“][^"”]*(?:\bI\b|\bme\b|\bmy\b)[^"”]*["”])|(?:\*[^*]*(?:\bI\b|\bme\b|\bmy\b)[^*]*\*[,;:]?\s+(?:she|he|they|\w+)\s+(?:thinks?|feels?|says?))/i;
 const comparativeVerdictPattern = /\b(?:you|\w+)\s+(?:carry|carries|give|gives|contribute|contributes|sacrifice|sacrifices|cost|costs|earn|earns)\s+(?:more|less|most|least)\b|\bmore (?:invested|important|responsible|burdened) than\b/i;
 const containmentBurdenPattern = /\b(?:you|\w+)\s+(?:contain|contains|carry|carries|hold|holds|bear|bears)\s+(?:the other person|their|his|her|your)\s+(?:burden|feelings?|chaos|pain|weight)\b|\bone of you (?:contains|carries|holds|bears) (?:more|the relationship|the bond)\b|\bemotional labor\b/i;
@@ -31,6 +40,19 @@ export function technicalLeakageMatches(value: string) {
     .map((pattern) => pattern.source);
 }
 
+export function synastryV3TechnicalMetrics(value: string) {
+  const terms = [...value.matchAll(technicalTermsPattern)].map((match) => match[0]);
+  const words = synastryV3WordCount(value);
+  const heavyParagraphs = value
+    .split(/\n\s*\n/)
+    .filter((paragraph) => [...paragraph.matchAll(technicalTermsPattern)].length >= 3);
+  return {
+    terms,
+    termsPerThousandWords: Number(((terms.length / Math.max(words, 1)) * 1_000).toFixed(1)),
+    heavyParagraphCount: heavyParagraphs.length
+  };
+}
+
 export function validateSynastryV3(input: {
   portrait: string;
   sections: Array<{ title: string; body: string }>;
@@ -41,6 +63,7 @@ export function validateSynastryV3(input: {
   readerName: string;
   allyName: string;
   semanticSeverity?: "none" | "minor" | "severe";
+  semanticReviewUnavailable?: boolean;
 }) {
   const boundaryViolations: string[] = [];
   const fatal = new Set<SynastryV3FatalCategory>();
@@ -52,7 +75,12 @@ export function validateSynastryV3(input: {
   if (input.sections.length !== 6 || expectedTitles.some((title, index) => actualTitles[index] !== title)) {
     fatal.add("format_integrity");
   }
-  if (technicalLeakageMatches(input.portrait).length || /\bS\d{2,}\b/.test(input.portrait)) fatal.add("technical_surface");
+  const technicalMetrics = synastryV3TechnicalMetrics(input.portrait);
+  if (technicalMetrics.termsPerThousandWords > 8 || technicalMetrics.heavyParagraphCount > 0 || /\bS\d{2,}\b/.test(input.portrait)) {
+    fatal.add("technical_surface");
+  } else if (technicalMetrics.terms.length) {
+    reviewNotes.push(`Portrait uses ${technicalMetrics.terms.length} contextual astrology terms (${technicalMetrics.termsPerThousandWords} per 1,000 words) without an astrology-heavy paragraph.`);
+  }
   if (inventedHistoryPattern.test(input.portrait) || fabricatedDialoguePattern.test(input.portrait)) fatal.add("invented_reality");
   if (comparativeVerdictPattern.test(input.portrait) || containmentBurdenPattern.test(input.portrait)) fatal.add("comparative_verdict");
   if (new RegExp(`\\b${escapeRegExp(input.allyName)}(?:,| is| as) (?:the |your )?${escapeRegExp(input.tone.authoredRelationship)}\\b`, "i").test(input.portrait)) {
@@ -71,14 +99,33 @@ export function validateSynastryV3(input: {
     }
   }
   if (input.semanticSeverity === "severe") fatal.add("semantic_fidelity");
+  if (input.semanticReviewUnavailable) reviewNotes.push("Semantic support reviewer was unavailable after one reviewer-only retry; deterministic Evidence and boundary validation passed.");
 
   const evidenceIds = new Set(input.evidenceIndex.map((row) => row.id));
-  if (input.trace.length !== 6) boundaryViolations.push("Evidence trace must contain exactly six chapter rows.");
+  const paragraphRows = input.sections.flatMap((section) => section.body
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph && paragraph !== "---")
+    .map((paragraph, index) => ({ chapter: section.title, paragraphIndex: index + 1, paragraph }))
+  );
+  if (input.trace.length !== paragraphRows.length) boundaryViolations.push("Evidence trace must contain exactly one row for every prose paragraph.");
   for (let index = 0; index < input.trace.length; index += 1) {
     const row = input.trace[index];
-    if (!row || row.chapter !== input.headings[index]) boundaryViolations.push(`Evidence trace chapter ${index + 1} does not match its portrait heading.`);
-    if (!row?.evidenceIds.length) boundaryViolations.push(`Evidence trace chapter ${index + 1} has no evidence IDs.`);
+    const paragraph = paragraphRows[index];
+    if (!row || row.chapter !== paragraph?.chapter || row.paragraphIndex !== paragraph?.paragraphIndex) {
+      boundaryViolations.push(`Evidence trace row ${index + 1} does not match its prose paragraph.`);
+    }
+    if (!row?.evidenceIds.length || row.evidenceIds.length > 4) boundaryViolations.push(`Evidence trace row ${index + 1} must have 1-4 evidence IDs.`);
+    if (!row?.mechanism?.trim() || !row?.livedExpression?.trim() || !row?.relationalConsequence?.trim() || !row?.supportedFeeling?.trim()) {
+      boundaryViolations.push(`Evidence trace row ${index + 1} is missing its mechanism, lived expression, consequence, or supported feeling.`);
+    }
     for (const id of row?.evidenceIds ?? []) if (!evidenceIds.has(id)) boundaryViolations.push(`Evidence trace references unknown ID ${id}.`);
+  }
+  const finalChapterWords = synastryV3WordCount(input.sections.at(-1)?.body ?? "");
+  if (finalChapterWords < 270) reviewNotes.push(`Final relationship-potential synthesis is ${finalChapterWords} words; the tolerated minimum is 270.`);
+  const conditionalOpenings = paragraphRows.filter(({ paragraph }) => /^(?:if|when|may|could|perhaps|should)\b/i.test(paragraph)).length;
+  if (conditionalOpenings > Math.ceil(paragraphRows.length * 0.35)) {
+    reviewNotes.push(`${conditionalOpenings} of ${paragraphRows.length} paragraphs open with a conditional marker; vary the formula.`);
   }
   if (input.tone.romanticLanguage === "prohibit" && romanticPattern.test(input.portrait)) {
     boundaryViolations.push("Romantic or sexual framing is prohibited for this Ally tone.");
@@ -102,6 +149,9 @@ export function validateSynastryV3(input: {
     boundaryViolations: [...new Set(boundaryViolations)],
     fatalCategories,
     reviewNotes,
+    technicalMetrics,
+    finalChapterWords,
+    paragraphCount: paragraphRows.length,
     greenLight: boundaryViolations.length === 0 && fatalCategories.length <= 2
   };
 }
