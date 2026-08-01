@@ -858,7 +858,9 @@ export const synastryV3MetadataSchema = z.object({
     technicalMetrics: z.object({
       terms: z.array(z.string()),
       termsPerThousandWords: z.number().nonnegative(),
-      heavyParagraphCount: z.number().int().nonnegative()
+      heavyParagraphCount: z.number().int().nonnegative(),
+      astrologyParagraphCount: z.number().int().nonnegative().optional(),
+      leadingParagraphCount: z.number().int().nonnegative().optional()
     }).optional()
   }),
   semanticSupport: synastryV3SemanticSupportSchema.optional()

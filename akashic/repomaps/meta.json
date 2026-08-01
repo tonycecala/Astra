@@ -12,7 +12,7 @@
       "file": "packages/astrology/src/index.ts",
       "weight": 2851.11,
       "bucket": "other",
-      "estimated_tokens": 45906,
+      "estimated_tokens": 45876,
       "lines": 4318,
       "symbols": 667,
       "symbol_type_counts": {
@@ -93,8 +93,8 @@
       "file": "packages/contracts/src/index.ts",
       "weight": 578.22,
       "bucket": "other",
-      "estimated_tokens": 11566,
-      "lines": 1229,
+      "estimated_tokens": 11603,
+      "lines": 1231,
       "symbols": 210,
       "symbol_type_counts": {
         "constant": 118,
@@ -336,13 +336,13 @@
     },
     {
       "file": "docs/progress/PROGRESS_LOG.md",
-      "weight": 229.21,
+      "weight": 232.2,
       "bucket": "other",
-      "estimated_tokens": 13716,
-      "lines": 741,
-      "symbols": 75,
+      "estimated_tokens": 14109,
+      "lines": 750,
+      "symbols": 76,
       "symbol_type_counts": {
-        "heading": 75
+        "heading": 76
       },
       "dependency_in": 0,
       "dependency_out": 0,
@@ -428,6 +428,22 @@
         "type": 5
       },
       "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "packages/astrology/src/report/synastryV3Validation.ts",
+      "weight": 167.33,
+      "bucket": "other",
+      "estimated_tokens": 3221,
+      "lines": 188,
+      "symbols": 44,
+      "symbol_type_counts": {
+        "constant": 35,
+        "function": 6,
+        "type": 3
+      },
+      "dependency_in": 2,
       "dependency_out": 0,
       "route_count": 0
     },
@@ -573,22 +589,6 @@
       },
       "dependency_in": 4,
       "dependency_out": 1,
-      "route_count": 0
-    },
-    {
-      "file": "packages/astrology/src/report/synastryV3Validation.ts",
-      "weight": 141.34,
-      "bucket": "other",
-      "estimated_tokens": 2667,
-      "lines": 162,
-      "symbols": 37,
-      "symbol_type_counts": {
-        "constant": 29,
-        "function": 5,
-        "type": 3
-      },
-      "dependency_in": 2,
-      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -1168,10 +1168,10 @@
     },
     {
       "file": "packages/astrology/src/report/synastryV3.ts",
-      "weight": 91.36,
+      "weight": 91.35,
       "bucket": "other",
-      "estimated_tokens": 2220,
-      "lines": 123,
+      "estimated_tokens": 2317,
+      "lines": 124,
       "symbols": 18,
       "symbol_type_counts": {
         "constant": 11,
@@ -3090,11 +3090,11 @@
       "route_count": 0
     },
     {
-      "file": "akashic/playbooks/astra-verification-tiers.md",
-      "weight": 33.31,
+      "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
+      "weight": 33.3,
       "bucket": "akashic",
-      "estimated_tokens": 4127,
-      "lines": 110,
+      "estimated_tokens": 4450,
+      "lines": 137,
       "symbols": 9,
       "symbol_type_counts": {
         "heading": 9
@@ -3104,11 +3104,11 @@
       "route_count": 0
     },
     {
-      "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
+      "file": "akashic/playbooks/astra-verification-tiers.md",
       "weight": 33.3,
       "bucket": "akashic",
-      "estimated_tokens": 4450,
-      "lines": 137,
+      "estimated_tokens": 4329,
+      "lines": 112,
       "symbols": 9,
       "symbol_type_counts": {
         "heading": 9
@@ -3180,6 +3180,20 @@
       "bucket": "akashic",
       "estimated_tokens": 351,
       "lines": 46,
+      "symbols": 9,
+      "symbol_type_counts": {
+        "heading": 9
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/skills/synastry-perspective-validation-and-prose-thinning.md",
+      "weight": 32.91,
+      "bucket": "akashic",
+      "estimated_tokens": 628,
+      "lines": 45,
       "symbols": 9,
       "symbol_type_counts": {
         "heading": 9
@@ -5141,7 +5155,7 @@
       "file": "docs/architecture/RISK_REGISTER.md",
       "weight": 15.74,
       "bucket": "other",
-      "estimated_tokens": 765,
+      "estimated_tokens": 779,
       "lines": 38,
       "symbols": 4,
       "symbol_type_counts": {
@@ -6522,7 +6536,7 @@
     {
       "name": "top-weighted",
       "budget_tokens": 32000,
-      "estimated_tokens": 45906,
+      "estimated_tokens": 45876,
       "file_count": 1,
       "symbol_count": 667,
       "files": [
@@ -6531,7 +6545,7 @@
           "file": "packages/astrology/src/index.ts",
           "weight": 2851.11,
           "bucket": "other",
-          "estimated_tokens": 45906,
+          "estimated_tokens": 45876,
           "lines": 4318,
           "symbols": 667,
           "symbol_type_counts": {
@@ -6549,7 +6563,7 @@
     {
       "name": "top-weighted",
       "budget_tokens": 64000,
-      "estimated_tokens": 65801,
+      "estimated_tokens": 65771,
       "file_count": 2,
       "symbol_count": 892,
       "files": [
@@ -6558,7 +6572,7 @@
           "file": "packages/astrology/src/index.ts",
           "weight": 2851.11,
           "bucket": "other",
-          "estimated_tokens": 45906,
+          "estimated_tokens": 45876,
           "lines": 4318,
           "symbols": 667,
           "symbol_type_counts": {
@@ -6593,7 +6607,7 @@
     {
       "name": "top-weighted",
       "budget_tokens": 128000,
-      "estimated_tokens": 138120,
+      "estimated_tokens": 138127,
       "file_count": 8,
       "symbol_count": 1899,
       "files": [
@@ -6602,7 +6616,7 @@
           "file": "packages/astrology/src/index.ts",
           "weight": 2851.11,
           "bucket": "other",
-          "estimated_tokens": 45906,
+          "estimated_tokens": 45876,
           "lines": 4318,
           "symbols": 667,
           "symbol_type_counts": {
@@ -6688,8 +6702,8 @@
           "file": "packages/contracts/src/index.ts",
           "weight": 578.22,
           "bucket": "other",
-          "estimated_tokens": 11566,
-          "lines": 1229,
+          "estimated_tokens": 11603,
+          "lines": 1231,
           "symbols": 210,
           "symbol_type_counts": {
             "constant": 118,
@@ -6740,8 +6754,8 @@
     }
   ],
   "coverage": {
-    "files": 450,
-    "symbols": 6195,
-    "total_estimated_tokens": 1179768
+    "files": 451,
+    "symbols": 6212,
+    "total_estimated_tokens": 1181663
   }
 }

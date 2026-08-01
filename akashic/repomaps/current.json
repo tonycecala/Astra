@@ -1,18 +1,18 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-08-01T01:15:03.602Z",
+  "generated_at": "2026-08-01T01:33:52.106Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 450,
-  "total_symbols": 6195,
-  "total_estimated_tokens": 1179768,
+  "files_indexed": 451,
+  "total_symbols": 6212,
+  "total_estimated_tokens": 1181663,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
       "lang": "typescript",
-      "size": 183640,
+      "size": 183522,
       "lines": 4318,
-      "estimated_tokens": 45906,
+      "estimated_tokens": 45876,
       "symbols": [
         {
           "name": "AstrologyReportSection",
@@ -7686,9 +7686,9 @@
     {
       "file": "packages/contracts/src/index.ts",
       "lang": "typescript",
-      "size": 46263,
-      "lines": 1229,
-      "estimated_tokens": 11566,
+      "size": 46409,
+      "lines": 1231,
+      "estimated_tokens": 11603,
       "symbols": [
         {
           "name": "idSchema",
@@ -8197,547 +8197,547 @@
         },
         {
           "name": "reportGenerationPartMetadataSchema",
-          "line": 867,
+          "line": 869,
           "type": "constant"
         },
         {
           "name": "reportGenerationMetadataSchema",
-          "line": 881,
+          "line": 883,
           "type": "constant"
         },
         {
           "name": "astrologyReportRequestSchema",
-          "line": 904,
+          "line": 906,
           "type": "constant"
         },
         {
           "name": "createAstrologyReportRequestSchema",
-          "line": 925,
+          "line": 927,
           "type": "constant"
         },
         {
           "name": "astrologyReportResultSchema",
-          "line": 934,
+          "line": 936,
           "type": "constant"
         },
         {
           "name": "recordAstrologyReportResultSchema",
-          "line": 951,
+          "line": 953,
           "type": "constant"
         },
         {
           "name": "portableUserDataBundleSchema",
-          "line": 966,
+          "line": 968,
           "type": "constant"
         },
         {
           "name": "expectedUserId",
-          "line": 995,
+          "line": 997,
           "type": "constant"
         },
         {
           "name": "ownedRows",
-          "line": 996,
+          "line": 998,
           "type": "constant"
         },
         {
           "name": "chartRequestIds",
-          "line": 1009,
+          "line": 1011,
           "type": "constant"
         },
         {
           "name": "reportRequestIds",
-          "line": 1016,
+          "line": 1018,
           "type": "constant"
         },
         {
           "name": "composerVoiceIdSchema",
-          "line": 1024,
-          "type": "constant"
-        },
-        {
-          "name": "composerVoiceCardSchema",
           "line": 1026,
           "type": "constant"
         },
         {
+          "name": "composerVoiceCardSchema",
+          "line": 1028,
+          "type": "constant"
+        },
+        {
           "name": "composerVoiceValidationErrorSchema",
-          "line": 1034,
+          "line": 1036,
           "type": "constant"
         },
         {
           "name": "composerArtifactRationaleSchema",
-          "line": 1049,
+          "line": 1051,
           "type": "constant"
         },
         {
           "name": "composerStreamArtifactSchema",
-          "line": 1054,
+          "line": 1056,
           "type": "constant"
         },
         {
           "name": "composerCardOntologyTypeSchema",
-          "line": 1070,
-          "type": "constant"
-        },
-        {
-          "name": "composerAvailabilityRequestSchema",
           "line": 1072,
           "type": "constant"
         },
         {
+          "name": "composerAvailabilityRequestSchema",
+          "line": 1074,
+          "type": "constant"
+        },
+        {
           "name": "composerAvailabilityCardSchema",
-          "line": 1079,
+          "line": 1081,
           "type": "constant"
         },
         {
           "name": "composerAvailabilityCollectionSchema",
-          "line": 1100,
+          "line": 1102,
           "type": "constant"
         },
         {
           "name": "composerAvailabilityResponseSchema",
-          "line": 1110,
+          "line": 1112,
           "type": "constant"
         },
         {
           "name": "composerSelectionRequestSchema",
-          "line": 1115,
+          "line": 1117,
           "type": "constant"
         },
         {
           "name": "composerSelectionResponseSchema",
-          "line": 1122,
+          "line": 1124,
           "type": "constant"
         },
         {
           "name": "AstraUser",
-          "line": 1132,
-          "type": "type"
-        },
-        {
-          "name": "AstraCard",
-          "line": 1133,
-          "type": "type"
-        },
-        {
-          "name": "StreamItem",
           "line": 1134,
           "type": "type"
         },
         {
-          "name": "Achievement",
+          "name": "AstraCard",
           "line": 1135,
           "type": "type"
         },
         {
-          "name": "Ally",
+          "name": "StreamItem",
           "line": 1136,
           "type": "type"
         },
         {
-          "name": "CreateAlly",
+          "name": "Achievement",
           "line": 1137,
           "type": "type"
         },
         {
-          "name": "AllyRelationshipTag",
+          "name": "Ally",
           "line": 1138,
           "type": "type"
         },
         {
-          "name": "UpdateAllyRelationship",
+          "name": "CreateAlly",
           "line": 1139,
           "type": "type"
         },
         {
-          "name": "Artifact",
+          "name": "AllyRelationshipTag",
           "line": 1140,
           "type": "type"
         },
         {
-          "name": "Gift",
+          "name": "UpdateAllyRelationship",
           "line": 1141,
           "type": "type"
         },
         {
-          "name": "StarTransaction",
+          "name": "Artifact",
           "line": 1142,
           "type": "type"
         },
         {
-          "name": "SourceCard",
+          "name": "Gift",
           "line": 1143,
           "type": "type"
         },
         {
-          "name": "PublicStreamItem",
+          "name": "StarTransaction",
           "line": 1144,
           "type": "type"
         },
         {
-          "name": "UserFeedItem",
+          "name": "SourceCard",
           "line": 1145,
           "type": "type"
         },
         {
-          "name": "ComposerDecision",
+          "name": "PublicStreamItem",
           "line": 1146,
           "type": "type"
         },
         {
-          "name": "PrivateFeedRequest",
+          "name": "UserFeedItem",
           "line": 1147,
           "type": "type"
         },
         {
-          "name": "PrivateFeedResponse",
+          "name": "ComposerDecision",
           "line": 1148,
           "type": "type"
         },
         {
-          "name": "CreateUserFeedItem",
+          "name": "PrivateFeedRequest",
           "line": 1149,
           "type": "type"
         },
         {
-          "name": "ChartArrivalEvidence",
+          "name": "PrivateFeedResponse",
           "line": 1150,
           "type": "type"
         },
         {
-          "name": "ChartArrivalGenerationSource",
+          "name": "CreateUserFeedItem",
           "line": 1151,
           "type": "type"
         },
         {
-          "name": "ChartArrivalView",
+          "name": "ChartArrivalEvidence",
           "line": 1152,
           "type": "type"
         },
         {
-          "name": "CreateChartArrival",
+          "name": "ChartArrivalGenerationSource",
           "line": 1153,
           "type": "type"
         },
         {
-          "name": "ChartArrivalRewriteRequest",
+          "name": "ChartArrivalView",
           "line": 1154,
           "type": "type"
         },
         {
-          "name": "ChartArrivalRewriteResponse",
+          "name": "CreateChartArrival",
           "line": 1155,
           "type": "type"
         },
         {
-          "name": "JourneyFeedItemAction",
+          "name": "ChartArrivalRewriteRequest",
           "line": 1156,
           "type": "type"
         },
         {
-          "name": "CreateComposerDecision",
+          "name": "ChartArrivalRewriteResponse",
           "line": 1157,
           "type": "type"
         },
         {
-          "name": "ComposerPrivateFeedDecisionInput",
+          "name": "JourneyFeedItemAction",
           "line": 1158,
           "type": "type"
         },
         {
-          "name": "ComposerPrivateFeedWrite",
+          "name": "CreateComposerDecision",
           "line": 1159,
           "type": "type"
         },
         {
-          "name": "ComposerPrivateFeedWriteResponse",
+          "name": "ComposerPrivateFeedDecisionInput",
           "line": 1160,
           "type": "type"
         },
         {
-          "name": "ComposerOnboardingCardsWrite",
+          "name": "ComposerPrivateFeedWrite",
           "line": 1161,
           "type": "type"
         },
         {
-          "name": "ComposerOnboardingCardsWriteResponse",
+          "name": "ComposerPrivateFeedWriteResponse",
           "line": 1162,
           "type": "type"
         },
         {
-          "name": "ChartBirthData",
+          "name": "ComposerOnboardingCardsWrite",
           "line": 1163,
           "type": "type"
         },
         {
-          "name": "CreateChartBirthData",
+          "name": "ComposerOnboardingCardsWriteResponse",
           "line": 1164,
           "type": "type"
         },
         {
-          "name": "ChartCalculationMode",
+          "name": "ChartBirthData",
           "line": 1165,
           "type": "type"
         },
         {
-          "name": "ChartSubjectType",
+          "name": "CreateChartBirthData",
           "line": 1166,
           "type": "type"
         },
         {
-          "name": "ChartSubjectContext",
+          "name": "ChartCalculationMode",
           "line": 1167,
           "type": "type"
         },
         {
-          "name": "ChartSettings",
+          "name": "ChartSubjectType",
           "line": 1168,
           "type": "type"
         },
         {
-          "name": "ExplicitChartSettings",
+          "name": "ChartSubjectContext",
           "line": 1169,
           "type": "type"
         },
         {
-          "name": "ChartRequestContext",
+          "name": "ChartSettings",
           "line": 1170,
           "type": "type"
         },
         {
-          "name": "SynastryStructuralLens",
+          "name": "ExplicitChartSettings",
           "line": 1171,
           "type": "type"
         },
         {
-          "name": "SynastryRomanticLanguage",
+          "name": "ChartRequestContext",
           "line": 1172,
           "type": "type"
         },
         {
-          "name": "SynastryToneSnapshot",
+          "name": "SynastryStructuralLens",
           "line": 1173,
           "type": "type"
         },
         {
-          "name": "BirthPlaceSearchQuery",
+          "name": "SynastryRomanticLanguage",
           "line": 1174,
           "type": "type"
         },
         {
-          "name": "BirthPlaceSearchResult",
+          "name": "SynastryToneSnapshot",
           "line": 1175,
           "type": "type"
         },
         {
-          "name": "BirthPlaceSearchResponse",
+          "name": "BirthPlaceSearchQuery",
           "line": 1176,
           "type": "type"
         },
         {
-          "name": "ChartMakerRequest",
+          "name": "BirthPlaceSearchResult",
           "line": 1177,
           "type": "type"
         },
         {
-          "name": "CreateChartMakerRequest",
+          "name": "BirthPlaceSearchResponse",
           "line": 1178,
           "type": "type"
         },
         {
-          "name": "ChartMakerResult",
+          "name": "ChartMakerRequest",
           "line": 1179,
           "type": "type"
         },
         {
-          "name": "ChartMakerPrecision",
+          "name": "CreateChartMakerRequest",
           "line": 1180,
           "type": "type"
         },
         {
-          "name": "ChartMakerChartData",
+          "name": "ChartMakerResult",
           "line": 1181,
           "type": "type"
         },
         {
-          "name": "RecordChartMakerResult",
+          "name": "ChartMakerPrecision",
           "line": 1182,
           "type": "type"
         },
         {
-          "name": "AstrologyReportStatus",
+          "name": "ChartMakerChartData",
           "line": 1183,
           "type": "type"
         },
         {
-          "name": "AstrologyReportType",
+          "name": "RecordChartMakerResult",
           "line": 1184,
           "type": "type"
         },
         {
-          "name": "OrderableAstrologyReportType",
+          "name": "AstrologyReportStatus",
           "line": 1185,
           "type": "type"
         },
         {
-          "name": "ReportBasisType",
+          "name": "AstrologyReportType",
           "line": 1186,
           "type": "type"
         },
         {
-          "name": "SynastryPerspective",
+          "name": "OrderableAstrologyReportType",
           "line": 1187,
           "type": "type"
         },
         {
-          "name": "ReportChartSourceSnapshot",
+          "name": "ReportBasisType",
           "line": 1188,
           "type": "type"
         },
         {
-          "name": "ReportChartBasisInput",
+          "name": "SynastryPerspective",
           "line": 1189,
           "type": "type"
         },
         {
-          "name": "ReportChartBasisSnapshot",
+          "name": "ReportChartSourceSnapshot",
           "line": 1190,
           "type": "type"
         },
         {
-          "name": "ReportBoundary",
+          "name": "ReportChartBasisInput",
           "line": 1191,
           "type": "type"
         },
         {
-          "name": "AstrologyReportSection",
+          "name": "ReportChartBasisSnapshot",
           "line": 1192,
           "type": "type"
         },
         {
-          "name": "AstrologyReportProvenance",
+          "name": "ReportBoundary",
           "line": 1193,
           "type": "type"
         },
         {
-          "name": "AstrologyReportPublicSignal",
+          "name": "AstrologyReportSection",
           "line": 1194,
           "type": "type"
         },
         {
-          "name": "ReportGenerationRetryReasonCode",
+          "name": "AstrologyReportProvenance",
           "line": 1195,
           "type": "type"
         },
         {
-          "name": "ReportGenerationRetryIssue",
+          "name": "AstrologyReportPublicSignal",
           "line": 1196,
           "type": "type"
         },
         {
-          "name": "ReportGenerationRetryFailure",
+          "name": "ReportGenerationRetryReasonCode",
           "line": 1197,
           "type": "type"
         },
         {
-          "name": "SynastryV3Metadata",
+          "name": "ReportGenerationRetryIssue",
           "line": 1198,
           "type": "type"
         },
         {
-          "name": "AstrologyReportRequest",
+          "name": "ReportGenerationRetryFailure",
           "line": 1199,
           "type": "type"
         },
         {
-          "name": "CreateAstrologyReportRequest",
+          "name": "SynastryV3Metadata",
           "line": 1200,
           "type": "type"
         },
         {
-          "name": "AstrologyReportResult",
+          "name": "AstrologyReportRequest",
           "line": 1201,
           "type": "type"
         },
         {
-          "name": "RecordAstrologyReportResult",
+          "name": "CreateAstrologyReportRequest",
           "line": 1202,
           "type": "type"
         },
         {
-          "name": "PortableUserDataBundle",
+          "name": "AstrologyReportResult",
           "line": 1203,
           "type": "type"
         },
         {
-          "name": "ComposerVoiceId",
+          "name": "RecordAstrologyReportResult",
           "line": 1204,
           "type": "type"
         },
         {
-          "name": "ComposerVoiceCard",
+          "name": "PortableUserDataBundle",
           "line": 1205,
           "type": "type"
         },
         {
-          "name": "ComposerVoiceValidationError",
+          "name": "ComposerVoiceId",
           "line": 1206,
           "type": "type"
         },
         {
-          "name": "ComposerArtifactRationale",
+          "name": "ComposerVoiceCard",
           "line": 1207,
           "type": "type"
         },
         {
-          "name": "ComposerStreamArtifact",
+          "name": "ComposerVoiceValidationError",
           "line": 1208,
           "type": "type"
         },
         {
-          "name": "ComposerCardOntologyType",
+          "name": "ComposerArtifactRationale",
           "line": 1209,
           "type": "type"
         },
         {
-          "name": "ComposerAvailabilityRequest",
+          "name": "ComposerStreamArtifact",
           "line": 1210,
           "type": "type"
         },
         {
-          "name": "ComposerAvailabilityCard",
+          "name": "ComposerCardOntologyType",
           "line": 1211,
           "type": "type"
         },
         {
-          "name": "ComposerAvailabilityCollection",
+          "name": "ComposerAvailabilityRequest",
           "line": 1212,
           "type": "type"
         },
         {
-          "name": "ComposerAvailabilityResponse",
+          "name": "ComposerAvailabilityCard",
           "line": 1213,
           "type": "type"
         },
         {
-          "name": "ComposerSelectionRequest",
+          "name": "ComposerAvailabilityCollection",
           "line": 1214,
           "type": "type"
         },
         {
-          "name": "ComposerSelectionResponse",
+          "name": "ComposerAvailabilityResponse",
           "line": 1215,
           "type": "type"
         },
         {
-          "name": "foundationSeedSchema",
+          "name": "ComposerSelectionRequest",
+          "line": 1216,
+          "type": "type"
+        },
+        {
+          "name": "ComposerSelectionResponse",
           "line": 1217,
+          "type": "type"
+        },
+        {
+          "name": "foundationSeedSchema",
+          "line": 1219,
           "type": "constant"
         },
         {
           "name": "FoundationSeed",
-          "line": 1228,
+          "line": 1230,
           "type": "type"
         }
       ],
@@ -14587,9 +14587,9 @@
     {
       "file": "docs/progress/PROGRESS_LOG.md",
       "lang": "markdown",
-      "size": 54874,
-      "lines": 741,
-      "estimated_tokens": 13716,
+      "size": 56449,
+      "lines": 750,
+      "estimated_tokens": 14109,
       "symbols": [
         {
           "name": "Astra Progress Log",
@@ -14965,6 +14965,11 @@
           "name": "2026-07-31 — Synastry V3 feeling-first production slice",
           "line": 733,
           "type": "heading"
+        },
+        {
+          "name": "2026-07-31 — Synastry V3.1.1 Michelle refinement",
+          "line": 742,
+          "type": "heading"
         }
       ],
       "imports": [],
@@ -14983,7 +14988,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 229.21,
+      "importance_weight": 232.2,
       "importance_bucket": "other"
     },
     {
@@ -16303,6 +16308,255 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 177.32,
+      "importance_bucket": "other"
+    },
+    {
+      "file": "packages/astrology/src/report/synastryV3Validation.ts",
+      "lang": "typescript",
+      "size": 12892,
+      "lines": 188,
+      "estimated_tokens": 3221,
+      "symbols": [
+        {
+          "name": "SynastryV3TraceRow",
+          "line": 3,
+          "type": "type"
+        },
+        {
+          "name": "SynastryV3EvidenceRow",
+          "line": 12,
+          "type": "type"
+        },
+        {
+          "name": "SynastryV3FatalCategory",
+          "line": 13,
+          "type": "type"
+        },
+        {
+          "name": "technicalTermPattern",
+          "line": 22,
+          "type": "constant"
+        },
+        {
+          "name": "technicalTermsPattern",
+          "line": 23,
+          "type": "constant"
+        },
+        {
+          "name": "technicalLeadPattern",
+          "line": 24,
+          "type": "constant"
+        },
+        {
+          "name": "technicalHousePattern",
+          "line": 25,
+          "type": "constant"
+        },
+        {
+          "name": "technicalDegreePattern",
+          "line": 26,
+          "type": "constant"
+        },
+        {
+          "name": "technicalOppositePattern",
+          "line": 27,
+          "type": "constant"
+        },
+        {
+          "name": "inventedHistoryPattern",
+          "line": 28,
+          "type": "constant"
+        },
+        {
+          "name": "fabricatedDialoguePattern",
+          "line": 29,
+          "type": "constant"
+        },
+        {
+          "name": "comparativeVerdictPattern",
+          "line": 30,
+          "type": "constant"
+        },
+        {
+          "name": "containmentBurdenPattern",
+          "line": 31,
+          "type": "constant"
+        },
+        {
+          "name": "romanticPattern",
+          "line": 32,
+          "type": "constant"
+        },
+        {
+          "name": "synastryV3WordCount",
+          "line": 34,
+          "type": "function"
+        },
+        {
+          "name": "technicalLeakageMatches",
+          "line": 38,
+          "type": "function"
+        },
+        {
+          "name": "synastryV3TechnicalMetrics",
+          "line": 44,
+          "type": "function"
+        },
+        {
+          "name": "terms",
+          "line": 45,
+          "type": "constant"
+        },
+        {
+          "name": "words",
+          "line": 46,
+          "type": "constant"
+        },
+        {
+          "name": "paragraphs",
+          "line": 47,
+          "type": "constant"
+        },
+        {
+          "name": "paragraphTermCounts",
+          "line": 51,
+          "type": "constant"
+        },
+        {
+          "name": "validateSynastryV3",
+          "line": 61,
+          "type": "function"
+        },
+        {
+          "name": "fatal",
+          "line": 74,
+          "type": "constant"
+        },
+        {
+          "name": "wordCount",
+          "line": 76,
+          "type": "constant"
+        },
+        {
+          "name": "expectedTitles",
+          "line": 77,
+          "type": "constant"
+        },
+        {
+          "name": "actualTitles",
+          "line": 78,
+          "type": "constant"
+        },
+        {
+          "name": "technicalMetrics",
+          "line": 83,
+          "type": "constant"
+        },
+        {
+          "name": "paragraphRows",
+          "line": 95,
+          "type": "constant"
+        },
+        {
+          "name": "observational",
+          "line": 101,
+          "type": "constant"
+        },
+        {
+          "name": "allyFirstName",
+          "line": 102,
+          "type": "constant"
+        },
+        {
+          "name": "allyReferencePattern",
+          "line": 103,
+          "type": "constant"
+        },
+        {
+          "name": "paragraphsWithoutReader",
+          "line": 114,
+          "type": "constant"
+        },
+        {
+          "name": "evidenceIds",
+          "line": 122,
+          "type": "constant"
+        },
+        {
+          "name": "row",
+          "line": 125,
+          "type": "constant"
+        },
+        {
+          "name": "paragraph",
+          "line": 126,
+          "type": "constant"
+        },
+        {
+          "name": "finalChapterWords",
+          "line": 136,
+          "type": "constant"
+        },
+        {
+          "name": "conditionalOpenings",
+          "line": 138,
+          "type": "constant"
+        },
+        {
+          "name": "opening",
+          "line": 146,
+          "type": "constant"
+        },
+        {
+          "name": "romanticOpening",
+          "line": 147,
+          "type": "constant"
+        },
+        {
+          "name": "sexualOpening",
+          "line": 148,
+          "type": "constant"
+        },
+        {
+          "name": "fatalCategories",
+          "line": 157,
+          "type": "constant"
+        },
+        {
+          "name": "synastryV3CorrectionMessages",
+          "line": 171,
+          "type": "function"
+        },
+        {
+          "name": "messages",
+          "line": 172,
+          "type": "constant"
+        },
+        {
+          "name": "escapeRegExp",
+          "line": 185,
+          "type": "function"
+        }
+      ],
+      "imports": [
+        "@astra/contracts"
+      ],
+      "exports": [
+        "SynastryV3EvidenceRow",
+        "SynastryV3FatalCategory",
+        "SynastryV3TraceRow",
+        "synastryV3CorrectionMessages",
+        "synastryV3TechnicalMetrics",
+        "synastryV3WordCount",
+        "technicalLeakageMatches",
+        "validateSynastryV3"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 2,
+      "dependency_out": 0,
+      "importance_weight": 167.33,
       "importance_bucket": "other"
     },
     {
@@ -18180,219 +18434,6 @@
       "dependency_in": 4,
       "dependency_out": 1,
       "importance_weight": 145.4,
-      "importance_bucket": "other"
-    },
-    {
-      "file": "packages/astrology/src/report/synastryV3Validation.ts",
-      "lang": "typescript",
-      "size": 10677,
-      "lines": 162,
-      "estimated_tokens": 2667,
-      "symbols": [
-        {
-          "name": "SynastryV3TraceRow",
-          "line": 3,
-          "type": "type"
-        },
-        {
-          "name": "SynastryV3EvidenceRow",
-          "line": 12,
-          "type": "type"
-        },
-        {
-          "name": "SynastryV3FatalCategory",
-          "line": 13,
-          "type": "type"
-        },
-        {
-          "name": "technicalTermPattern",
-          "line": 22,
-          "type": "constant"
-        },
-        {
-          "name": "technicalTermsPattern",
-          "line": 23,
-          "type": "constant"
-        },
-        {
-          "name": "technicalHousePattern",
-          "line": 24,
-          "type": "constant"
-        },
-        {
-          "name": "technicalDegreePattern",
-          "line": 25,
-          "type": "constant"
-        },
-        {
-          "name": "technicalOppositePattern",
-          "line": 26,
-          "type": "constant"
-        },
-        {
-          "name": "inventedHistoryPattern",
-          "line": 27,
-          "type": "constant"
-        },
-        {
-          "name": "fabricatedDialoguePattern",
-          "line": 28,
-          "type": "constant"
-        },
-        {
-          "name": "comparativeVerdictPattern",
-          "line": 29,
-          "type": "constant"
-        },
-        {
-          "name": "containmentBurdenPattern",
-          "line": 30,
-          "type": "constant"
-        },
-        {
-          "name": "romanticPattern",
-          "line": 31,
-          "type": "constant"
-        },
-        {
-          "name": "synastryV3WordCount",
-          "line": 33,
-          "type": "function"
-        },
-        {
-          "name": "technicalLeakageMatches",
-          "line": 37,
-          "type": "function"
-        },
-        {
-          "name": "synastryV3TechnicalMetrics",
-          "line": 43,
-          "type": "function"
-        },
-        {
-          "name": "terms",
-          "line": 44,
-          "type": "constant"
-        },
-        {
-          "name": "words",
-          "line": 45,
-          "type": "constant"
-        },
-        {
-          "name": "heavyParagraphs",
-          "line": 46,
-          "type": "constant"
-        },
-        {
-          "name": "validateSynastryV3",
-          "line": 56,
-          "type": "function"
-        },
-        {
-          "name": "fatal",
-          "line": 69,
-          "type": "constant"
-        },
-        {
-          "name": "wordCount",
-          "line": 71,
-          "type": "constant"
-        },
-        {
-          "name": "expectedTitles",
-          "line": 72,
-          "type": "constant"
-        },
-        {
-          "name": "actualTitles",
-          "line": 73,
-          "type": "constant"
-        },
-        {
-          "name": "technicalMetrics",
-          "line": 78,
-          "type": "constant"
-        },
-        {
-          "name": "observational",
-          "line": 90,
-          "type": "constant"
-        },
-        {
-          "name": "evidenceIds",
-          "line": 104,
-          "type": "constant"
-        },
-        {
-          "name": "paragraphRows",
-          "line": 105,
-          "type": "constant"
-        },
-        {
-          "name": "row",
-          "line": 113,
-          "type": "constant"
-        },
-        {
-          "name": "paragraph",
-          "line": 114,
-          "type": "constant"
-        },
-        {
-          "name": "finalChapterWords",
-          "line": 124,
-          "type": "constant"
-        },
-        {
-          "name": "conditionalOpenings",
-          "line": 126,
-          "type": "constant"
-        },
-        {
-          "name": "opening",
-          "line": 134,
-          "type": "constant"
-        },
-        {
-          "name": "romanticOpening",
-          "line": 135,
-          "type": "constant"
-        },
-        {
-          "name": "sexualOpening",
-          "line": 136,
-          "type": "constant"
-        },
-        {
-          "name": "fatalCategories",
-          "line": 145,
-          "type": "constant"
-        },
-        {
-          "name": "escapeRegExp",
-          "line": 159,
-          "type": "function"
-        }
-      ],
-      "imports": [
-        "@astra/contracts"
-      ],
-      "exports": [
-        "SynastryV3EvidenceRow",
-        "SynastryV3FatalCategory",
-        "SynastryV3TraceRow",
-        "synastryV3TechnicalMetrics",
-        "synastryV3WordCount",
-        "technicalLeakageMatches",
-        "validateSynastryV3"
-      ],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 2,
-      "dependency_out": 0,
-      "importance_weight": 141.34,
       "importance_bucket": "other"
     },
     {
@@ -22895,9 +22936,9 @@
     {
       "file": "packages/astrology/src/report/synastryV3.ts",
       "lang": "typescript",
-      "size": 8880,
-      "lines": 123,
-      "estimated_tokens": 2220,
+      "size": 9268,
+      "lines": 124,
+      "estimated_tokens": 2317,
       "symbols": [
         {
           "name": "ASTRA_SYNASTRY_V3_PROMPT_VERSION",
@@ -22946,47 +22987,47 @@
         },
         {
           "name": "parseSynastryV3Response",
-          "line": 73,
+          "line": 74,
           "type": "function"
         },
         {
           "name": "portraitMatch",
-          "line": 74,
-          "type": "constant"
-        },
-        {
-          "name": "traceMatch",
           "line": 75,
           "type": "constant"
         },
         {
+          "name": "traceMatch",
+          "line": 76,
+          "type": "constant"
+        },
+        {
           "name": "buildSynastryV3SemanticPrompt",
-          "line": 87,
+          "line": 88,
           "type": "function"
         },
         {
           "name": "parseSynastryV3SemanticResponse",
-          "line": 98,
+          "line": 99,
           "type": "function"
         },
         {
           "name": "candidate",
-          "line": 99,
+          "line": 100,
           "type": "constant"
         },
         {
           "name": "value",
-          "line": 101,
+          "line": 102,
           "type": "constant"
         },
         {
           "name": "isTraceRow",
-          "line": 112,
+          "line": 113,
           "type": "function"
         },
         {
           "name": "row",
-          "line": 114,
+          "line": 115,
           "type": "constant"
         }
       ],
@@ -23009,7 +23050,7 @@
       "headings": [],
       "dependency_in": 1,
       "dependency_out": 2,
-      "importance_weight": 91.36,
+      "importance_weight": 91.35,
       "importance_bucket": "other"
     },
     {
@@ -32909,78 +32950,6 @@
       "importance_bucket": "other"
     },
     {
-      "file": "akashic/playbooks/astra-verification-tiers.md",
-      "lang": "markdown",
-      "size": 16511,
-      "lines": 110,
-      "estimated_tokens": 4127,
-      "symbols": [
-        {
-          "name": "Astra Verification Tiers",
-          "line": 11,
-          "type": "heading"
-        },
-        {
-          "name": "Purpose",
-          "line": 13,
-          "type": "heading"
-        },
-        {
-          "name": "Procedure",
-          "line": 17,
-          "type": "heading"
-        },
-        {
-          "name": "Authenticated browser tests",
-          "line": 26,
-          "type": "heading"
-        },
-        {
-          "name": "Review",
-          "line": 30,
-          "type": "heading"
-        },
-        {
-          "name": "Branch and worktree closeout",
-          "line": 34,
-          "type": "heading"
-        },
-        {
-          "name": "Private shadow-generation bakeoffs",
-          "line": 59,
-          "type": "heading"
-        },
-        {
-          "name": "Synastry V3.1 production reliability and cleanliness lessons",
-          "line": 89,
-          "type": "heading"
-        },
-        {
-          "name": "Private OpenRouter bakeoff credential",
-          "line": 107,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Astra Verification Tiers",
-        "Purpose",
-        "Procedure",
-        "Authenticated browser tests",
-        "Review",
-        "Branch and worktree closeout",
-        "Private shadow-generation bakeoffs",
-        "Synastry V3.1 production reliability and cleanliness lessons"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 33.31,
-      "importance_bucket": "akashic"
-    },
-    {
       "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
       "lang": "markdown",
       "size": 17799,
@@ -33046,6 +33015,78 @@
         "Problems Encountered",
         "Lessons Learned",
         "Current State"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 33.3,
+      "importance_bucket": "akashic"
+    },
+    {
+      "file": "akashic/playbooks/astra-verification-tiers.md",
+      "lang": "markdown",
+      "size": 17318,
+      "lines": 112,
+      "estimated_tokens": 4329,
+      "symbols": [
+        {
+          "name": "Astra Verification Tiers",
+          "line": 11,
+          "type": "heading"
+        },
+        {
+          "name": "Purpose",
+          "line": 13,
+          "type": "heading"
+        },
+        {
+          "name": "Procedure",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Authenticated browser tests",
+          "line": 26,
+          "type": "heading"
+        },
+        {
+          "name": "Review",
+          "line": 30,
+          "type": "heading"
+        },
+        {
+          "name": "Branch and worktree closeout",
+          "line": 34,
+          "type": "heading"
+        },
+        {
+          "name": "Private shadow-generation bakeoffs",
+          "line": 59,
+          "type": "heading"
+        },
+        {
+          "name": "Synastry V3.1 production reliability and cleanliness lessons",
+          "line": 89,
+          "type": "heading"
+        },
+        {
+          "name": "Private OpenRouter bakeoff credential",
+          "line": 109,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Astra Verification Tiers",
+        "Purpose",
+        "Procedure",
+        "Authenticated browser tests",
+        "Review",
+        "Branch and worktree closeout",
+        "Private shadow-generation bakeoffs",
+        "Synastry V3.1 production reliability and cleanliness lessons"
       ],
       "dependency_in": 0,
       "dependency_out": 0,
@@ -33395,6 +33436,78 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 32.98,
+      "importance_bucket": "akashic"
+    },
+    {
+      "file": "akashic/skills/synastry-perspective-validation-and-prose-thinning.md",
+      "lang": "markdown",
+      "size": 2512,
+      "lines": 45,
+      "estimated_tokens": 628,
+      "symbols": [
+        {
+          "name": "Synastry perspective validation and prose thinning",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "Problem",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Signals",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "Root Cause",
+          "line": 25,
+          "type": "heading"
+        },
+        {
+          "name": "Investigation",
+          "line": 29,
+          "type": "heading"
+        },
+        {
+          "name": "Resolution",
+          "line": 32,
+          "type": "heading"
+        },
+        {
+          "name": "Prevention",
+          "line": 35,
+          "type": "heading"
+        },
+        {
+          "name": "Related Files",
+          "line": 38,
+          "type": "heading"
+        },
+        {
+          "name": "Related ADRs",
+          "line": 43,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Synastry perspective validation and prose thinning",
+        "Problem",
+        "Signals",
+        "Root Cause",
+        "Investigation",
+        "Resolution",
+        "Prevention",
+        "Related Files"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 32.91,
       "importance_bucket": "akashic"
     },
     {
@@ -40195,9 +40308,9 @@
     {
       "file": "docs/architecture/RISK_REGISTER.md",
       "lang": "markdown",
-      "size": 3058,
+      "size": 3113,
       "lines": 38,
-      "estimated_tokens": 765,
+      "estimated_tokens": 779,
       "symbols": [
         {
           "name": "Astra Risk Register",
@@ -43120,6 +43233,13 @@
         "type": "heading"
       }
     ],
+    "2026-07-31 — Synastry V3.1.1 Michelle refinement": [
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 742,
+        "type": "heading"
+      }
+    ],
     "3. `/allies`": [
       {
         "file": "docs/inbox-astra/completed/ASTRA_ALPHA_ROUTE_BY_ROUTE_PARITY_PROMPT.md",
@@ -43909,7 +44029,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1135,
+        "line": 1137,
         "type": "type"
       }
     ],
@@ -44120,7 +44240,7 @@
     "actualTitles": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 73,
+        "line": 78,
         "type": "constant"
       }
     ],
@@ -44729,7 +44849,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1136,
+        "line": 1138,
         "type": "type"
       },
       {
@@ -44792,6 +44912,13 @@
         "type": "constant"
       }
     ],
+    "allyFirstName": [
+      {
+        "file": "packages/astrology/src/report/synastryV3Validation.ts",
+        "line": 102,
+        "type": "constant"
+      }
+    ],
     "allyFromRow": [
       {
         "file": "packages/db/src/repositories.ts",
@@ -44838,6 +44965,13 @@
         "type": "function"
       }
     ],
+    "allyReferencePattern": [
+      {
+        "file": "packages/astrology/src/report/synastryV3Validation.ts",
+        "line": 103,
+        "type": "constant"
+      }
+    ],
     "AllyRelationshipEditor": [
       {
         "file": "apps/astra-web/components/AllyRelationshipEditor.tsx",
@@ -44853,7 +44987,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1138,
+        "line": 1140,
         "type": "type"
       }
     ],
@@ -45457,7 +45591,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1140,
+        "line": 1142,
         "type": "type"
       },
       {
@@ -47134,7 +47268,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1133,
+        "line": 1135,
         "type": "type"
       }
     ],
@@ -47197,7 +47331,7 @@
     "AstraUser": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1132,
+        "line": 1134,
         "type": "type"
       }
     ],
@@ -47253,7 +47387,7 @@
     "AstrologyReportProvenance": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1193,
+        "line": 1195,
         "type": "type"
       }
     ],
@@ -47277,7 +47411,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1194,
+        "line": 1196,
         "type": "type"
       }
     ],
@@ -47301,7 +47435,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1199,
+        "line": 1201,
         "type": "type"
       },
       {
@@ -47327,14 +47461,14 @@
     "astrologyReportRequestSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 904,
+        "line": 906,
         "type": "constant"
       }
     ],
     "AstrologyReportResult": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1201,
+        "line": 1203,
         "type": "type"
       },
       {
@@ -47360,7 +47494,7 @@
     "astrologyReportResultSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 934,
+        "line": 936,
         "type": "constant"
       }
     ],
@@ -47372,7 +47506,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1192,
+        "line": 1194,
         "type": "type"
       }
     ],
@@ -47421,7 +47555,7 @@
     "AstrologyReportStatus": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1183,
+        "line": 1185,
         "type": "type"
       }
     ],
@@ -47435,7 +47569,7 @@
     "AstrologyReportType": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1184,
+        "line": 1186,
         "type": "type"
       }
     ],
@@ -48409,7 +48543,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1174,
+        "line": 1176,
         "type": "type"
       }
     ],
@@ -48428,7 +48562,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1176,
+        "line": 1178,
         "type": "type"
       }
     ],
@@ -48442,7 +48576,7 @@
     "BirthPlaceSearchResult": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1175,
+        "line": 1177,
         "type": "type"
       }
     ],
@@ -49202,7 +49336,7 @@
     "buildSynastryV3SemanticPrompt": [
       {
         "file": "packages/astrology/src/report/synastryV3.ts",
-        "line": 87,
+        "line": 88,
         "type": "function"
       }
     ],
@@ -49369,7 +49503,7 @@
     "candidate": [
       {
         "file": "packages/astrology/src/report/synastryV3.ts",
-        "line": 99,
+        "line": 100,
         "type": "constant"
       }
     ],
@@ -50098,7 +50232,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1150,
+        "line": 1152,
         "type": "type"
       }
     ],
@@ -50112,7 +50246,7 @@
     "ChartArrivalGenerationSource": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1151,
+        "line": 1153,
         "type": "type"
       }
     ],
@@ -50133,7 +50267,7 @@
     "ChartArrivalRewriteRequest": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1154,
+        "line": 1156,
         "type": "type"
       }
     ],
@@ -50147,7 +50281,7 @@
     "ChartArrivalRewriteResponse": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1155,
+        "line": 1157,
         "type": "type"
       }
     ],
@@ -50171,7 +50305,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1152,
+        "line": 1154,
         "type": "type"
       }
     ],
@@ -50202,7 +50336,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1163,
+        "line": 1165,
         "type": "type"
       },
       {
@@ -50233,7 +50367,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1165,
+        "line": 1167,
         "type": "type"
       }
     ],
@@ -50306,7 +50440,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1181,
+        "line": 1183,
         "type": "type"
       }
     ],
@@ -50325,7 +50459,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1180,
+        "line": 1182,
         "type": "type"
       }
     ],
@@ -50354,7 +50488,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1177,
+        "line": 1179,
         "type": "type"
       },
       {
@@ -50373,7 +50507,7 @@
     "ChartMakerResult": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1179,
+        "line": 1181,
         "type": "type"
       },
       {
@@ -50467,7 +50601,7 @@
     "ChartRequestContext": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1170,
+        "line": 1172,
         "type": "type"
       }
     ],
@@ -50488,7 +50622,7 @@
     "chartRequestIds": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1009,
+        "line": 1011,
         "type": "constant"
       }
     ],
@@ -50614,7 +50748,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1168,
+        "line": 1170,
         "type": "type"
       }
     ],
@@ -50721,7 +50855,7 @@
     "ChartSubjectContext": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1167,
+        "line": 1169,
         "type": "type"
       }
     ],
@@ -50756,7 +50890,7 @@
     "ChartSubjectType": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1166,
+        "line": 1168,
         "type": "type"
       }
     ],
@@ -51640,7 +51774,7 @@
     "comparativeVerdictPattern": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 29,
+        "line": 30,
         "type": "constant"
       }
     ],
@@ -51973,35 +52107,35 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1207,
+        "line": 1209,
         "type": "type"
       }
     ],
     "composerArtifactRationaleSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1049,
+        "line": 1051,
         "type": "constant"
       }
     ],
     "ComposerAvailabilityCard": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1211,
+        "line": 1213,
         "type": "type"
       }
     ],
     "composerAvailabilityCardSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1079,
+        "line": 1081,
         "type": "constant"
       }
     ],
     "ComposerAvailabilityCollection": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1212,
+        "line": 1214,
         "type": "type"
       },
       {
@@ -52013,7 +52147,7 @@
     "composerAvailabilityCollectionSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1100,
+        "line": 1102,
         "type": "constant"
       }
     ],
@@ -52027,14 +52161,14 @@
     "ComposerAvailabilityRequest": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1210,
+        "line": 1212,
         "type": "type"
       }
     ],
     "composerAvailabilityRequestSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1072,
+        "line": 1074,
         "type": "constant"
       }
     ],
@@ -52046,7 +52180,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1213,
+        "line": 1215,
         "type": "type"
       },
       {
@@ -52058,7 +52192,7 @@
     "composerAvailabilityResponseSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1110,
+        "line": 1112,
         "type": "constant"
       }
     ],
@@ -52098,14 +52232,14 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1209,
+        "line": 1211,
         "type": "type"
       }
     ],
     "composerCardOntologyTypeSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1070,
+        "line": 1072,
         "type": "constant"
       }
     ],
@@ -52175,7 +52309,7 @@
     "ComposerDecision": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1146,
+        "line": 1148,
         "type": "type"
       },
       {
@@ -52281,7 +52415,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1161,
+        "line": 1163,
         "type": "type"
       }
     ],
@@ -52293,7 +52427,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1162,
+        "line": 1164,
         "type": "type"
       }
     ],
@@ -52377,7 +52511,7 @@
     "ComposerPrivateFeedDecisionInput": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1158,
+        "line": 1160,
         "type": "type"
       }
     ],
@@ -52425,7 +52559,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1159,
+        "line": 1161,
         "type": "type"
       }
     ],
@@ -52437,7 +52571,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1160,
+        "line": 1162,
         "type": "type"
       }
     ],
@@ -52617,14 +52751,14 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1214,
+        "line": 1216,
         "type": "type"
       }
     ],
     "composerSelectionRequestSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1115,
+        "line": 1117,
         "type": "constant"
       }
     ],
@@ -52636,14 +52770,14 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1215,
+        "line": 1217,
         "type": "type"
       }
     ],
     "composerSelectionResponseSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1122,
+        "line": 1124,
         "type": "constant"
       }
     ],
@@ -52669,7 +52803,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1208,
+        "line": 1210,
         "type": "type"
       },
       {
@@ -52681,7 +52815,7 @@
     "composerStreamArtifactSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1054,
+        "line": 1056,
         "type": "constant"
       }
     ],
@@ -52767,14 +52901,14 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1205,
+        "line": 1207,
         "type": "type"
       }
     ],
     "composerVoiceCardSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1026,
+        "line": 1028,
         "type": "constant"
       }
     ],
@@ -52793,14 +52927,14 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1204,
+        "line": 1206,
         "type": "type"
       }
     ],
     "composerVoiceIdSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1024,
+        "line": 1026,
         "type": "constant"
       }
     ],
@@ -52834,14 +52968,14 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1206,
+        "line": 1208,
         "type": "type"
       }
     ],
     "composerVoiceValidationErrorSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1034,
+        "line": 1036,
         "type": "constant"
       }
     ],
@@ -52890,7 +53024,7 @@
     "conditionalOpenings": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 126,
+        "line": 138,
         "type": "constant"
       }
     ],
@@ -53131,7 +53265,7 @@
     "containmentBurdenPattern": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 30,
+        "line": 31,
         "type": "constant"
       }
     ],
@@ -53948,7 +54082,7 @@
     "CreateAlly": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1137,
+        "line": 1139,
         "type": "type"
       },
       {
@@ -53988,7 +54122,7 @@
     "CreateAstrologyReportRequest": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1200,
+        "line": 1202,
         "type": "type"
       }
     ],
@@ -54002,7 +54136,7 @@
     "createAstrologyReportRequestSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 925,
+        "line": 927,
         "type": "constant"
       }
     ],
@@ -54051,7 +54185,7 @@
     "CreateChartArrival": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1153,
+        "line": 1155,
         "type": "type"
       }
     ],
@@ -54065,7 +54199,7 @@
     "CreateChartBirthData": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1164,
+        "line": 1166,
         "type": "type"
       },
       {
@@ -54098,7 +54232,7 @@
     "CreateChartMakerRequest": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1178,
+        "line": 1180,
         "type": "type"
       }
     ],
@@ -54147,7 +54281,7 @@
     "CreateComposerDecision": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1157,
+        "line": 1159,
         "type": "type"
       },
       {
@@ -54303,7 +54437,7 @@
     "CreateUserFeedItem": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1149,
+        "line": 1151,
         "type": "type"
       },
       {
@@ -56644,7 +56778,7 @@
     "escapeRegExp": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 159,
+        "line": 185,
         "type": "function"
       }
     ],
@@ -56843,7 +56977,7 @@
     "evidenceIds": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 104,
+        "line": 122,
         "type": "constant"
       },
       {
@@ -57082,7 +57216,7 @@
     "expectedTitles": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 72,
+        "line": 77,
         "type": "constant"
       }
     ],
@@ -57101,7 +57235,7 @@
     "expectedUserId": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 995,
+        "line": 997,
         "type": "constant"
       }
     ],
@@ -57122,7 +57256,7 @@
     "ExplicitChartSettings": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1169,
+        "line": 1171,
         "type": "type"
       }
     ],
@@ -57192,7 +57326,7 @@
     "fabricatedDialoguePattern": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 28,
+        "line": 29,
         "type": "constant"
       }
     ],
@@ -57399,14 +57533,14 @@
     "fatal": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 69,
+        "line": 74,
         "type": "constant"
       }
     ],
     "fatalCategories": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 145,
+        "line": 157,
         "type": "constant"
       }
     ],
@@ -57641,7 +57775,7 @@
     "finalChapterWords": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 124,
+        "line": 136,
         "type": "constant"
       }
     ],
@@ -58139,7 +58273,7 @@
     "FoundationSeed": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1228,
+        "line": 1230,
         "type": "type"
       },
       {
@@ -58158,7 +58292,7 @@
     "foundationSeedSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1217,
+        "line": 1219,
         "type": "constant"
       }
     ],
@@ -58894,7 +59028,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1141,
+        "line": 1143,
         "type": "type"
       }
     ],
@@ -59464,13 +59598,6 @@
       {
         "file": "packages/astrology/src/index.ts",
         "line": 2437,
-        "type": "constant"
-      }
-    ],
-    "heavyParagraphs": [
-      {
-        "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 46,
         "type": "constant"
       }
     ],
@@ -60788,7 +60915,7 @@
     "inventedHistoryPattern": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 27,
+        "line": 28,
         "type": "constant"
       }
     ],
@@ -60831,6 +60958,11 @@
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 26,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/synastry-perspective-validation-and-prose-thinning.md",
+        "line": 29,
         "type": "heading"
       },
       {
@@ -61116,7 +61248,7 @@
     "isTraceRow": [
       {
         "file": "packages/astrology/src/report/synastryV3.ts",
-        "line": 112,
+        "line": 113,
         "type": "function"
       }
     ],
@@ -61256,7 +61388,7 @@
     "JourneyFeedItemAction": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1156,
+        "line": 1158,
         "type": "type"
       },
       {
@@ -62878,6 +63010,11 @@
       {
         "file": "apps/astra-web/e2e/support/otp.ts",
         "line": 58,
+        "type": "constant"
+      },
+      {
+        "file": "packages/astrology/src/report/synastryV3Validation.ts",
+        "line": 172,
         "type": "constant"
       }
     ],
@@ -64985,7 +65122,7 @@
     "observational": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 90,
+        "line": 101,
         "type": "constant"
       }
     ],
@@ -65173,7 +65310,7 @@
     "opening": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 134,
+        "line": 146,
         "type": "constant"
       }
     ],
@@ -65423,7 +65560,7 @@
     "OrderableAstrologyReportType": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1185,
+        "line": 1187,
         "type": "type"
       }
     ],
@@ -65650,7 +65787,7 @@
     "ownedRows": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 996,
+        "line": 998,
         "type": "constant"
       }
     ],
@@ -65887,14 +66024,14 @@
     "paragraph": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 114,
+        "line": 126,
         "type": "constant"
       }
     ],
     "paragraphRows": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 105,
+        "line": 95,
         "type": "constant"
       }
     ],
@@ -65905,8 +66042,27 @@
         "type": "constant"
       },
       {
+        "file": "packages/astrology/src/report/synastryV3Validation.ts",
+        "line": 47,
+        "type": "constant"
+      },
+      {
         "file": "packages/astrology/src/report/writerClaimPlanning.ts",
         "line": 174,
+        "type": "constant"
+      }
+    ],
+    "paragraphsWithoutReader": [
+      {
+        "file": "packages/astrology/src/report/synastryV3Validation.ts",
+        "line": 114,
+        "type": "constant"
+      }
+    ],
+    "paragraphTermCounts": [
+      {
+        "file": "packages/astrology/src/report/synastryV3Validation.ts",
+        "line": 51,
         "type": "constant"
       }
     ],
@@ -66189,14 +66345,14 @@
     "parseSynastryV3Response": [
       {
         "file": "packages/astrology/src/report/synastryV3.ts",
-        "line": 73,
+        "line": 74,
         "type": "function"
       }
     ],
     "parseSynastryV3SemanticResponse": [
       {
         "file": "packages/astrology/src/report/synastryV3.ts",
-        "line": 98,
+        "line": 99,
         "type": "function"
       }
     ],
@@ -67546,7 +67702,7 @@
     "PortableUserDataBundle": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1203,
+        "line": 1205,
         "type": "type"
       },
       {
@@ -67558,7 +67714,7 @@
     "portableUserDataBundleSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 966,
+        "line": 968,
         "type": "constant"
       }
     ],
@@ -67579,7 +67735,7 @@
     "portraitMatch": [
       {
         "file": "packages/astrology/src/report/synastryV3.ts",
-        "line": 74,
+        "line": 75,
         "type": "constant"
       }
     ],
@@ -68034,6 +68190,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/synastry-perspective-validation-and-prose-thinning.md",
+        "line": 35,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/tier-browser-verification-by-changed-boundary.md",
         "line": 36,
         "type": "heading"
@@ -68363,7 +68524,7 @@
     "Private OpenRouter bakeoff credential": [
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "line": 107,
+        "line": 109,
         "type": "heading"
       }
     ],
@@ -68398,7 +68559,7 @@
     "PrivateFeedRequest": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1147,
+        "line": 1149,
         "type": "type"
       },
       {
@@ -68417,7 +68578,7 @@
     "PrivateFeedResponse": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1148,
+        "line": 1150,
         "type": "type"
       },
       {
@@ -68483,6 +68644,11 @@
       },
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/synastry-perspective-validation-and-prose-thinning.md",
         "line": 17,
         "type": "heading"
       },
@@ -69269,7 +69435,7 @@
     "PublicStreamItem": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1144,
+        "line": 1146,
         "type": "type"
       },
       {
@@ -70280,7 +70446,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1202,
+        "line": 1204,
         "type": "type"
       },
       {
@@ -70299,7 +70465,7 @@
     "recordAstrologyReportResultSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 951,
+        "line": 953,
         "type": "constant"
       }
     ],
@@ -70318,7 +70484,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1182,
+        "line": 1184,
         "type": "type"
       },
       {
@@ -70486,6 +70652,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/synastry-perspective-validation-and-prose-thinning.md",
+        "line": 43,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/tier-browser-verification-by-changed-boundary.md",
         "line": 44,
         "type": "heading"
@@ -70540,6 +70711,11 @@
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 35,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/synastry-perspective-validation-and-prose-thinning.md",
+        "line": 38,
         "type": "heading"
       },
       {
@@ -71037,7 +71213,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1186,
+        "line": 1188,
         "type": "type"
       }
     ],
@@ -71058,7 +71234,7 @@
     "ReportBoundary": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1191,
+        "line": 1193,
         "type": "type"
       }
     ],
@@ -71100,7 +71276,7 @@
     "ReportChartBasisInput": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1189,
+        "line": 1191,
         "type": "type"
       }
     ],
@@ -71119,7 +71295,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1190,
+        "line": 1192,
         "type": "type"
       },
       {
@@ -71157,7 +71333,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1188,
+        "line": 1190,
         "type": "type"
       }
     ],
@@ -71293,14 +71469,14 @@
     "reportGenerationMetadataSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 881,
+        "line": 883,
         "type": "constant"
       }
     ],
     "reportGenerationPartMetadataSchema": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 867,
+        "line": 869,
         "type": "constant"
       }
     ],
@@ -71312,7 +71488,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1197,
+        "line": 1199,
         "type": "type"
       }
     ],
@@ -71331,7 +71507,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1196,
+        "line": 1198,
         "type": "type"
       }
     ],
@@ -71350,7 +71526,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1195,
+        "line": 1197,
         "type": "type"
       }
     ],
@@ -71658,7 +71834,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1016,
+        "line": 1018,
         "type": "constant"
       }
     ],
@@ -72439,6 +72615,11 @@
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 29,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/synastry-perspective-validation-and-prose-thinning.md",
+        "line": 32,
         "type": "heading"
       },
       {
@@ -73414,14 +73595,14 @@
     "romanticOpening": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 135,
+        "line": 147,
         "type": "constant"
       }
     ],
     "romanticPattern": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 31,
+        "line": 32,
         "type": "constant"
       }
     ],
@@ -73506,6 +73687,11 @@
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 23,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/synastry-perspective-validation-and-prose-thinning.md",
+        "line": 25,
         "type": "heading"
       },
       {
@@ -73700,12 +73886,12 @@
     "row": [
       {
         "file": "packages/astrology/src/report/synastryV3.ts",
-        "line": 114,
+        "line": 115,
         "type": "constant"
       },
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 113,
+        "line": 125,
         "type": "constant"
       }
     ],
@@ -75462,7 +75648,7 @@
     "sexualOpening": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 136,
+        "line": 148,
         "type": "constant"
       }
     ],
@@ -75824,6 +76010,11 @@
       },
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
+        "line": 20,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/synastry-perspective-validation-and-prose-thinning.md",
         "line": 20,
         "type": "heading"
       },
@@ -76276,7 +76467,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1143,
+        "line": 1145,
         "type": "type"
       },
       {
@@ -76637,7 +76828,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1142,
+        "line": 1144,
         "type": "type"
       }
     ],
@@ -76946,7 +77137,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1134,
+        "line": 1136,
         "type": "type"
       }
     ],
@@ -77652,6 +77843,13 @@
         "type": "heading"
       }
     ],
+    "Synastry perspective validation and prose thinning": [
+      {
+        "file": "akashic/skills/synastry-perspective-validation-and-prose-thinning.md",
+        "line": 15,
+        "type": "heading"
+      }
+    ],
     "Synastry Report": [
       {
         "file": "docs/architecture/ASTRA_REPORT_PROMPT_REVIEW.md",
@@ -77744,7 +77942,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1187,
+        "line": 1189,
         "type": "type"
       }
     ],
@@ -77793,7 +77991,7 @@
     "SynastryRomanticLanguage": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1172,
+        "line": 1174,
         "type": "type"
       }
     ],
@@ -77807,7 +78005,7 @@
     "SynastryStructuralLens": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1171,
+        "line": 1173,
         "type": "type"
       }
     ],
@@ -77862,7 +78060,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1173,
+        "line": 1175,
         "type": "type"
       }
     ],
@@ -77892,6 +78090,13 @@
         "file": "packages/contracts/src/index.ts",
         "line": 819,
         "type": "constant"
+      }
+    ],
+    "synastryV3CorrectionMessages": [
+      {
+        "file": "packages/astrology/src/report/synastryV3Validation.ts",
+        "line": 171,
+        "type": "function"
       }
     ],
     "synastryV3EvidenceItemSchema": [
@@ -77942,7 +78147,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1198,
+        "line": 1200,
         "type": "type"
       }
     ],
@@ -77977,7 +78182,7 @@
     "synastryV3TechnicalMetrics": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 43,
+        "line": 44,
         "type": "function"
       }
     ],
@@ -77991,7 +78196,7 @@
     "synastryV3WordCount": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 33,
+        "line": 34,
         "type": "function"
       }
     ],
@@ -78299,14 +78504,14 @@
     "technicalDegreePattern": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 25,
+        "line": 26,
         "type": "constant"
       }
     ],
     "technicalHousePattern": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 24,
+        "line": 25,
         "type": "constant"
       }
     ],
@@ -78317,24 +78522,31 @@
         "type": "function"
       }
     ],
+    "technicalLeadPattern": [
+      {
+        "file": "packages/astrology/src/report/synastryV3Validation.ts",
+        "line": 24,
+        "type": "constant"
+      }
+    ],
     "technicalLeakageMatches": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 37,
+        "line": 38,
         "type": "function"
       }
     ],
     "technicalMetrics": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 78,
+        "line": 83,
         "type": "constant"
       }
     ],
     "technicalOppositePattern": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 26,
+        "line": 27,
         "type": "constant"
       }
     ],
@@ -78374,7 +78586,7 @@
     "terms": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 44,
+        "line": 45,
         "type": "constant"
       }
     ],
@@ -79130,7 +79342,7 @@
     "traceMatch": [
       {
         "file": "packages/astrology/src/report/synastryV3.ts",
-        "line": 75,
+        "line": 76,
         "type": "constant"
       }
     ],
@@ -79442,7 +79654,7 @@
     "UpdateAllyRelationship": [
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1139,
+        "line": 1141,
         "type": "type"
       },
       {
@@ -79961,7 +80173,7 @@
       },
       {
         "file": "packages/contracts/src/index.ts",
-        "line": 1145,
+        "line": 1147,
         "type": "type"
       },
       {
@@ -80190,7 +80402,7 @@
     "validateSynastryV3": [
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 56,
+        "line": 61,
         "type": "function"
       }
     ],
@@ -80335,7 +80547,7 @@
       },
       {
         "file": "packages/astrology/src/report/synastryV3.ts",
-        "line": 101,
+        "line": 102,
         "type": "constant"
       },
       {
@@ -81176,7 +81388,7 @@
       },
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 71,
+        "line": 76,
         "type": "constant"
       }
     ],
@@ -81208,7 +81420,7 @@
       },
       {
         "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "line": 45,
+        "line": 46,
         "type": "constant"
       }
     ],
@@ -81811,7 +82023,7 @@
         "file": "packages/astrology/src/index.ts",
         "weight": 2851.11,
         "bucket": "other",
-        "estimated_tokens": 45906,
+        "estimated_tokens": 45876,
         "lines": 4318,
         "symbols": 667,
         "symbol_type_counts": {
@@ -81892,8 +82104,8 @@
         "file": "packages/contracts/src/index.ts",
         "weight": 578.22,
         "bucket": "other",
-        "estimated_tokens": 11566,
-        "lines": 1229,
+        "estimated_tokens": 11603,
+        "lines": 1231,
         "symbols": 210,
         "symbol_type_counts": {
           "constant": 118,
@@ -82135,13 +82347,13 @@
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "weight": 229.21,
+        "weight": 232.2,
         "bucket": "other",
-        "estimated_tokens": 13716,
-        "lines": 741,
-        "symbols": 75,
+        "estimated_tokens": 14109,
+        "lines": 750,
+        "symbols": 76,
         "symbol_type_counts": {
-          "heading": 75
+          "heading": 76
         },
         "dependency_in": 0,
         "dependency_out": 0,
@@ -82227,6 +82439,22 @@
           "type": 5
         },
         "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "packages/astrology/src/report/synastryV3Validation.ts",
+        "weight": 167.33,
+        "bucket": "other",
+        "estimated_tokens": 3221,
+        "lines": 188,
+        "symbols": 44,
+        "symbol_type_counts": {
+          "constant": 35,
+          "function": 6,
+          "type": 3
+        },
+        "dependency_in": 2,
         "dependency_out": 0,
         "route_count": 0
       },
@@ -82372,22 +82600,6 @@
         },
         "dependency_in": 4,
         "dependency_out": 1,
-        "route_count": 0
-      },
-      {
-        "file": "packages/astrology/src/report/synastryV3Validation.ts",
-        "weight": 141.34,
-        "bucket": "other",
-        "estimated_tokens": 2667,
-        "lines": 162,
-        "symbols": 37,
-        "symbol_type_counts": {
-          "constant": 29,
-          "function": 5,
-          "type": 3
-        },
-        "dependency_in": 2,
-        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -82967,10 +83179,10 @@
       },
       {
         "file": "packages/astrology/src/report/synastryV3.ts",
-        "weight": 91.36,
+        "weight": 91.35,
         "bucket": "other",
-        "estimated_tokens": 2220,
-        "lines": 123,
+        "estimated_tokens": 2317,
+        "lines": 124,
         "symbols": 18,
         "symbol_type_counts": {
           "constant": 11,
@@ -84889,11 +85101,11 @@
         "route_count": 0
       },
       {
-        "file": "akashic/playbooks/astra-verification-tiers.md",
-        "weight": 33.31,
+        "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
+        "weight": 33.3,
         "bucket": "akashic",
-        "estimated_tokens": 4127,
-        "lines": 110,
+        "estimated_tokens": 4450,
+        "lines": 137,
         "symbols": 9,
         "symbol_type_counts": {
           "heading": 9
@@ -84903,11 +85115,11 @@
         "route_count": 0
       },
       {
-        "file": "akashic/missions/2026-06-12-astra-clean-start-foundation-progress.md",
+        "file": "akashic/playbooks/astra-verification-tiers.md",
         "weight": 33.3,
         "bucket": "akashic",
-        "estimated_tokens": 4450,
-        "lines": 137,
+        "estimated_tokens": 4329,
+        "lines": 112,
         "symbols": 9,
         "symbol_type_counts": {
           "heading": 9
@@ -84979,6 +85191,20 @@
         "bucket": "akashic",
         "estimated_tokens": 351,
         "lines": 46,
+        "symbols": 9,
+        "symbol_type_counts": {
+          "heading": 9
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "akashic/skills/synastry-perspective-validation-and-prose-thinning.md",
+        "weight": 32.91,
+        "bucket": "akashic",
+        "estimated_tokens": 628,
+        "lines": 45,
         "symbols": 9,
         "symbol_type_counts": {
           "heading": 9
@@ -86940,7 +87166,7 @@
         "file": "docs/architecture/RISK_REGISTER.md",
         "weight": 15.74,
         "bucket": "other",
-        "estimated_tokens": 765,
+        "estimated_tokens": 779,
         "lines": 38,
         "symbols": 4,
         "symbol_type_counts": {
@@ -88321,7 +88547,7 @@
       {
         "name": "top-weighted",
         "budget_tokens": 32000,
-        "estimated_tokens": 45906,
+        "estimated_tokens": 45876,
         "file_count": 1,
         "symbol_count": 667,
         "files": [
@@ -88330,7 +88556,7 @@
             "file": "packages/astrology/src/index.ts",
             "weight": 2851.11,
             "bucket": "other",
-            "estimated_tokens": 45906,
+            "estimated_tokens": 45876,
             "lines": 4318,
             "symbols": 667,
             "symbol_type_counts": {
@@ -88348,7 +88574,7 @@
       {
         "name": "top-weighted",
         "budget_tokens": 64000,
-        "estimated_tokens": 65801,
+        "estimated_tokens": 65771,
         "file_count": 2,
         "symbol_count": 892,
         "files": [
@@ -88357,7 +88583,7 @@
             "file": "packages/astrology/src/index.ts",
             "weight": 2851.11,
             "bucket": "other",
-            "estimated_tokens": 45906,
+            "estimated_tokens": 45876,
             "lines": 4318,
             "symbols": 667,
             "symbol_type_counts": {
@@ -88392,7 +88618,7 @@
       {
         "name": "top-weighted",
         "budget_tokens": 128000,
-        "estimated_tokens": 138120,
+        "estimated_tokens": 138127,
         "file_count": 8,
         "symbol_count": 1899,
         "files": [
@@ -88401,7 +88627,7 @@
             "file": "packages/astrology/src/index.ts",
             "weight": 2851.11,
             "bucket": "other",
-            "estimated_tokens": 45906,
+            "estimated_tokens": 45876,
             "lines": 4318,
             "symbols": 667,
             "symbol_type_counts": {
@@ -88487,8 +88713,8 @@
             "file": "packages/contracts/src/index.ts",
             "weight": 578.22,
             "bucket": "other",
-            "estimated_tokens": 11566,
-            "lines": 1229,
+            "estimated_tokens": 11603,
+            "lines": 1231,
             "symbols": 210,
             "symbol_type_counts": {
               "constant": 118,
@@ -88539,9 +88765,9 @@
       }
     ],
     "coverage": {
-      "files": 450,
-      "symbols": 6195,
-      "total_estimated_tokens": 1179768
+      "files": 451,
+      "symbols": 6212,
+      "total_estimated_tokens": 1181663
     }
   }
 }

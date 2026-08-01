@@ -108,7 +108,7 @@ import {
   parseSynastryV3Response,
   parseSynastryV3SemanticResponse
 } from "./report/synastryV3";
-import { validateSynastryV3 } from "./report/synastryV3Validation";
+import { synastryV3CorrectionMessages, validateSynastryV3 } from "./report/synastryV3Validation";
 import {
   mergeProviderUsage,
   maxModelOutputTokensFor as maxModelOutputTokensForProvider,
@@ -3821,7 +3821,7 @@ async function generateSynastryV3Draft(
 
     let validation = validateSynastryV3({ portrait: parsed.portrait, sections, headings, trace: parsed.trace, evidenceIndex, tone, readerName, allyName });
     if (!validation.greenLight) {
-      previousErrors = [...validation.boundaryViolations, ...validation.fatalCategories.map((category) => `Fatal category: ${category}`)];
+      previousErrors = synastryV3CorrectionMessages(validation);
       failures.push(synastryV3RetryFailure(attempt, previousErrors, response, response.text, "unsupported_claim"));
       if (attempt === 1) continue;
       throw new SynastryV3GenerationError(
@@ -3846,7 +3846,7 @@ async function generateSynastryV3Draft(
       semanticReviewUnavailable: semantic.reviewStatus === "unavailable"
     });
     if (!validation.greenLight) {
-      previousErrors = [...validation.boundaryViolations, ...validation.fatalCategories.map((category) => `Fatal category: ${category}`)];
+      previousErrors = synastryV3CorrectionMessages(validation);
       failures.push(synastryV3RetryFailure(attempt, previousErrors, response, response.text, "unsupported_claim"));
       if (attempt === 1) continue;
       throw new SynastryV3GenerationError(

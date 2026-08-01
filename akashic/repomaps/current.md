@@ -23,7 +23,7 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `1179768`
+- Estimated token footprint: `1181663`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
@@ -95,12 +95,12 @@ tsconfig.json
 3. Akashic artifacts preserve durable repo knowledge.
 
 ## Critical Files
-- `packages/astrology/src/index.ts` - weight 2851.11, ~45906 tokens, 667 symbols, in:0/out:16
+- `packages/astrology/src/index.ts` - weight 2851.11, ~45876 tokens, 667 symbols, in:0/out:16
 - `packages/db/src/repositories.ts` - weight 1069.18, ~19895 tokens, 225 symbols, in:1/out:2
 - `packages/astrology/src/meaningComplexNetwork.ts` - weight 918.2, ~15519 tokens, 233 symbols, in:1/out:0
 - `packages/astrology/src/structuralChartFacts.ts` - weight 798.22, ~12000 tokens, 206 symbols, in:1/out:0
 - `apps/composer-web/lib/cardLibrary.ts` - weight 585.24, ~8636 tokens, 135 symbols, in:16/out:13
-- `packages/contracts/src/index.ts` - weight 578.22, ~11566 tokens, 210 symbols, in:0/out:0
+- `packages/contracts/src/index.ts` - weight 578.22, ~11603 tokens, 210 symbols, in:0/out:0
 - `apps/astra-web/components/BirthOnboardingPanel.tsx` - weight 553.21, ~13463 tokens, 123 symbols, in:2/out:5
 - `apps/astra-web/app/admin/page.tsx` - weight 481.22, ~11135 tokens, 100 symbols, in:0/out:2
 - `apps/composer-web/components/CardWorkspace.tsx` - weight 457.24, ~9273 tokens, 91 symbols, in:3/out:1
@@ -158,9 +158,9 @@ tsconfig.json
 - `GET /api/status` in `apps/composer-web/app/api/status/route.ts:4`
 
 ## Pareto Profiles
-- `32000` tokens -> 1 files, 667 symbols, ~45906 estimated tokens.
-- `64000` tokens -> 2 files, 892 symbols, ~65801 estimated tokens.
-- `128000` tokens -> 8 files, 1899 symbols, ~138120 estimated tokens.
+- `32000` tokens -> 1 files, 667 symbols, ~45876 estimated tokens.
+- `64000` tokens -> 2 files, 892 symbols, ~65771 estimated tokens.
+- `128000` tokens -> 8 files, 1899 symbols, ~138127 estimated tokens.
 
 ## Data Model
 Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.
@@ -192,4 +192,4 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - Treat auth as a first-class product concern and verify the repo's documented local auth flow.
 - Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 450 local files for `astra-clean-start`.
+Generated from 451 local files for `astra-clean-start`.

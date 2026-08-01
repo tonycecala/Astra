@@ -21,6 +21,7 @@ export type SynastryV3FatalCategory =
 
 const technicalTermPattern = /\b(?:astrology|astrological|chart|planet|sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven|zodiac|natal|synastry|interaspect|aspect|conjunction|conjunct|trine|square|sextile|quincunx|opposition|orb|aries|taurus|gemini|cancer|leo|virgo|libra|scorpio|sagittarius|capricorn|aquarius|pisces)\b/i;
 const technicalTermsPattern = /\b(?:astrology|astrological|chart|planet|sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven|zodiac|natal|synastry|interaspect|aspect|conjunction|conjunct|trine|square|sextile|quincunx|opposition|orb|aries|taurus|gemini|cancer|leo|virgo|libra|scorpio|sagittarius|capricorn|aquarius|pisces)\b|\b(?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|\d+(?:st|nd|rd|th)?)\s+house\b|\b\d+(?:\.\d+)?\s*(?:degrees?|°)\b/gi;
+const technicalLeadPattern = /^(?:(?:your|her|his|their|the|a|an)\s+)?(?:astrology|astrological|chart|planet|sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven|zodiac|natal|synastry|interaspect|aspect|conjunction|conjunct|trine|square|sextile|quincunx|opposition|orb|aries|taurus|gemini|cancer|leo|virgo|libra|scorpio|sagittarius|capricorn|aquarius|pisces)\b/i;
 const technicalHousePattern = /\b(?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|\d+(?:st|nd|rd|th)?)\s+house\b/i;
 const technicalDegreePattern = /\b\d+(?:\.\d+)?\s*(?:degrees?|°)\b/i;
 const technicalOppositePattern = /\b(?:sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven)\s+(?:is\s+)?opposite\b|\bopposite\s+(?:the\s+)?(?:sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven)\b/i;
@@ -43,13 +44,17 @@ export function technicalLeakageMatches(value: string) {
 export function synastryV3TechnicalMetrics(value: string) {
   const terms = [...value.matchAll(technicalTermsPattern)].map((match) => match[0]);
   const words = synastryV3WordCount(value);
-  const heavyParagraphs = value
+  const paragraphs = value
     .split(/\n\s*\n/)
-    .filter((paragraph) => [...paragraph.matchAll(technicalTermsPattern)].length >= 3);
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph && !/^#+\s/.test(paragraph));
+  const paragraphTermCounts = paragraphs.map((paragraph) => [...paragraph.matchAll(technicalTermsPattern)].length);
   return {
     terms,
     termsPerThousandWords: Number(((terms.length / Math.max(words, 1)) * 1_000).toFixed(1)),
-    heavyParagraphCount: heavyParagraphs.length
+    heavyParagraphCount: paragraphTermCounts.filter((count) => count >= 3).length,
+    astrologyParagraphCount: paragraphTermCounts.filter((count) => count > 0).length,
+    leadingParagraphCount: paragraphs.filter((paragraph) => technicalLeadPattern.test(paragraph)).length
   };
 }
 
@@ -76,10 +81,10 @@ export function validateSynastryV3(input: {
     fatal.add("format_integrity");
   }
   const technicalMetrics = synastryV3TechnicalMetrics(input.portrait);
-  if (technicalMetrics.termsPerThousandWords > 8 || technicalMetrics.heavyParagraphCount > 0 || /\bS\d{2,}\b/.test(input.portrait)) {
+  if (technicalMetrics.terms.length > 15 || technicalMetrics.heavyParagraphCount > 3 || technicalMetrics.astrologyParagraphCount > 5 || technicalMetrics.leadingParagraphCount > 0 || /\bS\d{2,}\b/.test(input.portrait)) {
     fatal.add("technical_surface");
   } else if (technicalMetrics.terms.length) {
-    reviewNotes.push(`Portrait uses ${technicalMetrics.terms.length} contextual astrology terms (${technicalMetrics.termsPerThousandWords} per 1,000 words) without an astrology-heavy paragraph.`);
+    reviewNotes.push(`Portrait uses ${technicalMetrics.terms.length} contextual astrology terms across ${technicalMetrics.astrologyParagraphCount} paragraphs without leading with astrology.`);
   }
   if (inventedHistoryPattern.test(input.portrait) || fabricatedDialoguePattern.test(input.portrait)) fatal.add("invented_reality");
   if (comparativeVerdictPattern.test(input.portrait) || containmentBurdenPattern.test(input.portrait)) fatal.add("comparative_verdict");
@@ -87,9 +92,17 @@ export function validateSynastryV3(input: {
     fatal.add("identity_integrity");
   }
 
+  const paragraphRows = input.sections.flatMap((section) => section.body
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph && paragraph !== "---")
+    .map((paragraph, index) => ({ chapter: section.title, paragraphIndex: index + 1, paragraph }))
+  );
   const observational = new Set(["observational", "symbolic", "ancestral-symbolic"]).has(input.tone.structuralLens);
+  const allyFirstName = input.allyName.trim().split(/\s+/)[0] ?? input.allyName;
+  const allyReferencePattern = new RegExp(`\\b${escapeRegExp(allyFirstName)}\\b`, "i");
   for (const [index, section] of input.sections.entries()) {
-    if (!new RegExp(`\\b${escapeRegExp(input.allyName)}\\b`, "i").test(section.body)) fatal.add("perspective_erasure");
+    if (!allyReferencePattern.test(section.body)) fatal.add("perspective_erasure");
     if (!observational && !/\b(?:relationship|connection|bond|between you|what forms between)\b/i.test(section.body)) fatal.add("perspective_erasure");
     if (!/\b(?:you|your|yours)\b/i.test(section.body)) {
       boundaryViolations.push(`Chapter ${index + 1} does not address the selected reader as you.`);
@@ -98,16 +111,15 @@ export function validateSynastryV3(input: {
       boundaryViolations.push(`Chapter ${index + 1} names the selected reader instead of addressing them as you.`);
     }
   }
+  const paragraphsWithoutReader = paragraphRows.filter(({ paragraph }) => !/\b(?:you|your|yours)\b/i.test(paragraph)).length;
+  if (paragraphsWithoutReader) {
+    fatal.add("perspective_erasure");
+    reviewNotes.push(`${paragraphsWithoutReader} prose paragraphs do not directly address the selected reader as you or your.`);
+  }
   if (input.semanticSeverity === "severe") fatal.add("semantic_fidelity");
   if (input.semanticReviewUnavailable) reviewNotes.push("Semantic support reviewer was unavailable after one reviewer-only retry; deterministic Evidence and boundary validation passed.");
 
   const evidenceIds = new Set(input.evidenceIndex.map((row) => row.id));
-  const paragraphRows = input.sections.flatMap((section) => section.body
-    .split(/\n\s*\n/)
-    .map((paragraph) => paragraph.trim())
-    .filter((paragraph) => paragraph && paragraph !== "---")
-    .map((paragraph, index) => ({ chapter: section.title, paragraphIndex: index + 1, paragraph }))
-  );
   if (input.trace.length !== paragraphRows.length) boundaryViolations.push("Evidence trace must contain exactly one row for every prose paragraph.");
   for (let index = 0; index < input.trace.length; index += 1) {
     const row = input.trace[index];
@@ -154,6 +166,20 @@ export function validateSynastryV3(input: {
     paragraphCount: paragraphRows.length,
     greenLight: boundaryViolations.length === 0 && fatalCategories.length <= 2
   };
+}
+
+export function synastryV3CorrectionMessages(validation: ReturnType<typeof validateSynastryV3>) {
+  const messages = [...validation.boundaryViolations];
+  for (const category of validation.fatalCategories) {
+    if (category === "technical_surface") {
+      messages.push("Technical surface: thin the astrology commentary. Keep only occasional direct-aspect references that sharpen the psychology, never lead with astrology, and move the remaining chart support into the private Evidence trace.");
+    } else if (category === "perspective_erasure") {
+      messages.push("Perspective: address the selected reader as you or your in every prose paragraph; name the Ally by first name in every chapter; give the Ally a balanced possible response and the relationship a consequence in every chapter.");
+    } else {
+      messages.push(`Fatal category: ${category}`);
+    }
+  }
+  return [...new Set(messages)];
 }
 
 function escapeRegExp(value: string) {

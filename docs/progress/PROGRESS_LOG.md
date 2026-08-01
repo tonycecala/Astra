@@ -738,3 +738,12 @@ the experiment did not change production runtime, routes, data, or UI.
 - Owner readers now use stored V3 Evidence IDs; public shares omit Evidence, trace metadata, failures, private provenance, and internal review notes before rendering.
 - Focused static, contract, engine, API, i18n, build, and desktop/tablet/mobile browser journeys passed. Existing reports were not rewritten and no broad release suite was run.
 - Steward review: **accept**. Contracts, runtime guards, persistence, authenticated UI, and public/private projection moved together; no chart-calculation, SQL schema, natal/progressed, credit, or payment path changed.
+
+## 2026-07-31 — Synastry V3.1.1 Michelle refinement
+
+- Created one new immutable Tony + Michelle Lover report (`652dfffa-6cd3-49b7-9de5-73d5a4f59a2f`) from the same strongest-15 direct chart path and stable private Evidence IDs; no saved portrait or complete inventory entered the writer.
+- Reduced visible technical astrology from 49 to 13 terms, 34.9 to 8.8 terms per 1,000 words, and 10 to 3 heavy paragraphs while keeping all 15 prose paragraphs in second person. Fixed the false Michelle perspective category by accepting her first name rather than requiring the exact stored full name.
+- Tony accepted the result and preferred occasional aspect references that earn their paragraph over corrective prose quotas. The prompt now encodes that qualitative rule; the validator remains a private backstop against astrology-dominated writing and preserves the ±10% / more-than-two-fatal arithmetic.
+- The report cost $0.153852 through OpenRouter/Claude Sonnet 4.6: one rejected attempt ($0.071088), the accepted pass (approximately $0.071223), and semantic review ($0.011541). Total generation latency was 191.616 seconds.
+- Targeted packet, validator, engine, typecheck, ESLint, production build, and desktop/tablet/mobile owner/private-share boundary checks passed. Existing reports, Ally routing, chart calculation, schema, and public projection remain unchanged.
+- Steward review: **accept-with-notes**. Editorial improvement is material and owner-approved; the stored report honestly retains its generation-time review metadata and is not rewritten after acceptance.

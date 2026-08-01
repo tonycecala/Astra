@@ -83,6 +83,12 @@ const successfulFetch: typeof fetch = async (_url, init) => {
     if (!body.input?.includes("Private Evidence packet:") || !body.input.includes("S01")) throw new Error("Writer did not receive the stable selected packet.");
     if (/saved report|complete inventory/i.test(body.input)) throw new Error("Writer prompt referenced forbidden input.");
     if (body.max_output_tokens !== 8_000) throw new Error("V3.1 writer must reserve capacity for both portrait prose and its private paragraph trace.");
+    if (!body.input.includes("give each paragraph only the astrology it needs") || !body.input.includes("begin a paragraph with astrology")) {
+      throw new Error("V3.1.1 prompt did not preserve the psychology-first occasional-aspect allowance.");
+    }
+    if (!body.input.includes('Every prose paragraph must address Tony as "you" or "your,"')) {
+      throw new Error("V3.1.1 prompt did not keep the selected reader in second person paragraph by paragraph.");
+    }
     return new Response(JSON.stringify({ output_text: portraitBlock() }), { headers: { "content-type": "application/json" } });
   }
   if (body.max_output_tokens !== 1_400) throw new Error("Semantic support call must use the 1,400-token ceiling.");
