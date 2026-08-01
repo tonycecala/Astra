@@ -2,7 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 import { createHmac, randomUUID } from "node:crypto";
 import { ASTRA_REPORT_WRITER_ENV, LOCAL_DETERMINISTIC_REPORT_WRITER, buildAstrologyReportResultAsync } from "@astra/astrology";
 import { buildChartMakerRecordResult } from "@astra/chart-maker";
-import { appUserProfiles, createAlly, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, creditLedgerEntries, db, listUserAstrologyReportResults, listUserFeedItems, mirrorCreditBalanceToProfile, recordAstrologyReportResult, recordChartMakerResult, updateAuthUserProfileDisplayName } from "@astra/db";
+import { appUserProfiles, createAlly, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, creditLedgerEntries, db, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserFeedItems, mirrorCreditBalanceToProfile, recordAstrologyReportResult, recordChartMakerResult, updateAuthUserProfileDisplayName } from "@astra/db";
 import { eq } from "drizzle-orm";
 import { signInWithTestSession } from "./support/auth-session";
 import { readOtp } from "./support/otp";
@@ -288,6 +288,67 @@ test.describe("clean-start routes", () => {
     await expect(mobileLibrary).toHaveCSS("font-weight", "700");
   });
 
+  test("adding an Ally creates the private chart without ordering a report @auth @journey @responsive", async ({ page }, testInfo) => {
+    const email = `add-ally-${testInfo.project.name}-${Date.now()}@example.com`;
+    const userId = await signInWithTestSession(page, { email, name: "Ally Keeper" });
+    const browserErrors: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() === "error" && !message.text().startsWith("Failed to load resource:") && !isExpectedNavigationCancellation(message.text())) browserErrors.push(message.text());
+    });
+    page.on("pageerror", (error) => { if (!isExpectedNavigationCancellation(error.message)) browserErrors.push(error.message); });
+
+    await page.goto("/allies");
+    await expect(page.getByRole("heading", { name: "Add an Ally" })).toHaveCount(0);
+    const addAllyAction = page.getByRole("link", { name: "Add an Ally" }).first();
+    const addAllyActionStyles = await addAllyAction.evaluate((element) => {
+      const probe = document.createElement("span");
+      probe.style.color = getComputedStyle(document.documentElement).getPropertyValue("--gold");
+      document.body.append(probe);
+      const gold = getComputedStyle(probe).color;
+      probe.remove();
+      const styles = getComputedStyle(element);
+      return { background: styles.backgroundColor, gold, paddingLeft: Number.parseFloat(styles.paddingLeft), paddingRight: Number.parseFloat(styles.paddingRight) };
+    });
+    expect(addAllyActionStyles.background).toBe(addAllyActionStyles.gold);
+    expect(addAllyActionStyles.paddingLeft).toBeGreaterThanOrEqual(20);
+    expect(addAllyActionStyles.paddingRight).toBeGreaterThanOrEqual(20);
+    await addAllyAction.click();
+    const panel = page.locator('section[aria-label="Add an Ally"]');
+    await expect(panel.getByRole("heading", { name: "Add an Ally" })).toBeVisible();
+    await panel.getByLabel("Ally name").fill("Rowan Test Ally");
+    await panel.getByLabel("Relationship").selectOption("Friend");
+    await panel.getByRole("button", { name: "Next", exact: true }).click();
+    await chooseUnknownBirthMoment(page, { year: "1988", month: "October", day: "12" });
+    await panel.getByRole("button", { name: "Add Ally", exact: true }).click();
+
+    await expect(page).toHaveURL(/\/allies$/);
+    const card = page.locator("article.ally-card").filter({ hasText: "Rowan Test Ally" });
+    await expect(page.getByRole("heading", { name: "Rowan Test Ally" })).toBeVisible();
+    await expect(card.getByRole("link", { name: "View chart" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Add an Ally" })).toHaveCount(0);
+    expect(await listUserAstrologyReportRequests(db, userId)).toHaveLength(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+    expect(browserErrors).toEqual([]);
+  });
+
+  test("an Ally chart stays in Allies and renders one focused chart @auth @journey @responsive", async ({ page }, testInfo) => {
+    const email = `ally-chart-detail-${testInfo.project.name}-${Date.now()}@example.com`;
+    await signInWithTestSession(page, { email, name: "Chart Keeper" });
+    const completed = await createCompletedAllyChart(email, { name: "Focused Ally", relationship: "Friend" });
+
+    await page.goto("/allies");
+    await page.locator(`[id="ally-${completed.ally.id}"]`).getByRole("link", { name: "View chart" }).click();
+    await expect(page).toHaveURL(new RegExp(`/charts\\?chart=${completed.request.id}&from=allies`));
+    await expect(page.getByRole("link", { name: "Back to Allies" })).toBeVisible();
+    await expect(page.getByLabel("Selected chart").getByLabel("Full natal chart wheel")).toBeVisible();
+    await expect(page.getByLabel("Saved charts list")).toHaveCount(0);
+    const activeNavigation = page.locator('nav[aria-label="Primary navigation"]:visible, nav[aria-label="Mobile navigation"]:visible');
+    await expect(activeNavigation.getByRole("link", { name: "Allies" })).toHaveAttribute("aria-current", "page");
+    const topbarTitle = page.locator(".topbar-route-title:visible");
+    if (await topbarTitle.count()) await expect(topbarTitle).toHaveText("Allies");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  });
+
   test("primary journey reaches adjacent clean-start areas @smoke @journey @release", async ({ page }, testInfo) => {
     await page.goto("/journey");
     await page.waitForLoadState("networkidle");
@@ -462,18 +523,38 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("heading", { name: "Your Astra has arrived." })).toHaveCount(0);
 
     const existingAllyChart = await createCompletedAllyChart(email, { name: "Existing Ally", relationship: "Friend" });
-    await page.goto(`/allies?chart=${existingAllyChart.request.id}&start=birth_details#ally-birth-onboarding`);
-    const existingOrderPanel = page.locator('section[aria-label="Ally birth data onboarding"]');
-    await expect(existingOrderPanel.getByRole("heading", { name: "Order an Ally Report" })).toBeVisible();
+    await page.goto(`/allies?chart=${existingAllyChart.request.id}&start=report#ally-birth-onboarding`);
+    const existingOrderPanel = page.locator('section[aria-label="Create an Ally Report"]');
+    await expect(existingOrderPanel.getByRole("heading", { name: "Create a Report for Existing Ally" })).toBeVisible();
     await expect(existingOrderPanel.getByText("Ally report", { exact: true })).toHaveCount(0);
     await expect(existingOrderPanel.getByText("Name the Ally, add birth data")).toHaveCount(0);
     await expect(existingOrderPanel.getByText("Step 1 of 1")).toHaveCount(0);
     await expect(existingOrderPanel.getByRole("button", { name: "Back" })).toHaveCount(0);
-    await expect(existingOrderPanel.getByText("Existing Ally")).toBeVisible();
+    await expect(existingOrderPanel.getByText("Existing Ally", { exact: true })).toBeVisible();
     await expect(existingOrderPanel.getByText("Friend", { exact: true })).toBeVisible();
     await expect(existingOrderPanel.getByText("2021-12-23 · 01:50 · Plano, TX")).toBeVisible();
     await expect(existingOrderPanel.getByText("Birth date", { exact: true })).toHaveCount(0);
     await expect(existingOrderPanel.getByText("Birth place", { exact: true })).toHaveCount(0);
+    await expect(existingOrderPanel.getByRole("button", { name: "Create Report", exact: true })).toBeVisible();
+    await expect(existingOrderPanel.getByRole("button", { name: "Order Report", exact: true })).toHaveCount(0);
+
+    await page.goto("/allies");
+    await expect(page.getByRole("link", { name: "Add an Ally" }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Add an Ally" })).toHaveCount(0);
+    const existingAllyCard = page.locator(`[id="ally-${existingAllyChart.ally.id}"]`);
+    await existingAllyCard.getByRole("link", { name: "View chart" }).click();
+    await expect(page).toHaveURL(new RegExp(`/charts\\?chart=${existingAllyChart.request.id}&from=allies`));
+    await expect(page.getByRole("link", { name: "Back to Allies" })).toBeVisible();
+    await expect(page.getByLabel("Saved charts list")).toHaveCount(0);
+    await expect(page.getByLabel("Selected chart").getByLabel("Full natal chart wheel")).toBeVisible();
+    await expect(page.getByRole("navigation", { name: testInfo.project.name === "mobile" ? "Mobile navigation" : "Primary navigation" }).getByRole("link", { name: "Allies" })).toHaveAttribute("aria-current", "page");
+    if (testInfo.project.name === "mobile") await expect(page.locator(".topbar-route-title")).toHaveText("Allies");
+    await page.getByRole("link", { name: "Back to Allies" }).click();
+    await page.getByRole("link", { name: "Add an Ally" }).first().click();
+    const addAllyPanel = page.locator('section[aria-label="Add an Ally"]');
+    await expect(addAllyPanel.getByRole("heading", { name: "Add an Ally" })).toBeVisible();
+    await expect(addAllyPanel.getByText("Step 1 of 2: Name")).toBeVisible();
+    await expect(addAllyPanel.getByText("Report", { exact: true })).toHaveCount(0);
 
     await page.goto("/library");
     if (testInfo.project.name === "mobile") {
@@ -593,7 +674,12 @@ test.describe("clean-start routes", () => {
     await createCompletedAllyChart(email, { name: "Admin Comparison", relationship: "Colleague" });
     await page.goto("/self#self-birth-onboarding");
     await expect(page.getByRole("heading", { name: "Request Report" })).toBeVisible();
+    await expect(page.getByText("Step 1 of 2: Birth details")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Order Report", exact: true })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Request Report", exact: true })).toHaveAttribute("href", /start=report/);
+    await page.getByRole("button", { name: "Next", exact: true }).click();
     await expect(page.getByText("Step 2 of 2: Report")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Order Report", exact: true })).toBeVisible();
     await page.getByLabel("Synastry Report").check();
     await expect(page.getByLabel("Comparison chart")).toBeVisible();
 

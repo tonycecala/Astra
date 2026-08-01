@@ -30,7 +30,7 @@ test.describe("Synastry V3 production boundary", () => {
         chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
       }
     });
-    await page.goto("/allies#ally-birth-onboarding");
+    await page.goto("/allies?action=add#ally-birth-onboarding");
     const createSelector = page.getByLabel("Relationship").last();
     await expect(createSelector).toBeVisible();
     const optionLabels = await createSelector.locator("option").allTextContents();
@@ -58,8 +58,8 @@ test.describe("Synastry V3 production boundary", () => {
         chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
       }
     });
-    await page.locator(`[id="ally-${ally.id}"]`).getByRole("link", { name: "Create portrait" }).click();
-    const reportOrderPanel = page.locator('section[aria-label="Ally birth data onboarding"]');
+    await page.locator(`[id="ally-${ally.id}"]`).getByRole("link", { name: "Create Report" }).click();
+    const reportOrderPanel = page.locator('section[aria-label="Create an Ally Report"]');
     await expect(reportOrderPanel.getByText("Lover", { exact: true })).toBeVisible();
     const mobileReportSubmit = reportOrderPanel.locator("[data-mobile-report-submit]");
     if (testInfo.project.name === "mobile") {
@@ -74,7 +74,7 @@ test.describe("Synastry V3 production boundary", () => {
     await page.locator(`[id="ally-${ally.id}"]`).getByRole("button", { name: "Edit Ally: Cheyenne" }).click();
     await page.getByRole("dialog", { name: "Edit Cheyenne" }).getByRole("link", { name: "Edit birth details" }).click();
     await expect(page).toHaveURL(new RegExp(`/allies\\?chart=${allyChart.id}&start=birth_details`));
-    const birthEditPanel = page.locator('section[aria-label="Ally birth data onboarding"]');
+    const birthEditPanel = page.locator('section[aria-label="Create an Ally Report"]');
     await expect(birthEditPanel.getByText("Step 1 of 2: Birth details")).toBeVisible();
     await expect(birthEditPanel.getByLabel("Edit birth details")).toBeEnabled();
     await expect(birthEditPanel.getByLabel("Edit birth location")).toBeEnabled();

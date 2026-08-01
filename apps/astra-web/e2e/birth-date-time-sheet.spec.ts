@@ -230,7 +230,7 @@ test.describe("birth date and time sheet", () => {
     }
 
     if (testInfo.project.name === "desktop") {
-      await page.goto("/allies#ally-birth-onboarding");
+      await page.goto("/allies?action=add#ally-birth-onboarding");
       await page.getByLabel("Ally name").fill("QA Ally");
       await page.getByLabel("Relationship").fill("Friend");
       await page.getByRole("button", { name: "Next", exact: true }).click();

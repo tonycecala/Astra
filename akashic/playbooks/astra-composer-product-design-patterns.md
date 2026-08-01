@@ -11,8 +11,8 @@ tags:
   - playbook
 source_import: ../imports/astra-product-design-pattern-library/
 created: 2026-06-16
-updated: 2026-06-17
-timestamp: 2026-06-17
+updated: 2026-08-01
+timestamp: 2026-08-01
 ---
 
 # Astra and Composer Product Design Patterns
@@ -161,3 +161,19 @@ If the answer is no, redesign it.
 ## Long Mobile Choice Forms
 
 When the user must scroll through a long set of choices before acting, keep the primary action in a compact fixed bar immediately above Astra's bottom navigation. Hide the duplicate top action on phone, reserve enough scroll padding to keep the final controls readable, and remove the fixed bar when confirmation opens. Keep supporting descriptions short enough that the decision labels, prices, and required follow-up controls remain the visual priority. Verify the action stays in the phone viewport after scrolling to the final choice.
+
+## Allies List, Chart, And Report Separation
+
+Treat Allies management, chart inspection, and report creation as separate user intents:
+
+1. The default Allies surface is a calm list with one explicit `Add an Ally` action. Do not render report creation by default.
+2. Adding an Ally captures identity and birth details, persists the private Ally chart, and returns to the list without creating or charging for a report.
+3. Opening an Ally chart shows one chart, keeps Allies as the active navigation owner, and provides `Back to Allies`. Do not repeat the Allies or charts list beside the detail.
+4. `Create Report` is an explicit action for one saved Ally chart. Skip completed identity and birth-data steps, name the Ally in the heading, and preserve the existing report confirmation and private ownership boundary.
+5. Cover default, empty, add, chart-detail, report, invalid-chart, logged-out, success, and API-error states. Verify desktop, tablet, and mobile navigation, overflow, console health, and the absence of a report request after Add Ally.
+
+Use `05-progressive-disclosure.md`, `07-empty-states.md`, `13-intent-mirroring.md`, `15-pattern-alignment.md`, `23-deep-link.md`, `32-jtbd-copywriting.md`, and `36-trust-building.md`. Runtime analytics are N/A until Astra has an analytics transport; when one exists, document `empty_state_cta_clicked` for the empty-state add action and a project-contract deep-link event for chart detail entry.
+
+## Self Report Action Disclosure
+
+When Self already has a saved chart, default `Request Report` to Step 1, Birth details. Do not expose the final `Order Report` action on default arrival; show it only after the user explicitly advances into Report or follows the `start=report` deep link. Keep first-chart onboarding and logged-out behavior unchanged. This applies Progressive Disclosure, Setup Defaults, Intent Mirroring, and Trust Building; runtime analytics remain N/A until Astra has an analytics transport.

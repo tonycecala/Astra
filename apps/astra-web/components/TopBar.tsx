@@ -2,7 +2,7 @@
 
 import { Bell, CircleHelp, Settings, Sparkles as Stars, UserRound } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { authClient } from "../lib/auth/client";
 import { ui } from "../lib/i18n";
@@ -18,7 +18,9 @@ const topbarRoutes = [
   { href: "/gifts", label: ui.nav.gifts }
 ];
 
-function activeRouteLabel(pathname: string) {
+function activeRouteLabel(pathname: string, chartOwner: string | null) {
+  if (pathname === "/charts" && chartOwner === "allies") return ui.nav.allies;
+  if (pathname === "/charts" && chartOwner === "self") return ui.nav.self;
   return topbarRoutes.find((route) => pathname === route.href || pathname.startsWith(`${route.href}/`))?.label ?? ui.nav.journey;
 }
 
@@ -146,10 +148,12 @@ export function SidebarAccountControls() {
 
 export function TopBar({ starBalance }: { starBalance: number }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const chartOwner = searchParams.has("chart") || searchParams.has("chartId") ? searchParams.get("from") : null;
 
   return (
     <header className="topbar" aria-label={ui.account.mobileTopbarLabel}>
-      <h1 className="topbar-route-title">{activeRouteLabel(pathname)}</h1>
+      <h1 className="topbar-route-title">{activeRouteLabel(pathname, chartOwner)}</h1>
       <div className="topbar-actions">
         <Link className="topbar-icon-button topbar-stars-button" href="/stars" aria-label={ui.account.stars} title={ui.account.stars}>
           <Stars size={17} aria-hidden="true" />

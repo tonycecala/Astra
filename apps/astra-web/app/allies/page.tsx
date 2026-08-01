@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpenText, ChartPie, Search } from "lucide-react";
+import { BookOpenText, ChartPie, Plus, Search } from "lucide-react";
 import { normalizeAllyRelationshipTag, type Ally, type AstrologyReportRequest, type AstrologyReportResult, type ChartMakerRequest } from "@astra/contracts";
 import { PageHeader } from "../../components/PageHeader";
 import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
@@ -118,7 +118,7 @@ function AllyCard({
 }) {
   const createPortraitHref = chartRequest
     ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=report#ally-birth-onboarding`
-    : "#ally-birth-onboarding";
+    : "/allies?action=add#ally-birth-onboarding";
   const editBirthHref = chartRequest
     ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=birth_details#ally-birth-onboarding`
     : undefined;
@@ -137,18 +137,18 @@ function AllyCard({
         <div className="ally-card-controls">
           <div className="ally-card-actions" role="group" aria-label={`${ui.allies.cardActionsLabel}: ${ally.name}`}>
             {chartRequest ? (
-              <Link aria-label={ui.charts.viewChart} className="button secondary" href={`/charts?chart=${encodeURIComponent(chartRequest.id)}`} title={ui.charts.viewChart}>
+              <Link aria-label={ui.charts.viewChart} className="button secondary" href={`/charts?chart=${encodeURIComponent(chartRequest.id)}&from=allies`} title={ui.charts.viewChart}>
                 <ChartPie aria-hidden="true" size={16} />
               </Link>
             ) : null}
             {report ? (
               <span className="compact-list-report-actions">
-                <Link aria-label={ui.charts.viewPortrait} href={`/library?reportId=${encodeURIComponent(report.requestId)}`} title={ui.charts.viewPortrait}>
+                <Link aria-label={ui.allies.viewReport} href={`/library?reportId=${encodeURIComponent(report.requestId)}`} title={ui.allies.viewReport}>
                   <BookOpenText aria-hidden="true" size={16} />
                 </Link>
               </span>
             ) : (
-              <Link aria-label={ui.charts.createPortrait} className="button secondary" href={createPortraitHref} title={ui.charts.createPortrait}>
+              <Link aria-label={ui.allies.createReport} className="button secondary" href={createPortraitHref} title={ui.allies.createReport}>
                 <BookOpenText aria-hidden="true" size={16} />
               </Link>
             )}
@@ -167,6 +167,7 @@ type AlliesPageParams = {
     q?: string;
     relationship?: string;
     start?: string;
+    action?: string;
   }>;
 };
 
@@ -227,6 +228,7 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
   const initialOnboardingStep = selectedOnboardingChart
     ? onboardingStepFromParam(params.start) ?? "report"
     : onboardingStepFromParam(params.start);
+  const isAddingAlly = params.action === "add";
   const clearFilterParams = new URLSearchParams();
   if (params.chart) clearFilterParams.set("chart", params.chart);
   if (params.start) clearFilterParams.set("start", params.start);
@@ -248,6 +250,10 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
         <p>{ui.allies.eyebrow}</p>
         <h1 id="allies-title">{ui.allies.title}</h1>
         <div>{ui.allies.intro}</div>
+        <Link className="button allies-add-action" href="/allies?action=add#ally-birth-onboarding">
+          <Plus aria-hidden="true" size={18} />
+          {ui.allies.addAction}
+        </Link>
       </section>
       <AlliesConstellation
         allies={allies}
@@ -297,11 +303,18 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
             <div className="eyebrow">{ui.allies.emptyTitle}</div>
             <h2>{allies.length ? ui.allies.filterEmptyTitle : ui.allies.emptyTitle}</h2>
             <p>{allies.length ? ui.allies.filterEmptyBody : ui.allies.emptyBody}</p>
+            {!allies.length ? (
+              <Link className="button" href="/allies?action=add#ally-birth-onboarding">
+                <Plus aria-hidden="true" size={18} />
+                {ui.allies.addAction}
+              </Link>
+            ) : null}
           </article>
         )}
       </section>
-      <section id="ally-birth-onboarding">
+      {isAddingAlly || selectedOnboardingChart ? <section id="ally-birth-onboarding">
         <BirthOnboardingPanel
+          allyFlow={isAddingAlly ? "add" : "report"}
           displayName=""
           initialAllies={allies}
           key={selectedOnboardingChart ? `${selectedOnboardingChart.id}:${initialOnboardingStep}:${liveAllyForChart(selectedOnboardingChart, alliesById)?.relationship ?? "unknown"}` : "new-ally-chart"}
@@ -317,7 +330,7 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
           subjectType="ally"
           hideSummaryRail
         />
-      </section>
+      </section> : null}
     </>
   );
 }

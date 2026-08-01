@@ -816,3 +816,17 @@ the experiment did not change production runtime, routes, data, or UI.
 - The report cost $0.153852 through OpenRouter/Claude Sonnet 4.6: one rejected attempt ($0.071088), the accepted pass (approximately $0.071223), and semantic review ($0.011541). Total generation latency was 191.616 seconds.
 - Targeted packet, validator, engine, typecheck, ESLint, production build, and desktop/tablet/mobile owner/private-share boundary checks passed. Existing reports, Ally routing, chart calculation, schema, and public projection remain unchanged.
 - Steward review: **accept-with-notes**. Editorial improvement is material and owner-approved; the stored report honestly retains its generation-time review metadata and is not rewritten after acceptance.
+
+## 2026-08-01 — Allies add, chart detail, and report intent split
+
+- Changed `/allies` into a management surface with an explicit `Add an Ally` action and no default report wizard. Adding an Ally now persists the private Ally and chart, returns to the list, and does not create a report request.
+- Ally chart links now render one focused chart with `Back to Allies`; desktop, tablet, and mobile keep Allies highlighted. Existing-Ally report creation remains a separate one-step action named for the selected Ally.
+- Applied Progressive Disclosure, Empty States, Intent Mirroring, Pattern Alignment, Deep Link, JTBD Copywriting, and Trust Building. Runtime analytics remain N/A until Astra has an analytics transport. No dark pattern, public boundary, schema, credit, or payment behavior changed.
+- Typecheck, i18n guard, lint (one unrelated existing warning), production build, chart/report API smokes, Synastry production-boundary E2E, and focused desktop/tablet/mobile Add Ally and single-chart journeys passed. The standalone Ally API smoke reached the existing production OTP rate limit after repeated auth verification; the same Ally create path passed through authenticated browser coverage on all three viewports.
+- Steward review: **accept-with-notes**. The UI, navigation, persistence, report-intent, and private ownership boundaries move together and the actual browser journeys are green. No risk-register change is needed because AS-R-003 already covers browser proof and the required mitigation was performed.
+
+## 2026-08-01 — Self report action progressive disclosure
+
+- Saved-chart arrival on `/self` now opens `Request Report` at Step 1, Birth details, without rendering `Order Report`; the explicit `start=report` deep link still opens Report directly.
+- The affected Self journey passed on desktop, tablet, and mobile with lint, typecheck, i18n, production build, and live port 3011 route health. Logged-out, first-chart, persistence, report API, credits, and public/private behavior are unchanged.
+- Steward review: **accept**. This is a route-scoped initial-state correction with regression coverage proving the paid action is absent by default and present only after explicit report intent.

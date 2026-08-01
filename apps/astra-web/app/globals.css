@@ -1163,6 +1163,16 @@ a.card-link:focus-visible {
   align-items: start;
 }
 
+.chartSinglePage {
+  display: grid;
+  gap: 12px;
+  width: min(820px, 100%);
+}
+
+.chartBackLink {
+  justify-self: start;
+}
+
 .chartsList {
   display: grid;
   grid-column: 1;
@@ -2779,6 +2789,17 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   font-size: clamp(1.35rem, 5vw, 2.2rem);
   font-weight: 760;
   line-height: 1.4;
+}
+
+.allies-v1-intro .allies-add-action {
+  justify-self: start;
+  width: auto;
+  border-color: color-mix(in srgb, var(--gold) 72%, var(--line));
+  padding: 0 22px;
+  color: #1a1305;
+  background: var(--gold);
+  font-size: 0.95rem;
+  font-weight: 800;
 }
 
 .allies-constellation {

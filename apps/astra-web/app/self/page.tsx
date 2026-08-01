@@ -284,7 +284,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
           initialBirthData={onboardingChart?.birthData}
           initialChartRequestId={onboardingChart?.id}
           initialSubjectName={profile.displayName === profile.email ? "" : profile.displayName}
-          initialStep={onboardingStepFromParam(params.start)}
+          initialStep={onboardingStepFromParam(params.start) ?? (onboardingChart ? "birth_details" : undefined)}
           hideRecentRequestPanels
         />
       </section>

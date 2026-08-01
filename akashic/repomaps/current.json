@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-08-01T18:23:44.978Z",
+  "generated_at": "2026-08-01T20:50:42.859Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 453,
-  "total_symbols": 6250,
-  "total_estimated_tokens": 1186658,
+  "files_indexed": 455,
+  "total_symbols": 6301,
+  "total_estimated_tokens": 1192337,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -8963,9 +8963,9 @@
     {
       "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
       "lang": "typescript",
-      "size": 53856,
-      "lines": 1304,
-      "estimated_tokens": 13463,
+      "size": 56099,
+      "lines": 1361,
+      "estimated_tokens": 14024,
       "symbols": [
         {
           "name": "Ally",
@@ -9029,557 +9029,582 @@
         },
         {
           "name": "FormState",
-          "line": 107,
+          "line": 108,
           "type": "type"
         },
         {
           "name": "chartSubjectContext",
-          "line": 126,
+          "line": 127,
           "type": "function"
         },
         {
           "name": "subject",
-          "line": 127,
+          "line": 128,
           "type": "constant"
         },
         {
           "name": "localDateOnly",
-          "line": 133,
+          "line": 134,
           "type": "function"
         },
         {
           "name": "today",
-          "line": 134,
-          "type": "constant"
-        },
-        {
-          "name": "offset",
           "line": 135,
           "type": "constant"
         },
         {
+          "name": "offset",
+          "line": 136,
+          "type": "constant"
+        },
+        {
           "name": "defaultForm",
-          "line": 139,
+          "line": 140,
           "type": "constant"
         },
         {
           "name": "optional",
-          "line": 163,
+          "line": 164,
           "type": "function"
         },
         {
           "name": "clean",
-          "line": 164,
+          "line": 165,
           "type": "constant"
         },
         {
           "name": "RequestIssue",
-          "line": 168,
+          "line": 169,
           "type": "type"
         },
         {
           "name": "requestErrorMessage",
-          "line": 170,
+          "line": 171,
           "type": "function"
         },
         {
           "name": "birthDataFor",
-          "line": 184,
+          "line": 185,
           "type": "function"
         },
         {
           "name": "knownTime",
-          "line": 185,
-          "type": "constant"
-        },
-        {
-          "name": "birthData",
           "line": 186,
           "type": "constant"
         },
         {
+          "name": "birthData",
+          "line": 187,
+          "type": "constant"
+        },
+        {
           "name": "birthDataMatchesForm",
-          "line": 198,
+          "line": 199,
           "type": "function"
         },
         {
           "name": "knownTime",
-          "line": 200,
+          "line": 201,
           "type": "constant"
         },
         {
           "name": "reportStatusLabel",
-          "line": 212,
+          "line": 213,
           "type": "function"
         },
         {
           "name": "reportTypeLabel",
-          "line": 232,
+          "line": 233,
           "type": "function"
         },
         {
           "name": "reportTypeCost",
-          "line": 241,
+          "line": 242,
           "type": "function"
         },
         {
           "name": "reportBasisLabel",
-          "line": 245,
+          "line": 246,
           "type": "function"
         },
         {
           "name": "chartSubjectType",
-          "line": 249,
+          "line": 250,
           "type": "function"
         },
         {
           "name": "compactBirthLine",
-          "line": 253,
+          "line": 254,
           "type": "function"
         },
         {
           "name": "compactFormBirthLine",
-          "line": 262,
+          "line": 263,
           "type": "function"
         },
         {
           "name": "birthMomentValueFor",
-          "line": 271,
+          "line": 272,
           "type": "function"
         },
         {
           "name": "birthMomentSummary",
-          "line": 280,
+          "line": 281,
           "type": "function"
         },
         {
           "name": "parts",
-          "line": 282,
+          "line": 283,
           "type": "constant"
         },
         {
           "name": "chartSubjectId",
-          "line": 292,
+          "line": 293,
           "type": "function"
         },
         {
           "name": "subject",
-          "line": 293,
+          "line": 294,
           "type": "constant"
         },
         {
           "name": "BirthOnboardingPanel",
-          "line": 297,
+          "line": 298,
           "type": "component"
         },
         {
           "name": "initialChartRequest",
-          "line": 316,
+          "line": 318,
           "type": "constant"
         },
         {
           "name": "initialForm",
-          "line": 319,
+          "line": 321,
           "type": "constant"
         },
         {
           "name": "requestedInitialStep",
-          "line": 320,
+          "line": 322,
           "type": "constant"
         },
         {
           "name": "initialActiveStep",
-          "line": 321,
+          "line": 323,
           "type": "function"
         },
         {
           "name": "isAlly",
-          "line": 346,
-          "type": "constant"
-        },
-        {
-          "name": "isAdmin",
-          "line": 347,
-          "type": "constant"
-        },
-        {
-          "name": "synastryChartOptions",
           "line": 348,
           "type": "constant"
         },
         {
+          "name": "isAllyAddFlow",
+          "line": 349,
+          "type": "constant"
+        },
+        {
+          "name": "isAdmin",
+          "line": 350,
+          "type": "constant"
+        },
+        {
+          "name": "synastryChartOptions",
+          "line": 351,
+          "type": "constant"
+        },
+        {
           "name": "availableReportTypes",
-          "line": 356,
-          "type": "constant"
-        },
-        {
-          "name": "panelCopy",
-          "line": 357,
-          "type": "constant"
-        },
-        {
-          "name": "isWizardComplete",
-          "line": 358,
-          "type": "constant"
-        },
-        {
-          "name": "canSubmit",
           "line": 359,
           "type": "constant"
         },
         {
-          "name": "existingChartRequest",
+          "name": "panelCopy",
           "line": 360,
           "type": "constant"
         },
         {
-          "name": "isUsingExistingChart",
+          "name": "isWizardComplete",
+          "line": 361,
+          "type": "constant"
+        },
+        {
+          "name": "canSubmit",
+          "line": 362,
+          "type": "constant"
+        },
+        {
+          "name": "existingChartRequest",
           "line": 363,
           "type": "constant"
         },
         {
-          "name": "isChartArrivalFlow",
-          "line": 364,
-          "type": "constant"
-        },
-        {
-          "name": "selectedReportType",
-          "line": 365,
-          "type": "constant"
-        },
-        {
-          "name": "selectedReportCost",
+          "name": "isUsingExistingChart",
           "line": 366,
           "type": "constant"
         },
         {
-          "name": "balanceAfterReport",
+          "name": "isChartArrivalFlow",
           "line": 367,
           "type": "constant"
         },
         {
-          "name": "canAffordSelectedReport",
+          "name": "selectedReportType",
           "line": 368,
           "type": "constant"
         },
         {
-          "name": "isExistingChartBirthEditMode",
+          "name": "selectedReportCost",
           "line": 369,
           "type": "constant"
         },
         {
-          "name": "isExistingChartOrderMode",
+          "name": "balanceAfterReport",
           "line": 370,
           "type": "constant"
         },
         {
-          "name": "isExistingChartLocked",
+          "name": "canAffordSelectedReport",
           "line": 371,
           "type": "constant"
         },
         {
-          "name": "visibleStepIndex",
+          "name": "isExistingChartBirthEditMode",
+          "line": 372,
+          "type": "constant"
+        },
+        {
+          "name": "isExistingChartOrderMode",
           "line": 373,
           "type": "constant"
         },
         {
-          "name": "displayedStepIndex",
+          "name": "isExistingChartLocked",
           "line": 374,
           "type": "constant"
         },
         {
+          "name": "visibleStepIndex",
+          "line": 382,
+          "type": "constant"
+        },
+        {
+          "name": "displayedStepIndex",
+          "line": 383,
+          "type": "constant"
+        },
+        {
           "name": "isSingleStepFlow",
-          "line": 375,
-          "type": "constant"
-        },
-        {
-          "name": "synastryPartner",
-          "line": 376,
-          "type": "constant"
-        },
-        {
-          "name": "synastryPrimaryName",
-          "line": 380,
-          "type": "constant"
-        },
-        {
-          "name": "synastryReaderName",
-          "line": 381,
-          "type": "constant"
-        },
-        {
-          "name": "synastryComparisonName",
           "line": 384,
           "type": "constant"
         },
         {
-          "name": "reviewSubjectName",
-          "line": 387,
+          "name": "synastryPartner",
+          "line": 385,
           "type": "constant"
         },
         {
-          "name": "previewBirthData",
+          "name": "synastryPrimaryName",
+          "line": 389,
+          "type": "constant"
+        },
+        {
+          "name": "synastryReaderName",
           "line": 390,
           "type": "constant"
         },
         {
-          "name": "hasHouseCalculation",
+          "name": "synastryComparisonName",
           "line": 393,
           "type": "constant"
         },
         {
+          "name": "reviewSubjectName",
+          "line": 396,
+          "type": "constant"
+        },
+        {
+          "name": "previewBirthData",
+          "line": 399,
+          "type": "constant"
+        },
+        {
+          "name": "hasHouseCalculation",
+          "line": 402,
+          "type": "constant"
+        },
+        {
           "name": "reviewRows",
-          "line": 394,
+          "line": 403,
           "type": "constant"
         },
         {
           "name": "chartRequestsBySubjectId",
-          "line": 416,
+          "line": 425,
           "type": "constant"
         },
         {
           "name": "indexed",
-          "line": 417,
+          "line": 426,
           "type": "constant"
         },
         {
           "name": "subjectId",
-          "line": 419,
+          "line": 428,
           "type": "constant"
         },
         {
           "name": "updateField",
-          "line": 427,
+          "line": 436,
           "type": "function"
         },
         {
           "name": "applyBirthMoment",
-          "line": 433,
+          "line": 442,
           "type": "function"
         },
         {
           "name": "applyBirthLocation",
-          "line": 446,
+          "line": 455,
           "type": "function"
         },
         {
           "name": "selectReportType",
-          "line": 459,
+          "line": 468,
           "type": "function"
         },
         {
           "name": "stepError",
-          "line": 470,
+          "line": 479,
           "type": "function"
         },
         {
           "name": "goToStep",
-          "line": 493,
+          "line": 502,
           "type": "function"
         },
         {
           "name": "currentError",
-          "line": 495,
+          "line": 504,
           "type": "constant"
         },
         {
           "name": "nextVisibleIndex",
-          "line": 496,
+          "line": 505,
           "type": "constant"
         },
         {
           "name": "stepLabel",
-          "line": 506,
+          "line": 515,
           "type": "function"
         },
         {
           "name": "goNext",
-          "line": 511,
+          "line": 520,
           "type": "function"
         },
         {
           "name": "currentError",
-          "line": 513,
+          "line": 522,
           "type": "constant"
         },
         {
           "name": "next",
-          "line": 519,
+          "line": 528,
           "type": "constant"
         },
         {
           "name": "goBack",
-          "line": 527,
+          "line": 536,
           "type": "function"
         },
         {
           "name": "previous",
-          "line": 529,
-          "type": "constant"
-        },
-        {
-          "name": "subjectNameError",
-          "line": 537,
-          "type": "constant"
-        },
-        {
-          "name": "relationshipError",
           "line": 538,
           "type": "constant"
         },
         {
+          "name": "subjectNameError",
+          "line": 546,
+          "type": "constant"
+        },
+        {
+          "name": "relationshipError",
+          "line": 547,
+          "type": "constant"
+        },
+        {
           "name": "activeStepError",
-          "line": 539,
+          "line": 548,
           "type": "constant"
         },
         {
           "name": "response",
-          "line": 542,
+          "line": 551,
           "type": "constant"
         },
         {
           "name": "text",
-          "line": 549,
+          "line": 558,
           "type": "constant"
         },
         {
           "name": "payload",
-          "line": 550,
+          "line": 559,
           "type": "constant"
         },
         {
           "name": "createAllyRecord",
-          "line": 564,
+          "line": 573,
           "type": "function"
         },
         {
           "name": "payload",
-          "line": 565,
+          "line": 574,
           "type": "constant"
         },
         {
           "name": "submitChartRequest",
-          "line": 578,
+          "line": 587,
           "type": "function"
         },
         {
           "name": "currentError",
-          "line": 581,
+          "line": 590,
           "type": "constant"
         },
         {
           "name": "requiredStep",
-          "line": 592,
+          "line": 606,
           "type": "constant"
         },
         {
-          "name": "submitChartArrival",
-          "line": 605,
+          "name": "submitAllyChart",
+          "line": 619,
           "type": "function"
         },
         {
-          "name": "chartSettings",
-          "line": 611,
-          "type": "constant"
-        },
-        {
-          "name": "canReuseExistingChart",
-          "line": 615,
-          "type": "constant"
-        },
-        {
-          "name": "chartRequest",
-          "line": 616,
-          "type": "constant"
-        },
-        {
-          "name": "arrival",
-          "line": 633,
-          "type": "constant"
-        },
-        {
-          "name": "completeArrival",
-          "line": 651,
-          "type": "function"
-        },
-        {
-          "name": "submitConfirmedReport",
-          "line": 667,
-          "type": "function"
-        },
-        {
-          "name": "currentError",
-          "line": 669,
+          "name": "requiredStep",
+          "line": 621,
           "type": "constant"
         },
         {
           "name": "ally",
-          "line": 682,
-          "type": "constant"
-        },
-        {
-          "name": "subjectContext",
-          "line": 683,
-          "type": "constant"
-        },
-        {
-          "name": "chartSettings",
-          "line": 692,
-          "type": "constant"
-        },
-        {
-          "name": "canReuseExistingChart",
-          "line": 696,
-          "type": "constant"
-        },
-        {
-          "name": "reportBirthData",
-          "line": 697,
-          "type": "constant"
-        },
-        {
-          "name": "chartBody",
-          "line": 698,
-          "type": "constant"
-        },
-        {
-          "name": "basisType",
-          "line": 716,
-          "type": "constant"
-        },
-        {
-          "name": "reportBasis",
-          "line": 717,
-          "type": "constant"
-        },
-        {
-          "name": "reportPayload",
-          "line": 727,
-          "type": "constant"
-        },
-        {
-          "name": "startAnotherOnboarding",
-          "line": 751,
-          "type": "function"
-        },
-        {
-          "name": "openReportArtifact",
-          "line": 762,
-          "type": "function"
-        },
-        {
-          "name": "generateReport",
-          "line": 766,
-          "type": "function"
-        },
-        {
-          "name": "payload",
-          "line": 770,
+          "line": 631,
           "type": "constant"
         },
         {
           "name": "chartRequest",
-          "line": 1230,
+          "line": 632,
+          "type": "constant"
+        },
+        {
+          "name": "submitChartArrival",
+          "line": 662,
+          "type": "function"
+        },
+        {
+          "name": "chartSettings",
+          "line": 668,
+          "type": "constant"
+        },
+        {
+          "name": "canReuseExistingChart",
+          "line": 672,
+          "type": "constant"
+        },
+        {
+          "name": "chartRequest",
+          "line": 673,
+          "type": "constant"
+        },
+        {
+          "name": "arrival",
+          "line": 690,
+          "type": "constant"
+        },
+        {
+          "name": "completeArrival",
+          "line": 708,
+          "type": "function"
+        },
+        {
+          "name": "submitConfirmedReport",
+          "line": 724,
+          "type": "function"
+        },
+        {
+          "name": "currentError",
+          "line": 726,
+          "type": "constant"
+        },
+        {
+          "name": "ally",
+          "line": 739,
+          "type": "constant"
+        },
+        {
+          "name": "subjectContext",
+          "line": 740,
+          "type": "constant"
+        },
+        {
+          "name": "chartSettings",
+          "line": 749,
+          "type": "constant"
+        },
+        {
+          "name": "canReuseExistingChart",
+          "line": 753,
+          "type": "constant"
+        },
+        {
+          "name": "reportBirthData",
+          "line": 754,
+          "type": "constant"
+        },
+        {
+          "name": "chartBody",
+          "line": 755,
+          "type": "constant"
+        },
+        {
+          "name": "basisType",
+          "line": 773,
+          "type": "constant"
+        },
+        {
+          "name": "reportBasis",
+          "line": 774,
+          "type": "constant"
+        },
+        {
+          "name": "reportPayload",
+          "line": 784,
+          "type": "constant"
+        },
+        {
+          "name": "startAnotherOnboarding",
+          "line": 808,
+          "type": "function"
+        },
+        {
+          "name": "openReportArtifact",
+          "line": 819,
+          "type": "function"
+        },
+        {
+          "name": "generateReport",
+          "line": 823,
+          "type": "function"
+        },
+        {
+          "name": "payload",
+          "line": 827,
+          "type": "constant"
+        },
+        {
+          "name": "chartRequest",
+          "line": 1287,
           "type": "constant"
         }
       ],
@@ -9602,7 +9627,7 @@
       "headings": [],
       "dependency_in": 2,
       "dependency_out": 5,
-      "importance_weight": 553.21,
+      "importance_weight": 573.2,
       "importance_bucket": "other"
     },
     {
@@ -11142,6 +11167,478 @@
       "importance_bucket": "other"
     },
     {
+      "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+      "lang": "typescript",
+      "size": 44310,
+      "lines": 764,
+      "estimated_tokens": 11076,
+      "symbols": [
+        {
+          "name": "JsonObject",
+          "line": 10,
+          "type": "type"
+        },
+        {
+          "name": "isExpectedNavigationCancellation",
+          "line": 12,
+          "type": "function"
+        },
+        {
+          "name": "routes",
+          "line": 17,
+          "type": "constant"
+        },
+        {
+          "name": "chooseUnknownBirthMoment",
+          "line": 28,
+          "type": "function"
+        },
+        {
+          "name": "dialog",
+          "line": 30,
+          "type": "constant"
+        },
+        {
+          "name": "makeProfileAdmin",
+          "line": 44,
+          "type": "function"
+        },
+        {
+          "name": "userIdForEmail",
+          "line": 62,
+          "type": "function"
+        },
+        {
+          "name": "createCompletedChart",
+          "line": 68,
+          "type": "function"
+        },
+        {
+          "name": "request",
+          "line": 71,
+          "type": "constant"
+        },
+        {
+          "name": "result",
+          "line": 89,
+          "type": "constant"
+        },
+        {
+          "name": "createCompletedAllyChart",
+          "line": 93,
+          "type": "function"
+        },
+        {
+          "name": "ally",
+          "line": 96,
+          "type": "constant"
+        },
+        {
+          "name": "request",
+          "line": 102,
+          "type": "constant"
+        },
+        {
+          "name": "result",
+          "line": 118,
+          "type": "constant"
+        },
+        {
+          "name": "createCompletedReport",
+          "line": 122,
+          "type": "function"
+        },
+        {
+          "name": "chartSettings",
+          "line": 135,
+          "type": "constant"
+        },
+        {
+          "name": "request",
+          "line": 136,
+          "type": "constant"
+        },
+        {
+          "name": "generatedResult",
+          "line": 181,
+          "type": "constant"
+        },
+        {
+          "name": "result",
+          "line": 187,
+          "type": "constant"
+        },
+        {
+          "name": "signedStripeHeader",
+          "line": 198,
+          "type": "function"
+        },
+        {
+          "name": "secret",
+          "line": 199,
+          "type": "constant"
+        },
+        {
+          "name": "timestamp",
+          "line": 201,
+          "type": "constant"
+        },
+        {
+          "name": "signature",
+          "line": 202,
+          "type": "constant"
+        },
+        {
+          "name": "fulfillCheckoutThroughWebhook",
+          "line": 206,
+          "type": "function"
+        },
+        {
+          "name": "event",
+          "line": 207,
+          "type": "constant"
+        },
+        {
+          "name": "rawBody",
+          "line": 227,
+          "type": "constant"
+        },
+        {
+          "name": "response",
+          "line": 228,
+          "type": "constant"
+        },
+        {
+          "name": "hasOverflow",
+          "line": 273,
+          "type": "constant"
+        },
+        {
+          "name": "desktopSelf",
+          "line": 280,
+          "type": "constant"
+        },
+        {
+          "name": "mobileLibrary",
+          "line": 286,
+          "type": "constant"
+        },
+        {
+          "name": "email",
+          "line": 292,
+          "type": "constant"
+        },
+        {
+          "name": "userId",
+          "line": 293,
+          "type": "constant"
+        },
+        {
+          "name": "addAllyAction",
+          "line": 302,
+          "type": "constant"
+        },
+        {
+          "name": "addAllyActionStyles",
+          "line": 303,
+          "type": "constant"
+        },
+        {
+          "name": "probe",
+          "line": 304,
+          "type": "constant"
+        },
+        {
+          "name": "gold",
+          "line": 307,
+          "type": "constant"
+        },
+        {
+          "name": "styles",
+          "line": 309,
+          "type": "constant"
+        },
+        {
+          "name": "panel",
+          "line": 316,
+          "type": "constant"
+        },
+        {
+          "name": "card",
+          "line": 325,
+          "type": "constant"
+        },
+        {
+          "name": "email",
+          "line": 335,
+          "type": "constant"
+        },
+        {
+          "name": "completed",
+          "line": 337,
+          "type": "constant"
+        },
+        {
+          "name": "activeNavigation",
+          "line": 345,
+          "type": "constant"
+        },
+        {
+          "name": "topbarTitle",
+          "line": 347,
+          "type": "constant"
+        },
+        {
+          "name": "cards",
+          "line": 374,
+          "type": "constant"
+        },
+        {
+          "name": "firstCard",
+          "line": 376,
+          "type": "constant"
+        },
+        {
+          "name": "showMore",
+          "line": 381,
+          "type": "constant"
+        },
+        {
+          "name": "email",
+          "line": 421,
+          "type": "constant"
+        },
+        {
+          "name": "email",
+          "line": 434,
+          "type": "constant"
+        },
+        {
+          "name": "name",
+          "line": 435,
+          "type": "constant"
+        },
+        {
+          "name": "onboardingUserId",
+          "line": 442,
+          "type": "constant"
+        },
+        {
+          "name": "prematureChartRequests",
+          "line": 451,
+          "type": "constant"
+        },
+        {
+          "name": "onboardingFeed",
+          "line": 465,
+          "type": "constant"
+        },
+        {
+          "name": "locationDialog",
+          "line": 477,
+          "type": "constant"
+        },
+        {
+          "name": "searchBox",
+          "line": 478,
+          "type": "constant"
+        },
+        {
+          "name": "currentSelection",
+          "line": 479,
+          "type": "constant"
+        },
+        {
+          "name": "searchBounds",
+          "line": 480,
+          "type": "constant"
+        },
+        {
+          "name": "selectionBounds",
+          "line": 481,
+          "type": "constant"
+        },
+        {
+          "name": "createChartButton",
+          "line": 491,
+          "type": "constant"
+        },
+        {
+          "name": "chartSettings",
+          "line": 496,
+          "type": "constant"
+        },
+        {
+          "name": "settingsBox",
+          "line": 498,
+          "type": "constant"
+        },
+        {
+          "name": "arrivalResponsePromise",
+          "line": 505,
+          "type": "constant"
+        },
+        {
+          "name": "glimpse",
+          "line": 511,
+          "type": "constant"
+        },
+        {
+          "name": "userId",
+          "line": 514,
+          "type": "constant"
+        },
+        {
+          "name": "existingAllyChart",
+          "line": 525,
+          "type": "constant"
+        },
+        {
+          "name": "existingOrderPanel",
+          "line": 527,
+          "type": "constant"
+        },
+        {
+          "name": "existingAllyCard",
+          "line": 544,
+          "type": "constant"
+        },
+        {
+          "name": "addAllyPanel",
+          "line": 554,
+          "type": "constant"
+        },
+        {
+          "name": "email",
+          "line": 577,
+          "type": "constant"
+        },
+        {
+          "name": "completed",
+          "line": 584,
+          "type": "constant"
+        },
+        {
+          "name": "legacyHeadline",
+          "line": 587,
+          "type": "constant"
+        },
+        {
+          "name": "email",
+          "line": 603,
+          "type": "constant"
+        },
+        {
+          "name": "name",
+          "line": 604,
+          "type": "constant"
+        },
+        {
+          "name": "starsDialog",
+          "line": 616,
+          "type": "constant"
+        },
+        {
+          "name": "checkoutResponse",
+          "line": 626,
+          "type": "constant"
+        },
+        {
+          "name": "checkoutBody",
+          "line": 633,
+          "type": "constant"
+        },
+        {
+          "name": "checkout",
+          "line": 635,
+          "type": "constant"
+        },
+        {
+          "name": "checkoutSessionId",
+          "line": 636,
+          "type": "constant"
+        },
+        {
+          "name": "fulfilled",
+          "line": 639,
+          "type": "constant"
+        },
+        {
+          "name": "revealChart",
+          "line": 666,
+          "type": "constant"
+        },
+        {
+          "name": "completedChart",
+          "line": 686,
+          "type": "constant"
+        },
+        {
+          "name": "selfEditPanel",
+          "line": 688,
+          "type": "constant"
+        },
+        {
+          "name": "existingSelfBirthDialog",
+          "line": 695,
+          "type": "constant"
+        },
+        {
+          "name": "existingSelfLocationDialog",
+          "line": 699,
+          "type": "constant"
+        },
+        {
+          "name": "completedReport",
+          "line": 705,
+          "type": "constant"
+        },
+        {
+          "name": "selectedChart",
+          "line": 723,
+          "type": "constant"
+        },
+        {
+          "name": "reportFilters",
+          "line": 733,
+          "type": "constant"
+        },
+        {
+          "name": "reportFilterSelect",
+          "line": 735,
+          "type": "constant"
+        },
+        {
+          "name": "reportChartPlate",
+          "line": 749,
+          "type": "constant"
+        },
+        {
+          "name": "debugDetails",
+          "line": 756,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "./support/auth-session",
+        "./support/otp",
+        "@astra/astrology",
+        "@astra/chart-maker",
+        "@astra/db",
+        "@playwright/test",
+        "drizzle-orm",
+        "node:crypto"
+      ],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 0,
+      "dependency_out": 2,
+      "importance_weight": 317.22,
+      "importance_bucket": "other"
+    },
+    {
       "file": "scripts/lib/semantic-synthesis-v2-evaluation.ts",
       "lang": "typescript",
       "size": 16508,
@@ -12335,400 +12832,480 @@
       "importance_bucket": "other"
     },
     {
-      "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-      "lang": "typescript",
-      "size": 37687,
-      "lines": 678,
-      "estimated_tokens": 9420,
+      "file": "docs/progress/PROGRESS_LOG.md",
+      "lang": "markdown",
+      "size": 64245,
+      "lines": 833,
+      "estimated_tokens": 16057,
       "symbols": [
         {
-          "name": "JsonObject",
-          "line": 10,
-          "type": "type"
-        },
-        {
-          "name": "isExpectedNavigationCancellation",
+          "name": "Astra Progress Log",
           "line": 12,
-          "type": "function"
+          "type": "heading"
         },
         {
-          "name": "routes",
-          "line": 17,
-          "type": "constant"
+          "name": "Entries",
+          "line": 14,
+          "type": "heading"
         },
         {
-          "name": "chooseUnknownBirthMoment",
-          "line": 28,
-          "type": "function"
+          "name": "2026-08-01 - Progressed Evidence-to-Prose B Contract",
+          "line": 16,
+          "type": "heading"
         },
         {
-          "name": "dialog",
-          "line": 30,
-          "type": "constant"
+          "name": "What Changed",
+          "line": 23,
+          "type": "heading"
         },
         {
-          "name": "makeProfileAdmin",
-          "line": 44,
-          "type": "function"
+          "name": "Validation And Steward Review",
+          "line": 29,
+          "type": "heading"
         },
         {
-          "name": "userIdForEmail",
+          "name": "Next Copy/Paste Goal",
+          "line": 35,
+          "type": "heading"
+        },
+        {
+          "name": "2026-08-01 - Core and Deep Evidence-to-Prose Contract",
+          "line": 39,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
+          "line": 46,
+          "type": "heading"
+        },
+        {
+          "name": "Validation And Steward Review",
+          "line": 52,
+          "type": "heading"
+        },
+        {
+          "name": "Next Copy/Paste Goal",
+          "line": 58,
+          "type": "heading"
+        },
+        {
+          "name": "2026-08-01 - Explicit Synastry Production Writer Policy",
           "line": 62,
-          "type": "function"
+          "type": "heading"
         },
         {
-          "name": "createCompletedChart",
-          "line": 68,
-          "type": "function"
+          "name": "What Changed",
+          "line": 69,
+          "type": "heading"
         },
         {
-          "name": "request",
-          "line": 71,
-          "type": "constant"
+          "name": "Validation And Steward Review",
+          "line": 75,
+          "type": "heading"
         },
         {
-          "name": "result",
-          "line": 89,
-          "type": "constant"
+          "name": "Next Copy/Paste Goal",
+          "line": 81,
+          "type": "heading"
         },
         {
-          "name": "createCompletedAllyChart",
-          "line": 93,
-          "type": "function"
+          "name": "2026-07-31 - Synastry V3.1 Production Reliability",
+          "line": 85,
+          "type": "heading"
         },
         {
-          "name": "ally",
-          "line": 96,
-          "type": "constant"
+          "name": "What Changed",
+          "line": 92,
+          "type": "heading"
         },
         {
-          "name": "request",
-          "line": 102,
-          "type": "constant"
+          "name": "Live Failure Evidence",
+          "line": 99,
+          "type": "heading"
         },
         {
-          "name": "result",
-          "line": 118,
-          "type": "constant"
+          "name": "Validation And Steward Review",
+          "line": 106,
+          "type": "heading"
         },
         {
-          "name": "createCompletedReport",
-          "line": 122,
-          "type": "function"
+          "name": "Next Copy/Paste Goal",
+          "line": 112,
+          "type": "heading"
         },
         {
-          "name": "chartSettings",
-          "line": 135,
-          "type": "constant"
+          "name": "2026-07-30 - TypeScript 7 Throughput Trial",
+          "line": 116,
+          "type": "heading"
         },
         {
-          "name": "request",
-          "line": 136,
-          "type": "constant"
+          "name": "What Changed",
+          "line": 123,
+          "type": "heading"
         },
         {
-          "name": "generatedResult",
-          "line": 181,
-          "type": "constant"
+          "name": "Validation",
+          "line": 132,
+          "type": "heading"
         },
         {
-          "name": "result",
-          "line": 187,
-          "type": "constant"
+          "name": "Next Copy/Paste Goal",
+          "line": 142,
+          "type": "heading"
         },
         {
-          "name": "signedStripeHeader",
-          "line": 198,
-          "type": "function"
+          "name": "2026-06-19 - Shared Card Face And Mobile Chrome Stabilization",
+          "line": 148,
+          "type": "heading"
         },
         {
-          "name": "secret",
+          "name": "What Changed",
+          "line": 155,
+          "type": "heading"
+        },
+        {
+          "name": "Lessons And Notes",
+          "line": 168,
+          "type": "heading"
+        },
+        {
+          "name": "Validation",
+          "line": 176,
+          "type": "heading"
+        },
+        {
+          "name": "Next Copy/Paste Goal",
+          "line": 188,
+          "type": "heading"
+        },
+        {
+          "name": "2026-06-18 - Composer Course Assessment UX Matches V1",
+          "line": 192,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
           "line": 199,
-          "type": "constant"
+          "type": "heading"
         },
         {
-          "name": "timestamp",
-          "line": 201,
-          "type": "constant"
+          "name": "Validation",
+          "line": 208,
+          "type": "heading"
         },
         {
-          "name": "signature",
-          "line": 202,
-          "type": "constant"
+          "name": "Next Copy/Paste Goal",
+          "line": 219,
+          "type": "heading"
         },
         {
-          "name": "fulfillCheckoutThroughWebhook",
-          "line": 206,
-          "type": "function"
+          "name": "2026-06-17 - Composer Durable Server And Card Detail Control Point",
+          "line": 223,
+          "type": "heading"
         },
         {
-          "name": "event",
-          "line": 207,
-          "type": "constant"
+          "name": "What Changed",
+          "line": 230,
+          "type": "heading"
         },
         {
-          "name": "rawBody",
-          "line": 227,
-          "type": "constant"
+          "name": "Validation",
+          "line": 239,
+          "type": "heading"
         },
         {
-          "name": "response",
-          "line": 228,
-          "type": "constant"
+          "name": "Next Copy/Paste Goal",
+          "line": 246,
+          "type": "heading"
         },
         {
-          "name": "hasOverflow",
-          "line": 273,
-          "type": "constant"
+          "name": "2026-06-17 - Composer V1 Quarry Tabs And Starter Library",
+          "line": 250,
+          "type": "heading"
         },
         {
-          "name": "desktopSelf",
-          "line": 280,
-          "type": "constant"
+          "name": "What Changed",
+          "line": 257,
+          "type": "heading"
         },
         {
-          "name": "mobileLibrary",
-          "line": 286,
-          "type": "constant"
+          "name": "Tests Run",
+          "line": 312,
+          "type": "heading"
         },
         {
-          "name": "cards",
-          "line": 313,
-          "type": "constant"
-        },
-        {
-          "name": "firstCard",
-          "line": 315,
-          "type": "constant"
-        },
-        {
-          "name": "showMore",
-          "line": 320,
-          "type": "constant"
-        },
-        {
-          "name": "email",
-          "line": 360,
-          "type": "constant"
-        },
-        {
-          "name": "email",
-          "line": 373,
-          "type": "constant"
-        },
-        {
-          "name": "name",
-          "line": 374,
-          "type": "constant"
-        },
-        {
-          "name": "onboardingUserId",
-          "line": 381,
-          "type": "constant"
-        },
-        {
-          "name": "prematureChartRequests",
-          "line": 390,
-          "type": "constant"
-        },
-        {
-          "name": "onboardingFeed",
-          "line": 404,
-          "type": "constant"
-        },
-        {
-          "name": "locationDialog",
+          "name": "Risks / Follow-ups",
           "line": 416,
-          "type": "constant"
+          "type": "heading"
         },
         {
-          "name": "searchBox",
-          "line": 417,
-          "type": "constant"
-        },
-        {
-          "name": "currentSelection",
-          "line": 418,
-          "type": "constant"
-        },
-        {
-          "name": "searchBounds",
-          "line": 419,
-          "type": "constant"
-        },
-        {
-          "name": "selectionBounds",
-          "line": 420,
-          "type": "constant"
-        },
-        {
-          "name": "createChartButton",
+          "name": "Next Copy/Paste Goal",
           "line": 430,
-          "type": "constant"
+          "type": "heading"
         },
         {
-          "name": "chartSettings",
-          "line": 435,
-          "type": "constant"
+          "name": "2026-06-17 - Composer Operator App",
+          "line": 434,
+          "type": "heading"
         },
         {
-          "name": "settingsBox",
-          "line": 437,
-          "type": "constant"
+          "name": "What Changed",
+          "line": 441,
+          "type": "heading"
         },
         {
-          "name": "arrivalResponsePromise",
-          "line": 444,
-          "type": "constant"
-        },
-        {
-          "name": "glimpse",
+          "name": "Tests Run",
           "line": 450,
-          "type": "constant"
+          "type": "heading"
         },
         {
-          "name": "userId",
-          "line": 453,
-          "type": "constant"
-        },
-        {
-          "name": "existingAllyChart",
-          "line": 464,
-          "type": "constant"
-        },
-        {
-          "name": "existingOrderPanel",
+          "name": "Risks / Follow-ups",
           "line": 466,
-          "type": "constant"
+          "type": "heading"
         },
         {
-          "name": "email",
-          "line": 496,
-          "type": "constant"
+          "name": "2026-06-16 - Composer Onboarding Cards",
+          "line": 471,
+          "type": "heading"
         },
         {
-          "name": "completed",
-          "line": 503,
-          "type": "constant"
+          "name": "What Changed",
+          "line": 478,
+          "type": "heading"
         },
         {
-          "name": "legacyHeadline",
-          "line": 506,
-          "type": "constant"
+          "name": "Tests Run",
+          "line": 486,
+          "type": "heading"
         },
         {
-          "name": "email",
-          "line": 522,
-          "type": "constant"
+          "name": "Risks / Follow-ups",
+          "line": 494,
+          "type": "heading"
         },
         {
-          "name": "name",
-          "line": 523,
-          "type": "constant"
+          "name": "2026-06-16 - Chart Generation Flow UX",
+          "line": 498,
+          "type": "heading"
         },
         {
-          "name": "starsDialog",
-          "line": 535,
-          "type": "constant"
+          "name": "What Changed",
+          "line": 505,
+          "type": "heading"
         },
         {
-          "name": "checkoutResponse",
-          "line": 545,
-          "type": "constant"
+          "name": "Tests Run",
+          "line": 514,
+          "type": "heading"
         },
         {
-          "name": "checkoutBody",
-          "line": 552,
-          "type": "constant"
+          "name": "Risks / Follow-ups",
+          "line": 527,
+          "type": "heading"
         },
         {
-          "name": "checkout",
-          "line": 554,
-          "type": "constant"
+          "name": "2026-06-16 - Auth and Self Onboarding Alpha",
+          "line": 532,
+          "type": "heading"
         },
         {
-          "name": "checkoutSessionId",
-          "line": 555,
-          "type": "constant"
+          "name": "What Changed",
+          "line": 539,
+          "type": "heading"
         },
         {
-          "name": "fulfilled",
+          "name": "Tests Run",
+          "line": 546,
+          "type": "heading"
+        },
+        {
+          "name": "Risks / Follow-ups",
           "line": 558,
-          "type": "constant"
+          "type": "heading"
         },
         {
-          "name": "revealChart",
-          "line": 585,
-          "type": "constant"
+          "name": "2026-06-16 - Journey Core Product Loop",
+          "line": 563,
+          "type": "heading"
         },
         {
-          "name": "completedChart",
-          "line": 600,
-          "type": "constant"
+          "name": "What Changed",
+          "line": 570,
+          "type": "heading"
         },
         {
-          "name": "selfEditPanel",
+          "name": "Tests Run",
+          "line": 576,
+          "type": "heading"
+        },
+        {
+          "name": "Risks / Follow-ups",
+          "line": 583,
+          "type": "heading"
+        },
+        {
+          "name": "2026-06-16 - Composer Operator Review Workflow",
+          "line": 587,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
+          "line": 594,
+          "type": "heading"
+        },
+        {
+          "name": "Tests Run",
           "line": 602,
-          "type": "constant"
+          "type": "heading"
         },
         {
-          "name": "existingSelfBirthDialog",
-          "line": 609,
-          "type": "constant"
+          "name": "Risks / Follow-ups",
+          "line": 617,
+          "type": "heading"
         },
         {
-          "name": "existingSelfLocationDialog",
-          "line": 613,
-          "type": "constant"
+          "name": "2026-06-16 - Composer Private Feed Write Edge",
+          "line": 621,
+          "type": "heading"
         },
         {
-          "name": "completedReport",
-          "line": 619,
-          "type": "constant"
+          "name": "What Changed",
+          "line": 628,
+          "type": "heading"
         },
         {
-          "name": "selectedChart",
-          "line": 637,
-          "type": "constant"
+          "name": "Tests Run",
+          "line": 635,
+          "type": "heading"
         },
         {
-          "name": "reportFilters",
-          "line": 647,
-          "type": "constant"
+          "name": "Risks / Follow-ups",
+          "line": 646,
+          "type": "heading"
         },
         {
-          "name": "reportFilterSelect",
-          "line": 649,
-          "type": "constant"
+          "name": "2026-06-16 - Stewardship v3 Install",
+          "line": 651,
+          "type": "heading"
         },
         {
-          "name": "reportChartPlate",
-          "line": 663,
-          "type": "constant"
+          "name": "What Changed",
+          "line": 658,
+          "type": "heading"
         },
         {
-          "name": "debugDetails",
-          "line": 670,
-          "type": "constant"
+          "name": "Tests Run",
+          "line": 664,
+          "type": "heading"
+        },
+        {
+          "name": "Risks / Follow-ups",
+          "line": 668,
+          "type": "heading"
+        },
+        {
+          "name": "2026-07-30 - TypeScript 7 Normal Session and i18n Chrome Guard",
+          "line": 672,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
+          "line": 679,
+          "type": "heading"
+        },
+        {
+          "name": "Tests Run",
+          "line": 687,
+          "type": "heading"
+        },
+        {
+          "name": "Steward Review",
+          "line": 695,
+          "type": "heading"
+        },
+        {
+          "name": "2026-07-30 - Tiered Verification and Stable Auth E2E",
+          "line": 704,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
+          "line": 711,
+          "type": "heading"
+        },
+        {
+          "name": "Tests Run",
+          "line": 720,
+          "type": "heading"
+        },
+        {
+          "name": "Steward Review",
+          "line": 729,
+          "type": "heading"
+        },
+        {
+          "name": "2026-07-31 - Synastry V3 Clean-Prose Blind Experiment",
+          "line": 738,
+          "type": "heading"
+        },
+        {
+          "name": "What Changed",
+          "line": 745,
+          "type": "heading"
+        },
+        {
+          "name": "Tests Run",
+          "line": 761,
+          "type": "heading"
+        },
+        {
+          "name": "Steward Review",
+          "line": 772,
+          "type": "heading"
+        },
+        {
+          "name": "2026-07-31 — Synastry V3 bakeoff closure and production plan",
+          "line": 784,
+          "type": "heading"
+        },
+        {
+          "name": "2026-07-31 — Synastry V3 feeling-first production slice",
+          "line": 802,
+          "type": "heading"
+        },
+        {
+          "name": "2026-07-31 — Synastry V3.1.1 Michelle refinement",
+          "line": 811,
+          "type": "heading"
+        },
+        {
+          "name": "2026-08-01 — Allies add, chart detail, and report intent split",
+          "line": 820,
+          "type": "heading"
+        },
+        {
+          "name": "2026-08-01 — Self report action progressive disclosure",
+          "line": 828,
+          "type": "heading"
         }
       ],
-      "imports": [
-        "./support/auth-session",
-        "./support/otp",
-        "@astra/astrology",
-        "@astra/chart-maker",
-        "@astra/db",
-        "@playwright/test",
-        "drizzle-orm",
-        "node:crypto"
-      ],
+      "imports": [],
       "exports": [],
       "routes": [],
       "route_count": 0,
-      "headings": [],
+      "headings": [
+        "Astra Progress Log",
+        "Entries",
+        "2026-08-01 - Progressed Evidence-to-Prose B Contract",
+        "2026-08-01 - Core and Deep Evidence-to-Prose Contract",
+        "2026-08-01 - Explicit Synastry Production Writer Policy",
+        "2026-07-31 - Synastry V3.1 Production Reliability",
+        "2026-07-30 - TypeScript 7 Throughput Trial",
+        "2026-06-19 - Shared Card Face And Mobile Chrome Stabilization"
+      ],
       "dependency_in": 0,
-      "dependency_out": 2,
-      "importance_weight": 272.24,
+      "dependency_out": 0,
+      "importance_weight": 274.19,
       "importance_bucket": "other"
     },
     {
@@ -12982,468 +13559,6 @@
       "dependency_out": 3,
       "importance_weight": 266.36,
       "importance_bucket": "app/api"
-    },
-    {
-      "file": "docs/progress/PROGRESS_LOG.md",
-      "lang": "markdown",
-      "size": 61240,
-      "lines": 813,
-      "estimated_tokens": 15307,
-      "symbols": [
-        {
-          "name": "Astra Progress Log",
-          "line": 12,
-          "type": "heading"
-        },
-        {
-          "name": "Entries",
-          "line": 14,
-          "type": "heading"
-        },
-        {
-          "name": "2026-08-01 - Progressed Evidence-to-Prose B Contract",
-          "line": 16,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 23,
-          "type": "heading"
-        },
-        {
-          "name": "Next Copy/Paste Goal",
-          "line": 29,
-          "type": "heading"
-        },
-        {
-          "name": "2026-08-01 - Core and Deep Evidence-to-Prose Contract",
-          "line": 33,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 40,
-          "type": "heading"
-        },
-        {
-          "name": "Validation And Steward Review",
-          "line": 46,
-          "type": "heading"
-        },
-        {
-          "name": "Next Copy/Paste Goal",
-          "line": 52,
-          "type": "heading"
-        },
-        {
-          "name": "2026-08-01 - Explicit Synastry Production Writer Policy",
-          "line": 56,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 63,
-          "type": "heading"
-        },
-        {
-          "name": "Validation And Steward Review",
-          "line": 69,
-          "type": "heading"
-        },
-        {
-          "name": "Next Copy/Paste Goal",
-          "line": 75,
-          "type": "heading"
-        },
-        {
-          "name": "2026-07-31 - Synastry V3.1 Production Reliability",
-          "line": 79,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 86,
-          "type": "heading"
-        },
-        {
-          "name": "Live Failure Evidence",
-          "line": 93,
-          "type": "heading"
-        },
-        {
-          "name": "Validation And Steward Review",
-          "line": 100,
-          "type": "heading"
-        },
-        {
-          "name": "Next Copy/Paste Goal",
-          "line": 106,
-          "type": "heading"
-        },
-        {
-          "name": "2026-07-30 - TypeScript 7 Throughput Trial",
-          "line": 110,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 117,
-          "type": "heading"
-        },
-        {
-          "name": "Validation",
-          "line": 126,
-          "type": "heading"
-        },
-        {
-          "name": "Next Copy/Paste Goal",
-          "line": 136,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-19 - Shared Card Face And Mobile Chrome Stabilization",
-          "line": 142,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 149,
-          "type": "heading"
-        },
-        {
-          "name": "Lessons And Notes",
-          "line": 162,
-          "type": "heading"
-        },
-        {
-          "name": "Validation",
-          "line": 170,
-          "type": "heading"
-        },
-        {
-          "name": "Next Copy/Paste Goal",
-          "line": 182,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-18 - Composer Course Assessment UX Matches V1",
-          "line": 186,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 193,
-          "type": "heading"
-        },
-        {
-          "name": "Validation",
-          "line": 202,
-          "type": "heading"
-        },
-        {
-          "name": "Next Copy/Paste Goal",
-          "line": 213,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-17 - Composer Durable Server And Card Detail Control Point",
-          "line": 217,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 224,
-          "type": "heading"
-        },
-        {
-          "name": "Validation",
-          "line": 233,
-          "type": "heading"
-        },
-        {
-          "name": "Next Copy/Paste Goal",
-          "line": 240,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-17 - Composer V1 Quarry Tabs And Starter Library",
-          "line": 244,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 251,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 306,
-          "type": "heading"
-        },
-        {
-          "name": "Risks / Follow-ups",
-          "line": 410,
-          "type": "heading"
-        },
-        {
-          "name": "Next Copy/Paste Goal",
-          "line": 424,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-17 - Composer Operator App",
-          "line": 428,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 435,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 444,
-          "type": "heading"
-        },
-        {
-          "name": "Risks / Follow-ups",
-          "line": 460,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-16 - Composer Onboarding Cards",
-          "line": 465,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 472,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 480,
-          "type": "heading"
-        },
-        {
-          "name": "Risks / Follow-ups",
-          "line": 488,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-16 - Chart Generation Flow UX",
-          "line": 492,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 499,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 508,
-          "type": "heading"
-        },
-        {
-          "name": "Risks / Follow-ups",
-          "line": 521,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-16 - Auth and Self Onboarding Alpha",
-          "line": 526,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 533,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 540,
-          "type": "heading"
-        },
-        {
-          "name": "Risks / Follow-ups",
-          "line": 552,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-16 - Journey Core Product Loop",
-          "line": 557,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 564,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 570,
-          "type": "heading"
-        },
-        {
-          "name": "Risks / Follow-ups",
-          "line": 577,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-16 - Composer Operator Review Workflow",
-          "line": 581,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 588,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 596,
-          "type": "heading"
-        },
-        {
-          "name": "Risks / Follow-ups",
-          "line": 611,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-16 - Composer Private Feed Write Edge",
-          "line": 615,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 622,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 629,
-          "type": "heading"
-        },
-        {
-          "name": "Risks / Follow-ups",
-          "line": 640,
-          "type": "heading"
-        },
-        {
-          "name": "2026-06-16 - Stewardship v3 Install",
-          "line": 645,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 652,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 658,
-          "type": "heading"
-        },
-        {
-          "name": "Risks / Follow-ups",
-          "line": 662,
-          "type": "heading"
-        },
-        {
-          "name": "2026-07-30 - TypeScript 7 Normal Session and i18n Chrome Guard",
-          "line": 666,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 673,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 681,
-          "type": "heading"
-        },
-        {
-          "name": "Steward Review",
-          "line": 689,
-          "type": "heading"
-        },
-        {
-          "name": "2026-07-30 - Tiered Verification and Stable Auth E2E",
-          "line": 698,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 705,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 714,
-          "type": "heading"
-        },
-        {
-          "name": "Steward Review",
-          "line": 723,
-          "type": "heading"
-        },
-        {
-          "name": "2026-07-31 - Synastry V3 Clean-Prose Blind Experiment",
-          "line": 732,
-          "type": "heading"
-        },
-        {
-          "name": "What Changed",
-          "line": 739,
-          "type": "heading"
-        },
-        {
-          "name": "Tests Run",
-          "line": 755,
-          "type": "heading"
-        },
-        {
-          "name": "Steward Review",
-          "line": 766,
-          "type": "heading"
-        },
-        {
-          "name": "2026-07-31 — Synastry V3 bakeoff closure and production plan",
-          "line": 778,
-          "type": "heading"
-        },
-        {
-          "name": "2026-07-31 — Synastry V3 feeling-first production slice",
-          "line": 796,
-          "type": "heading"
-        },
-        {
-          "name": "2026-07-31 — Synastry V3.1.1 Michelle refinement",
-          "line": 805,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Astra Progress Log",
-        "Entries",
-        "2026-08-01 - Progressed Evidence-to-Prose B Contract",
-        "2026-08-01 - Core and Deep Evidence-to-Prose Contract",
-        "2026-08-01 - Explicit Synastry Production Writer Policy",
-        "2026-07-31 - Synastry V3.1 Production Reliability",
-        "2026-07-30 - TypeScript 7 Throughput Trial",
-        "2026-06-19 - Shared Card Face And Mobile Chrome Stabilization"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 265.2,
-      "importance_bucket": "other"
     },
     {
       "file": "packages/astrology/src/report/promptBuilderContracts.ts",
@@ -15910,9 +16025,9 @@
     {
       "file": "apps/astra-web/app/allies/page.tsx",
       "lang": "typescript",
-      "size": 14385,
-      "lines": 324,
-      "estimated_tokens": 3596,
+      "size": 15038,
+      "lines": 337,
+      "estimated_tokens": 3760,
       "symbols": [
         {
           "name": "dynamic",
@@ -16016,122 +16131,127 @@
         },
         {
           "name": "onboardingStepFromParam",
-          "line": 173,
+          "line": 174,
           "type": "function"
         },
         {
           "name": "cleanFilter",
-          "line": 177,
+          "line": 178,
           "type": "function"
         },
         {
           "name": "AlliesPage",
-          "line": 181,
+          "line": 182,
           "type": "component"
         },
         {
           "name": "params",
-          "line": 182,
+          "line": 183,
           "type": "constant"
         },
         {
           "name": "alliesById",
-          "line": 211,
-          "type": "constant"
-        },
-        {
-          "name": "hydratedChartRequests",
           "line": 212,
           "type": "constant"
         },
         {
-          "name": "allyChartRequests",
+          "name": "hydratedChartRequests",
           "line": 213,
           "type": "constant"
         },
         {
-          "name": "allyReportRequests",
+          "name": "allyChartRequests",
           "line": 214,
           "type": "constant"
         },
         {
-          "name": "allyReportRequestIds",
+          "name": "allyReportRequests",
           "line": 215,
           "type": "constant"
         },
         {
-          "name": "allyReportResults",
+          "name": "allyReportRequestIds",
           "line": 216,
           "type": "constant"
         },
         {
-          "name": "latestChartRequestByAllyId",
+          "name": "allyReportResults",
           "line": 217,
           "type": "constant"
         },
         {
+          "name": "latestChartRequestByAllyId",
+          "line": 218,
+          "type": "constant"
+        },
+        {
           "name": "ally",
-          "line": 219,
+          "line": 220,
           "type": "constant"
         },
         {
           "name": "selectedOnboardingChart",
-          "line": 224,
+          "line": 225,
           "type": "constant"
         },
         {
           "name": "initialOnboardingStep",
-          "line": 227,
+          "line": 228,
+          "type": "constant"
+        },
+        {
+          "name": "isAddingAlly",
+          "line": 231,
           "type": "constant"
         },
         {
           "name": "clearFilterParams",
-          "line": 230,
+          "line": 232,
           "type": "constant"
         },
         {
           "name": "clearFilterHref",
-          "line": 233,
-          "type": "constant"
-        },
-        {
-          "name": "filterQuery",
-          "line": 234,
-          "type": "constant"
-        },
-        {
-          "name": "filterRelationship",
           "line": 235,
           "type": "constant"
         },
         {
-          "name": "relationshipOptions",
+          "name": "filterQuery",
           "line": 236,
           "type": "constant"
         },
         {
-          "name": "filteredAllies",
+          "name": "filterRelationship",
           "line": 237,
           "type": "constant"
         },
         {
-          "name": "chartRequest",
+          "name": "relationshipOptions",
           "line": 238,
           "type": "constant"
         },
         {
-          "name": "haystack",
+          "name": "filteredAllies",
           "line": 239,
           "type": "constant"
         },
         {
-          "name": "matchesQuery",
+          "name": "chartRequest",
           "line": 240,
           "type": "constant"
         },
         {
-          "name": "matchesRelationship",
+          "name": "haystack",
           "line": 241,
+          "type": "constant"
+        },
+        {
+          "name": "matchesQuery",
+          "line": 242,
+          "type": "constant"
+        },
+        {
+          "name": "matchesRelationship",
+          "line": 243,
           "type": "constant"
         }
       ],
@@ -16157,7 +16277,7 @@
       "headings": [],
       "dependency_in": 0,
       "dependency_out": 7,
-      "importance_weight": 203.32,
+      "importance_weight": 206.31,
       "importance_bucket": "other"
     },
     {
@@ -16392,6 +16512,225 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 177.32,
+      "importance_bucket": "other"
+    },
+    {
+      "file": "apps/astra-web/app/charts/page.tsx",
+      "lang": "typescript",
+      "size": 11878,
+      "lines": 322,
+      "estimated_tokens": 2969,
+      "symbols": [
+        {
+          "name": "dynamic",
+          "line": 14,
+          "type": "constant"
+        },
+        {
+          "name": "ChartsPageParams",
+          "line": 16,
+          "type": "type"
+        },
+        {
+          "name": "ChartResultRow",
+          "line": 24,
+          "type": "type"
+        },
+        {
+          "name": "ReportResultRow",
+          "line": 30,
+          "type": "type"
+        },
+        {
+          "name": "ChartListItem",
+          "line": 35,
+          "type": "type"
+        },
+        {
+          "name": "ChartsPage",
+          "line": 42,
+          "type": "component"
+        },
+        {
+          "name": "selectedChartId",
+          "line": 44,
+          "type": "constant"
+        },
+        {
+          "name": "chartItems",
+          "line": 67,
+          "type": "constant"
+        },
+        {
+          "name": "selected",
+          "line": 68,
+          "type": "constant"
+        },
+        {
+          "name": "backToSelf",
+          "line": 72,
+          "type": "constant"
+        },
+        {
+          "name": "owner",
+          "line": 86,
+          "type": "constant"
+        },
+        {
+          "name": "canonicalOwner",
+          "line": 87,
+          "type": "constant"
+        },
+        {
+          "name": "ChartCard",
+          "line": 130,
+          "type": "component"
+        },
+        {
+          "name": "subject",
+          "line": 132,
+          "type": "constant"
+        },
+        {
+          "name": "status",
+          "line": 133,
+          "type": "constant"
+        },
+        {
+          "name": "createHref",
+          "line": 134,
+          "type": "constant"
+        },
+        {
+          "name": "editHref",
+          "line": 138,
+          "type": "constant"
+        },
+        {
+          "name": "SelectedChartPanel",
+          "line": 182,
+          "type": "component"
+        },
+        {
+          "name": "reportRequest",
+          "line": 183,
+          "type": "constant"
+        },
+        {
+          "name": "chartSnapshot",
+          "line": 184,
+          "type": "constant"
+        },
+        {
+          "name": "settings",
+          "line": 185,
+          "type": "constant"
+        },
+        {
+          "name": "subject",
+          "line": 186,
+          "type": "constant"
+        },
+        {
+          "name": "getUserChartItems",
+          "line": 232,
+          "type": "function"
+        },
+        {
+          "name": "resultByChartId",
+          "line": 252,
+          "type": "constant"
+        },
+        {
+          "name": "reportResultByRequestId",
+          "line": 253,
+          "type": "constant"
+        },
+        {
+          "name": "reportsByChartId",
+          "line": 254,
+          "type": "constant"
+        },
+        {
+          "name": "report",
+          "line": 263,
+          "type": "constant"
+        },
+        {
+          "name": "normalizeChartId",
+          "line": 273,
+          "type": "function"
+        },
+        {
+          "name": "trimmed",
+          "line": 274,
+          "type": "constant"
+        },
+        {
+          "name": "chartSettings",
+          "line": 278,
+          "type": "function"
+        },
+        {
+          "name": "settings",
+          "line": 279,
+          "type": "constant"
+        },
+        {
+          "name": "subjectContext",
+          "line": 286,
+          "type": "function"
+        },
+        {
+          "name": "subject",
+          "line": 287,
+          "type": "constant"
+        },
+        {
+          "name": "source",
+          "line": 288,
+          "type": "constant"
+        },
+        {
+          "name": "relationship",
+          "line": 289,
+          "type": "constant"
+        },
+        {
+          "name": "chartAsReportRequest",
+          "line": 297,
+          "type": "function"
+        },
+        {
+          "name": "birthLine",
+          "line": 315,
+          "type": "function"
+        }
+      ],
+      "imports": [
+        "../../components/FullChartWheel",
+        "../../components/PageHeader",
+        "../../lib/auth/profile",
+        "../../lib/i18n",
+        "../../lib/report-display",
+        "@astra/astrology",
+        "@astra/contracts",
+        "@astra/db",
+        "drizzle-orm",
+        "lucide-react",
+        "next/link",
+        "next/navigation"
+      ],
+      "exports": [
+        "ChartsPage",
+        "dynamic"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 0,
+      "dependency_out": 5,
+      "importance_weight": 167.33,
       "importance_bucket": "other"
     },
     {
@@ -17140,209 +17479,6 @@
       "importance_bucket": "other"
     },
     {
-      "file": "apps/astra-web/app/charts/page.tsx",
-      "lang": "typescript",
-      "size": 10445,
-      "lines": 290,
-      "estimated_tokens": 2611,
-      "symbols": [
-        {
-          "name": "dynamic",
-          "line": 13,
-          "type": "constant"
-        },
-        {
-          "name": "ChartsPageParams",
-          "line": 15,
-          "type": "type"
-        },
-        {
-          "name": "ChartResultRow",
-          "line": 22,
-          "type": "type"
-        },
-        {
-          "name": "ReportResultRow",
-          "line": 28,
-          "type": "type"
-        },
-        {
-          "name": "ChartListItem",
-          "line": 33,
-          "type": "type"
-        },
-        {
-          "name": "ChartsPage",
-          "line": 40,
-          "type": "component"
-        },
-        {
-          "name": "selectedChartId",
-          "line": 42,
-          "type": "constant"
-        },
-        {
-          "name": "chartItems",
-          "line": 65,
-          "type": "constant"
-        },
-        {
-          "name": "selected",
-          "line": 66,
-          "type": "constant"
-        },
-        {
-          "name": "ChartCard",
-          "line": 98,
-          "type": "component"
-        },
-        {
-          "name": "subject",
-          "line": 100,
-          "type": "constant"
-        },
-        {
-          "name": "status",
-          "line": 101,
-          "type": "constant"
-        },
-        {
-          "name": "createHref",
-          "line": 102,
-          "type": "constant"
-        },
-        {
-          "name": "editHref",
-          "line": 106,
-          "type": "constant"
-        },
-        {
-          "name": "SelectedChartPanel",
-          "line": 150,
-          "type": "component"
-        },
-        {
-          "name": "reportRequest",
-          "line": 151,
-          "type": "constant"
-        },
-        {
-          "name": "chartSnapshot",
-          "line": 152,
-          "type": "constant"
-        },
-        {
-          "name": "settings",
-          "line": 153,
-          "type": "constant"
-        },
-        {
-          "name": "subject",
-          "line": 154,
-          "type": "constant"
-        },
-        {
-          "name": "getUserChartItems",
-          "line": 200,
-          "type": "function"
-        },
-        {
-          "name": "resultByChartId",
-          "line": 220,
-          "type": "constant"
-        },
-        {
-          "name": "reportResultByRequestId",
-          "line": 221,
-          "type": "constant"
-        },
-        {
-          "name": "reportsByChartId",
-          "line": 222,
-          "type": "constant"
-        },
-        {
-          "name": "report",
-          "line": 231,
-          "type": "constant"
-        },
-        {
-          "name": "normalizeChartId",
-          "line": 241,
-          "type": "function"
-        },
-        {
-          "name": "trimmed",
-          "line": 242,
-          "type": "constant"
-        },
-        {
-          "name": "chartSettings",
-          "line": 246,
-          "type": "function"
-        },
-        {
-          "name": "settings",
-          "line": 247,
-          "type": "constant"
-        },
-        {
-          "name": "subjectContext",
-          "line": 254,
-          "type": "function"
-        },
-        {
-          "name": "subject",
-          "line": 255,
-          "type": "constant"
-        },
-        {
-          "name": "source",
-          "line": 256,
-          "type": "constant"
-        },
-        {
-          "name": "relationship",
-          "line": 257,
-          "type": "constant"
-        },
-        {
-          "name": "chartAsReportRequest",
-          "line": 265,
-          "type": "function"
-        },
-        {
-          "name": "birthLine",
-          "line": 283,
-          "type": "function"
-        }
-      ],
-      "imports": [
-        "../../components/FullChartWheel",
-        "../../components/PageHeader",
-        "../../lib/auth/profile",
-        "../../lib/i18n",
-        "../../lib/report-display",
-        "@astra/astrology",
-        "@astra/contracts",
-        "@astra/db",
-        "drizzle-orm",
-        "lucide-react",
-        "next/link"
-      ],
-      "exports": [
-        "ChartsPage",
-        "dynamic"
-      ],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 0,
-      "dependency_out": 5,
-      "importance_weight": 158.34,
-      "importance_bucket": "other"
-    },
-    {
       "file": "apps/astra-web/components/SelfTabAvatar.tsx",
       "lang": "typescript",
       "size": 7912,
@@ -17518,9 +17654,9 @@
     {
       "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
       "lang": "typescript",
-      "size": 16565,
+      "size": 16576,
       "lines": 302,
-      "estimated_tokens": 4142,
+      "estimated_tokens": 4144,
       "symbols": [
         {
           "name": "gotoAfterDevCompilation",
@@ -18151,9 +18287,9 @@
     {
       "file": "apps/astra-web/app/self/page.tsx",
       "lang": "typescript",
-      "size": 12191,
+      "size": 12242,
       "lines": 294,
-      "estimated_tokens": 3048,
+      "estimated_tokens": 3060,
       "symbols": [
         {
           "name": "normalizeRole",
@@ -20057,6 +20193,136 @@
       "importance_bucket": "app/api"
     },
     {
+      "file": "apps/astra-web/components/TopBar.tsx",
+      "lang": "typescript",
+      "size": 6796,
+      "lines": 171,
+      "estimated_tokens": 1699,
+      "symbols": [
+        {
+          "name": "topbarRoutes",
+          "line": 12,
+          "type": "constant"
+        },
+        {
+          "name": "activeRouteLabel",
+          "line": 21,
+          "type": "function"
+        },
+        {
+          "name": "accountInitial",
+          "line": 27,
+          "type": "function"
+        },
+        {
+          "name": "useAccountState",
+          "line": 31,
+          "type": "function"
+        },
+        {
+          "name": "router",
+          "line": 33,
+          "type": "constant"
+        },
+        {
+          "name": "frame",
+          "line": 36,
+          "type": "constant"
+        },
+        {
+          "name": "hydratedSession",
+          "line": 39,
+          "type": "constant"
+        },
+        {
+          "name": "accountName",
+          "line": 40,
+          "type": "constant"
+        },
+        {
+          "name": "accountEmail",
+          "line": 41,
+          "type": "constant"
+        },
+        {
+          "name": "signedIn",
+          "line": 42,
+          "type": "constant"
+        },
+        {
+          "name": "signOut",
+          "line": 44,
+          "type": "function"
+        },
+        {
+          "name": "AccountMenu",
+          "line": 52,
+          "type": "component"
+        },
+        {
+          "name": "menuRef",
+          "line": 54,
+          "type": "constant"
+        },
+        {
+          "name": "closeOnOutsideClick",
+          "line": 60,
+          "type": "function"
+        },
+        {
+          "name": "closeOnEscape",
+          "line": 66,
+          "type": "function"
+        },
+        {
+          "name": "SidebarAccountControls",
+          "line": 122,
+          "type": "component"
+        },
+        {
+          "name": "TopBar",
+          "line": 149,
+          "type": "component"
+        },
+        {
+          "name": "pathname",
+          "line": 150,
+          "type": "constant"
+        },
+        {
+          "name": "searchParams",
+          "line": 151,
+          "type": "constant"
+        },
+        {
+          "name": "chartOwner",
+          "line": 152,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "../lib/auth/client",
+        "../lib/i18n",
+        "./SelfTabAvatar",
+        "./ThemeToggle",
+        "lucide-react",
+        "next/link",
+        "next/navigation",
+        "react"
+      ],
+      "exports": [
+        "SidebarAccountControls",
+        "TopBar"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 1,
+      "dependency_out": 4,
+      "importance_weight": 121.38,
+      "importance_bucket": "other"
+    },
+    {
       "file": "apps/composer-web/app/api/chart-arrival/rewrite/route.ts",
       "lang": "typescript",
       "size": 2471,
@@ -20161,126 +20427,6 @@
       "dependency_out": 1,
       "importance_weight": 117.13,
       "importance_bucket": "app/api"
-    },
-    {
-      "file": "apps/astra-web/components/TopBar.tsx",
-      "lang": "typescript",
-      "size": 6431,
-      "lines": 167,
-      "estimated_tokens": 1608,
-      "symbols": [
-        {
-          "name": "topbarRoutes",
-          "line": 12,
-          "type": "constant"
-        },
-        {
-          "name": "activeRouteLabel",
-          "line": 21,
-          "type": "function"
-        },
-        {
-          "name": "accountInitial",
-          "line": 25,
-          "type": "function"
-        },
-        {
-          "name": "useAccountState",
-          "line": 29,
-          "type": "function"
-        },
-        {
-          "name": "router",
-          "line": 31,
-          "type": "constant"
-        },
-        {
-          "name": "frame",
-          "line": 34,
-          "type": "constant"
-        },
-        {
-          "name": "hydratedSession",
-          "line": 37,
-          "type": "constant"
-        },
-        {
-          "name": "accountName",
-          "line": 38,
-          "type": "constant"
-        },
-        {
-          "name": "accountEmail",
-          "line": 39,
-          "type": "constant"
-        },
-        {
-          "name": "signedIn",
-          "line": 40,
-          "type": "constant"
-        },
-        {
-          "name": "signOut",
-          "line": 42,
-          "type": "function"
-        },
-        {
-          "name": "AccountMenu",
-          "line": 50,
-          "type": "component"
-        },
-        {
-          "name": "menuRef",
-          "line": 52,
-          "type": "constant"
-        },
-        {
-          "name": "closeOnOutsideClick",
-          "line": 58,
-          "type": "function"
-        },
-        {
-          "name": "closeOnEscape",
-          "line": 64,
-          "type": "function"
-        },
-        {
-          "name": "SidebarAccountControls",
-          "line": 120,
-          "type": "component"
-        },
-        {
-          "name": "TopBar",
-          "line": 147,
-          "type": "component"
-        },
-        {
-          "name": "pathname",
-          "line": 148,
-          "type": "constant"
-        }
-      ],
-      "imports": [
-        "../lib/auth/client",
-        "../lib/i18n",
-        "./SelfTabAvatar",
-        "./ThemeToggle",
-        "lucide-react",
-        "next/link",
-        "next/navigation",
-        "react"
-      ],
-      "exports": [
-        "SidebarAccountControls",
-        "TopBar"
-      ],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 1,
-      "dependency_out": 4,
-      "importance_weight": 115.38,
-      "importance_bucket": "other"
     },
     {
       "file": "apps/astra-web/components/BirthDateTimeSheet.helpers.ts",
@@ -25212,9 +25358,9 @@
     {
       "file": "apps/astra-web/lib/i18n.ts",
       "lang": "typescript",
-      "size": 39364,
-      "lines": 896,
-      "estimated_tokens": 9839,
+      "size": 40034,
+      "lines": 911,
+      "estimated_tokens": 10006,
       "symbols": [
         {
           "name": "ui",
@@ -25828,9 +25974,9 @@
     {
       "file": "apps/astra-web/e2e/synastry-v3-production.spec.ts",
       "lang": "typescript",
-      "size": 9950,
+      "size": 9949,
       "lines": 157,
-      "estimated_tokens": 2487,
+      "estimated_tokens": 2486,
       "symbols": [
         {
           "name": "expectedCancellation",
@@ -27593,6 +27739,103 @@
       "importance_bucket": "other"
     },
     {
+      "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
+      "lang": "markdown",
+      "size": 8511,
+      "lines": 180,
+      "estimated_tokens": 2128,
+      "symbols": [
+        {
+          "name": "Astra and Composer Product Design Patterns",
+          "line": 18,
+          "type": "heading"
+        },
+        {
+          "name": "North Star",
+          "line": 27,
+          "type": "heading"
+        },
+        {
+          "name": "Required Design Review",
+          "line": 48,
+          "type": "heading"
+        },
+        {
+          "name": "Adopt First",
+          "line": 59,
+          "type": "heading"
+        },
+        {
+          "name": "Adapt Carefully",
+          "line": 78,
+          "type": "heading"
+        },
+        {
+          "name": "Avoid Or Defer",
+          "line": 94,
+          "type": "heading"
+        },
+        {
+          "name": "Immediate Product Impact",
+          "line": 103,
+          "type": "heading"
+        },
+        {
+          "name": "Composer-Specific Rules",
+          "line": 115,
+          "type": "heading"
+        },
+        {
+          "name": "Astra-Specific Rules",
+          "line": 127,
+          "type": "heading"
+        },
+        {
+          "name": "i18n Chrome Enforcement",
+          "line": 139,
+          "type": "heading"
+        },
+        {
+          "name": "Review Question",
+          "line": 153,
+          "type": "heading"
+        },
+        {
+          "name": "Long Mobile Choice Forms",
+          "line": 161,
+          "type": "heading"
+        },
+        {
+          "name": "Allies List, Chart, And Report Separation",
+          "line": 165,
+          "type": "heading"
+        },
+        {
+          "name": "Self Report Action Disclosure",
+          "line": 177,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Astra and Composer Product Design Patterns",
+        "North Star",
+        "Required Design Review",
+        "Adopt First",
+        "Adapt Carefully",
+        "Avoid Or Defer",
+        "Immediate Product Impact",
+        "Composer-Specific Rules"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 48.36,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "apps/composer-web/app/course/page.tsx",
       "lang": "typescript",
       "size": 5313,
@@ -28467,93 +28710,6 @@
       "importance_bucket": "akashic"
     },
     {
-      "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
-      "lang": "markdown",
-      "size": 6549,
-      "lines": 164,
-      "estimated_tokens": 1638,
-      "symbols": [
-        {
-          "name": "Astra and Composer Product Design Patterns",
-          "line": 18,
-          "type": "heading"
-        },
-        {
-          "name": "North Star",
-          "line": 27,
-          "type": "heading"
-        },
-        {
-          "name": "Required Design Review",
-          "line": 48,
-          "type": "heading"
-        },
-        {
-          "name": "Adopt First",
-          "line": 59,
-          "type": "heading"
-        },
-        {
-          "name": "Adapt Carefully",
-          "line": 78,
-          "type": "heading"
-        },
-        {
-          "name": "Avoid Or Defer",
-          "line": 94,
-          "type": "heading"
-        },
-        {
-          "name": "Immediate Product Impact",
-          "line": 103,
-          "type": "heading"
-        },
-        {
-          "name": "Composer-Specific Rules",
-          "line": 115,
-          "type": "heading"
-        },
-        {
-          "name": "Astra-Specific Rules",
-          "line": 127,
-          "type": "heading"
-        },
-        {
-          "name": "i18n Chrome Enforcement",
-          "line": 139,
-          "type": "heading"
-        },
-        {
-          "name": "Review Question",
-          "line": 153,
-          "type": "heading"
-        },
-        {
-          "name": "Long Mobile Choice Forms",
-          "line": 161,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Astra and Composer Product Design Patterns",
-        "North Star",
-        "Required Design Review",
-        "Adopt First",
-        "Adapt Carefully",
-        "Avoid Or Defer",
-        "Immediate Product Impact",
-        "Composer-Specific Rules"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 42.38,
-      "importance_bucket": "akashic"
-    },
-    {
       "file": "apps/astra-web/lib/internal-token.ts",
       "lang": "typescript",
       "size": 495,
@@ -28752,6 +28908,66 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 40.31,
+      "importance_bucket": "other"
+    },
+    {
+      "file": "apps/astra-web/components/AppNavigation.tsx",
+      "lang": "typescript",
+      "size": 1654,
+      "lines": 42,
+      "estimated_tokens": 414,
+      "symbols": [
+        {
+          "name": "navItems",
+          "line": 8,
+          "type": "constant"
+        },
+        {
+          "name": "isActivePath",
+          "line": 16,
+          "type": "function"
+        },
+        {
+          "name": "AppNavigation",
+          "line": 22,
+          "type": "component"
+        },
+        {
+          "name": "pathname",
+          "line": 23,
+          "type": "constant"
+        },
+        {
+          "name": "searchParams",
+          "line": 24,
+          "type": "constant"
+        },
+        {
+          "name": "chartOwner",
+          "line": 25,
+          "type": "constant"
+        },
+        {
+          "name": "active",
+          "line": 30,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "../lib/i18n",
+        "lucide-react",
+        "next/link",
+        "next/navigation"
+      ],
+      "exports": [
+        "AppNavigation"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 1,
+      "dependency_out": 1,
+      "importance_weight": 39.88,
       "importance_bucket": "other"
     },
     {
@@ -33027,56 +33243,6 @@
       "importance_bucket": "other"
     },
     {
-      "file": "apps/astra-web/components/AppNavigation.tsx",
-      "lang": "typescript",
-      "size": 1279,
-      "lines": 38,
-      "estimated_tokens": 320,
-      "symbols": [
-        {
-          "name": "navItems",
-          "line": 8,
-          "type": "constant"
-        },
-        {
-          "name": "isActivePath",
-          "line": 16,
-          "type": "function"
-        },
-        {
-          "name": "AppNavigation",
-          "line": 20,
-          "type": "component"
-        },
-        {
-          "name": "pathname",
-          "line": 21,
-          "type": "constant"
-        },
-        {
-          "name": "active",
-          "line": 26,
-          "type": "constant"
-        }
-      ],
-      "imports": [
-        "../lib/i18n",
-        "lucide-react",
-        "next/link",
-        "next/navigation"
-      ],
-      "exports": [
-        "AppNavigation"
-      ],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 1,
-      "dependency_out": 1,
-      "importance_weight": 33.82,
-      "importance_bucket": "other"
-    },
-    {
       "file": "apps/astra-web/app/layout.tsx",
       "lang": "typescript",
       "size": 2840,
@@ -33483,6 +33649,78 @@
       "importance_bucket": "akashic"
     },
     {
+      "file": "akashic/skills/separate-management-detail-and-paid-generation-intents.md",
+      "lang": "markdown",
+      "size": 2894,
+      "lines": 55,
+      "estimated_tokens": 724,
+      "symbols": [
+        {
+          "name": "Separate management, detail, and paid-generation intents",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "Problem",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Signals",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "Root Cause",
+          "line": 26,
+          "type": "heading"
+        },
+        {
+          "name": "Investigation",
+          "line": 29,
+          "type": "heading"
+        },
+        {
+          "name": "Resolution",
+          "line": 35,
+          "type": "heading"
+        },
+        {
+          "name": "Prevention",
+          "line": 42,
+          "type": "heading"
+        },
+        {
+          "name": "Related Files",
+          "line": 45,
+          "type": "heading"
+        },
+        {
+          "name": "Related ADRs",
+          "line": 53,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Separate management, detail, and paid-generation intents",
+        "Problem",
+        "Signals",
+        "Root Cause",
+        "Investigation",
+        "Resolution",
+        "Prevention",
+        "Related Files"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 33.07,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "akashic/skills/enforce-astra-interface-chrome-through-i18n.md",
       "lang": "markdown",
       "size": 1550,
@@ -33552,6 +33790,78 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 33.04,
+      "importance_bucket": "akashic"
+    },
+    {
+      "file": "akashic/skills/progressed-b-contract-must-stay-family-scoped.md",
+      "lang": "markdown",
+      "size": 2442,
+      "lines": 51,
+      "estimated_tokens": 611,
+      "symbols": [
+        {
+          "name": "Progressed B contract must stay family-scoped",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "Problem",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Signals",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "Root Cause",
+          "line": 26,
+          "type": "heading"
+        },
+        {
+          "name": "Investigation",
+          "line": 30,
+          "type": "heading"
+        },
+        {
+          "name": "Resolution",
+          "line": 34,
+          "type": "heading"
+        },
+        {
+          "name": "Prevention",
+          "line": 38,
+          "type": "heading"
+        },
+        {
+          "name": "Related Files",
+          "line": 42,
+          "type": "heading"
+        },
+        {
+          "name": "Related ADRs",
+          "line": 49,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Progressed B contract must stay family-scoped",
+        "Problem",
+        "Signals",
+        "Root Cause",
+        "Investigation",
+        "Resolution",
+        "Prevention",
+        "Related Files"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 33.02,
       "importance_bucket": "akashic"
     },
     {
@@ -43324,84 +43634,84 @@
     "2026-06-16 - Auth and Self Onboarding Alpha": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 526,
+        "line": 532,
         "type": "heading"
       }
     ],
     "2026-06-16 - Chart Generation Flow UX": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 492,
+        "line": 498,
         "type": "heading"
       }
     ],
     "2026-06-16 - Composer Onboarding Cards": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 465,
+        "line": 471,
         "type": "heading"
       }
     ],
     "2026-06-16 - Composer Operator Review Workflow": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 581,
+        "line": 587,
         "type": "heading"
       }
     ],
     "2026-06-16 - Composer Private Feed Write Edge": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 615,
+        "line": 621,
         "type": "heading"
       }
     ],
     "2026-06-16 - Journey Core Product Loop": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 557,
+        "line": 563,
         "type": "heading"
       }
     ],
     "2026-06-16 - Stewardship v3 Install": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 645,
+        "line": 651,
         "type": "heading"
       }
     ],
     "2026-06-17 - Composer Durable Server And Card Detail Control Point": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 217,
+        "line": 223,
         "type": "heading"
       }
     ],
     "2026-06-17 - Composer Operator App": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 428,
+        "line": 434,
         "type": "heading"
       }
     ],
     "2026-06-17 - Composer V1 Quarry Tabs And Starter Library": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 244,
+        "line": 250,
         "type": "heading"
       }
     ],
     "2026-06-18 - Composer Course Assessment UX Matches V1": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 186,
+        "line": 192,
         "type": "heading"
       }
     ],
     "2026-06-19 - Shared Card Face And Mobile Chrome Stabilization": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 142,
+        "line": 148,
         "type": "heading"
       }
     ],
@@ -43436,70 +43746,70 @@
     "2026-07-30 - Tiered Verification and Stable Auth E2E": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 698,
+        "line": 704,
         "type": "heading"
       }
     ],
     "2026-07-30 - TypeScript 7 Normal Session and i18n Chrome Guard": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 666,
+        "line": 672,
         "type": "heading"
       }
     ],
     "2026-07-30 - TypeScript 7 Throughput Trial": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 110,
+        "line": 116,
         "type": "heading"
       }
     ],
     "2026-07-31 - Synastry V3 Clean-Prose Blind Experiment": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 732,
+        "line": 738,
         "type": "heading"
       }
     ],
     "2026-07-31 - Synastry V3.1 Production Reliability": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 79,
+        "line": 85,
         "type": "heading"
       }
     ],
     "2026-07-31 — Synastry V3 bakeoff closure and production plan": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 778,
+        "line": 784,
         "type": "heading"
       }
     ],
     "2026-07-31 — Synastry V3 feeling-first production slice": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 796,
+        "line": 802,
         "type": "heading"
       }
     ],
     "2026-07-31 — Synastry V3.1.1 Michelle refinement": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 805,
+        "line": 811,
         "type": "heading"
       }
     ],
     "2026-08-01 - Core and Deep Evidence-to-Prose Contract": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 33,
+        "line": 39,
         "type": "heading"
       }
     ],
     "2026-08-01 - Explicit Synastry Production Writer Policy": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 56,
+        "line": 62,
         "type": "heading"
       }
     ],
@@ -43507,6 +43817,20 @@
       {
         "file": "docs/progress/PROGRESS_LOG.md",
         "line": 16,
+        "type": "heading"
+      }
+    ],
+    "2026-08-01 — Allies add, chart detail, and report intent split": [
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 820,
+        "type": "heading"
+      }
+    ],
+    "2026-08-01 — Self report action progressive disclosure": [
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 828,
         "type": "heading"
       }
     ],
@@ -44266,28 +44590,28 @@
     "accountEmail": [
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 39,
+        "line": 41,
         "type": "constant"
       }
     ],
     "accountInitial": [
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 25,
+        "line": 27,
         "type": "function"
       }
     ],
     "AccountMenu": [
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 50,
+        "line": 52,
         "type": "component"
       }
     ],
     "accountName": [
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 38,
+        "line": 40,
         "type": "constant"
       }
     ],
@@ -44408,7 +44732,7 @@
     "active": [
       {
         "file": "apps/astra-web/components/AppNavigation.tsx",
-        "line": 26,
+        "line": 30,
         "type": "constant"
       },
       {
@@ -44455,6 +44779,13 @@
         "type": "constant"
       }
     ],
+    "activeNavigation": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 345,
+        "type": "constant"
+      }
+    ],
     "activeRouteLabel": [
       {
         "file": "apps/astra-web/components/TopBar.tsx",
@@ -44477,7 +44808,7 @@
     "activeStepError": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 539,
+        "line": 548,
         "type": "constant"
       }
     ],
@@ -44560,6 +44891,27 @@
         "file": "packages/astrology/src/meaningComplexNetwork.ts",
         "line": 835,
         "type": "function"
+      }
+    ],
+    "addAllyAction": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 302,
+        "type": "constant"
+      }
+    ],
+    "addAllyActionStyles": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 303,
+        "type": "constant"
+      }
+    ],
+    "addAllyPanel": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 554,
+        "type": "constant"
       }
     ],
     "addAngularAndCuspEdges": [
@@ -44973,6 +45325,13 @@
         "type": "heading"
       }
     ],
+    "Allies List, Chart, And Report Separation": [
+      {
+        "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
+        "line": 165,
+        "type": "heading"
+      }
+    ],
     "allies or equivalent": [
       {
         "file": "docs/inbox-astra/ASTRA_JOB_1_CHART_REPORT_LIBRARY_PARITY.md",
@@ -44990,7 +45349,7 @@
     "alliesById": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 211,
+        "line": 212,
         "type": "constant"
       }
     ],
@@ -45004,7 +45363,7 @@
     "AlliesPage": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 181,
+        "line": 182,
         "type": "component"
       }
     ],
@@ -45084,7 +45443,7 @@
     "ally": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 219,
+        "line": 220,
         "type": "constant"
       },
       {
@@ -45099,7 +45458,12 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 682,
+        "line": 631,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
+        "line": 739,
         "type": "constant"
       },
       {
@@ -45171,7 +45535,7 @@
     "allyChartRequests": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 213,
+        "line": 214,
         "type": "constant"
       }
     ],
@@ -45292,21 +45656,21 @@
     "allyReportRequestIds": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 215,
+        "line": 216,
         "type": "constant"
       }
     ],
     "allyReportRequests": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 214,
+        "line": 215,
         "type": "constant"
       }
     ],
     "allyReportResults": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 216,
+        "line": 217,
         "type": "constant"
       }
     ],
@@ -45653,14 +46017,14 @@
     "applyBirthLocation": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 446,
+        "line": 455,
         "type": "function"
       }
     ],
     "applyBirthMoment": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 433,
+        "line": 442,
         "type": "function"
       }
     ],
@@ -45693,7 +46057,7 @@
     "AppNavigation": [
       {
         "file": "apps/astra-web/components/AppNavigation.tsx",
-        "line": 20,
+        "line": 22,
         "type": "component"
       }
     ],
@@ -45801,7 +46165,7 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 633,
+        "line": 690,
         "type": "constant"
       },
       {
@@ -45837,7 +46201,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 444,
+        "line": 505,
         "type": "constant"
       }
     ],
@@ -48183,7 +48547,7 @@
     "availableReportTypes": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 356,
+        "line": 359,
         "type": "constant"
       }
     ],
@@ -48397,6 +48761,13 @@
         "type": "heading"
       }
     ],
+    "backToSelf": [
+      {
+        "file": "apps/astra-web/app/charts/page.tsx",
+        "line": 72,
+        "type": "constant"
+      }
+    ],
     "balance": [
       {
         "file": "apps/astra-web/app/stars/page.tsx",
@@ -48427,7 +48798,7 @@
     "balanceAfterReport": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 367,
+        "line": 370,
         "type": "constant"
       }
     ],
@@ -48595,7 +48966,7 @@
     "basisType": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 716,
+        "line": 773,
         "type": "constant"
       }
     ],
@@ -48684,7 +49055,7 @@
     "birthData": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 186,
+        "line": 187,
         "type": "constant"
       },
       {
@@ -48716,14 +49087,14 @@
     "birthDataFor": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 184,
+        "line": 185,
         "type": "function"
       }
     ],
     "birthDataMatchesForm": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 198,
+        "line": 199,
         "type": "function"
       }
     ],
@@ -48780,7 +49151,7 @@
     "birthLine": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 283,
+        "line": 315,
         "type": "function"
       },
       {
@@ -48813,21 +49184,21 @@
     "birthMomentSummary": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 280,
+        "line": 281,
         "type": "function"
       }
     ],
     "birthMomentValueFor": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 271,
+        "line": 272,
         "type": "function"
       }
     ],
     "BirthOnboardingPanel": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 297,
+        "line": 298,
         "type": "component"
       }
     ],
@@ -49792,7 +50163,7 @@
     "canAffordSelectedReport": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 368,
+        "line": 371,
         "type": "constant"
       }
     ],
@@ -49986,6 +50357,13 @@
         "type": "function"
       }
     ],
+    "canonicalOwner": [
+      {
+        "file": "apps/astra-web/app/charts/page.tsx",
+        "line": 87,
+        "type": "constant"
+      }
+    ],
     "canonicalReportType": [
       {
         "file": "apps/astra-web/app/library/page.tsx",
@@ -50017,19 +50395,19 @@
     "canReuseExistingChart": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 615,
+        "line": 672,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 696,
+        "line": 753,
         "type": "constant"
       }
     ],
     "canSubmit": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 359,
+        "line": 362,
         "type": "constant"
       }
     ],
@@ -50055,6 +50433,11 @@
       }
     ],
     "card": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 325,
+        "type": "constant"
+      },
       {
         "file": "apps/astra-web/e2e/journey-step.spec.ts",
         "line": 72,
@@ -50210,7 +50593,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 313,
+        "line": 374,
         "type": "constant"
       },
       {
@@ -50629,7 +51012,7 @@
     "chartAsReportRequest": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 265,
+        "line": 297,
         "type": "function"
       }
     ],
@@ -50665,7 +51048,7 @@
     "chartBody": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 698,
+        "line": 755,
         "type": "constant"
       }
     ],
@@ -50705,7 +51088,7 @@
     "ChartCard": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 98,
+        "line": 130,
         "type": "component"
       }
     ],
@@ -50731,14 +51114,14 @@
     "chartItems": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 65,
+        "line": 67,
         "type": "constant"
       }
     ],
     "ChartListItem": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 33,
+        "line": 35,
         "type": "type"
       }
     ],
@@ -50840,6 +51223,18 @@
         "type": "constant"
       }
     ],
+    "chartOwner": [
+      {
+        "file": "apps/astra-web/components/AppNavigation.tsx",
+        "line": 25,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/components/TopBar.tsx",
+        "line": 152,
+        "type": "constant"
+      }
+    ],
     "chartPairAllowedForCustomer": [
       {
         "file": "apps/astra-web/app/api/reports/route.ts",
@@ -50874,7 +51269,7 @@
       },
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 238,
+        "line": 240,
         "type": "constant"
       },
       {
@@ -50894,12 +51289,17 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 616,
+        "line": 632,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 1230,
+        "line": 673,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
+        "line": 1287,
         "type": "constant"
       },
       {
@@ -50946,7 +51346,7 @@
     "chartRequestsBySubjectId": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 416,
+        "line": 425,
         "type": "constant"
       }
     ],
@@ -50960,7 +51360,7 @@
     "ChartResultRow": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 22,
+        "line": 24,
         "type": "type"
       }
     ],
@@ -51021,17 +51421,17 @@
     "chartSettings": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 246,
+        "line": 278,
         "type": "function"
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 611,
+        "line": 668,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 692,
+        "line": 749,
         "type": "constant"
       },
       {
@@ -51041,7 +51441,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 435,
+        "line": 496,
         "type": "constant"
       },
       {
@@ -51125,7 +51525,7 @@
     "chartSnapshot": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 152,
+        "line": 184,
         "type": "constant"
       },
       {
@@ -51137,14 +51537,14 @@
     "ChartsPage": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 40,
+        "line": 42,
         "type": "component"
       }
     ],
     "ChartsPageParams": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 15,
+        "line": 16,
         "type": "type"
       }
     ],
@@ -51158,7 +51558,7 @@
     "chartSubjectContext": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 126,
+        "line": 127,
         "type": "function"
       }
     ],
@@ -51179,7 +51579,7 @@
     "chartSubjectId": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 292,
+        "line": 293,
         "type": "function"
       }
     ],
@@ -51193,7 +51593,7 @@
     "chartSubjectType": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 249,
+        "line": 250,
         "type": "function"
       }
     ],
@@ -51228,21 +51628,21 @@
     "checkout": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 554,
+        "line": 635,
         "type": "constant"
       }
     ],
     "checkoutBody": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 552,
+        "line": 633,
         "type": "constant"
       }
     ],
     "checkoutResponse": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 545,
+        "line": 626,
         "type": "constant"
       }
     ],
@@ -51254,7 +51654,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 555,
+        "line": 636,
         "type": "constant"
       }
     ],
@@ -51417,7 +51817,7 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 164,
+        "line": 165,
         "type": "constant"
       },
       {
@@ -51497,7 +51897,7 @@
     "cleanFilter": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 177,
+        "line": 178,
         "type": "function"
       }
     ],
@@ -51525,14 +51925,14 @@
     "clearFilterHref": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 233,
+        "line": 235,
         "type": "constant"
       }
     ],
     "clearFilterParams": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 230,
+        "line": 232,
         "type": "constant"
       }
     ],
@@ -51579,14 +51979,14 @@
       },
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 64,
+        "line": 66,
         "type": "function"
       }
     ],
     "closeOnOutsideClick": [
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 58,
+        "line": 60,
         "type": "function"
       }
     ],
@@ -52049,14 +52449,14 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 253,
+        "line": 254,
         "type": "function"
       }
     ],
     "compactFormBirthLine": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 262,
+        "line": 263,
         "type": "function"
       }
     ],
@@ -52154,7 +52554,7 @@
     "completeArrival": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 651,
+        "line": 708,
         "type": "function"
       }
     ],
@@ -52168,7 +52568,12 @@
     "completed": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 503,
+        "line": 337,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 584,
         "type": "constant"
       },
       {
@@ -52201,14 +52606,14 @@
     "completedChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 600,
+        "line": 686,
         "type": "constant"
       }
     ],
     "completedReport": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 619,
+        "line": 705,
         "type": "constant"
       }
     ],
@@ -54421,7 +54826,7 @@
     "createAllyRecord": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 564,
+        "line": 573,
         "type": "function"
       }
     ],
@@ -54538,7 +54943,7 @@
     "createChartButton": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 430,
+        "line": 491,
         "type": "constant"
       }
     ],
@@ -54708,7 +55113,7 @@
     "createHref": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 102,
+        "line": 134,
         "type": "constant"
       }
     ],
@@ -55096,22 +55501,22 @@
     "currentError": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 495,
+        "line": 504,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 513,
+        "line": 522,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 581,
+        "line": 590,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 669,
+        "line": 726,
         "type": "constant"
       }
     ],
@@ -55153,7 +55558,7 @@
     "currentSelection": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 418,
+        "line": 479,
         "type": "constant"
       }
     ],
@@ -55493,7 +55898,7 @@
     "debugDetails": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 670,
+        "line": 756,
         "type": "constant"
       }
     ],
@@ -55796,7 +56201,7 @@
     "defaultForm": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 139,
+        "line": 140,
         "type": "constant"
       }
     ],
@@ -56270,7 +56675,7 @@
     "displayedStepIndex": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 374,
+        "line": 383,
         "type": "constant"
       }
     ],
@@ -56615,7 +57020,7 @@
       },
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 13,
+        "line": 14,
         "type": "constant"
       },
       {
@@ -56735,7 +57140,7 @@
     "editHref": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 106,
+        "line": 138,
         "type": "constant"
       }
     ],
@@ -56822,22 +57227,32 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 360,
+        "line": 292,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 373,
+        "line": 335,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 496,
+        "line": 421,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 522,
+        "line": 434,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 577,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 603,
         "type": "constant"
       },
       {
@@ -57456,24 +57871,31 @@
         "type": "constant"
       }
     ],
+    "existingAllyCard": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 544,
+        "type": "constant"
+      }
+    ],
     "existingAllyChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 464,
+        "line": 525,
         "type": "constant"
       }
     ],
     "existingChartRequest": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 360,
+        "line": 363,
         "type": "constant"
       }
     ],
     "existingOrderPanel": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 466,
+        "line": 527,
         "type": "constant"
       }
     ],
@@ -57501,14 +57923,14 @@
     "existingSelfBirthDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 609,
+        "line": 695,
         "type": "constant"
       }
     ],
     "existingSelfLocationDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 613,
+        "line": 699,
         "type": "constant"
       }
     ],
@@ -58056,7 +58478,7 @@
     "filteredAllies": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 237,
+        "line": 239,
         "type": "constant"
       }
     ],
@@ -58084,14 +58506,14 @@
     "filterQuery": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 234,
+        "line": 236,
         "type": "constant"
       }
     ],
     "filterRelationship": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 235,
+        "line": 237,
         "type": "constant"
       }
     ],
@@ -58276,7 +58698,7 @@
     "firstCard": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 315,
+        "line": 376,
         "type": "constant"
       }
     ],
@@ -58610,7 +59032,7 @@
     "FormState": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 107,
+        "line": 108,
         "type": "type"
       }
     ],
@@ -58671,7 +59093,7 @@
     "frame": [
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 34,
+        "line": 36,
         "type": "constant"
       },
       {
@@ -58742,7 +59164,7 @@
     "fulfilled": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 558,
+        "line": 639,
         "type": "constant"
       }
     ],
@@ -58923,7 +59345,7 @@
     "generateReport": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 766,
+        "line": 823,
         "type": "function"
       }
     ],
@@ -59353,7 +59775,7 @@
     "getUserChartItems": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 200,
+        "line": 232,
         "type": "function"
       }
     ],
@@ -59447,7 +59869,7 @@
     "glimpse": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 450,
+        "line": 511,
         "type": "constant"
       },
       {
@@ -59515,14 +59937,21 @@
     "goBack": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 527,
+        "line": 536,
         "type": "function"
+      }
+    ],
+    "gold": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 307,
+        "type": "constant"
       }
     ],
     "goNext": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 511,
+        "line": 520,
         "type": "function"
       }
     ],
@@ -59536,7 +59965,7 @@
     "goToStep": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 493,
+        "line": 502,
         "type": "function"
       }
     ],
@@ -59816,7 +60245,7 @@
     "hasHouseCalculation": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 393,
+        "line": 402,
         "type": "constant"
       }
     ],
@@ -59896,7 +60325,7 @@
       },
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 239,
+        "line": 241,
         "type": "constant"
       },
       {
@@ -60525,14 +60954,14 @@
     "hydratedChartRequests": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 212,
+        "line": 213,
         "type": "constant"
       }
     ],
     "hydratedSession": [
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 37,
+        "line": 39,
         "type": "constant"
       }
     ],
@@ -60999,7 +61428,7 @@
     "indexed": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 417,
+        "line": 426,
         "type": "constant"
       }
     ],
@@ -61027,28 +61456,28 @@
     "initialActiveStep": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 321,
+        "line": 323,
         "type": "function"
       }
     ],
     "initialChartRequest": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 316,
+        "line": 318,
         "type": "constant"
       }
     ],
     "initialForm": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 319,
+        "line": 321,
         "type": "constant"
       }
     ],
     "initialOnboardingStep": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 227,
+        "line": 228,
         "type": "constant"
       }
     ],
@@ -61321,6 +61750,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/progressed-b-contract-must-stay-family-scoped.md",
+        "line": 30,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/promote-clean-prose-reports-with-private-retry-evidence.md",
         "line": 26,
         "type": "heading"
@@ -61328,6 +61762,11 @@
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 26,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/separate-management-detail-and-paid-generation-intents.md",
+        "line": 29,
         "type": "heading"
       },
       {
@@ -61360,10 +61799,17 @@
         "type": "function"
       }
     ],
+    "isAddingAlly": [
+      {
+        "file": "apps/astra-web/app/allies/page.tsx",
+        "line": 231,
+        "type": "constant"
+      }
+    ],
     "isAdmin": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 347,
+        "line": 350,
         "type": "constant"
       }
     ],
@@ -61377,7 +61823,14 @@
     "isAlly": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 346,
+        "line": 348,
+        "type": "constant"
+      }
+    ],
+    "isAllyAddFlow": [
+      {
+        "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
+        "line": 349,
         "type": "constant"
       }
     ],
@@ -61398,7 +61851,7 @@
     "isChartArrivalFlow": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 364,
+        "line": 367,
         "type": "constant"
       }
     ],
@@ -61419,21 +61872,21 @@
     "isExistingChartBirthEditMode": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 369,
+        "line": 372,
         "type": "constant"
       }
     ],
     "isExistingChartLocked": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 371,
+        "line": 374,
         "type": "constant"
       }
     ],
     "isExistingChartOrderMode": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 370,
+        "line": 373,
         "type": "constant"
       }
     ],
@@ -61578,7 +62031,7 @@
     "isSingleStepFlow": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 375,
+        "line": 384,
         "type": "constant"
       }
     ],
@@ -61625,7 +62078,7 @@
     "isUsingExistingChart": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 363,
+        "line": 366,
         "type": "constant"
       }
     ],
@@ -61665,7 +62118,7 @@
     "isWizardComplete": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 358,
+        "line": 361,
         "type": "constant"
       }
     ],
@@ -61935,12 +62388,12 @@
     "knownTime": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 185,
+        "line": 186,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 200,
+        "line": 201,
         "type": "constant"
       }
     ],
@@ -62088,7 +62541,7 @@
     "latestChartRequestByAllyId": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 217,
+        "line": 218,
         "type": "constant"
       }
     ],
@@ -62239,7 +62692,7 @@
     "legacyHeadline": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 506,
+        "line": 587,
         "type": "constant"
       }
     ],
@@ -62267,7 +62720,7 @@
     "Lessons And Notes": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 162,
+        "line": 168,
         "type": "heading"
       }
     ],
@@ -62565,7 +63018,7 @@
     "Live Failure Evidence": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 93,
+        "line": 99,
         "type": "heading"
       }
     ],
@@ -62663,7 +63116,7 @@
     "localDateOnly": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 133,
+        "line": 134,
         "type": "function"
       }
     ],
@@ -62689,7 +63142,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 416,
+        "line": 477,
         "type": "constant"
       }
     ],
@@ -63029,14 +63482,14 @@
     "matchesQuery": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 240,
+        "line": 242,
         "type": "constant"
       }
     ],
     "matchesRelationship": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 241,
+        "line": 243,
         "type": "constant"
       }
     ],
@@ -63293,7 +63746,7 @@
     "menuRef": [
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 52,
+        "line": 54,
         "type": "constant"
       }
     ],
@@ -64115,12 +64568,12 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 374,
+        "line": 435,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 523,
+        "line": 604,
         "type": "constant"
       },
       {
@@ -64224,7 +64677,7 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 519,
+        "line": 528,
         "type": "constant"
       },
       {
@@ -64325,47 +64778,47 @@
     "Next Copy/Paste Goal": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 29,
+        "line": 35,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 52,
+        "line": 58,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 75,
+        "line": 81,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 106,
+        "line": 112,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 136,
+        "line": 142,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 182,
+        "line": 188,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 213,
+        "line": 219,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 240,
+        "line": 246,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 424,
+        "line": 430,
         "type": "heading"
       }
     ],
@@ -64484,7 +64937,7 @@
     "nextVisibleIndex": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 496,
+        "line": 505,
         "type": "constant"
       }
     ],
@@ -64745,7 +65198,7 @@
     "normalizeChartId": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 241,
+        "line": 273,
         "type": "function"
       }
     ],
@@ -65528,7 +65981,7 @@
     "offset": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 135,
+        "line": 136,
         "type": "constant"
       }
     ],
@@ -65556,7 +66009,7 @@
     "onboardingFeed": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 404,
+        "line": 465,
         "type": "constant"
       }
     ],
@@ -65570,7 +66023,7 @@
     "onboardingStepFromParam": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 173,
+        "line": 174,
         "type": "function"
       },
       {
@@ -65582,7 +66035,7 @@
     "onboardingUserId": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 381,
+        "line": 442,
         "type": "constant"
       }
     ],
@@ -65723,7 +66176,7 @@
     "openReportArtifact": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 762,
+        "line": 819,
         "type": "function"
       }
     ],
@@ -65876,7 +66329,7 @@
     "optional": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 163,
+        "line": 164,
         "type": "function"
       }
     ],
@@ -66190,6 +66643,13 @@
         "type": "constant"
       }
     ],
+    "owner": [
+      {
+        "file": "apps/astra-web/app/charts/page.tsx",
+        "line": 86,
+        "type": "constant"
+      }
+    ],
     "owners": [
       {
         "file": "packages/astrology/src/index.ts",
@@ -66392,10 +66852,17 @@
         "type": "constant"
       }
     ],
+    "panel": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 316,
+        "type": "constant"
+      }
+    ],
     "panelCopy": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 357,
+        "line": 360,
         "type": "constant"
       }
     ],
@@ -66471,7 +66938,7 @@
       },
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 182,
+        "line": 183,
         "type": "constant"
       },
       {
@@ -66866,7 +67333,7 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 282,
+        "line": 283,
         "type": "constant"
       },
       {
@@ -66914,12 +67381,12 @@
     "pathname": [
       {
         "file": "apps/astra-web/components/AppNavigation.tsx",
-        "line": 21,
+        "line": 23,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 148,
+        "line": 150,
         "type": "constant"
       },
       {
@@ -67007,17 +67474,17 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 550,
+        "line": 559,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 565,
+        "line": 574,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 770,
+        "line": 827,
         "type": "constant"
       },
       {
@@ -68473,7 +68940,7 @@
     "prematureChartRequests": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 390,
+        "line": 451,
         "type": "constant"
       }
     ],
@@ -68570,6 +69037,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/progressed-b-contract-must-stay-family-scoped.md",
+        "line": 38,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/promote-clean-prose-reports-with-private-retry-evidence.md",
         "line": 32,
         "type": "heading"
@@ -68577,6 +69049,11 @@
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 32,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/separate-management-detail-and-paid-generation-intents.md",
+        "line": 42,
         "type": "heading"
       },
       {
@@ -68632,7 +69109,7 @@
     "previewBirthData": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 390,
+        "line": 399,
         "type": "constant"
       }
     ],
@@ -68667,7 +69144,7 @@
     "previous": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 529,
+        "line": 538,
         "type": "constant"
       }
     ],
@@ -68996,6 +69473,13 @@
         "type": "constant"
       }
     ],
+    "probe": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 304,
+        "type": "constant"
+      }
+    ],
     "Problem": [
       {
         "file": "akashic/skills/astra-stewardship-validation.md",
@@ -69033,12 +69517,22 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/progressed-b-contract-must-stay-family-scoped.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/promote-clean-prose-reports-with-private-retry-evidence.md",
         "line": 17,
         "type": "heading"
       },
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/separate-management-detail-and-paid-generation-intents.md",
         "line": 17,
         "type": "heading"
       },
@@ -69426,6 +69920,13 @@
       {
         "file": "docs/inbox-astra/completed/2026-06-16-next-thread-lean-rebuilt-stream-astrology-reports.md",
         "line": 97,
+        "type": "heading"
+      }
+    ],
+    "Progressed B contract must stay family-scoped": [
+      {
+        "file": "akashic/skills/progressed-b-contract-must-stay-family-scoped.md",
+        "line": 15,
         "type": "heading"
       }
     ],
@@ -71056,6 +71557,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/progressed-b-contract-must-stay-family-scoped.md",
+        "line": 49,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/promote-clean-prose-reports-with-private-retry-evidence.md",
         "line": 38,
         "type": "heading"
@@ -71063,6 +71569,11 @@
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 38,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/separate-management-detail-and-paid-generation-intents.md",
+        "line": 53,
         "type": "heading"
       },
       {
@@ -71123,6 +71634,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/progressed-b-contract-must-stay-family-scoped.md",
+        "line": 42,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/promote-clean-prose-reports-with-private-retry-evidence.md",
         "line": 35,
         "type": "heading"
@@ -71130,6 +71646,11 @@
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 35,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/separate-management-detail-and-paid-generation-intents.md",
+        "line": 45,
         "type": "heading"
       },
       {
@@ -71170,7 +71691,7 @@
     "relationship": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 257,
+        "line": 289,
         "type": "constant"
       },
       {
@@ -71208,7 +71729,7 @@
     "relationshipError": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 538,
+        "line": 547,
         "type": "constant"
       }
     ],
@@ -71229,7 +71750,7 @@
     "relationshipOptions": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 236,
+        "line": 238,
         "type": "constant"
       }
     ],
@@ -71535,7 +72056,7 @@
     "report": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 231,
+        "line": 263,
         "type": "constant"
       }
     ],
@@ -71591,7 +72112,7 @@
     "reportBasis": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 717,
+        "line": 774,
         "type": "constant"
       },
       {
@@ -71620,7 +72141,7 @@
     "reportBasisLabel": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 245,
+        "line": 246,
         "type": "function"
       }
     ],
@@ -71646,7 +72167,7 @@
     "reportBirthData": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 697,
+        "line": 754,
         "type": "constant"
       }
     ],
@@ -71733,7 +72254,7 @@
     "reportChartPlate": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 663,
+        "line": 749,
         "type": "constant"
       }
     ],
@@ -71874,14 +72395,14 @@
     "reportFilters": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 647,
+        "line": 733,
         "type": "constant"
       }
     ],
     "reportFilterSelect": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 649,
+        "line": 735,
         "type": "constant"
       }
     ],
@@ -72121,7 +72642,7 @@
     "reportPayload": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 727,
+        "line": 784,
         "type": "constant"
       }
     ],
@@ -72234,7 +72755,7 @@
       },
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 151,
+        "line": 183,
         "type": "constant"
       }
     ],
@@ -72272,14 +72793,14 @@
       },
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 221,
+        "line": 253,
         "type": "constant"
       }
     ],
     "ReportResultRow": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 28,
+        "line": 30,
         "type": "type"
       }
     ],
@@ -72307,7 +72828,7 @@
     "reportsByChartId": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 222,
+        "line": 254,
         "type": "constant"
       }
     ],
@@ -72368,7 +72889,7 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 212,
+        "line": 213,
         "type": "function"
       }
     ],
@@ -72410,7 +72931,7 @@
     "reportTypeCost": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 241,
+        "line": 242,
         "type": "function"
       }
     ],
@@ -72422,7 +72943,7 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 232,
+        "line": 233,
         "type": "function"
       },
       {
@@ -72655,7 +73176,7 @@
     "requestedInitialStep": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 320,
+        "line": 322,
         "type": "constant"
       }
     ],
@@ -72676,7 +73197,7 @@
     "requestErrorMessage": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 170,
+        "line": 171,
         "type": "function"
       }
     ],
@@ -72732,7 +73253,7 @@
     "RequestIssue": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 168,
+        "line": 169,
         "type": "type"
       }
     ],
@@ -72932,7 +73453,12 @@
     "requiredStep": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 592,
+        "line": 606,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
+        "line": 621,
         "type": "constant"
       }
     ],
@@ -73039,6 +73565,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/progressed-b-contract-must-stay-family-scoped.md",
+        "line": 34,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/promote-clean-prose-reports-with-private-retry-evidence.md",
         "line": 29,
         "type": "heading"
@@ -73046,6 +73577,11 @@
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 29,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/separate-management-detail-and-paid-generation-intents.md",
+        "line": 35,
         "type": "heading"
       },
       {
@@ -73194,7 +73730,7 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 542,
+        "line": 551,
         "type": "constant"
       },
       {
@@ -73457,7 +73993,7 @@
     "resultByChartId": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 220,
+        "line": 252,
         "type": "constant"
       }
     ],
@@ -73644,7 +74180,7 @@
     "revealChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 585,
+        "line": 666,
         "type": "constant"
       }
     ],
@@ -73705,14 +74241,14 @@
     "reviewRows": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 394,
+        "line": 403,
         "type": "constant"
       }
     ],
     "reviewSubjectName": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 387,
+        "line": 396,
         "type": "constant"
       }
     ],
@@ -73915,47 +74451,47 @@
     "Risks / Follow-ups": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 410,
+        "line": 416,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 460,
+        "line": 466,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 488,
+        "line": 494,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 521,
+        "line": 527,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 552,
+        "line": 558,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 577,
+        "line": 583,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 611,
+        "line": 617,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 640,
+        "line": 646,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 662,
+        "line": 668,
         "type": "heading"
       }
     ],
@@ -74116,6 +74652,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/progressed-b-contract-must-stay-family-scoped.md",
+        "line": 26,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/promote-clean-prose-reports-with-private-retry-evidence.md",
         "line": 23,
         "type": "heading"
@@ -74123,6 +74664,11 @@
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
         "line": 23,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/separate-management-detail-and-paid-generation-intents.md",
+        "line": 26,
         "type": "heading"
       },
       {
@@ -74308,7 +74854,7 @@
       },
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 31,
+        "line": 33,
         "type": "constant"
       }
     ],
@@ -74878,14 +75424,14 @@
     "searchBounds": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 419,
+        "line": 480,
         "type": "constant"
       }
     ],
     "searchBox": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 417,
+        "line": 478,
         "type": "constant"
       }
     ],
@@ -74898,8 +75444,18 @@
     ],
     "searchParams": [
       {
+        "file": "apps/astra-web/components/AppNavigation.tsx",
+        "line": 24,
+        "type": "constant"
+      },
+      {
         "file": "apps/astra-web/components/AuthPanel.tsx",
         "line": 26,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/components/TopBar.tsx",
+        "line": 151,
         "type": "constant"
       }
     ],
@@ -75406,7 +75962,7 @@
     "selected": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 66,
+        "line": 68,
         "type": "constant"
       },
       {
@@ -75494,21 +76050,21 @@
     "selectedChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 637,
+        "line": 723,
         "type": "constant"
       }
     ],
     "selectedChartId": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 42,
+        "line": 44,
         "type": "constant"
       }
     ],
     "SelectedChartPanel": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 150,
+        "line": 182,
         "type": "component"
       }
     ],
@@ -75555,7 +76111,7 @@
     "selectedOnboardingChart": [
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "line": 224,
+        "line": 225,
         "type": "constant"
       },
       {
@@ -75609,7 +76165,7 @@
     "selectedReportCost": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 366,
+        "line": 369,
         "type": "constant"
       }
     ],
@@ -75623,7 +76179,7 @@
     "selectedReportType": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 365,
+        "line": 368,
         "type": "constant"
       }
     ],
@@ -75682,7 +76238,7 @@
     "selectionBounds": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 420,
+        "line": 481,
         "type": "constant"
       }
     ],
@@ -75710,7 +76266,7 @@
     "selectReportType": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 459,
+        "line": 468,
         "type": "function"
       }
     ],
@@ -75718,6 +76274,13 @@
       {
         "file": "akashic/imports/astra-product-design-pattern-library/source-library/ASTRA_PRODUCT_DESIGN_EXECUTIVE_SYNTHESIS.md",
         "line": 60,
+        "type": "heading"
+      }
+    ],
+    "Self Report Action Disclosure": [
+      {
+        "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
+        "line": 177,
         "type": "heading"
       }
     ],
@@ -75738,7 +76301,7 @@
     "selfEditPanel": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 602,
+        "line": 688,
         "type": "constant"
       }
     ],
@@ -75901,6 +76464,13 @@
         "type": "constant"
       }
     ],
+    "Separate management, detail, and paid-generation intents": [
+      {
+        "file": "akashic/skills/separate-management-detail-and-paid-generation-intents.md",
+        "line": 15,
+        "type": "heading"
+      }
+    ],
     "Separate Synastry writer and reviewer failures": [
       {
         "file": "akashic/warnings/separate-synastry-writer-and-reviewer-failures.md",
@@ -76018,12 +76588,12 @@
     "settings": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 153,
+        "line": 185,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 247,
+        "line": 279,
         "type": "constant"
       }
     ],
@@ -76037,7 +76607,7 @@
     "settingsBox": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 437,
+        "line": 498,
         "type": "constant"
       }
     ],
@@ -76279,14 +76849,14 @@
     "showMore": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 320,
+        "line": 381,
         "type": "constant"
       }
     ],
     "SidebarAccountControls": [
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 120,
+        "line": 122,
         "type": "component"
       }
     ],
@@ -76445,12 +77015,22 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/progressed-b-contract-must-stay-family-scoped.md",
+        "line": 20,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/promote-clean-prose-reports-with-private-retry-evidence.md",
         "line": 20,
         "type": "heading"
       },
       {
         "file": "akashic/skills/safe-stale-worktree-integration.md",
+        "line": 20,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/separate-management-detail-and-paid-generation-intents.md",
         "line": 20,
         "type": "heading"
       },
@@ -76539,7 +77119,7 @@
       },
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 40,
+        "line": 42,
         "type": "constant"
       }
     ],
@@ -76652,7 +77232,7 @@
       },
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 42,
+        "line": 44,
         "type": "function"
       }
     ],
@@ -76818,7 +77398,7 @@
     "source": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 256,
+        "line": 288,
         "type": "constant"
       },
       {
@@ -77154,7 +77734,7 @@
     "starsDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 535,
+        "line": 616,
         "type": "constant"
       }
     ],
@@ -77216,7 +77796,7 @@
     "startAnotherOnboarding": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 751,
+        "line": 808,
         "type": "function"
       }
     ],
@@ -77309,7 +77889,7 @@
       },
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 101,
+        "line": 133,
         "type": "constant"
       },
       {
@@ -77426,7 +78006,7 @@
     "stepError": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 470,
+        "line": 479,
         "type": "function"
       }
     ],
@@ -77440,7 +78020,7 @@
     "stepLabel": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 506,
+        "line": 515,
         "type": "function"
       }
     ],
@@ -77464,17 +78044,17 @@
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 689,
+        "line": 695,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 723,
+        "line": 729,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 766,
+        "line": 772,
         "type": "heading"
       }
     ],
@@ -77730,6 +78310,13 @@
         "type": "function"
       }
     ],
+    "styles": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 309,
+        "type": "constant"
+      }
+    ],
     "subject": [
       {
         "file": "apps/astra-web/app/admin/page.tsx",
@@ -77758,17 +78345,17 @@
       },
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 100,
+        "line": 132,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 154,
+        "line": 186,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 255,
+        "line": 287,
         "type": "constant"
       },
       {
@@ -77778,12 +78365,12 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 127,
+        "line": 128,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 293,
+        "line": 294,
         "type": "constant"
       },
       {
@@ -77815,12 +78402,12 @@
     "subjectContext": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 254,
+        "line": 286,
         "type": "function"
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 683,
+        "line": 740,
         "type": "constant"
       }
     ],
@@ -77837,7 +78424,7 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 419,
+        "line": 428,
         "type": "constant"
       }
     ],
@@ -77868,7 +78455,7 @@
     "subjectNameError": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 537,
+        "line": 546,
         "type": "constant"
       }
     ],
@@ -77891,24 +78478,31 @@
         "type": "constant"
       }
     ],
+    "submitAllyChart": [
+      {
+        "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
+        "line": 619,
+        "type": "function"
+      }
+    ],
     "submitChartArrival": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 605,
+        "line": 662,
         "type": "function"
       }
     ],
     "submitChartRequest": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 578,
+        "line": 587,
         "type": "function"
       }
     ],
     "submitConfirmedReport": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 667,
+        "line": 724,
         "type": "function"
       }
     ],
@@ -78334,14 +78928,14 @@
     "synastryChartOptions": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 348,
+        "line": 351,
         "type": "constant"
       }
     ],
     "synastryComparisonName": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 384,
+        "line": 393,
         "type": "constant"
       }
     ],
@@ -78362,7 +78956,7 @@
     "synastryPartner": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 376,
+        "line": 385,
         "type": "constant"
       }
     ],
@@ -78409,14 +79003,14 @@
     "synastryPrimaryName": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 380,
+        "line": 389,
         "type": "constant"
       }
     ],
     "synastryReaderName": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 381,
+        "line": 390,
         "type": "constant"
       }
     ],
@@ -79102,62 +79696,62 @@
     "Tests Run": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 306,
+        "line": 312,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 444,
+        "line": 450,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 480,
+        "line": 486,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 508,
+        "line": 514,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 540,
+        "line": 546,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 570,
+        "line": 576,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 596,
+        "line": 602,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 629,
+        "line": 635,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 658,
+        "line": 664,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 681,
+        "line": 687,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 714,
+        "line": 720,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 755,
+        "line": 761,
         "type": "heading"
       }
     ],
@@ -79171,7 +79765,7 @@
     "text": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 549,
+        "line": 558,
         "type": "constant"
       },
       {
@@ -79608,7 +80202,7 @@
     "today": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 134,
+        "line": 135,
         "type": "constant"
       },
       {
@@ -79753,7 +80347,7 @@
     "TopBar": [
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 147,
+        "line": 149,
         "type": "component"
       }
     ],
@@ -79761,6 +80355,13 @@
       {
         "file": "apps/astra-web/components/TopBar.tsx",
         "line": 12,
+        "type": "constant"
+      }
+    ],
+    "topbarTitle": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 347,
         "type": "constant"
       }
     ],
@@ -79830,7 +80431,7 @@
     "trimmed": [
       {
         "file": "apps/astra-web/app/charts/page.tsx",
-        "line": 242,
+        "line": 274,
         "type": "constant"
       },
       {
@@ -80159,7 +80760,7 @@
     "updateField": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 427,
+        "line": 436,
         "type": "function"
       }
     ],
@@ -80545,7 +81146,7 @@
     "useAccountState": [
       {
         "file": "apps/astra-web/components/TopBar.tsx",
-        "line": 29,
+        "line": 31,
         "type": "function"
       }
     ],
@@ -80657,7 +81258,12 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 453,
+        "line": 293,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 514,
         "type": "constant"
       },
       {
@@ -80889,39 +81495,44 @@
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 126,
+        "line": 132,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 170,
+        "line": 176,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 202,
+        "line": 208,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 233,
+        "line": 239,
         "type": "heading"
       }
     ],
     "Validation And Steward Review": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 46,
+        "line": 29,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 69,
+        "line": 52,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 100,
+        "line": 75,
+        "type": "heading"
+      },
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 106,
         "type": "heading"
       }
     ],
@@ -81241,7 +81852,7 @@
     "visibleStepIndex": [
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "line": 373,
+        "line": 382,
         "type": "constant"
       }
     ],
@@ -81392,97 +82003,97 @@
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 40,
+        "line": 46,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 63,
+        "line": 69,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 86,
+        "line": 92,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 117,
+        "line": 123,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 149,
+        "line": 155,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 193,
+        "line": 199,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 224,
+        "line": 230,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 251,
+        "line": 257,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 435,
+        "line": 441,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 472,
+        "line": 478,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 499,
+        "line": 505,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 533,
+        "line": 539,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 564,
+        "line": 570,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 588,
+        "line": 594,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 622,
+        "line": 628,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 652,
+        "line": 658,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 673,
+        "line": 679,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 705,
+        "line": 711,
         "type": "heading"
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "line": 739,
+        "line": 745,
         "type": "heading"
       }
     ],
@@ -82589,15 +83200,15 @@
       },
       {
         "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-        "weight": 553.21,
+        "weight": 573.2,
         "bucket": "other",
-        "estimated_tokens": 13463,
-        "lines": 1304,
-        "symbols": 123,
+        "estimated_tokens": 14024,
+        "lines": 1361,
+        "symbols": 128,
         "symbol_type_counts": {
           "component": 1,
-          "constant": 76,
-          "function": 35,
+          "constant": 80,
+          "function": 36,
           "type": 11
         },
         "dependency_in": 2,
@@ -82655,6 +83266,22 @@
         "route_count": 0
       },
       {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "weight": 317.22,
+        "bucket": "other",
+        "estimated_tokens": 11076,
+        "lines": 764,
+        "symbols": 89,
+        "symbol_type_counts": {
+          "constant": 79,
+          "function": 9,
+          "type": 1
+        },
+        "dependency_in": 0,
+        "dependency_out": 2,
+        "route_count": 0
+      },
+      {
         "file": "scripts/lib/semantic-synthesis-v2-evaluation.ts",
         "weight": 299.31,
         "bucket": "other",
@@ -82704,19 +83331,17 @@
         "route_count": 0
       },
       {
-        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "weight": 272.24,
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "weight": 274.19,
         "bucket": "other",
-        "estimated_tokens": 9420,
-        "lines": 678,
-        "symbols": 74,
+        "estimated_tokens": 16057,
+        "lines": 833,
+        "symbols": 90,
         "symbol_type_counts": {
-          "constant": 64,
-          "function": 9,
-          "type": 1
+          "heading": 90
         },
         "dependency_in": 0,
-        "dependency_out": 2,
+        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -82736,20 +83361,6 @@
         "dependency_in": 0,
         "dependency_out": 3,
         "route_count": 2
-      },
-      {
-        "file": "docs/progress/PROGRESS_LOG.md",
-        "weight": 265.2,
-        "bucket": "other",
-        "estimated_tokens": 15307,
-        "lines": 813,
-        "symbols": 87,
-        "symbol_type_counts": {
-          "heading": 87
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
-        "route_count": 0
       },
       {
         "file": "packages/astrology/src/report/promptBuilderContracts.ts",
@@ -82882,14 +83493,14 @@
       },
       {
         "file": "apps/astra-web/app/allies/page.tsx",
-        "weight": 203.32,
+        "weight": 206.31,
         "bucket": "other",
-        "estimated_tokens": 3596,
-        "lines": 324,
-        "symbols": 44,
+        "estimated_tokens": 3760,
+        "lines": 337,
+        "symbols": 45,
         "symbol_type_counts": {
           "component": 3,
-          "constant": 32,
+          "constant": 33,
           "function": 8,
           "type": 1
         },
@@ -82930,6 +83541,23 @@
         "route_count": 0
       },
       {
+        "file": "apps/astra-web/app/charts/page.tsx",
+        "weight": 167.33,
+        "bucket": "other",
+        "estimated_tokens": 2969,
+        "lines": 322,
+        "symbols": 37,
+        "symbol_type_counts": {
+          "component": 3,
+          "constant": 24,
+          "function": 6,
+          "type": 4
+        },
+        "dependency_in": 0,
+        "dependency_out": 5,
+        "route_count": 0
+      },
+      {
         "file": "apps/astra-web/components/ReportChartPlate.tsx",
         "weight": 166.36,
         "bucket": "other",
@@ -82961,23 +83589,6 @@
         "route_count": 0
       },
       {
-        "file": "apps/astra-web/app/charts/page.tsx",
-        "weight": 158.34,
-        "bucket": "other",
-        "estimated_tokens": 2611,
-        "lines": 290,
-        "symbols": 34,
-        "symbol_type_counts": {
-          "component": 3,
-          "constant": 21,
-          "function": 6,
-          "type": 4
-        },
-        "dependency_in": 0,
-        "dependency_out": 5,
-        "route_count": 0
-      },
-      {
         "file": "apps/astra-web/components/SelfTabAvatar.tsx",
         "weight": 155.37,
         "bucket": "other",
@@ -82998,7 +83609,7 @@
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
         "weight": 151.31,
         "bucket": "other",
-        "estimated_tokens": 4142,
+        "estimated_tokens": 4144,
         "lines": 302,
         "symbols": 42,
         "symbol_type_counts": {
@@ -83045,7 +83656,7 @@
         "file": "apps/astra-web/app/self/page.tsx",
         "weight": 146.33,
         "bucket": "other",
-        "estimated_tokens": 3048,
+        "estimated_tokens": 3060,
         "lines": 294,
         "symbols": 33,
         "symbol_type_counts": {
@@ -83275,6 +83886,22 @@
         "route_count": 1
       },
       {
+        "file": "apps/astra-web/components/TopBar.tsx",
+        "weight": 121.38,
+        "bucket": "other",
+        "estimated_tokens": 1699,
+        "lines": 171,
+        "symbols": 20,
+        "symbol_type_counts": {
+          "component": 3,
+          "constant": 11,
+          "function": 6
+        },
+        "dependency_in": 1,
+        "dependency_out": 4,
+        "route_count": 0
+      },
+      {
         "file": "apps/composer-web/app/api/chart-arrival/rewrite/route.ts",
         "weight": 117.13,
         "bucket": "app/api",
@@ -83291,22 +83918,6 @@
         "dependency_in": 0,
         "dependency_out": 1,
         "route_count": 1
-      },
-      {
-        "file": "apps/astra-web/components/TopBar.tsx",
-        "weight": 115.38,
-        "bucket": "other",
-        "estimated_tokens": 1608,
-        "lines": 167,
-        "symbols": 18,
-        "symbol_type_counts": {
-          "component": 3,
-          "constant": 9,
-          "function": 6
-        },
-        "dependency_in": 1,
-        "dependency_out": 4,
-        "route_count": 0
       },
       {
         "file": "apps/astra-web/components/BirthDateTimeSheet.helpers.ts",
@@ -84005,8 +84616,8 @@
         "file": "apps/astra-web/lib/i18n.ts",
         "weight": 73.23,
         "bucket": "other",
-        "estimated_tokens": 9839,
-        "lines": 896,
+        "estimated_tokens": 10006,
+        "lines": 911,
         "symbols": 1,
         "symbol_type_counts": {
           "constant": 1
@@ -84181,7 +84792,7 @@
         "file": "apps/astra-web/e2e/synastry-v3-production.spec.ts",
         "weight": 67.35,
         "bucket": "other",
-        "estimated_tokens": 2487,
+        "estimated_tokens": 2486,
         "lines": 157,
         "symbols": 19,
         "symbol_type_counts": {
@@ -84506,6 +85117,20 @@
         "route_count": 0
       },
       {
+        "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
+        "weight": 48.36,
+        "bucket": "akashic",
+        "estimated_tokens": 2128,
+        "lines": 180,
+        "symbols": 14,
+        "symbol_type_counts": {
+          "heading": 14
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "apps/composer-web/app/course/page.tsx",
         "weight": 47.4,
         "bucket": "other",
@@ -84671,20 +85296,6 @@
         "route_count": 0
       },
       {
-        "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
-        "weight": 42.38,
-        "bucket": "akashic",
-        "estimated_tokens": 1638,
-        "lines": 164,
-        "symbols": 12,
-        "symbol_type_counts": {
-          "heading": 12
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
-        "route_count": 0
-      },
-      {
         "file": "apps/astra-web/lib/internal-token.ts",
         "weight": 42.15,
         "bucket": "other",
@@ -84742,6 +85353,22 @@
         },
         "dependency_in": 0,
         "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "apps/astra-web/components/AppNavigation.tsx",
+        "weight": 39.88,
+        "bucket": "other",
+        "estimated_tokens": 414,
+        "lines": 42,
+        "symbols": 7,
+        "symbol_type_counts": {
+          "component": 1,
+          "constant": 5,
+          "function": 1
+        },
+        "dependency_in": 1,
+        "dependency_out": 1,
         "route_count": 0
       },
       {
@@ -85555,22 +86182,6 @@
         "route_count": 0
       },
       {
-        "file": "apps/astra-web/components/AppNavigation.tsx",
-        "weight": 33.82,
-        "bucket": "other",
-        "estimated_tokens": 320,
-        "lines": 38,
-        "symbols": 5,
-        "symbol_type_counts": {
-          "component": 1,
-          "constant": 3,
-          "function": 1
-        },
-        "dependency_in": 1,
-        "dependency_out": 1,
-        "route_count": 0
-      },
-      {
         "file": "apps/astra-web/app/layout.tsx",
         "weight": 33.42,
         "bucket": "other",
@@ -85657,11 +86268,39 @@
         "route_count": 0
       },
       {
+        "file": "akashic/skills/separate-management-detail-and-paid-generation-intents.md",
+        "weight": 33.07,
+        "bucket": "akashic",
+        "estimated_tokens": 724,
+        "lines": 55,
+        "symbols": 9,
+        "symbol_type_counts": {
+          "heading": 9
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "akashic/skills/enforce-astra-interface-chrome-through-i18n.md",
         "weight": 33.04,
         "bucket": "akashic",
         "estimated_tokens": 388,
         "lines": 50,
+        "symbols": 9,
+        "symbol_type_counts": {
+          "heading": 9
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "akashic/skills/progressed-b-contract-must-stay-family-scoped.md",
+        "weight": 33.02,
+        "bucket": "akashic",
+        "estimated_tokens": 611,
+        "lines": 51,
         "symbols": 9,
         "symbol_type_counts": {
           "heading": 9
@@ -89117,9 +89756,9 @@
       {
         "name": "top-weighted",
         "budget_tokens": 128000,
-        "estimated_tokens": 138387,
+        "estimated_tokens": 138948,
         "file_count": 8,
-        "symbol_count": 1904,
+        "symbol_count": 1909,
         "files": [
           {
             "rank": 1,
@@ -89227,15 +89866,15 @@
           {
             "rank": 7,
             "file": "apps/astra-web/components/BirthOnboardingPanel.tsx",
-            "weight": 553.21,
+            "weight": 573.2,
             "bucket": "other",
-            "estimated_tokens": 13463,
-            "lines": 1304,
-            "symbols": 123,
+            "estimated_tokens": 14024,
+            "lines": 1361,
+            "symbols": 128,
             "symbol_type_counts": {
               "component": 1,
-              "constant": 76,
-              "function": 35,
+              "constant": 80,
+              "function": 36,
               "type": 11
             },
             "dependency_in": 2,
@@ -89264,9 +89903,9 @@
       }
     ],
     "coverage": {
-      "files": 453,
-      "symbols": 6250,
-      "total_estimated_tokens": 1186658
+      "files": 455,
+      "symbols": 6301,
+      "total_estimated_tokens": 1192337
     }
   }
 }

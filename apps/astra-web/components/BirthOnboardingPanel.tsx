@@ -102,6 +102,7 @@ type BirthOnboardingPanelProps = {
   chartArrivalEligible?: boolean;
   hideRecentRequestPanels?: boolean;
   hideSummaryRail?: boolean;
+  allyFlow?: "add" | "report";
 };
 
 type FormState = {
@@ -311,7 +312,8 @@ export function BirthOnboardingPanel({
   initialChartArrival,
   chartArrivalEligible = false,
   hideRecentRequestPanels = false,
-  hideSummaryRail = false
+  hideSummaryRail = false,
+  allyFlow = "report"
 }: BirthOnboardingPanelProps) {
   const initialChartRequest = initialChartRequestId
     ? initialRequests.find((request) => request.id === initialChartRequestId)
@@ -344,6 +346,7 @@ export function BirthOnboardingPanel({
   const [isCompletingArrival, setIsCompletingArrival] = useState(false);
 
   const isAlly = subjectType === "ally";
+  const isAllyAddFlow = isAlly && allyFlow === "add";
   const isAdmin = role === "admin";
   const synastryChartOptions = useMemo(
     () => (synastryComparisonRequests ?? requests).filter((request) =>
@@ -356,7 +359,7 @@ export function BirthOnboardingPanel({
   const availableReportTypes = REPORT_PRODUCT_ORDER;
   const panelCopy = isAlly ? ui.allies.wizard : ui.self;
   const isWizardComplete = isSubmissionComplete;
-  const canSubmit = activeStep === "report" && !isWizardComplete;
+  const canSubmit = (isAllyAddFlow ? activeStep === "birth_details" : activeStep === "report") && !isWizardComplete;
   const existingChartRequest = selectedExistingChartRequestId
     ? requests.find((request) => request.id === selectedExistingChartRequestId)
     : undefined;
@@ -369,7 +372,13 @@ export function BirthOnboardingPanel({
   const isExistingChartBirthEditMode = isAlly && isUsingExistingChart && requestedInitialStep === "birth_details";
   const isExistingChartOrderMode = isAlly && isUsingExistingChart && !isExistingChartBirthEditMode;
   const isExistingChartLocked = isExistingChartOrderMode;
-  const visibleSteps: readonly Step[] = isExistingChartOrderMode ? ["report"] : isUsingExistingChart ? ["birth_details", "report"] : steps;
+  const visibleSteps: readonly Step[] = isAllyAddFlow
+    ? ["subject", "birth_details"]
+    : isExistingChartOrderMode
+      ? ["report"]
+      : isUsingExistingChart
+        ? ["birth_details", "report"]
+        : steps;
   const visibleStepIndex = visibleSteps.indexOf(activeStep);
   const displayedStepIndex = visibleStepIndex >= 0 ? visibleStepIndex : 0;
   const isSingleStepFlow = visibleSteps.length === 1;
@@ -588,6 +597,11 @@ export function BirthOnboardingPanel({
       return;
     }
 
+    if (isAllyAddFlow) {
+      await submitAllyChart();
+      return;
+    }
+
     if (isChartArrivalFlow) {
       const requiredStep = (["subject", "birth_details"] as const).find((step) => stepError(step));
       if (requiredStep) {
@@ -600,6 +614,49 @@ export function BirthOnboardingPanel({
     }
 
     setIsConfirmingReport(true);
+  }
+
+  async function submitAllyChart() {
+    if (isSubmitting) return;
+    const requiredStep = (["subject", "birth_details"] as const).find((step) => stepError(step));
+    if (requiredStep) {
+      setActiveStep(requiredStep);
+      setMessage(stepError(requiredStep));
+      return;
+    }
+
+    setIsSubmitting(true);
+    setMessage(ui.allies.addWorking);
+    try {
+      const ally = await createAllyRecord();
+      const chartRequest = (await requestJson<{ request: ChartMakerRequest }>("/api/chart-requests", {
+        method: "POST",
+        body: JSON.stringify({
+          subjectName: form.subjectName.trim(),
+          birthData: birthDataFor(form),
+          source: "ally",
+          context: {
+            subject: {
+              subjectType: "ally",
+              subjectId: ally.id,
+              allyId: ally.id,
+              displayName: ally.name,
+              relationship: ally.relationship,
+              ...(ally.note ? { note: ally.note } : {})
+            },
+            chartSettings: {
+              zodiacMode: form.zodiacMode,
+              houseSystem: form.houseSystem
+            }
+          }
+        })
+      })).request;
+      setRequests((current) => [chartRequest, ...current]);
+      window.location.assign("/allies");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : ui.self.chartRequestError);
+      setIsSubmitting(false);
+    }
   }
 
   async function submitChartArrival() {
@@ -676,7 +733,7 @@ export function BirthOnboardingPanel({
     setIsConfirmingReport(false);
     setIsSubmitting(true);
     setIsSubmissionComplete(false);
-    setMessage(ui.self.chartRequestWorking);
+    setMessage(isAlly ? ui.allies.reportWorking : ui.self.chartRequestWorking);
 
     try {
       const ally = !existingChartRequest && isAlly ? await createAllyRecord() : undefined;
@@ -818,10 +875,10 @@ export function BirthOnboardingPanel({
   }
 
   return (
-    <section className={styles.panel} aria-label={panelCopy.chartRequestPanelLabel}>
+    <section className={styles.panel} aria-label={isAllyAddFlow ? ui.allies.addPanelLabel : isAlly ? ui.allies.reportPanelLabel : panelCopy.chartRequestPanelLabel}>
       <article className="card">
-        <h2>{isAlly ? ui.allies.wizard.chartRequestExistingTitle : isChartArrivalFlow ? ui.self.chartArrivalPanelTitle : panelCopy.chartRequestTitle}</h2>
-        {!isAlly && !isExistingChartOrderMode ? <p>{isChartArrivalFlow ? ui.self.chartArrivalPanelIntro : panelCopy.chartRequestIntro}</p> : null}
+        <h2>{isAllyAddFlow ? ui.allies.addTitle : isAlly ? ui.allies.reportTitle(form.subjectName) : isChartArrivalFlow ? ui.self.chartArrivalPanelTitle : panelCopy.chartRequestTitle}</h2>
+        {isAllyAddFlow ? <p>{ui.allies.addIntro}</p> : !isAlly && !isExistingChartOrderMode ? <p>{isChartArrivalFlow ? ui.self.chartArrivalPanelIntro : panelCopy.chartRequestIntro}</p> : null}
 
         {!isSingleStepFlow ? (
           <div
@@ -896,8 +953,8 @@ export function BirthOnboardingPanel({
               <button className={`button ${styles.primarySubmitAction}`} type="submit" disabled={isSubmitting || Boolean(activeStepError)}>
                 {isSubmitting ? <Send aria-hidden="true" size={18} /> : null}
                 {isSubmitting
-                  ? isChartArrivalFlow ? ui.self.chartArrivalReading : ui.self.chartRequestWorking
-                  : isChartArrivalFlow ? ui.self.chartArrivalReveal : ui.self.chartRequestSubmit}
+                  ? isAllyAddFlow ? ui.allies.addWorking : isAlly ? ui.allies.reportWorking : isChartArrivalFlow ? ui.self.chartArrivalReading : ui.self.chartRequestWorking
+                  : isAllyAddFlow ? ui.allies.addSubmit : isAlly ? ui.allies.createReport : isChartArrivalFlow ? ui.self.chartArrivalReveal : ui.self.chartRequestSubmit}
               </button>
             ) : isWizardComplete ? (
               <div className={styles.completionActions}>
@@ -1143,8 +1200,8 @@ export function BirthOnboardingPanel({
               <button className="button" disabled={isSubmitting || Boolean(activeStepError)} type="submit">
                 {isSubmitting ? <Send aria-hidden="true" size={18} /> : null}
                 {isSubmitting
-                  ? isChartArrivalFlow ? ui.self.chartArrivalReading : ui.self.chartRequestWorking
-                  : isChartArrivalFlow ? ui.self.chartArrivalReveal : ui.self.chartRequestSubmit}
+                  ? isAllyAddFlow ? ui.allies.addWorking : isAlly ? ui.allies.reportWorking : isChartArrivalFlow ? ui.self.chartArrivalReading : ui.self.chartRequestWorking
+                  : isAllyAddFlow ? ui.allies.addSubmit : isAlly ? ui.allies.createReport : isChartArrivalFlow ? ui.self.chartArrivalReveal : ui.self.chartRequestSubmit}
               </button>
             </div>
           ) : null}
@@ -1211,7 +1268,7 @@ export function BirthOnboardingPanel({
                   onClick={submitConfirmedReport}
                   disabled={isSubmitting || !canAffordSelectedReport}
                 >
-                  {ui.self.reportConfirmOk}
+                  {isAlly ? ui.allies.createReport : ui.self.reportConfirmOk}
                 </button>
               </div>
             </section>

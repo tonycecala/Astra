@@ -23,7 +23,7 @@ This repository contains `astra-clean-start`. No package description found.
 - Generator: `ak`
 - Machine manifest: `akashic/repomaps/current.json`
 - Meta index: `akashic/repomaps/meta.json`
-- Estimated token footprint: `1186658`
+- Estimated token footprint: `1192337`
 
 ## Architecture
 - `akashic/` contains durable engineering knowledge artifacts.
@@ -101,15 +101,15 @@ tsconfig.json
 - `packages/astrology/src/structuralChartFacts.ts` - weight 798.22, ~12000 tokens, 206 symbols, in:1/out:0
 - `apps/composer-web/lib/cardLibrary.ts` - weight 585.24, ~8636 tokens, 135 symbols, in:16/out:13
 - `packages/contracts/src/index.ts` - weight 578.22, ~11603 tokens, 210 symbols, in:0/out:0
-- `apps/astra-web/components/BirthOnboardingPanel.tsx` - weight 553.21, ~13463 tokens, 123 symbols, in:2/out:5
+- `apps/astra-web/components/BirthOnboardingPanel.tsx` - weight 573.2, ~14024 tokens, 128 symbols, in:2/out:5
 - `apps/astra-web/app/admin/page.tsx` - weight 481.22, ~11135 tokens, 100 symbols, in:0/out:2
 - `apps/composer-web/components/CardWorkspace.tsx` - weight 457.24, ~9273 tokens, 91 symbols, in:3/out:1
 - `packages/astrology/src/meaningComplexReportViews.ts` - weight 394.3, ~4580 tokens, 99 symbols, in:2/out:0
+- `apps/astra-web/e2e/foundation-routes.spec.ts` - weight 317.22, ~11076 tokens, 89 symbols, in:0/out:2
 - `scripts/lib/semantic-synthesis-v2-evaluation.ts` - weight 299.31, ~4127 tokens, 79 symbols, in:0/out:2
 - `apps/astra-web/components/ReportReader.tsx` - weight 296.31, ~3842 tokens, 59 symbols, in:2/out:8
 - `packages/astrology/src/normalizedChartFacts.ts` - weight 289.31, ~3967 tokens, 77 symbols, in:1/out:0
-- `apps/astra-web/e2e/foundation-routes.spec.ts` - weight 272.24, ~9420 tokens, 74 symbols, in:0/out:2
-- `apps/astra-web/app/api/reports/route.ts` - weight 266.36, ~2151 tokens, 42 symbols, in:0/out:3
+- `docs/progress/PROGRESS_LOG.md` - weight 274.19, ~16057 tokens, 90 symbols, in:0/out:0
 
 ## Critical Routes
 - `POST /api/admin/replay-report` in `apps/astra-web/app/api/admin/replay-report/route.ts:15`
@@ -160,7 +160,7 @@ tsconfig.json
 ## Pareto Profiles
 - `32000` tokens -> 1 files, 672 symbols, ~46136 estimated tokens.
 - `64000` tokens -> 2 files, 897 symbols, ~66031 estimated tokens.
-- `128000` tokens -> 8 files, 1904 symbols, ~138387 estimated tokens.
+- `128000` tokens -> 8 files, 1909 symbols, ~138948 estimated tokens.
 
 ## Data Model
 Database/schema ownership is present and should be treated as product runtime architecture, not an Akashic constraint violation.
@@ -181,8 +181,8 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - `apps/astra-web/app/admin/page.tsx` needs extra care because it is large or touches auth/data/schema concerns.
 - `apps/composer-web/components/CardWorkspace.tsx` needs extra care because it is large or touches auth/data/schema concerns.
 - `packages/astrology/src/meaningComplexReportViews.ts` needs extra care because it is large or touches auth/data/schema concerns.
+- `apps/astra-web/e2e/foundation-routes.spec.ts` needs extra care because it is large or touches auth/data/schema concerns.
 - `scripts/lib/semantic-synthesis-v2-evaluation.ts` needs extra care because it is large or touches auth/data/schema concerns.
-- `apps/astra-web/components/ReportReader.tsx` needs extra care because it is large or touches auth/data/schema concerns.
 
 ## Current Priorities
 - Honor this repo's own AGENTS.md, ADRs, REPOMAP, and local Akashic artifacts before applying central guidance.
@@ -192,4 +192,4 @@ This is a Next.js app. Confirm the production build with the repo's build script
 - Treat auth as a first-class product concern and verify the repo's documented local auth flow.
 - Keep Composer boundaries explicit: Composer composes and publishes artifacts through contracts.
 
-Generated from 453 local files for `astra-clean-start`.
+Generated from 455 local files for `astra-clean-start`.

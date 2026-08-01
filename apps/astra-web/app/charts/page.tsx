@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, BookOpenText, ChartPie, Pencil } from "lucide-react";
+import { redirect } from "next/navigation";
+import { ArrowLeft, ArrowRight, BookOpenText, ChartPie, Pencil } from "lucide-react";
 import { buildAstrologyChartSnapshot } from "@astra/astrology";
 import type { AstrologyReportRequest, ChartMakerRequest, ChartSettings } from "@astra/contracts";
 import { astrologyReportResults, chartResults, db, listUserAstrologyReportRequests, listUserChartMakerRequests } from "@astra/db";
@@ -16,6 +17,7 @@ type ChartsPageParams = {
   searchParams: Promise<{
     chart?: string;
     chartId?: string;
+    from?: string;
   }>;
 };
 
@@ -38,7 +40,7 @@ type ChartListItem = {
 };
 
 export default async function ChartsPage({ searchParams }: ChartsPageParams) {
-  const { chart, chartId } = await searchParams;
+  const { chart, chartId, from } = await searchParams;
   const selectedChartId = normalizeChartId(chartId ?? chart);
   const { profile } = await getAstraAuthContext();
 
@@ -63,7 +65,37 @@ export default async function ChartsPage({ searchParams }: ChartsPageParams) {
   }
 
   const chartItems = await getUserChartItems(profile.userId);
-  const selected = chartItems.find((item) => item.chart.id === selectedChartId) ?? chartItems.at(0) ?? null;
+  const selected = selectedChartId ? chartItems.find((item) => item.chart.id === selectedChartId) ?? null : chartItems.at(0) ?? null;
+
+  if (selectedChartId) {
+    if (!selected) {
+      const backToSelf = from === "self";
+      return (
+        <section className="grid" aria-label={ui.charts.selectedLabel}>
+          <article className="card">
+            <h1>{ui.charts.chartNotFoundTitle}</h1>
+            <p>{ui.charts.chartNotFoundBody}</p>
+            <Link className="button secondary" href={backToSelf ? "/self" : "/allies"}>
+              <ArrowLeft aria-hidden="true" size={16} />
+              {backToSelf ? ui.charts.backToSelf : ui.charts.backToAllies}
+            </Link>
+          </article>
+        </section>
+      );
+    }
+    const owner = subjectContext(selected.chart).source;
+    const canonicalOwner = owner === "ally" ? "allies" : "self";
+    if (from !== canonicalOwner) redirect(`/charts?chart=${encodeURIComponent(selected.chart.id)}&from=${canonicalOwner}`);
+    return (
+      <section className="chartSinglePage" aria-label={ui.charts.selectedLabel}>
+        <Link className="button secondary chartBackLink" href={owner === "ally" ? "/allies" : "/self"}>
+          <ArrowLeft aria-hidden="true" size={16} />
+          {owner === "ally" ? ui.charts.backToAllies : ui.charts.backToSelf}
+        </Link>
+        <SelectedChartPanel item={selected} />
+      </section>
+    );
+  }
 
   return (
     <>
@@ -123,7 +155,7 @@ function ChartCard({ active, item }: { active: boolean; item: ChartListItem }) {
         </div>
       </div>
       <div className="chartHomeActions" aria-label={ui.charts.cardActionsLabel}>
-        <Link className="button secondary" href={`/charts?chart=${chart.id}`} scroll={false}>
+        <Link className="button secondary" href={`/charts?chart=${chart.id}&from=${subject.source === "ally" ? "allies" : "self"}`} scroll={false}>
           <ChartPie aria-hidden="true" size={16} />
           {ui.charts.viewChart}
         </Link>
