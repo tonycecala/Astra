@@ -17,7 +17,7 @@ export type JourneyStep = {
   item: UserFeedItem;
   card: AstraCard;
   primaryAction?: { href: string; label: string };
-  provenance: string;
+  provenance?: string;
 };
 export type PublicJourneyCard = { item: StreamItem | { id: string }; card: AstraCard };
 export type JourneyViewModel = { currentStep?: JourneyStep; queue: JourneyStep[]; queuedStepCount: number };
@@ -83,13 +83,7 @@ function primaryActionFor(item: UserFeedItem): JourneyStep["primaryAction"] {
 }
 
 function provenanceFor(item: UserFeedItem) {
-  if (item.reasonCode === "focus_first_exploration") {
-    const focus = item.displayPayload.explorerFocus;
-    if (focus && typeof focus === "object" && !Array.isArray(focus) && (focus as Record<string, unknown>).status === "selected") {
-      return ui.journey.provenance.focusSelected;
-    }
-    return ui.journey.provenance.focusSkipped;
-  }
+  if (item.reasonCode === "focus_first_exploration") return undefined;
   if (item.reasonCode === "explicit_report_signal_publish") return ui.journey.provenance.report;
   if (item.feedKind === "ally") return ui.journey.provenance.ally;
   if (item.feedKind === "gift") return ui.journey.provenance.gift;

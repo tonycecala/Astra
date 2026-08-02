@@ -535,8 +535,7 @@ test.describe("clean-start routes", () => {
     await expect(page).toHaveURL(/\/journey(?:[?#]|$)/);
     await expect(page.locator("article.astraPublishedCard .astraPublishedCardTitle")).toHaveText("Notice what you carry into connection");
     await expect(page.getByRole("link", { name: "Explore this in your chart" })).toHaveAttribute("href", `/charts?chart=${encodeURIComponent(arrivalPayload.chartRequestId)}&from=self`);
-    await page.getByText("Why this now?").click();
-    await expect(page.getByText(/You chose a starting focus before Astra read your chart/)).toBeVisible();
+    await expect(page.getByText("Why this now?")).toHaveCount(0);
     const repeatComplete = await page.request.post(`/api/chart-arrivals/${encodeURIComponent(arrivalPayload.chartRequestId)}/complete`);
     expect(repeatComplete.ok()).toBe(true);
     const journeyAfterRepeat = await listUserFeedItems(db, { userId, state: "available", limit: 20 });

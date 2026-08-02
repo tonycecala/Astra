@@ -61,12 +61,10 @@ export const ui = {
     completedNotice: "Step completed.",
     archivedNotice: "Step archived.",
     provenance: {
-      focusSelected: "You chose a starting focus before Astra read your chart. This private step uses that focus as an editorial lens and stays anchored to the chart signals shown here. Changing your focus later will shape future guidance, not rewrite this step.",
-      focusSkipped: "You left your starting focus open, so Astra chose a broad first exploration anchored only to supported chart signals. You can choose a focus later from Self without changing this step.",
-      report: "This recent report is ready in your private Library. Journey is bringing it forward once so you can decide what comes next.",
-      ally: "This step connects to an Ally saved in your private Astra.",
-      gift: "This step connects to a Gift in your private Astra.",
-      privateJourney: "This step was placed in your private Journey from Astra's approved guidance library."
+      report: "A recent report is ready in your Library.",
+      ally: "This step connects to one of your Allies.",
+      gift: "This step connects to one of your Gifts.",
+      privateJourney: "Astra placed this step in your private Journey."
     },
     upNext: "Up next",
     upNextLabel: "Upcoming Journey steps",

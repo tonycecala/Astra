@@ -68,10 +68,10 @@ export function JourneyStepReader({
             title={currentStep.card.title}
           />
         </article>
-        <details className="journey-provenance">
+        {currentStep.provenance ? <details className="journey-provenance">
           <summary>{ui.journey.whyThisNow}</summary>
           <p>{currentStep.provenance}</p>
-        </details>
+        </details> : null}
         {error ? <p className="form-error" role="alert">{error}</p> : null}
         {notice ? <p className="journey-notice" role="status"><span>{notice.message}</span><button className="text-button" disabled={pendingId === notice.feedItemId} onClick={() => act(notice.feedItemId, "restore")} type="button">{ui.journey.undo}</button></p> : null}
         {currentStep.primaryAction ? <Link className="journey-open-link" href={currentStep.primaryAction.href} prefetch={false}>{currentStep.primaryAction.label}<span aria-hidden="true">→</span></Link> : null}

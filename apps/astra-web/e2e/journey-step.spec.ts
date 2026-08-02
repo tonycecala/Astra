@@ -88,7 +88,7 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   await expect(pageA.getByText("5 steps")).toBeVisible();
   await expect(pageA.getByText("2 more steps are held in your private queue.")).toBeVisible();
   await pageA.getByText("Why this now?").click();
-  await expect(pageA.getByText("This recent report is ready in your private Library. Journey is bringing it forward once so you can decide what comes next.")).toBeVisible();
+  await expect(pageA.getByText("A recent report is ready in your Library.")).toBeVisible();
 
   const forged = await pageA.request.patch(`/api/journey/items/${encodeURIComponent(userBOnly.id)}`, { data: { action: "dismiss" } });
   expect(forged.status()).toBe(404);
