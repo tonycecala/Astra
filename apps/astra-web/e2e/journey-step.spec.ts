@@ -78,6 +78,9 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
   await expect(pageA.getByText("B private step")).toHaveCount(0);
   await expect(pageA.getByRole("link", { name: "Open report" })).toHaveAttribute("href", /\/library\?reportId=/);
+  const toolbar = pageA.getByRole("toolbar", { name: "Journey card toolbar" });
+  await expect(toolbar.getByRole("button", { name: "Archive" })).toHaveCount(1);
+  await expect(pageA.getByRole("button", { name: "OK", exact: true })).toHaveCount(0);
   await expect(pageA.getByText("Obsolete imported report signal")).toHaveCount(0);
   const [repairedSignal] = await db.select({ state: userFeedItems.state }).from(userFeedItems).where(eq(userFeedItems.id, orphanSignal.id)).limit(1);
   expect(repairedSignal?.state).toBe("seen");
@@ -106,26 +109,13 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   await pageA.reload();
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
 
-  await pageA.getByRole("button", { name: "OK" }).click();
-  await expect(pageA.getByText("Noted. It will make room when something newer arrives.")).toBeVisible();
-  await expect(pageA.getByRole("button", { name: "Noted" })).toBeDisabled();
-  await expect(pageA.getByText("This stays current until newer guidance arrives.")).toBeVisible();
-  const [acknowledged] = await db.select({ state: userFeedItems.state, displayPayload: userFeedItems.displayPayload }).from(userFeedItems).where(eq(userFeedItems.id, (await listUserFeedItems(db, { userId: userA, state: "available", limit: 20 })).items.find((item) => item.title === "A private current step")!.id)).limit(1);
-  expect(acknowledged?.state).toBe("available");
-  expect((acknowledged?.displayPayload as Record<string, unknown> | undefined)?.acknowledgedAt).toEqual(expect.any(String));
-
-  await new Promise((resolve) => setTimeout(resolve, 10));
-  const newerGuidance = await seedStep(userA, { rank: 25, title: "Newer private guidance" });
-  await pageA.reload();
-  await expect(card.locator(".astraPublishedCardTitle")).toHaveText("Newer private guidance");
-
   await pageA.getByRole("button", { name: "Archive" }).click();
-  const repeatedArchive = await pageA.request.patch(`/api/journey/items/${encodeURIComponent(newerGuidance.id)}`, { data: { action: "archive" } });
+  const repeatedArchive = await pageA.request.patch(`/api/journey/items/${encodeURIComponent(currentStep.id)}`, { data: { action: "archive" } });
   expect(repeatedArchive.status()).toBe(200);
   await pageA.goto("/library");
   const archive = pageA.getByLabel("Journey Archive");
   await expect(archive).toBeVisible();
-  await expect(archive.getByText("Newer private guidance")).toBeVisible();
+  await expect(archive.getByText("A private current step")).toBeVisible();
   await expect(archive.getByText("B private step")).toHaveCount(0);
   const [reportsAfterArchive, artifactsAfterArchive, creditsAfterArchive] = await Promise.all([
     db.select({ id: astrologyReportRequests.id }).from(astrologyReportRequests).where(eq(astrologyReportRequests.userId, userA)),
@@ -138,13 +128,13 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   await archive.getByRole("button", { name: "Return to Journey" }).click();
   await expect(pageA.getByLabel("Journey Archive")).toHaveCount(0);
   await pageA.goto("/journey");
-  await expect(card.locator(".astraPublishedCardTitle")).toHaveText("Newer private guidance");
+  await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
 
   const currentActionUrl = "**/api/journey/items/**";
   await pageA.route(currentActionUrl, (route) => route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ error: "TEST_FAILURE" }) }));
-  await pageA.getByRole("button", { name: "OK" }).click();
+  await pageA.getByRole("button", { name: "Archive" }).click();
   await expect(pageA.locator(".form-error[role=alert]")).toHaveText("Astra could not save that change. Please try again.");
-  await expect(card.locator(".astraPublishedCardTitle")).toHaveText("Newer private guidance");
+  await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
   await pageA.unroute(currentActionUrl);
 
   for (const viewport of [{ width: 820, height: 1180 }, { width: 390, height: 844 }]) {

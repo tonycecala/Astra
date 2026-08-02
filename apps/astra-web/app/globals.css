@@ -876,10 +876,6 @@ textarea {
   height: clamp(132px, 18vw, 190px);
   min-height: 132px;
 }
-.journey-current-card--acknowledged { border-color: color-mix(in srgb, var(--success) 42%, var(--line)); background: color-mix(in srgb, var(--success) 5%, var(--panel)); }
-.journey-acknowledged { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; margin: 14px 0 0; color: var(--muted); font-size: .92rem; }
-.journey-acknowledged > span:first-child { display: inline-grid; width: 18px; height: 18px; place-items: center; border-radius: 999px; background: var(--success); color: #102218; font-size: .72rem; font-weight: 900; }
-.journey-acknowledged strong { color: var(--success); }
 .journey-current-card .astraPublishedCardImage {
   height: 100%;
   aspect-ratio: auto;
@@ -902,29 +898,21 @@ textarea {
 .journey-open-link:hover,
 .journey-open-link:focus-visible { color: color-mix(in srgb, var(--gold) 72%, #fff); text-decoration: underline; text-underline-offset: 4px; }
 .journey-open-link span { font-size: 1.1em; }
-.journey-step-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
-.journey-step-actions .button {
-  min-height: 46px;
-  padding: 11px 18px;
-  border-radius: 9px;
-  font-weight: 760;
-  line-height: 1.15;
+.journey-card-toolbar { display: flex; justify-content: flex-end; margin-top: 16px; border-top: 1px solid var(--line); padding-top: 10px; }
+.journey-toolbar-button {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
 }
-.journey-step-actions .journey-action-primary {
-  color: #1c1609;
-  border-color: color-mix(in srgb, var(--gold) 76%, #fff);
-  background: linear-gradient(135deg, color-mix(in srgb, var(--gold) 88%, #fff), var(--gold));
-  box-shadow: 0 8px 22px color-mix(in srgb, var(--gold) 18%, transparent);
-}
-.journey-step-actions .journey-action-primary:hover,
-.journey-step-actions .journey-action-primary:focus-visible {
-  color: #120e05;
-  border-color: color-mix(in srgb, var(--gold) 88%, #fff);
-  background: linear-gradient(135deg, color-mix(in srgb, var(--gold) 96%, #fff), color-mix(in srgb, var(--gold) 86%, #fff));
-}
-.journey-step-actions .journey-action-archive { min-height: 46px; padding: 11px 8px; color: var(--muted); font-weight: 720; }
-.journey-step-actions .journey-action-archive:hover,
-.journey-step-actions .journey-action-archive:focus-visible { color: var(--gold); }
+.journey-toolbar-button:hover,
+.journey-toolbar-button:focus-visible { border-color: color-mix(in srgb, var(--gold) 30%, var(--line)); background: color-mix(in srgb, var(--gold) 8%, transparent); color: var(--gold); outline: none; }
+.journey-toolbar-button:disabled { cursor: wait; opacity: .55; }
 .journey-queue { padding: 20px; }
 .journey-queue-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .journey-queue-heading span { color: var(--muted); font-size: .88rem; }
@@ -4585,7 +4573,6 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
 
   .journey-step-layout { grid-template-columns: 1fr; }
   .journey-queue, .journey-empty { border-radius: 8px; padding: 18px; }
-  .journey-step-actions .button { flex: 1 1 100%; justify-content: center; }
 
   .reader-detail {
     position: static;

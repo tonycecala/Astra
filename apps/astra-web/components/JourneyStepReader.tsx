@@ -2,6 +2,7 @@
 
 import type { JourneyFeedItemAction } from "@astra/contracts";
 import { PublishedCard } from "@astra/ui";
+import { Bookmark } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -19,7 +20,6 @@ export function JourneyStepReader({
 }) {
   const router = useRouter();
   const [pendingId, setPendingId] = useState<string>();
-  const [acknowledgedId, setAcknowledgedId] = useState<string>();
   const [error, setError] = useState("");
   const [notice, setNotice] = useState<{ feedItemId: string; message: string }>();
 
@@ -33,18 +33,11 @@ export function JourneyStepReader({
         body: JSON.stringify({ action })
       });
       if (!response.ok) throw new Error("journey_action_failed");
-      if (action === "acknowledge") {
-        setAcknowledgedId(feedItemId);
-        setNotice({ feedItemId, message: ui.journey.acknowledgedNotice });
-      }
-      else if (action === "archive") setNotice({ feedItemId, message: ui.journey.archivedNotice });
+      if (action === "archive") setNotice({ feedItemId, message: ui.journey.archivedNotice });
       else if (action === "restore") {
-        setAcknowledgedId(undefined);
         setNotice(undefined);
       }
-      // OK intentionally leaves the current card in place. A later Journey
-      // item will take priority when the view next refreshes.
-      if (action !== "acknowledge") router.refresh();
+      router.refresh();
     } catch {
       setError(ui.journey.actionError);
     } finally {
@@ -56,12 +49,10 @@ export function JourneyStepReader({
     return <section className="journey-empty" aria-label={ui.journey.currentStepLabel}><h2>{ui.journey.emptyTitle}</h2><p>{ui.journey.emptyBody}</p>{error ? <p className="form-error" role="alert">{error}</p> : null}{notice ? <p className="journey-notice" role="status"><span>{notice.message}</span><button className="text-button" disabled={pendingId === notice.feedItemId} onClick={() => act(notice.feedItemId, "restore")} type="button">{ui.journey.undo}</button></p> : null}<Link className="button" href="/self">{ui.journey.emptyAction}</Link></section>;
   }
 
-  const acknowledged = acknowledgedId === currentStep.item.id || typeof currentStep.item.displayPayload.acknowledgedAt === "string";
-
   return (
     <div className="journey-step-layout">
       <main className="journey-current-step" aria-label={ui.journey.currentStepLabel}>
-        <article className={`journey-current-card stream-card astraPublishedCard${acknowledged ? " journey-current-card--acknowledged" : ""}`}>
+        <article className="journey-current-card stream-card astraPublishedCard">
           <PublishedCard
             bodyText={currentStep.card.body}
             className="stream-card-open"
@@ -81,13 +72,11 @@ export function JourneyStepReader({
           <summary>{ui.journey.whyThisNow}</summary>
           <p>{currentStep.provenance}</p>
         </details>
-        {acknowledged ? <p className="journey-acknowledged" role="status"><span aria-hidden="true">✓</span><strong>{ui.journey.notedStep}</strong><span>{ui.journey.notedHint}</span></p> : null}
         {error ? <p className="form-error" role="alert">{error}</p> : null}
         {notice ? <p className="journey-notice" role="status"><span>{notice.message}</span><button className="text-button" disabled={pendingId === notice.feedItemId} onClick={() => act(notice.feedItemId, "restore")} type="button">{ui.journey.undo}</button></p> : null}
         {currentStep.primaryAction ? <Link className="journey-open-link" href={currentStep.primaryAction.href} prefetch={false}>{currentStep.primaryAction.label}<span aria-hidden="true">→</span></Link> : null}
-        <div className="journey-step-actions" aria-label={ui.journey.stepActionsLabel}>
-          <button className="button journey-action-primary" disabled={acknowledged || pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "acknowledge")} type="button">{acknowledged ? ui.journey.notedStep : ui.journey.okStep}</button>
-          <button className="text-button journey-action-archive" disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "archive")} type="button">{ui.journey.archiveStep}</button>
+        <div className="journey-card-toolbar" aria-label={ui.journey.stepActionsLabel} role="toolbar">
+          <button aria-label={ui.journey.archiveStep} className="journey-toolbar-button" disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "archive")} title={ui.journey.archiveStep} type="button"><Bookmark aria-hidden="true" size={19} strokeWidth={2} /></button>
         </div>
       </main>
       <aside className="journey-queue" aria-label={ui.journey.upNextLabel}>
