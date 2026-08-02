@@ -11,16 +11,15 @@ import type { JourneyStep } from "../lib/journey";
 export function JourneyStepReader({
   currentStep,
   queue,
-  queuedStepCount,
-  saved
+  queuedStepCount
 }: {
   currentStep?: JourneyStep;
   queue: JourneyStep[];
   queuedStepCount: number;
-  saved: JourneyStep[];
 }) {
   const router = useRouter();
   const [pendingId, setPendingId] = useState<string>();
+  const [acknowledgedId, setAcknowledgedId] = useState<string>();
   const [error, setError] = useState("");
   const [notice, setNotice] = useState<{ feedItemId: string; message: string }>();
 
@@ -34,10 +33,18 @@ export function JourneyStepReader({
         body: JSON.stringify({ action })
       });
       if (!response.ok) throw new Error("journey_action_failed");
-      if (action === "dismiss") setNotice({ feedItemId, message: ui.journey.dismissedNotice });
-      else if (action === "complete") setNotice({ feedItemId, message: ui.journey.completedNotice });
-      else if (action === "restore") setNotice(undefined);
-      router.refresh();
+      if (action === "acknowledge") {
+        setAcknowledgedId(feedItemId);
+        setNotice({ feedItemId, message: ui.journey.acknowledgedNotice });
+      }
+      else if (action === "archive") setNotice({ feedItemId, message: ui.journey.archivedNotice });
+      else if (action === "restore") {
+        setAcknowledgedId(undefined);
+        setNotice(undefined);
+      }
+      // OK intentionally leaves the current card in place. A later Journey
+      // item will take priority when the view next refreshes.
+      if (action !== "acknowledge") router.refresh();
     } catch {
       setError(ui.journey.actionError);
     } finally {
@@ -49,19 +56,21 @@ export function JourneyStepReader({
     return <section className="journey-empty" aria-label={ui.journey.currentStepLabel}><h2>{ui.journey.emptyTitle}</h2><p>{ui.journey.emptyBody}</p>{error ? <p className="form-error" role="alert">{error}</p> : null}{notice ? <p className="journey-notice" role="status"><span>{notice.message}</span><button className="text-button" disabled={pendingId === notice.feedItemId} onClick={() => act(notice.feedItemId, "restore")} type="button">{ui.journey.undo}</button></p> : null}<Link className="button" href="/self">{ui.journey.emptyAction}</Link></section>;
   }
 
+  const acknowledged = acknowledgedId === currentStep.item.id || typeof currentStep.item.displayPayload.acknowledgedAt === "string";
+
   return (
     <div className="journey-step-layout">
       <main className="journey-current-step" aria-label={ui.journey.currentStepLabel}>
-        <article className="journey-current-card stream-card astraPublishedCard">
+        <article className={`journey-current-card stream-card astraPublishedCard${acknowledged ? " journey-current-card--acknowledged" : ""}`}>
           <PublishedCard
             bodyText={currentStep.card.body}
             className="stream-card-open"
             contentClassName="stream-card-content"
             eyebrow={ui.journey.currentStep}
             imageAlt={currentStep.card.imageUrl ? currentStep.card.title : ""}
-            imageFallback={ui.journey.lanes[currentStep.card.lane]}
             imageUrl={currentStep.card.imageUrl}
             mediaClassName="stream-card-media astraStreamArtFrame"
+            showMedia={Boolean(currentStep.card.imageUrl)}
             showLessLabel={ui.journey.showLess}
             showMoreLabel={ui.journey.showMore}
             subtitle={currentStep.card.subtitle}
@@ -72,20 +81,19 @@ export function JourneyStepReader({
           <summary>{ui.journey.whyThisNow}</summary>
           <p>{currentStep.provenance}</p>
         </details>
+        {acknowledged ? <p className="journey-acknowledged" role="status"><span aria-hidden="true">✓</span><strong>{ui.journey.notedStep}</strong><span>{ui.journey.notedHint}</span></p> : null}
         {error ? <p className="form-error" role="alert">{error}</p> : null}
         {notice ? <p className="journey-notice" role="status"><span>{notice.message}</span><button className="text-button" disabled={pendingId === notice.feedItemId} onClick={() => act(notice.feedItemId, "restore")} type="button">{ui.journey.undo}</button></p> : null}
         <div className="journey-step-actions" aria-label={ui.journey.stepActionsLabel}>
           {currentStep.primaryAction ? <Link className="button journey-action-primary" href={currentStep.primaryAction.href} prefetch={false}>{currentStep.primaryAction.label}</Link> : null}
-          <button className={`button ${currentStep.primaryAction ? "journey-action-secondary" : "journey-action-primary"}`} disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "complete")} type="button">{ui.journey.completeStep}</button>
-          <button className="button journey-action-secondary" disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "save")} type="button">{ui.journey.saveForLater}</button>
-          <button className="button journey-action-tertiary" disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "dismiss")} type="button">{ui.journey.dismissStep}</button>
+          <button className={`button ${currentStep.primaryAction ? "journey-action-secondary" : "journey-action-primary"}`} disabled={acknowledged || pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "acknowledge")} type="button">{acknowledged ? ui.journey.notedStep : ui.journey.okStep}</button>
+          <button className="button journey-action-tertiary" disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "archive")} type="button">{ui.journey.archiveStep}</button>
         </div>
       </main>
       <aside className="journey-queue" aria-label={ui.journey.upNextLabel}>
         <div className="journey-queue-heading"><h2>{ui.journey.upNext}</h2><span>{ui.journey.stepCount(queuedStepCount)}</span></div>
         {queue.length ? <ol>{queue.map((step) => <li key={step.item.id}><strong>{step.card.title}</strong>{step.card.subtitle ? <span>{step.card.subtitle}</span> : null}</li>)}</ol> : <p>{ui.journey.queueEmpty}</p>}
         {queuedStepCount > queue.length ? <p className="journey-queue-remainder">{ui.journey.queueRemainder(queuedStepCount - queue.length)}</p> : null}
-        {saved.length ? <section className="journey-saved"><h3>{ui.journey.savedForLater}</h3><ul>{saved.map((step) => <li key={step.item.id}><span>{step.card.title}</span><button className="text-button" disabled={pendingId === step.item.id} onClick={() => act(step.item.id, "restore")} type="button">{ui.journey.restoreStep}</button></li>)}</ul></section> : null}
       </aside>
     </div>
   );

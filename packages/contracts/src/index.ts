@@ -339,7 +339,13 @@ export const chartArrivalRewriteResponseSchema = z.object({
   promptVersion: z.string().min(1)
 });
 
-export const journeyFeedItemActionSchema = z.enum(["complete", "dismiss", "save", "restore"]);
+/**
+ * `acknowledge` deliberately leaves a Journey item available. It records that
+ * the Explorer has seen it without creating a report, artifact, or credit
+ * event. `archive` uses the established saved state so existing restore
+ * semantics remain intact.
+ */
+export const journeyFeedItemActionSchema = z.enum(["acknowledge", "archive", "complete", "dismiss", "save", "restore"]);
 
 export const createComposerDecisionSchema = z.object({
   userId: idSchema,

@@ -2,8 +2,10 @@ import { expect, test } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import {
   appUserProfiles,
+  artifacts,
   astrologyReportRequests,
   astrologyReportResults,
+  creditLedgerEntries,
   createUserFeedItem,
   db,
   listUserFeedItems,
@@ -72,7 +74,7 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   const card = pageA.locator("article.astraPublishedCard");
   await expect(card).toHaveCount(1);
   await expect(card.locator(".astraPublishedCardEyebrow")).toHaveText("Current step");
-  await expect(card.locator(".astraPublishedCardMedia")).toBeVisible();
+  await expect(card.locator(".astraPublishedCardMedia")).toHaveCount(0);
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
   await expect(pageA.getByText("B private step")).toHaveCount(0);
   await expect(pageA.getByRole("link", { name: "Open report" })).toHaveAttribute("href", /\/library\?reportId=/);
@@ -88,24 +90,57 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   const forged = await pageA.request.patch(`/api/journey/items/${encodeURIComponent(userBOnly.id)}`, { data: { action: "dismiss" } });
   expect(forged.status()).toBe(404);
 
-  await pageA.getByRole("button", { name: "Save for later" }).click();
+  const [reportsBeforeArchive, artifactsBeforeArchive, creditsBeforeArchive] = await Promise.all([
+    db.select({ id: astrologyReportRequests.id }).from(astrologyReportRequests).where(eq(astrologyReportRequests.userId, userA)),
+    db.select({ id: artifacts.id }).from(artifacts).where(eq(artifacts.userId, userA)),
+    db.select({ id: creditLedgerEntries.id }).from(creditLedgerEntries).where(eq(creditLedgerEntries.userId, userA))
+  ]);
+  await pageA.getByRole("button", { name: "Archive" }).click();
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private next step");
-  await expect(pageA.getByText("A private current step")).toBeVisible();
-  await pageA.getByRole("button", { name: "Restore" }).click();
-  await pageA.reload();
-  await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
-
-  await pageA.getByRole("button", { name: "Dismiss" }).click();
-  await expect(pageA.getByText("Step dismissed.")).toBeVisible();
+  await expect(pageA.getByText("Step archived.")).toBeVisible();
   await pageA.getByRole("button", { name: "Undo" }).click();
   await pageA.reload();
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
 
+  await pageA.getByRole("button", { name: "OK" }).click();
+  await expect(pageA.getByText("Noted. It will make room when something newer arrives.")).toBeVisible();
+  await expect(pageA.getByRole("button", { name: "Noted" })).toBeDisabled();
+  await expect(pageA.getByText("This stays current until newer guidance arrives.")).toBeVisible();
+  const [acknowledged] = await db.select({ state: userFeedItems.state, displayPayload: userFeedItems.displayPayload }).from(userFeedItems).where(eq(userFeedItems.id, (await listUserFeedItems(db, { userId: userA, state: "available", limit: 20 })).items.find((item) => item.title === "A private current step")!.id)).limit(1);
+  expect(acknowledged?.state).toBe("available");
+  expect((acknowledged?.displayPayload as Record<string, unknown> | undefined)?.acknowledgedAt).toEqual(expect.any(String));
+
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  const newerGuidance = await seedStep(userA, { rank: 25, title: "Newer private guidance" });
+  await pageA.reload();
+  await expect(card.locator(".astraPublishedCardTitle")).toHaveText("Newer private guidance");
+
+  await pageA.getByRole("button", { name: "Archive" }).click();
+  const repeatedArchive = await pageA.request.patch(`/api/journey/items/${encodeURIComponent(newerGuidance.id)}`, { data: { action: "archive" } });
+  expect(repeatedArchive.status()).toBe(200);
+  await pageA.goto("/library");
+  const archive = pageA.getByLabel("Journey Archive");
+  await expect(archive).toBeVisible();
+  await expect(archive.getByText("Newer private guidance")).toBeVisible();
+  await expect(archive.getByText("B private step")).toHaveCount(0);
+  const [reportsAfterArchive, artifactsAfterArchive, creditsAfterArchive] = await Promise.all([
+    db.select({ id: astrologyReportRequests.id }).from(astrologyReportRequests).where(eq(astrologyReportRequests.userId, userA)),
+    db.select({ id: artifacts.id }).from(artifacts).where(eq(artifacts.userId, userA)),
+    db.select({ id: creditLedgerEntries.id }).from(creditLedgerEntries).where(eq(creditLedgerEntries.userId, userA))
+  ]);
+  expect(reportsAfterArchive).toEqual(reportsBeforeArchive);
+  expect(artifactsAfterArchive).toEqual(artifactsBeforeArchive);
+  expect(creditsAfterArchive).toEqual(creditsBeforeArchive);
+  await archive.getByRole("button", { name: "Return to Journey" }).click();
+  await expect(pageA.getByLabel("Journey Archive")).toHaveCount(0);
+  await pageA.goto("/journey");
+  await expect(card.locator(".astraPublishedCardTitle")).toHaveText("Newer private guidance");
+
   const currentActionUrl = "**/api/journey/items/**";
   await pageA.route(currentActionUrl, (route) => route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ error: "TEST_FAILURE" }) }));
-  await pageA.getByRole("button", { name: "Complete" }).click();
+  await pageA.getByRole("button", { name: "OK" }).click();
   await expect(pageA.locator(".form-error[role=alert]")).toHaveText("Astra could not save that change. Please try again.");
-  await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
+  await expect(card.locator(".astraPublishedCardTitle")).toHaveText("Newer private guidance");
   await pageA.unroute(currentActionUrl);
 
   for (const viewport of [{ width: 820, height: 1180 }, { width: 390, height: 844 }]) {
@@ -118,9 +153,8 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   await pageB.goto("/journey");
   await expect(pageB.locator("article.astraPublishedCard .astraPublishedCardTitle")).toHaveText("B private step");
   await expect(pageB.getByText("A private current step")).toHaveCount(0);
-  await pageB.getByRole("button", { name: "Complete" }).click();
-  await expect(pageB.getByText("Step completed.")).toBeVisible();
-  await expect(pageB.getByRole("button", { name: "Undo" })).toBeVisible();
+  const legacyComplete = await pageB.request.patch(`/api/journey/items/${encodeURIComponent(userBOnly.id)}`, { data: { action: "complete" } });
+  expect(legacyComplete.status()).toBe(200);
   await pageB.reload();
   await expect(pageB.getByRole("heading", { name: "Your Journey is clear" })).toBeVisible();
   await expect(pageB.getByRole("link", { name: "Begin with your Self" })).toHaveAttribute("href", "/self");

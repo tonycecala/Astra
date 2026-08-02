@@ -3,8 +3,9 @@ import { Search } from "lucide-react";
 
 import type { Artifact } from "@astra/contracts";
 import { PageHeader } from "../../components/PageHeader";
+import { JourneyArchive, type JourneyArchiveItem } from "../../components/JourneyArchive";
 import { ReportReader, formatReportDate, reportSubjectContext } from "../../components/ReportReader";
-import { astrologyReportShares, db, getUserAstrologyReportResult, getUserAstrologyReportRequest, listUserArtifacts, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests } from "@astra/db";
+import { astrologyReportShares, db, getUserAstrologyReportResult, getUserAstrologyReportRequest, listUserArtifacts, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests, listUserFeedItems } from "@astra/db";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
 import {
@@ -16,6 +17,7 @@ import {
   resolveLegacySynastryPartnerBirthDate
 } from "../../lib/report-display";
 import { and, eq } from "drizzle-orm";
+import { CHART_ARRIVAL_REASON } from "../../lib/chart-arrival";
 
 export const dynamic = "force-dynamic";
 
@@ -67,7 +69,18 @@ export default async function LibraryPage({ searchParams }: LibraryPageParams) {
     );
   }
 
-  const view = { artifacts: await getUserLibraryArtifacts(profile.userId) };
+  const [artifacts, savedJourneyItems] = await Promise.all([
+    getUserLibraryArtifacts(profile.userId),
+    listUserFeedItems(db, { userId: profile.userId, state: "saved", limit: 50 })
+  ]);
+  const view = { artifacts };
+  const journeyArchive: JourneyArchiveItem[] = savedJourneyItems.items
+    .filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON)
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      subtitle: typeof item.displayPayload.subtitle === "string" ? item.displayPayload.subtitle : undefined
+    }));
   const filteredArtifacts = filterLibraryArtifacts(view.artifacts as LibraryArtifact[], activeFilter, query);
   const filterCounts = reportFilterCounts(view.artifacts as LibraryArtifact[]);
   const selectedReport =
@@ -94,6 +107,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageParams) {
       {shouldShowList ? (
         <>
           <LibraryControls activeFilter={activeFilter} filterCounts={filterCounts} query={query} />
+          <JourneyArchive items={journeyArchive} />
           <section className="list" aria-label={ui.library.listLabel}>
           {filteredArtifacts.map((artifact) => (
             <ArtifactCard artifact={artifact} key={artifact.id} />

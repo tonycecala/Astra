@@ -1208,14 +1208,61 @@ export async function updateUserFeedItemState(
   input: { userId: string; feedItemId: string; action: JourneyFeedItemAction }
 ): Promise<UserFeedItem | null> {
   const now = new Date();
-  const state = input.action === "complete" ? "seen" : input.action === "dismiss" ? "dismissed" : input.action === "save" ? "saved" : "available";
+  if (input.action === "acknowledge") {
+    return database.transaction(async (tx) => {
+      const [existing] = await tx
+        .select()
+        .from(userFeedItems)
+        .where(and(eq(userFeedItems.id, input.feedItemId), eq(userFeedItems.userId, input.userId)))
+        .limit(1);
+      if (!existing) return null;
+
+      const displayPayload = existing.displayPayload && typeof existing.displayPayload === "object" && !Array.isArray(existing.displayPayload)
+        ? existing.displayPayload as Record<string, unknown>
+        : {};
+      const [row] = await tx
+        .update(userFeedItems)
+        .set({
+          // Preserve the first acknowledgement: repeated OK requests are idempotent.
+          displayPayload: { ...displayPayload, acknowledgedAt: displayPayload.acknowledgedAt ?? now.toISOString() },
+          updatedAt: now
+        })
+        .where(and(eq(userFeedItems.id, input.feedItemId), eq(userFeedItems.userId, input.userId)))
+        .returning();
+      return row ? userFeedItemFromRow(row) : null;
+    });
+  }
+
+  if (input.action === "restore") {
+    return database.transaction(async (tx) => {
+      const [existing] = await tx
+        .select()
+        .from(userFeedItems)
+        .where(and(eq(userFeedItems.id, input.feedItemId), eq(userFeedItems.userId, input.userId)))
+        .limit(1);
+      if (!existing) return null;
+
+      const displayPayload = existing.displayPayload && typeof existing.displayPayload === "object" && !Array.isArray(existing.displayPayload)
+        ? { ...(existing.displayPayload as Record<string, unknown>) }
+        : {};
+      delete displayPayload.acknowledgedAt;
+      const [row] = await tx
+        .update(userFeedItems)
+        .set({ state: "available", seenAt: null, dismissedAt: null, savedAt: null, displayPayload, updatedAt: now })
+        .where(and(eq(userFeedItems.id, input.feedItemId), eq(userFeedItems.userId, input.userId)))
+        .returning();
+      return row ? userFeedItemFromRow(row) : null;
+    });
+  }
+
+  const state = input.action === "complete" ? "seen" : input.action === "dismiss" ? "dismissed" : "saved";
   const [row] = await database
     .update(userFeedItems)
     .set({
       state,
       seenAt: input.action === "complete" ? now : null,
       dismissedAt: input.action === "dismiss" ? now : null,
-      savedAt: input.action === "save" ? now : null,
+      savedAt: input.action === "save" || input.action === "archive" ? now : null,
       updatedAt: now
     })
     .where(and(eq(userFeedItems.id, input.feedItemId), eq(userFeedItems.userId, input.userId)))

@@ -20,11 +20,37 @@ export type JourneyStep = {
   provenance: string;
 };
 export type PublicJourneyCard = { item: StreamItem | { id: string }; card: AstraCard };
-export type JourneyViewModel = { currentStep?: JourneyStep; queue: JourneyStep[]; queuedStepCount: number; saved: JourneyStep[] };
+export type JourneyViewModel = { currentStep?: JourneyStep; queue: JourneyStep[]; queuedStepCount: number };
 
 function payloadString(payload: Record<string, unknown>, key: string) {
   const value = payload[key];
   return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+function acknowledgedAt(item: UserFeedItem) {
+  return payloadString(item.displayPayload, "acknowledgedAt");
+}
+
+/**
+ * Keep an acknowledged item where it was until later guidance arrives. When a
+ * new available item is created, that newer item moves ahead without turning
+ * acknowledgement into completion or hiding the original step.
+ */
+function orderAvailableJourneyItems(items: UserFeedItem[]) {
+  const acknowledgementTimes = items
+    .map(acknowledgedAt)
+    .filter((value): value is string => Boolean(value))
+    .map((value) => new Date(value).getTime())
+    .filter((value) => !Number.isNaN(value));
+  if (!acknowledgementTimes.length) return items;
+
+  // A new item is the only thing that moves ahead of an acknowledged current
+  // step. Pre-existing queue items retain their place behind it.
+  const newestAcknowledgement = Math.max(...acknowledgementTimes);
+  const newerGuidance = items.filter((item) => !acknowledgedAt(item) && new Date(item.createdAt).getTime() > newestAcknowledgement);
+  if (!newerGuidance.length) return items;
+  const newerIds = new Set(newerGuidance.map((item) => item.id));
+  return [...newerGuidance, ...items.filter((item) => !newerIds.has(item.id))];
 }
 
 function laneForFeedKind(kind: UserFeedItem["feedKind"]): AstraCard["lane"] {
@@ -99,19 +125,17 @@ export async function getJourneyViewModel(userId: string, options: { userRole?: 
     retireLegacyWelcomeJourneyItems(userId),
     retireLegacyComposerOnboardingJourneyItems(userId)
   ]);
-  const [available, saved, requests] = await Promise.all([
+  const [available, requests] = await Promise.all([
     listUserFeedItems(db, { userId, state: "available", limit: 50 }),
-    listUserFeedItems(db, { userId, state: "saved", limit: 50 }),
     listUserAstrologyReportRequests(db, userId)
   ]);
   const requestsById = new Map(requests.map((request) => [request.id, request]));
-  const steps = available.items.filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON).map((item) => stepFromFeedItem(item, requestsById));
+  const steps = orderAvailableJourneyItems(available.items.filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON)).map((item) => stepFromFeedItem(item, requestsById));
   const queue = steps.slice(1);
   return {
     currentStep: steps[0],
     queue: queue.slice(0, JOURNEY_UP_NEXT_PREVIEW_LIMIT),
-    queuedStepCount: queue.length,
-    saved: saved.items.filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON).map((item) => stepFromFeedItem(item, requestsById))
+    queuedStepCount: queue.length
   };
 }
 
