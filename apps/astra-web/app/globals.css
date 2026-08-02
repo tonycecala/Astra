@@ -885,7 +885,34 @@ textarea {
 .journey-provenance summary { color: var(--gold); cursor: pointer; font-weight: 750; }
 .journey-provenance p { margin: 10px 0 0; color: var(--muted); }
 .journey-notice { display: flex; align-items: center; gap: 12px; margin: 16px 0 0; color: var(--success); }
-.journey-step-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.journey-open-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  margin-top: 18px;
+  color: var(--gold);
+  font-weight: 780;
+  text-decoration: none;
+}
+.journey-open-link:hover,
+.journey-open-link:focus-visible { color: color-mix(in srgb, var(--gold) 72%, #fff); text-decoration: underline; text-underline-offset: 4px; }
+.journey-open-link span { font-size: 1.1em; }
+.journey-card-toolbar { display: flex; justify-content: flex-end; margin-top: 16px; border-top: 1px solid var(--line); padding-top: 10px; }
+.journey-toolbar-button {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.journey-toolbar-button:hover,
+.journey-toolbar-button:focus-visible { border-color: color-mix(in srgb, var(--gold) 30%, var(--line)); background: color-mix(in srgb, var(--gold) 8%, transparent); color: var(--gold); outline: none; }
+.journey-toolbar-button:disabled { cursor: wait; opacity: .55; }
 .journey-queue { padding: 20px; }
 .journey-queue-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .journey-queue-heading span { color: var(--muted); font-size: .88rem; }
@@ -893,10 +920,21 @@ textarea {
 .journey-queue ol li { padding: 12px 0 12px 6px; border-bottom: 1px solid var(--line); }
 .journey-queue li span { display: block; margin-top: 3px; color: var(--muted); font-size: .88rem; }
 .journey-queue-remainder { margin: 14px 0 0; color: var(--muted); font-size: .88rem; }
-.journey-saved { margin-top: 26px; }
-.journey-saved h3 { color: var(--gold); font-size: 1rem; }
-.journey-saved ul { display: grid; gap: 10px; padding: 0; list-style: none; }
-.journey-saved li { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.journey-archive { margin: 20px 0; }
+.journey-archive-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
+.journey-archive-heading h2 { margin: 2px 0 0; }
+.journey-archive-heading > span { color: var(--muted); font-size: .88rem; white-space: nowrap; }
+.journey-archive > p { margin: 10px 0 16px; color: var(--muted); }
+.journey-archive ul { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.journey-archive li { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-top: 10px; border-top: 1px solid var(--line); }
+.journey-archive li div { display: grid; gap: 3px; min-width: 0; }
+.journey-archive li strong, .journey-archive li span { overflow-wrap: anywhere; }
+.journey-archive li span { color: var(--muted); font-size: .9rem; }
+.journey-archive-restore { flex: 0 0 auto; }
+@media (max-width: 560px) {
+  .journey-archive li { align-items: stretch; flex-direction: column; }
+  .journey-archive-restore { width: 100%; }
+}
 .journey-empty .button { margin-top: 12px; }
 .public-journey-preview { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 24px; }
 .public-journey-preview h2 { color: var(--gold); }
@@ -1171,6 +1209,19 @@ a.card-link:focus-visible {
 
 .chartBackLink {
   justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--gold);
+  font-weight: 760;
+  text-decoration: none;
+}
+
+.chartBackLink:hover,
+.chartBackLink:focus-visible {
+  color: color-mix(in srgb, var(--gold) 72%, #fff);
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .chartsList {
@@ -4522,7 +4573,6 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
 
   .journey-step-layout { grid-template-columns: 1fr; }
   .journey-queue, .journey-empty { border-radius: 8px; padding: 18px; }
-  .journey-step-actions .button { flex: 1 1 100%; justify-content: center; }
 
   .reader-detail {
     position: static;

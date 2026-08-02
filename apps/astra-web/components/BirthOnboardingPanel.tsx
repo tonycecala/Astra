@@ -12,10 +12,13 @@ import {
   AstrologyReportResult,
   ChartBirthData,
   type ChartArrivalView,
+  type ExplorerFocus,
+  type ExplorerFocusKey,
   ChartMakerRequest,
   OrderableAstrologyReportType,
   type SynastryPerspective
 } from "@astra/contracts";
+import { EXPLORER_FOCUS_INTENTS } from "../lib/explorer-focus";
 import { displayTimezone } from "../lib/display";
 import { ui } from "../lib/i18n";
 import { REPORT_PRODUCT_ORDER, reportProductFor } from "../lib/reportCatalog";
@@ -41,7 +44,7 @@ function supportedTimeZones() {
 }
 
 const timeZones = supportedTimeZones();
-const steps = ["subject", "birth_details", "report"] as const;
+const steps = ["focus", "subject", "birth_details", "report"] as const;
 
 const confirmLayerStyle: CSSProperties = {
   position: "fixed",
@@ -99,6 +102,7 @@ type BirthOnboardingPanelProps = {
   initialSubjectName?: string;
   initialStep?: Step;
   initialChartArrival?: ChartArrivalView;
+  initialExplorerFocus?: ExplorerFocus;
   chartArrivalEligible?: boolean;
   hideRecentRequestPanels?: boolean;
   hideSummaryRail?: boolean;
@@ -310,6 +314,7 @@ export function BirthOnboardingPanel({
   initialSubjectName,
   initialStep,
   initialChartArrival,
+  initialExplorerFocus,
   chartArrivalEligible = false,
   hideRecentRequestPanels = false,
   hideSummaryRail = false,
@@ -321,6 +326,7 @@ export function BirthOnboardingPanel({
   const initialForm = defaultForm(displayName, initialBirthData, initialChartRequest, initialSubjectName);
   const requestedInitialStep = initialChartRequest ? initialStep ?? "report" : initialStep ?? "subject";
   const initialActiveStep = (() => {
+    if (chartArrivalEligible && !initialExplorerFocus && !initialChartArrival) return "focus";
     if (!chartArrivalEligible || requestedInitialStep !== "report") return requestedInitialStep;
     if (!optional(initialForm.subjectName)) return "subject";
     return isValidDateOnly(initialForm.date) ? "report" : "birth_details";
@@ -343,6 +349,9 @@ export function BirthOnboardingPanel({
   const [isBirthMomentSheetOpen, setIsBirthMomentSheetOpen] = useState(false);
   const [isBirthLocationSheetOpen, setIsBirthLocationSheetOpen] = useState(false);
   const [chartArrival, setChartArrival] = useState(initialChartArrival);
+  const [focusStatus, setFocusStatus] = useState<"selected" | "skipped" | undefined>(initialExplorerFocus?.status);
+  const [focusKey, setFocusKey] = useState<ExplorerFocusKey | undefined>(initialExplorerFocus?.status === "selected" ? initialExplorerFocus.key : undefined);
+  const [focusQuestion, setFocusQuestion] = useState(initialExplorerFocus?.status === "selected" ? initialExplorerFocus.question ?? "" : "");
   const [isCompletingArrival, setIsCompletingArrival] = useState(false);
 
   const isAlly = subjectType === "ally";
@@ -377,8 +386,8 @@ export function BirthOnboardingPanel({
     : isExistingChartOrderMode
       ? ["report"]
       : isUsingExistingChart
-        ? ["birth_details", "report"]
-        : steps;
+        ? isChartArrivalFlow ? ["focus", "birth_details", "report"] : ["birth_details", "report"]
+        : isChartArrivalFlow ? steps : ["subject", "birth_details", "report"];
   const visibleStepIndex = visibleSteps.indexOf(activeStep);
   const displayedStepIndex = visibleStepIndex >= 0 ? visibleStepIndex : 0;
   const isSingleStepFlow = visibleSteps.length === 1;
@@ -477,6 +486,7 @@ export function BirthOnboardingPanel({
   }
 
   function stepError(step: Step) {
+    if (step === "focus" && focusStatus !== "selected") return ui.self.focus.required;
     if (step === "subject" && !optional(form.subjectName)) return ui.self.onboardingSubjectRequired;
     if (step === "subject" && isAlly && !optional(form.relationship)) return ui.allies.wizardRelationshipRequired;
     if (!isChartArrivalFlow && step === "report" && form.reportType === "synastry" && !optional(form.synastryPartnerChartRequestId)) {
@@ -517,8 +527,29 @@ export function BirthOnboardingPanel({
     return isAlly && step === "subject" ? ui.allies.wizard.subjectStepLabel : ui.self.onboardingSteps[step];
   }
 
-  function goNext() {
+  async function saveFocus(next: { status: "selected"; key: ExplorerFocusKey; question?: string } | { status: "skipped" }) {
+    setIsSubmitting(true);
+    setMessage("");
+    try {
+      const payload = await requestJson<{ focus: ExplorerFocus }>("/api/profile/focus", { method: "PATCH", body: JSON.stringify(next) });
+      setFocusStatus(payload.focus.status);
+      setFocusKey(payload.focus.status === "selected" ? payload.focus.key : undefined);
+      setFocusQuestion(payload.focus.status === "selected" ? payload.focus.question ?? "" : "");
+      const nextStep = visibleSteps[displayedStepIndex + 1];
+      if (nextStep) setActiveStep(nextStep);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : ui.self.focus.saveError);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function goNext() {
     if (isWizardComplete) return;
+    if (activeStep === "focus" && focusKey) {
+      await saveFocus({ status: "selected", key: focusKey, question: optional(focusQuestion) });
+      return;
+    }
     const currentError = stepError(activeStep);
     if (currentError) {
       setMessage(currentError);
@@ -683,8 +714,13 @@ export function BirthOnboardingPanel({
                   subjectType: "self",
                   displayName: form.subjectName.trim()
                 },
-                chartSettings
-              }
+                chartSettings,
+                explorerFocus: focusStatus === "selected" && focusKey
+                  ? { schemaVersion: 1, status: "selected", key: focusKey }
+                  : { schemaVersion: 1, status: "skipped" }
+              },
+              intent: focusStatus === "selected" && focusKey ? EXPLORER_FOCUS_INTENTS[focusKey] : undefined,
+              question: focusStatus === "selected" ? optional(focusQuestion) : undefined
             })
           })).request;
       const arrival = await requestJson<ChartArrivalView>("/api/chart-arrivals", {
@@ -714,7 +750,7 @@ export function BirthOnboardingPanel({
         `/api/chart-arrivals/${encodeURIComponent(chartArrival.chartRequestId)}/complete`,
         { method: "POST" }
       );
-      window.location.assign("/self");
+      window.location.assign("/journey");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : ui.self.chartArrivalCompleteError);
       setIsCompletingArrival(false);
@@ -981,6 +1017,36 @@ export function BirthOnboardingPanel({
               </button>
             )}
           </div>
+          {activeStep === "focus" ? (
+            <div className={styles.subjectFields}>
+              <fieldset className={styles.optionGroup}>
+                <legend>{ui.self.focus.prompt}</legend>
+                <p className={styles.fieldHint}>{ui.self.focus.intro}</p>
+                {(Object.keys(ui.self.focus.choices) as ExplorerFocusKey[]).map((key) => (
+                  <label className={styles.option} key={key}>
+                    <input
+                      checked={focusStatus === "selected" && focusKey === key}
+                      name="explorerFocus"
+                      onChange={() => { setFocusStatus("selected"); setFocusKey(key); setMessage(""); }}
+                      type="radio"
+                    />
+                    <span><strong className={styles.optionTitle}>{ui.self.focus.choices[key]}</strong></span>
+                  </label>
+                ))}
+              </fieldset>
+              {focusStatus === "selected" ? (
+                <label>
+                  <span>{ui.self.focus.questionLabel}</span>
+                  <textarea maxLength={280} onChange={(event) => setFocusQuestion(event.target.value)} placeholder={ui.self.focus.questionPlaceholder} rows={3} value={focusQuestion} />
+                  <small>{ui.self.focus.questionHint}</small>
+                </label>
+              ) : null}
+              <button className="text-button" disabled={isSubmitting} onClick={() => saveFocus({ status: "skipped" })} type="button">
+                {ui.self.focus.skip}
+              </button>
+            </div>
+          ) : null}
+
           {activeStep === "subject" ? (
             <div className={styles.subjectFields}>
               <label>

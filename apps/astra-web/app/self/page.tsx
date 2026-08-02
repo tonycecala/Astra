@@ -6,11 +6,13 @@ import birthOnboardingStyles from "../../components/BirthOnboardingPanel.module.
 import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
 import { PageHeader } from "../../components/PageHeader";
 import { SelfTabAvatar } from "../../components/SelfTabAvatar";
+import { ExplorerFocusPanel } from "../../components/ExplorerFocusPanel";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { getUserChartArrival, hasLegacyWelcomeReport } from "../../lib/chart-arrival";
 import { displayTimezone } from "../../lib/display";
 import { ui } from "../../lib/i18n";
 import { isWelcomeReport, reportFamilyLabel } from "../../lib/report-display";
+import { explorerFocusFromMetadata } from "../../lib/explorer-focus";
 
 function normalizeRole(value: string | undefined) {
   const normalizedRole = (value ?? "self").trim().toLowerCase();
@@ -149,6 +151,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
     ? `/self?chart=${encodeURIComponent(onboardingChart.id)}&start=birth_details#self-birth-onboarding`
     : "#self-birth-onboarding";
   const roleLine = normalizeRole(profile.role);
+  const explorerFocus = explorerFocusFromMetadata(profile.metadata);
   const birthLine = formatBirthSummary(selfChartRequest);
   return (
     <>
@@ -233,6 +236,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
           <div className="metric">{profile.starBalance}</div>
           <p>{ui.self.starsDescription}</p>
         </article>
+        {profile.role === "customer" && profile.onboardingStatus === "complete" ? <ExplorerFocusPanel initialFocus={explorerFocus} /> : null}
         <article className="card self-insight-card">
           <div className="eyebrow">{ui.self.achievement}</div>
           <h2>{ui.self.noAchievementTitle}</h2>
@@ -280,6 +284,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
           initialReportRequests={visibleReportRequests}
           initialReportResults={visibleReportResults}
           initialChartArrival={chartArrival ?? undefined}
+          initialExplorerFocus={explorerFocus}
           chartArrivalEligible={chartArrivalEligible}
           initialBirthData={onboardingChart?.birthData}
           initialChartRequestId={onboardingChart?.id}

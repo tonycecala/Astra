@@ -4,24 +4,28 @@ import { buildAstrologyChartSnapshot } from "@astra/astrology";
 import { buildChartMakerRecordResult } from "@astra/chart-maker";
 import {
   chartArrivalRewriteResponseSchema,
+  chartArrivalEvidenceSchema,
   chartArrivalViewSchema,
+  explorerFocusSnapshotSchema,
   chartCalculationModeForBirthData,
   type AstrologyReportRequest,
   type ChartArrivalEvidence,
   type ChartArrivalView,
   type ChartMakerRequest,
+  type ExplorerFocusSnapshot,
   type UserFeedItem
 } from "@astra/contracts";
 import {
   createUserFeedItem,
+  completeChartArrivalTransaction,
   db,
   getUserChartMakerRequest,
   getUserFeedItemById,
   listUserFeedItems,
   listUserAstrologyReportRequests,
   recordChartMakerResult,
-  updateUserFeedItemState
 } from "@astra/db";
+import { deterministicArrivalGlimpse, deterministicFirstJourneyStep } from "./explorer-focus";
 
 const ARRIVAL_PROMPT_VERSION = "chart-arrival-deterministic-v1";
 export const CHART_ARRIVAL_REASON = "chart_arrival_first_glimpse";
@@ -61,6 +65,8 @@ function reportShapedChartInput(request: ChartMakerRequest): AstrologyReportRequ
     reportType: "identity",
     subjectName: request.subjectName,
     birthData: request.birthData,
+    question: request.question,
+    intent: request.intent,
     context: request.context,
     source: request.source,
     boundary: "private",
@@ -104,30 +110,20 @@ function evidenceFor(request: ChartMakerRequest): ChartArrivalEvidence[] {
   return evidence.slice(0, 4);
 }
 
-function deterministicGlimpse(evidence: ChartArrivalEvidence[]) {
-  const sun = evidence.find((item) => item.key === "sun")?.value;
-  const moon = evidence.find((item) => item.key === "moon")?.value;
-  const rising = evidence.find((item) => item.key === "rising")?.value;
-  if (sun && moon && rising) {
-    return `Your chart begins with a ${sun} Sun, ${moon} Moon, and ${rising} Rising. Astra can hold these verified signals together without reducing you to any single placement.`;
-  }
-  if (sun && moon) {
-    return `Your ${sun} Sun and ${moon} Moon form Astra’s first verified view of the chart, while time-sensitive details remain intentionally open until the birth data can support them.`;
-  }
-  if (sun) {
-    return `Your ${sun} Sun is the first clear pattern Astra can verify, so this arrival begins there without guessing at houses, angles, or other time-sensitive details.`;
-  }
-  return "Astra has received the verified shape of your chart and will begin with what the birth data can support, leaving every uncertain detail open rather than guessing.";
-}
-
-async function composerRewrite(evidence: ChartArrivalEvidence[], fallback: string) {
+async function composerRewrite(
+  evidence: ChartArrivalEvidence[],
+  fallback: string,
+  deterministicJourneyBody: string,
+  explorerFocus: ExplorerFocusSnapshot,
+  question?: string
+) {
   const token = clean(process.env.ASTRA_INTERNAL_API_TOKEN);
   if (!token) return null;
   try {
     const response = await fetch(new URL("/api/chart-arrival/rewrite", composerBaseUrl()), {
       method: "POST",
       headers: { "content-type": "application/json", "x-astra-internal-token": token },
-      body: JSON.stringify({ evidence, deterministicGlimpse: fallback }),
+      body: JSON.stringify({ evidence, deterministicGlimpse: fallback, deterministicJourneyBody, explorerFocus, question }),
       cache: "no-store",
       signal: AbortSignal.timeout(8_000)
     });
@@ -140,8 +136,18 @@ async function composerRewrite(evidence: ChartArrivalEvidence[], fallback: strin
 
 function arrivalFromItem(item: UserFeedItem | null): ChartArrivalView | null {
   if (!item || item.reasonCode !== CHART_ARRIVAL_REASON) return null;
+  const evidence = chartArrivalEvidenceSchema.array().safeParse(item.displayPayload.evidence);
+  if (!evidence.success || !evidence.data.length) return null;
+  const focus = explorerFocusSnapshotSchema.safeParse(item.displayPayload.explorerFocus);
+  const explorerFocus = focus.success ? focus.data : { schemaVersion: 1 as const, status: "skipped" as const };
+  const fallbackStep = deterministicFirstJourneyStep(evidence.data, explorerFocus);
   const parsed = chartArrivalViewSchema.safeParse({
     ...item.displayPayload,
+    explorerFocus,
+    firstJourneyStep: item.displayPayload.firstJourneyStep ?? {
+      ...fallbackStep,
+      promptVersion: ARRIVAL_PROMPT_VERSION
+    },
     id: item.id,
     title: item.title,
     glimpse: item.body,
@@ -183,8 +189,10 @@ export async function ensureChartArrival(userId: string, chartRequestId: string)
   await recordChartMakerResult(db, buildChartMakerRecordResult(chartRequest));
 
   const evidence = evidenceFor(chartRequest);
-  const deterministic = deterministicGlimpse(evidence);
-  const rewritten = await composerRewrite(evidence, deterministic);
+  const explorerFocus = chartRequest.context?.explorerFocus ?? { schemaVersion: 1 as const, status: "skipped" as const };
+  const deterministic = deterministicArrivalGlimpse(evidence, explorerFocus);
+  const deterministicJourney = deterministicFirstJourneyStep(evidence, explorerFocus);
+  const rewritten = await composerRewrite(evidence, deterministic, deterministicJourney.body, explorerFocus, chartRequest.question);
   const createdAt = new Date().toISOString();
   const glimpse = rewritten?.glimpse ?? deterministic;
   const generationSource = rewritten ? "composer" as const : "deterministic" as const;
@@ -203,7 +211,13 @@ export async function ensureChartArrival(userId: string, chartRequestId: string)
       evidence,
       deterministicGlimpse: deterministic,
       generationSource,
-      promptVersion
+      promptVersion,
+      explorerFocus,
+      firstJourneyStep: {
+        ...deterministicJourney,
+        body: rewritten?.journeyBody ?? deterministicJourney.body,
+        promptVersion
+      }
     },
     reasonCode: CHART_ARRIVAL_REASON,
     state: "available",
@@ -215,12 +229,33 @@ export async function ensureChartArrival(userId: string, chartRequestId: string)
   return arrival;
 }
 
-export async function completeChartArrival(userId: string, chartRequestId: string) {
+export async function completeChartArrival(userId: string, chartRequestId: string, options: { userRole?: string } = {}) {
   const id = chartArrivalId(userId, chartRequestId);
   const existing = await getUserFeedItemById(db, { userId, feedItemId: id });
   if (!existing || existing.reasonCode !== CHART_ARRIVAL_REASON) throw new Error("CHART_ARRIVAL_NOT_FOUND");
-  const updated = await updateUserFeedItemState(db, { userId, feedItemId: id, action: "complete" });
-  const arrival = arrivalFromItem(updated);
-  if (!arrival) throw new Error("CHART_ARRIVAL_NOT_COMPLETED");
-  return arrival;
+  const arrival = arrivalFromItem(existing);
+  if (!arrival) throw new Error("CHART_ARRIVAL_NOT_FOUND");
+  const focusKey = arrival.explorerFocus.status === "selected" ? arrival.explorerFocus.key : undefined;
+  const journeyItem = options.userRole === "customer" ? {
+    id: `focus_first:${userId}:${chartRequestId}`,
+    userId,
+    feedKind: "manual" as const,
+    title: arrival.firstJourneyStep.title,
+    body: arrival.firstJourneyStep.body,
+    displayPayload: {
+      chartRequestId,
+      explorerFocus: arrival.explorerFocus,
+      subtitle: focusKey ? "A first exploration shaped by your focus" : "A first exploration from your chart",
+      ctaLabel: arrival.firstJourneyStep.ctaLabel,
+      ctaHref: `/charts?chart=${encodeURIComponent(chartRequestId)}&from=self`
+    },
+    reasonCode: "focus_first_exploration",
+    state: "available" as const,
+    rankScore: 100,
+    availableAt: new Date().toISOString()
+  } : undefined;
+  const updated = await completeChartArrivalTransaction(db, { userId, arrivalFeedItemId: id, journeyItem });
+  const completed = arrivalFromItem(updated);
+  if (!completed) throw new Error("CHART_ARRIVAL_NOT_COMPLETED");
+  return completed;
 }

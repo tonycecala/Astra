@@ -10,7 +10,7 @@ export async function POST(_request: Request, context: RouteContext) {
 
   const { chartRequestId } = await context.params;
   try {
-    const arrival = await completeChartArrival(profile.userId, chartRequestId);
+    const arrival = await completeChartArrival(profile.userId, chartRequestId, { userRole: profile.role });
     return NextResponse.json(arrival);
   } catch (error) {
     const code = error instanceof Error ? error.message : "CHART_ARRIVAL_NOT_COMPLETED";

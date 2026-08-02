@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { AstraCard, AstrologyReportRequest, StreamItem, UserFeedItem } from "@astra/contracts";
+import type { AstraCard, AstrologyReportRequest, ExplorerFocusKey, StreamItem, UserFeedItem } from "@astra/contracts";
 import { db, listUserAstrologyReportRequests, listUserFeedItems, readFoundationSnapshot, seedSnapshot } from "@astra/db";
 import { fetchComposerAvailability } from "./composer-selection";
 import { ui } from "./i18n";
@@ -16,15 +16,49 @@ import { JOURNEY_UP_NEXT_PREVIEW_LIMIT, reportJourneySubtitle } from "./journey-
 export type JourneyStep = {
   item: UserFeedItem;
   card: AstraCard;
+  eyebrow: string;
   primaryAction?: { href: string; label: string };
-  provenance: string;
+  provenance?: string;
 };
 export type PublicJourneyCard = { item: StreamItem | { id: string }; card: AstraCard };
-export type JourneyViewModel = { currentStep?: JourneyStep; queue: JourneyStep[]; queuedStepCount: number; saved: JourneyStep[] };
+export type JourneyViewModel = { currentStep?: JourneyStep; queue: JourneyStep[]; queuedStepCount: number };
 
 function payloadString(payload: Record<string, unknown>, key: string) {
   const value = payload[key];
   return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+function selectedFocusKey(item: UserFeedItem): ExplorerFocusKey | undefined {
+  const focus = item.displayPayload.explorerFocus;
+  if (!focus || typeof focus !== "object" || Array.isArray(focus)) return undefined;
+  const key = (focus as Record<string, unknown>).key;
+  return typeof key === "string" && key in ui.journey.focusEyebrows ? key as ExplorerFocusKey : undefined;
+}
+
+function acknowledgedAt(item: UserFeedItem) {
+  return payloadString(item.displayPayload, "acknowledgedAt");
+}
+
+/**
+ * Keep an acknowledged item where it was until later guidance arrives. When a
+ * new available item is created, that newer item moves ahead without turning
+ * acknowledgement into completion or hiding the original step.
+ */
+function orderAvailableJourneyItems(items: UserFeedItem[]) {
+  const acknowledgementTimes = items
+    .map(acknowledgedAt)
+    .filter((value): value is string => Boolean(value))
+    .map((value) => new Date(value).getTime())
+    .filter((value) => !Number.isNaN(value));
+  if (!acknowledgementTimes.length) return items;
+
+  // A new item is the only thing that moves ahead of an acknowledged current
+  // step. Pre-existing queue items retain their place behind it.
+  const newestAcknowledgement = Math.max(...acknowledgementTimes);
+  const newerGuidance = items.filter((item) => !acknowledgedAt(item) && new Date(item.createdAt).getTime() > newestAcknowledgement);
+  if (!newerGuidance.length) return items;
+  const newerIds = new Set(newerGuidance.map((item) => item.id));
+  return [...newerGuidance, ...items.filter((item) => !newerIds.has(item.id))];
 }
 
 function laneForFeedKind(kind: UserFeedItem["feedKind"]): AstraCard["lane"] {
@@ -42,6 +76,10 @@ function reportRequestId(item: UserFeedItem) {
 
 function primaryActionFor(item: UserFeedItem): JourneyStep["primaryAction"] {
   const label = payloadString(item.displayPayload, "ctaLabel") ?? ui.journey.openStep;
+  if (item.reasonCode === "focus_first_exploration") {
+    const href = payloadString(item.displayPayload, "ctaHref");
+    return { href: href?.startsWith("/charts?chart=") ? href : "/charts", label };
+  }
   if (item.feedKind === "report_signal" || item.feedKind === "artifact") {
     const reportId = reportRequestId(item) ?? item.artifactId;
     return { href: reportId ? `/library?reportId=${encodeURIComponent(reportId)}` : "/library", label };
@@ -53,10 +91,22 @@ function primaryActionFor(item: UserFeedItem): JourneyStep["primaryAction"] {
 }
 
 function provenanceFor(item: UserFeedItem) {
+  if (item.reasonCode === "focus_first_exploration") return undefined;
   if (item.reasonCode === "explicit_report_signal_publish") return ui.journey.provenance.report;
   if (item.feedKind === "ally") return ui.journey.provenance.ally;
   if (item.feedKind === "gift") return ui.journey.provenance.gift;
   return ui.journey.provenance.privateJourney;
+}
+
+function eyebrowFor(item: UserFeedItem) {
+  if (item.reasonCode === "focus_first_exploration") {
+    const focusKey = selectedFocusKey(item);
+    return focusKey ? ui.journey.focusEyebrows[focusKey] : ui.journey.firstExploration;
+  }
+  if (item.feedKind === "report_signal" || item.feedKind === "artifact") return ui.journey.reportReady;
+  if (item.feedKind === "ally") return ui.journey.allyExploration;
+  if (item.feedKind === "gift") return ui.journey.giftExploration;
+  return ui.journey.currentStep;
 }
 
 function stepFromFeedItem(item: UserFeedItem, requestsById: Map<string, AstrologyReportRequest>): JourneyStep {
@@ -64,9 +114,12 @@ function stepFromFeedItem(item: UserFeedItem, requestsById: Map<string, Astrolog
   const request = requestId ? requestsById.get(requestId) : undefined;
   const subtitle = item.feedKind === "report_signal"
     ? request ? reportJourneySubtitle(request) : ui.journey.privateReportContext
-    : payloadString(item.displayPayload, "subtitle");
+    : item.reasonCode === "focus_first_exploration"
+      ? selectedFocusKey(item) ? ui.journey.focusReminder(ui.self.focus.choices[selectedFocusKey(item)!]) : ui.journey.firstExplorationSubtitle
+      : payloadString(item.displayPayload, "subtitle");
   return {
     item,
+    eyebrow: eyebrowFor(item),
     primaryAction: primaryActionFor(item),
     provenance: provenanceFor(item),
     card: {
@@ -88,19 +141,17 @@ export async function getJourneyViewModel(userId: string, options: { userRole?: 
     retireLegacyWelcomeJourneyItems(userId),
     retireLegacyComposerOnboardingJourneyItems(userId)
   ]);
-  const [available, saved, requests] = await Promise.all([
+  const [available, requests] = await Promise.all([
     listUserFeedItems(db, { userId, state: "available", limit: 50 }),
-    listUserFeedItems(db, { userId, state: "saved", limit: 50 }),
     listUserAstrologyReportRequests(db, userId)
   ]);
   const requestsById = new Map(requests.map((request) => [request.id, request]));
-  const steps = available.items.filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON).map((item) => stepFromFeedItem(item, requestsById));
+  const steps = orderAvailableJourneyItems(available.items.filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON)).map((item) => stepFromFeedItem(item, requestsById));
   const queue = steps.slice(1);
   return {
     currentStep: steps[0],
     queue: queue.slice(0, JOURNEY_UP_NEXT_PREVIEW_LIMIT),
-    queuedStepCount: queue.length,
-    saved: saved.items.filter((item) => item.reasonCode !== CHART_ARRIVAL_REASON).map((item) => stepFromFeedItem(item, requestsById))
+    queuedStepCount: queue.length
   };
 }
 

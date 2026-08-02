@@ -2,7 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 import { createHmac, randomUUID } from "node:crypto";
 import { ASTRA_REPORT_WRITER_ENV, LOCAL_DETERMINISTIC_REPORT_WRITER, buildAstrologyReportResultAsync } from "@astra/astrology";
 import { buildChartMakerRecordResult } from "@astra/chart-maker";
-import { appUserProfiles, createAlly, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, creditLedgerEntries, db, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserFeedItems, mirrorCreditBalanceToProfile, recordAstrologyReportResult, recordChartMakerResult, updateAuthUserProfileDisplayName } from "@astra/db";
+import { appUserProfiles, artifacts, createAlly, createAstrologyReportRequest, createAstrologyReportShare, createChartMakerRequest, creditLedgerEntries, db, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests, listUserFeedItems, mirrorCreditBalanceToProfile, recordAstrologyReportResult, recordChartMakerResult, updateAuthUserProfileDisplayName } from "@astra/db";
 import { eq } from "drizzle-orm";
 import { signInWithTestSession } from "./support/auth-session";
 import { readOtp } from "./support/otp";
@@ -440,6 +440,7 @@ test.describe("clean-start routes", () => {
     page.on("pageerror", (error) => { if (!isExpectedNavigationCancellation(error.message)) browserErrors.push(error.message); });
 
     const onboardingUserId = await signInWithTestSession(page, { email, name });
+    const initialCreditRows = await db.select().from(creditLedgerEntries).where(eq(creditLedgerEntries.userId, onboardingUserId));
     await expect(page).toHaveURL(/\/self(?:[?#]|$)/);
 
     await expect(page.locator(".self-profile-name")).toHaveText(name);
@@ -452,9 +453,14 @@ test.describe("clean-start routes", () => {
     page.on("request", (request) => {
       if (request.method() === "POST" && new URL(request.url()).pathname === "/api/chart-requests") prematureChartRequests += 1;
     });
-    await page.goto("/self?start=report#self-birth-onboarding");
-    await expect(page.getByText("Step 2 of 3: Birth details")).toBeVisible();
-    await expect(page.getByText("Choose a real birth date before continuing.")).toBeVisible();
+    try {
+      await page.goto("/self?start=report#self-birth-onboarding");
+    } catch (error) {
+      if (!(error instanceof Error) || !error.message.includes("interrupted by another navigation")) throw error;
+      await page.goto("/self?start=report#self-birth-onboarding");
+    }
+    await expect(page.getByText("Step 1 of 4: Starting focus")).toBeVisible();
+    await expect(page.getByText("What brings you to Astra right now?")).toBeVisible();
     await expect(page.getByRole("button", { name: "Next", exact: true })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Reveal My Chart", exact: true })).toHaveCount(0);
     expect(prematureChartRequests).toBe(0);
@@ -466,12 +472,17 @@ test.describe("clean-start routes", () => {
     expect(onboardingFeed.items.filter((item) => item.reasonCode === "composer_onboarding_card")).toHaveLength(0);
 
     await page.goto("/self#self-birth-onboarding");
-    await expect(page.getByText("Step 1 of 3: Your name")).toBeVisible();
+    await expect(page.getByText("Step 1 of 4: Starting focus")).toBeVisible();
+    await page.getByRole("radio", { name: "Understand my relationships" }).check();
+    const privateQuestion = "How can I be more honest without abandoning myself?";
+    await page.getByLabel("Is there a question you want Astra to hold privately?").fill(privateQuestion);
+    await page.getByRole("button", { exact: true, name: "Next" }).click();
+    await expect(page.getByText("Step 2 of 4: Your name")).toBeVisible();
     await expect(page.getByLabel("Your name")).toHaveValue(name);
     await page.getByLabel("Your name").fill(name);
 
     await page.getByRole("button", { exact: true, name: "Next" }).click();
-    await expect(page.getByText("Step 2 of 3: Birth details")).toBeVisible();
+    await expect(page.getByText("Step 3 of 4: Birth details")).toBeVisible();
     await chooseUnknownBirthMoment(page, { year: "1961", month: "May", day: "23" });
     await page.getByRole("button", { name: "Edit birth location" }).click();
     const locationDialog = page.getByRole("dialog", { name: "Birth Location" });
@@ -487,7 +498,7 @@ test.describe("clean-start routes", () => {
     await locationDialog.getByRole("button", { name: "Continue", exact: true }).click();
     await expect(page.getByRole("button", { name: "Edit birth location" })).toContainText("Cedar Rapids, Iowa, United States");
     await page.getByRole("button", { exact: true, name: "Next" }).click();
-    await expect(page.getByText("Step 3 of 3: Arrival")).toBeVisible();
+    await expect(page.getByText("Step 4 of 4: Arrival")).toBeVisible();
     const createChartButton = page.getByRole("button", { name: "Reveal My Chart", exact: true });
     await expect(createChartButton).toBeVisible();
     await expect(page.getByRole("dialog", { name: "Confirm Report" })).toHaveCount(0);
@@ -504,7 +515,10 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("radio", { name: "Sidereal" })).toBeChecked();
     const arrivalResponsePromise = page.waitForResponse((response) => response.request().method() === "POST" && new URL(response.url()).pathname === "/api/chart-arrivals");
     await createChartButton.click();
-    expect((await arrivalResponsePromise).status()).toBe(201);
+    const arrivalResponse = await arrivalResponsePromise;
+    expect(arrivalResponse.status()).toBe(201);
+    const arrivalPayload = await arrivalResponse.json() as { chartRequestId: string; explorerFocus: { status: string; key?: string } };
+    expect(arrivalPayload.explorerFocus).toEqual({ schemaVersion: 1, status: "selected", key: "relationships" });
     await expect(page.getByRole("heading", { name: "Your Astra has arrived." })).toBeVisible();
     await expect(page.getByLabel("Chart recognition")).toContainText("Sun");
     await expect(page.getByLabel("Chart recognition")).not.toContainText("Rising");
@@ -518,7 +532,37 @@ test.describe("clean-start routes", () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
     await page.goto("/self");
     await page.getByRole("button", { name: "Enter Astra", exact: true }).click();
-    await expect(page.getByRole("heading", { name: "Your Astra has arrived." })).toHaveCount(0);
+    await expect(page).toHaveURL(/\/journey(?:[?#]|$)/);
+    await expect(page.locator("article.astraPublishedCard .astraPublishedCardTitle")).toHaveText("Notice what you carry into connection");
+    await expect(page.locator("article.astraPublishedCard .astraPublishedCardEyebrow")).toHaveText("Exploring connection patterns");
+    await expect(page.getByText("Your current focus: Understand my relationships")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Explore this in your chart" })).toHaveAttribute("href", `/charts?chart=${encodeURIComponent(arrivalPayload.chartRequestId)}&from=self`);
+    await expect(page.getByText("Why this now?")).toHaveCount(0);
+    const repeatComplete = await page.request.post(`/api/chart-arrivals/${encodeURIComponent(arrivalPayload.chartRequestId)}/complete`);
+    expect(repeatComplete.ok()).toBe(true);
+    const journeyAfterRepeat = await listUserFeedItems(db, { userId, state: "available", limit: 20 });
+    const [starterItem] = journeyAfterRepeat.items.filter((item) => item.reasonCode === "focus_first_exploration");
+    expect(starterItem).toBeDefined();
+    expect(journeyAfterRepeat.items.filter((item) => item.reasonCode === "focus_first_exploration")).toHaveLength(1);
+    expect(journeyAfterRepeat.items.filter((item) => item.reasonCode === "composer_onboarding_card")).toHaveLength(0);
+    expect(JSON.stringify(starterItem)).not.toContain(privateQuestion);
+    const savedChart = (await listUserChartMakerRequests(db, userId)).find((request) => request.id === arrivalPayload.chartRequestId);
+    expect(savedChart?.question).toBe(privateQuestion);
+    expect(savedChart?.intent).toBe("Understand my relationships");
+    expect(savedChart?.context?.explorerFocus).toEqual({ schemaVersion: 1, status: "selected", key: "relationships" });
+    expect(await listUserAstrologyReportRequests(db, userId)).toHaveLength(0);
+    expect(await listUserAstrologyReportResults(db, userId)).toHaveLength(0);
+    expect(await db.select().from(artifacts).where(eq(artifacts.userId, userId))).toHaveLength(0);
+    expect(await db.select().from(creditLedgerEntries).where(eq(creditLedgerEntries.userId, userId))).toHaveLength(initialCreditRows.length);
+    await page.goto("/self");
+    await page.getByRole("button", { name: "Edit focus" }).click();
+    await page.getByRole("radio", { name: "Learn how my chart works" }).check();
+    await page.getByRole("button", { name: "Save focus" }).click();
+    await expect(page.getByText("Focus saved")).toBeVisible();
+    const [starterAfterFocusEdit] = (await listUserFeedItems(db, { userId, state: "available", limit: 20 })).items.filter((item) => item.reasonCode === "focus_first_exploration");
+    expect(starterAfterFocusEdit?.body).toBe(starterItem?.body);
+    const savedChartAfterFocusEdit = (await listUserChartMakerRequests(db, userId)).find((request) => request.id === arrivalPayload.chartRequestId);
+    expect(savedChartAfterFocusEdit?.context?.explorerFocus).toEqual({ schemaVersion: 1, status: "selected", key: "relationships" });
     await page.reload();
     await expect(page.getByRole("heading", { name: "Your Astra has arrived." })).toHaveCount(0);
 
@@ -659,6 +703,7 @@ test.describe("clean-start routes", () => {
 
     await page.goto("/self#self-birth-onboarding");
     await expect(page.getByRole("heading", { name: "Reveal your chart" })).toBeVisible();
+    await page.getByRole("button", { name: "Skip for now" }).click();
     await page.getByLabel("Your name").fill(name);
     await page.getByRole("button", { exact: true, name: "Next" }).click();
     await chooseUnknownBirthMoment(page, { year: "1961", month: "May", day: "23" });
@@ -670,6 +715,8 @@ test.describe("clean-start routes", () => {
     await expect(page.getByRole("heading", { name: "Your Astra has arrived." })).toBeVisible();
     await page.getByRole("button", { name: "Enter Astra", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Your Astra has arrived." })).toHaveCount(0);
+    const adminStarterItems = await listUserFeedItems(db, { userId: adminProfile.userId, state: "available", limit: 20 });
+    expect(adminStarterItems.items.filter((item) => item.reasonCode === "focus_first_exploration")).toHaveLength(0);
 
     await createCompletedAllyChart(email, { name: "Admin Comparison", relationship: "Colleague" });
     await page.goto("/self#self-birth-onboarding");

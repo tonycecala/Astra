@@ -75,7 +75,7 @@ export default async function ChartsPage({ searchParams }: ChartsPageParams) {
           <article className="card">
             <h1>{ui.charts.chartNotFoundTitle}</h1>
             <p>{ui.charts.chartNotFoundBody}</p>
-            <Link className="button secondary" href={backToSelf ? "/self" : "/allies"}>
+            <Link className="chartBackLink" href={backToSelf ? "/self" : "/allies"}>
               <ArrowLeft aria-hidden="true" size={16} />
               {backToSelf ? ui.charts.backToSelf : ui.charts.backToAllies}
             </Link>
@@ -88,7 +88,7 @@ export default async function ChartsPage({ searchParams }: ChartsPageParams) {
     if (from !== canonicalOwner) redirect(`/charts?chart=${encodeURIComponent(selected.chart.id)}&from=${canonicalOwner}`);
     return (
       <section className="chartSinglePage" aria-label={ui.charts.selectedLabel}>
-        <Link className="button secondary chartBackLink" href={owner === "ally" ? "/allies" : "/self"}>
+        <Link className="chartBackLink" href={owner === "ally" ? "/allies" : "/self"}>
           <ArrowLeft aria-hidden="true" size={16} />
           {owner === "ally" ? ui.charts.backToAllies : ui.charts.backToSelf}
         </Link>
