@@ -536,7 +536,7 @@ test.describe("clean-start routes", () => {
     await expect(page.locator("article.astraPublishedCard .astraPublishedCardTitle")).toHaveText("Notice what you carry into connection");
     await expect(page.locator("article.astraPublishedCard .astraPublishedCardEyebrow")).toHaveText("Exploring connection patterns");
     await expect(page.getByText("Your current focus: Understand my relationships")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Explore this in your chart" })).toHaveAttribute("href", `/charts?chart=${encodeURIComponent(arrivalPayload.chartRequestId)}&from=self`);
+    await expect(page.getByRole("link", { name: "Explore this in your chart" })).toHaveCount(0);
     await expect(page.getByText("Why this now?")).toHaveCount(0);
     const repeatComplete = await page.request.post(`/api/chart-arrivals/${encodeURIComponent(arrivalPayload.chartRequestId)}/complete`);
     expect(repeatComplete.ok()).toBe(true);

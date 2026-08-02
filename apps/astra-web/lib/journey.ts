@@ -76,10 +76,7 @@ function reportRequestId(item: UserFeedItem) {
 
 function primaryActionFor(item: UserFeedItem): JourneyStep["primaryAction"] {
   const label = payloadString(item.displayPayload, "ctaLabel") ?? ui.journey.openStep;
-  if (item.reasonCode === "focus_first_exploration") {
-    const href = payloadString(item.displayPayload, "ctaHref");
-    return { href: href?.startsWith("/charts?chart=") ? href : "/charts", label };
-  }
+  if (item.reasonCode === "focus_first_exploration") return undefined;
   if (item.feedKind === "report_signal" || item.feedKind === "artifact") {
     const reportId = reportRequestId(item) ?? item.artifactId;
     return { href: reportId ? `/library?reportId=${encodeURIComponent(reportId)}` : "/library", label };
