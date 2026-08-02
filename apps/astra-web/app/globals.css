@@ -95,6 +95,40 @@ textarea {
   font: inherit;
 }
 
+/*
+ * A button should be recognizable and usable before a feature author reaches
+ * for a component class. Variants below can deliberately soften or reshape
+ * this foundation, but native browser buttons must never ship as unpadded
+ * white controls.
+ */
+button {
+  min-height: 42px;
+  border: 1px solid color-mix(in srgb, var(--ink) 84%, var(--line));
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--paper);
+  background: var(--ink);
+  cursor: pointer;
+  font-weight: 760;
+  line-height: 1.2;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+button:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--gold) 48%, var(--ink));
+  background: color-mix(in srgb, var(--ink) 88%, var(--gold));
+}
+
+button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 @media (max-width: 900px) {
   /*
    * iOS Safari zooms the visual viewport when a focused form control computes
@@ -2657,6 +2691,7 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   min-height: 42px;
   border: 1px solid transparent;
   border-radius: 6px;
+  padding: 10px 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2664,6 +2699,8 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   color: var(--ink);
   background: transparent;
   cursor: pointer;
+  font-weight: 760;
+  line-height: 1.2;
 }
 
 .segmented-control button.active,
@@ -2676,6 +2713,44 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   color: var(--ink);
   border-color: var(--line);
   background: var(--soft);
+}
+
+.button.ghost {
+  color: var(--ink);
+  border-color: var(--line);
+  background: transparent;
+}
+
+.button.ghost:hover:not(:disabled),
+.button.ghost:focus-visible {
+  border-color: color-mix(in srgb, var(--gold) 42%, var(--line));
+  background: var(--soft);
+}
+
+.text-button {
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  color: var(--gold);
+  background: transparent;
+  font-weight: 760;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.text-button:hover:not(:disabled),
+.text-button:focus-visible {
+  color: color-mix(in srgb, var(--gold) 78%, var(--ink));
+  background: transparent;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
 }
 
 .auth-form {
