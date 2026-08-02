@@ -73,7 +73,7 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   await pageA.goto("/journey");
   const card = pageA.locator("article.astraPublishedCard");
   await expect(card).toHaveCount(1);
-  await expect(card.locator(".astraPublishedCardEyebrow")).toHaveText("Current step");
+  await expect(card.locator(".astraPublishedCardEyebrow")).toHaveText("Report ready");
   await expect(card.locator(".astraPublishedCardMedia")).toHaveCount(0);
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
   await expect(pageA.getByText("B private step")).toHaveCount(0);

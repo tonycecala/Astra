@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { AstraCard, AstrologyReportRequest, StreamItem, UserFeedItem } from "@astra/contracts";
+import type { AstraCard, AstrologyReportRequest, ExplorerFocusKey, StreamItem, UserFeedItem } from "@astra/contracts";
 import { db, listUserAstrologyReportRequests, listUserFeedItems, readFoundationSnapshot, seedSnapshot } from "@astra/db";
 import { fetchComposerAvailability } from "./composer-selection";
 import { ui } from "./i18n";
@@ -16,6 +16,7 @@ import { JOURNEY_UP_NEXT_PREVIEW_LIMIT, reportJourneySubtitle } from "./journey-
 export type JourneyStep = {
   item: UserFeedItem;
   card: AstraCard;
+  eyebrow: string;
   primaryAction?: { href: string; label: string };
   provenance?: string;
 };
@@ -25,6 +26,13 @@ export type JourneyViewModel = { currentStep?: JourneyStep; queue: JourneyStep[]
 function payloadString(payload: Record<string, unknown>, key: string) {
   const value = payload[key];
   return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+function selectedFocusKey(item: UserFeedItem): ExplorerFocusKey | undefined {
+  const focus = item.displayPayload.explorerFocus;
+  if (!focus || typeof focus !== "object" || Array.isArray(focus)) return undefined;
+  const key = (focus as Record<string, unknown>).key;
+  return typeof key === "string" && key in ui.journey.focusEyebrows ? key as ExplorerFocusKey : undefined;
 }
 
 function acknowledgedAt(item: UserFeedItem) {
@@ -90,14 +98,28 @@ function provenanceFor(item: UserFeedItem) {
   return ui.journey.provenance.privateJourney;
 }
 
+function eyebrowFor(item: UserFeedItem) {
+  if (item.reasonCode === "focus_first_exploration") {
+    const focusKey = selectedFocusKey(item);
+    return focusKey ? ui.journey.focusEyebrows[focusKey] : ui.journey.firstExploration;
+  }
+  if (item.feedKind === "report_signal" || item.feedKind === "artifact") return ui.journey.reportReady;
+  if (item.feedKind === "ally") return ui.journey.allyExploration;
+  if (item.feedKind === "gift") return ui.journey.giftExploration;
+  return ui.journey.currentStep;
+}
+
 function stepFromFeedItem(item: UserFeedItem, requestsById: Map<string, AstrologyReportRequest>): JourneyStep {
   const requestId = reportRequestId(item);
   const request = requestId ? requestsById.get(requestId) : undefined;
   const subtitle = item.feedKind === "report_signal"
     ? request ? reportJourneySubtitle(request) : ui.journey.privateReportContext
-    : payloadString(item.displayPayload, "subtitle");
+    : item.reasonCode === "focus_first_exploration"
+      ? selectedFocusKey(item) ? ui.journey.focusReminder(ui.self.focus.choices[selectedFocusKey(item)!]) : ui.journey.firstExplorationSubtitle
+      : payloadString(item.displayPayload, "subtitle");
   return {
     item,
+    eyebrow: eyebrowFor(item),
     primaryAction: primaryActionFor(item),
     provenance: provenanceFor(item),
     card: {

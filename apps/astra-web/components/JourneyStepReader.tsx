@@ -57,7 +57,7 @@ export function JourneyStepReader({
             bodyText={currentStep.card.body}
             className="stream-card-open"
             contentClassName="stream-card-content"
-            eyebrow={ui.journey.currentStep}
+            eyebrow={currentStep.eyebrow}
             imageAlt={currentStep.card.imageUrl ? currentStep.card.title : ""}
             imageUrl={currentStep.card.imageUrl}
             mediaClassName="stream-card-media astraStreamArtFrame"
