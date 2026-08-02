@@ -49,7 +49,7 @@ export const ui = {
     currentStep: "Current step",
     firstExploration: "First chart reflection",
     firstExplorationSubtitle: "A first exploration from your chart",
-    focusReminder: (focus: string) => `Your focus: ${focus}`,
+    focusReminder: (focus: string) => `Your current focus: ${focus}`,
     focusEyebrows: {
       self_understanding: "Exploring your inner pattern",
       relationships: "Exploring connection patterns",
