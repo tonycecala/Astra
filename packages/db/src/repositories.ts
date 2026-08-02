@@ -12,6 +12,8 @@ import {
   type UpdateAllyRelationship,
   type CreateComposerDecision,
   type CreateUserFeedItem,
+  type ExplorerFocus,
+  type UpdateExplorerFocus,
   type ComposerStreamArtifact,
   type ChartBirthData,
   type CreateChartBirthData,
@@ -40,6 +42,8 @@ import {
   updateAllyRelationshipSchema,
   reportChartBasisSnapshotSchema,
   createUserFeedItemSchema,
+  explorerFocusSchema,
+  updateExplorerFocusSchema,
   composerStreamArtifactSchema,
   type FoundationSeed,
   foundationSeedSchema,
@@ -1321,6 +1325,82 @@ export async function markAuthUserOnboardingComplete(database: AstraDb, userId: 
 
   if (!profile) throw new Error("Onboarding completion did not resolve a saved user profile.");
   return profile;
+}
+
+export async function updateAuthUserExplorerFocus(
+  database: AstraDb,
+  input: { userId: string; focus: UpdateExplorerFocus }
+): Promise<ExplorerFocus> {
+  const focus = updateExplorerFocusSchema.parse(input.focus);
+  return database.transaction(async (tx) => {
+    await tx.execute(sql`select ${appUserProfiles.userId} from ${appUserProfiles} where ${appUserProfiles.userId} = ${input.userId} for update`);
+    const [profile] = await tx.select().from(appUserProfiles).where(eq(appUserProfiles.userId, input.userId)).limit(1);
+    if (!profile) throw new Error("PROFILE_NOT_FOUND");
+    const now = new Date().toISOString();
+    const prior = explorerFocusSchema.safeParse((profile.metadata as Record<string, unknown>)?.explorerFocus);
+    const saved = explorerFocusSchema.parse({
+      schemaVersion: 1,
+      ...focus,
+      selectedAt: prior.success ? prior.data.selectedAt : now,
+      updatedAt: now
+    });
+    await tx.update(appUserProfiles).set({
+      metadata: { ...(profile.metadata as Record<string, unknown>), explorerFocus: saved },
+      updatedAt: new Date(now)
+    }).where(eq(appUserProfiles.userId, input.userId));
+    return saved;
+  });
+}
+
+export async function completeChartArrivalTransaction(
+  database: AstraDb,
+  input: { userId: string; arrivalFeedItemId: string; journeyItem?: CreateUserFeedItem }
+): Promise<UserFeedItem> {
+  const parsedJourneyItem = input.journeyItem ? createUserFeedItemSchema.parse(input.journeyItem) : undefined;
+  if (parsedJourneyItem && parsedJourneyItem.userId !== input.userId) throw new Error("FEED_ITEM_USER_MISMATCH");
+  return database.transaction(async (tx) => {
+    const [arrival] = await tx.select().from(userFeedItems).where(and(
+      eq(userFeedItems.id, input.arrivalFeedItemId),
+      eq(userFeedItems.userId, input.userId)
+    )).limit(1);
+    if (!arrival || arrival.reasonCode !== "chart_arrival_first_glimpse") throw new Error("CHART_ARRIVAL_NOT_FOUND");
+
+    const now = new Date();
+    if (parsedJourneyItem) {
+      await tx.insert(userFeedItems).values({
+        id: parsedJourneyItem.id,
+        userId: parsedJourneyItem.userId,
+        feedKind: parsedJourneyItem.feedKind,
+        title: parsedJourneyItem.title,
+        body: parsedJourneyItem.body,
+        displayPayload: parsedJourneyItem.displayPayload,
+        rankScore: Math.round(parsedJourneyItem.rankScore),
+        reasonCode: parsedJourneyItem.reasonCode,
+        state: parsedJourneyItem.state,
+        availableAt: parsedJourneyItem.availableAt ? toDate(parsedJourneyItem.availableAt) : now,
+        createdAt: now,
+        updatedAt: now
+      }).onConflictDoUpdate({
+        target: userFeedItems.id,
+        set: {
+          title: parsedJourneyItem.title,
+          body: parsedJourneyItem.body,
+          displayPayload: parsedJourneyItem.displayPayload,
+          rankScore: Math.round(parsedJourneyItem.rankScore),
+          reasonCode: parsedJourneyItem.reasonCode,
+          updatedAt: now
+        }
+      });
+    }
+
+    const [updatedArrival] = await tx.update(userFeedItems).set({ state: "seen", seenAt: now, updatedAt: now }).where(and(
+      eq(userFeedItems.id, input.arrivalFeedItemId),
+      eq(userFeedItems.userId, input.userId)
+    )).returning();
+    await tx.update(appUserProfiles).set({ onboardingStatus: "complete", updatedAt: now }).where(eq(appUserProfiles.userId, input.userId));
+    if (!updatedArrival) throw new Error("CHART_ARRIVAL_NOT_COMPLETED");
+    return userFeedItemFromRow(updatedArrival);
+  });
 }
 
 export async function updateAuthUserProfileDisplayName(

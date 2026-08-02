@@ -6,6 +6,41 @@ const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const timeOnlySchema = z.string().regex(/^\d{2}:\d{2}$/);
 const jsonObjectSchema = z.record(z.string(), z.unknown());
 
+export const explorerFocusKeys = [
+  "self_understanding",
+  "relationships",
+  "work_purpose",
+  "change_transition",
+  "learn_chart"
+] as const;
+
+export const explorerFocusKeySchema = z.enum(explorerFocusKeys);
+export const explorerFocusQuestionSchema = z.string().trim().min(1).max(280);
+export const explorerFocusSnapshotSchema = z.discriminatedUnion("status", [
+  z.object({ schemaVersion: z.literal(1), status: z.literal("selected"), key: explorerFocusKeySchema }),
+  z.object({ schemaVersion: z.literal(1), status: z.literal("skipped") })
+]);
+export const explorerFocusSchema = z.discriminatedUnion("status", [
+  z.object({
+    schemaVersion: z.literal(1),
+    status: z.literal("selected"),
+    key: explorerFocusKeySchema,
+    question: explorerFocusQuestionSchema.optional(),
+    selectedAt: isoDateSchema,
+    updatedAt: isoDateSchema
+  }),
+  z.object({
+    schemaVersion: z.literal(1),
+    status: z.literal("skipped"),
+    selectedAt: isoDateSchema,
+    updatedAt: isoDateSchema
+  })
+]);
+export const updateExplorerFocusSchema = z.discriminatedUnion("status", [
+  z.object({ status: z.literal("selected"), key: explorerFocusKeySchema, question: explorerFocusQuestionSchema.optional() }),
+  z.object({ status: z.literal("skipped") })
+]);
+
 function parseDateOnly(value: string) {
   const [yearText, monthText, dayText] = value.split("-");
   const year = Number.parseInt(yearText ?? "", 10);
@@ -275,6 +310,13 @@ export const chartArrivalViewSchema = z.object({
   glimpse: z.string().min(1),
   generationSource: chartArrivalGenerationSourceSchema,
   promptVersion: z.string().min(1),
+  explorerFocus: explorerFocusSnapshotSchema,
+  firstJourneyStep: z.object({
+    title: z.string().min(1),
+    body: z.string().min(1),
+    ctaLabel: z.string().min(1),
+    promptVersion: z.string().min(1)
+  }),
   state: z.enum(["available", "seen"]),
   createdAt: isoDateSchema
 });
@@ -285,11 +327,15 @@ export const createChartArrivalSchema = z.object({
 
 export const chartArrivalRewriteRequestSchema = z.object({
   evidence: z.array(chartArrivalEvidenceSchema).min(1).max(4),
-  deterministicGlimpse: z.string().min(20).max(500)
+  deterministicGlimpse: z.string().min(20).max(500),
+  deterministicJourneyBody: z.string().min(20).max(1200),
+  explorerFocus: explorerFocusSnapshotSchema,
+  question: explorerFocusQuestionSchema.optional()
 });
 
 export const chartArrivalRewriteResponseSchema = z.object({
   glimpse: z.string().min(20).max(500),
+  journeyBody: z.string().min(20).max(1200),
   promptVersion: z.string().min(1)
 });
 
@@ -558,7 +604,8 @@ export const chartRequestContextSchema = jsonObjectSchema.and(
     subject: chartSubjectContextSchema.optional(),
     chartSettings: chartSettingsSchema.optional(),
     synastryPartner: synastryPartnerSchema.optional(),
-    synastryTone: synastryToneSnapshotSchema.optional()
+    synastryTone: synastryToneSnapshotSchema.optional(),
+    explorerFocus: explorerFocusSnapshotSchema.optional()
   })
 );
 
@@ -1149,6 +1196,10 @@ export type ComposerDecision = z.infer<typeof composerDecisionSchema>;
 export type PrivateFeedRequest = z.infer<typeof privateFeedRequestSchema>;
 export type PrivateFeedResponse = z.infer<typeof privateFeedResponseSchema>;
 export type CreateUserFeedItem = z.infer<typeof createUserFeedItemSchema>;
+export type ExplorerFocusKey = z.infer<typeof explorerFocusKeySchema>;
+export type ExplorerFocusSnapshot = z.infer<typeof explorerFocusSnapshotSchema>;
+export type ExplorerFocus = z.infer<typeof explorerFocusSchema>;
+export type UpdateExplorerFocus = z.infer<typeof updateExplorerFocusSchema>;
 export type ChartArrivalEvidence = z.infer<typeof chartArrivalEvidenceSchema>;
 export type ChartArrivalGenerationSource = z.infer<typeof chartArrivalGenerationSourceSchema>;
 export type ChartArrivalView = z.infer<typeof chartArrivalViewSchema>;

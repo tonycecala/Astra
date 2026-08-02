@@ -75,10 +75,10 @@ export function JourneyStepReader({
         {error ? <p className="form-error" role="alert">{error}</p> : null}
         {notice ? <p className="journey-notice" role="status"><span>{notice.message}</span><button className="text-button" disabled={pendingId === notice.feedItemId} onClick={() => act(notice.feedItemId, "restore")} type="button">{ui.journey.undo}</button></p> : null}
         <div className="journey-step-actions" aria-label={ui.journey.stepActionsLabel}>
-          {currentStep.primaryAction ? <Link className="button" href={currentStep.primaryAction.href} prefetch={false}>{currentStep.primaryAction.label}</Link> : null}
-          <button className={currentStep.primaryAction ? "button secondary" : "button"} disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "complete")} type="button">{ui.journey.completeStep}</button>
-          <button className="button secondary" disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "save")} type="button">{ui.journey.saveForLater}</button>
-          <button className="button ghost" disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "dismiss")} type="button">{ui.journey.dismissStep}</button>
+          {currentStep.primaryAction ? <Link className="button journey-action-primary" href={currentStep.primaryAction.href} prefetch={false}>{currentStep.primaryAction.label}</Link> : null}
+          <button className={`button ${currentStep.primaryAction ? "journey-action-secondary" : "journey-action-primary"}`} disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "complete")} type="button">{ui.journey.completeStep}</button>
+          <button className="button journey-action-secondary" disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "save")} type="button">{ui.journey.saveForLater}</button>
+          <button className="button journey-action-tertiary" disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "dismiss")} type="button">{ui.journey.dismissStep}</button>
         </div>
       </main>
       <aside className="journey-queue" aria-label={ui.journey.upNextLabel}>

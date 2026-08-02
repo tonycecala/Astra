@@ -59,6 +59,8 @@ export const ui = {
     dismissedNotice: "Step dismissed.",
     completedNotice: "Step completed.",
     provenance: {
+      focusSelected: "You chose a starting focus before Astra read your chart. This private step uses that focus as an editorial lens and stays anchored to the chart signals shown here. Changing your focus later will shape future guidance, not rewrite this step.",
+      focusSkipped: "You left your starting focus open, so Astra chose a broad first exploration anchored only to supported chart signals. You can choose a focus later from Self without changing this step.",
       report: "This recent report is ready in your private Library. Journey is bringing it forward once so you can decide what comes next.",
       ally: "This step connects to an Ally saved in your private Astra.",
       gift: "This step connects to a Gift in your private Astra.",
@@ -320,6 +322,29 @@ export const ui = {
     chartArrivalError: "Astra could not read the chart yet. Your details are saved; try again.",
     chartArrivalInvalidBirthDetails: "Review your birth details before revealing your chart.",
     chartArrivalCompleteError: "Astra could not complete the arrival. Try Enter Astra again.",
+    focus: {
+      prompt: "What brings you to Astra right now?",
+      intro: "Choose a starting point. This shapes what Astra shows first; it does not limit where you can go.",
+      choices: {
+        self_understanding: "Understand myself",
+        relationships: "Understand my relationships",
+        work_purpose: "Find direction in work and purpose",
+        change_transition: "Make sense of a change",
+        learn_chart: "Learn how my chart works"
+      },
+      questionLabel: "Is there a question you want Astra to hold privately?",
+      questionHint: "Optional · 280 characters · private to your Astra",
+      questionPlaceholder: "What feels most important to understand right now?",
+      required: "Choose a focus or skip for now.",
+      skip: "Skip for now",
+      saveError: "Astra could not save your focus. Try again.",
+      editTitle: "Your current focus",
+      editIntro: "This shapes future guidance. Changing it will not rewrite your chart arrival, past reports, or earlier Journey steps.",
+      editAction: "Edit focus",
+      saveAction: "Save focus",
+      saved: "Focus saved",
+      open: "Open for now"
+    },
     onboardingGuideLabel: "Alpha onboarding guidance",
     onboardingGuideTitle: "Alpha path",
     onboardingGuideBody: "Your name and birth date are enough to start. Add time and place only when you know them.",
@@ -402,6 +427,7 @@ export const ui = {
     chartFlowReport: "Report generated",
     chartFlowLibrary: "Saved in Library",
     onboardingSteps: {
+      focus: "Starting focus",
       subject: "Your name",
       birth_details: "Birth details",
       report: "Report",

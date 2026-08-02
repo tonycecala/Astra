@@ -89,6 +89,7 @@
     "test:composer-ingest-api": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/smoke-composer-ingest-api.mts",
     "test:private-feed": "node --import tsx scripts/smoke-private-feed.mts",
     "test:journey-curation": "node --import tsx scripts/smoke-journey-curation.mts",
+    "test:focus-first-onboarding": "node --import tsx scripts/smoke-focus-first-onboarding.mts",
     "test:composer-private-feed-api": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/smoke-composer-private-feed-api.mts",
     "test:composer-operator-workflow": "node --env-file-if-exists=apps/astra-web/.env.local --import tsx scripts/smoke-composer-operator-workflow.mts",
     "test:composer-card-queue-api": "node --import tsx scripts/smoke-composer-card-queue-api.mts",

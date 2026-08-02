@@ -7,7 +7,7 @@ import {
 } from "@astra/contracts";
 import { getInternalToken } from "../../../../lib/config";
 
-const PROMPT_VERSION = "chart-arrival-composer-rules-v1";
+const PROMPT_VERSION = "focus-first-arrival-composer-v1";
 
 function tokensMatch(actual: string, expected: string) {
   const actualBytes = Buffer.from(actual);
@@ -25,13 +25,13 @@ function rewriteFirstGlimpse(evidence: ChartArrivalEvidence[], fallback: string)
   const rising = evidenceValue(evidence, "rising");
 
   if (sun && moon && rising) {
-    return `Your chart opens with a ${sun} Sun, ${moon} Moon, and ${rising} Rising—three distinct signals Astra will keep in view as it explores identity, feeling, and how you meet the world.`;
+    return fallback;
   }
   if (sun && moon) {
-    return `Your ${sun} Sun and ${moon} Moon give Astra a clear first pattern: identity and emotional instinct are both present, without pretending to know the time-sensitive details your chart cannot support.`;
+    return fallback;
   }
   if (sun) {
-    return `Your ${sun} Sun is the first clear pattern Astra can read here, so the journey begins with that verified signal while leaving time-sensitive details open rather than guessing.`;
+    return fallback;
   }
   return fallback;
 }
@@ -51,6 +51,7 @@ export async function POST(request: Request) {
   return NextResponse.json(
     chartArrivalRewriteResponseSchema.parse({
       glimpse: rewriteFirstGlimpse(parsed.data.evidence, parsed.data.deterministicGlimpse),
+      journeyBody: parsed.data.deterministicJourneyBody,
       promptVersion: PROMPT_VERSION
     })
   );

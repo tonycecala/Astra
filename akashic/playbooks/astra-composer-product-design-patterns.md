@@ -11,8 +11,8 @@ tags:
   - playbook
 source_import: ../imports/astra-product-design-pattern-library/
 created: 2026-06-16
-updated: 2026-08-01
-timestamp: 2026-08-01
+updated: 2026-08-02
+timestamp: 2026-08-02
 ---
 
 # Astra and Composer Product Design Patterns
@@ -177,3 +177,11 @@ Use `05-progressive-disclosure.md`, `07-empty-states.md`, `13-intent-mirroring.m
 ## Self Report Action Disclosure
 
 When Self already has a saved chart, default `Request Report` to Step 1, Birth details. Do not expose the final `Order Report` action on default arrival; show it only after the user explicitly advances into Report or follows the `start=report` deep link. Keep first-chart onboarding and logged-out behavior unchanged. This applies Progressive Disclosure, Setup Defaults, Intent Mirroring, and Trust Building; runtime analytics remain N/A until Astra has an analytics transport.
+
+## Focus-first Onboarding Continuity
+
+For a new signed-in customer without a Self chart, use one coherent four-step path: Starting focus, Your name, Birth details, Arrival. The focus is optional, private, editable, and explainable; reveal the optional question only after a focus choice. Snapshot the choice into the chart request so Arrival and the first Journey step remain historically honest when the current profile focus changes later.
+
+`Enter Astra` is the commitment boundary. In one transaction, complete Chart Arrival, mark onboarding complete, and upsert exactly one deterministic private `focus_first_exploration` Journey item while preserving any existing item state. Do not create a report, artifact, credit event, or retired `composer_onboarding_card`. Exclude admin and operator accounts from the starter-item producer.
+
+Apply `01-time-to-value.md`, `03-discovery.md`, `04-personalisation.md`, `05-progressive-disclosure.md`, `06-setup-defaults.md`, `07-empty-states.md`, `08-success-moments.md`, `12-commitment.md`, `13-intent-mirroring.md`, `20-fail-safe.md`, `32-jtbd-copywriting.md`, and `36-trust-building.md`. Runtime analytics remain N/A until Astra has an analytics transport; the event contract stays documentation-only. Acceptance requires all five focus variants plus skip, private-question leakage checks, retry/idempotency proof, non-creation checks, and the complete authenticated production path at desktop, tablet, and phone.

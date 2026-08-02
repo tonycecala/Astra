@@ -42,6 +42,10 @@ function reportRequestId(item: UserFeedItem) {
 
 function primaryActionFor(item: UserFeedItem): JourneyStep["primaryAction"] {
   const label = payloadString(item.displayPayload, "ctaLabel") ?? ui.journey.openStep;
+  if (item.reasonCode === "focus_first_exploration") {
+    const href = payloadString(item.displayPayload, "ctaHref");
+    return { href: href?.startsWith("/charts?chart=") ? href : "/charts", label };
+  }
   if (item.feedKind === "report_signal" || item.feedKind === "artifact") {
     const reportId = reportRequestId(item) ?? item.artifactId;
     return { href: reportId ? `/library?reportId=${encodeURIComponent(reportId)}` : "/library", label };
@@ -53,6 +57,13 @@ function primaryActionFor(item: UserFeedItem): JourneyStep["primaryAction"] {
 }
 
 function provenanceFor(item: UserFeedItem) {
+  if (item.reasonCode === "focus_first_exploration") {
+    const focus = item.displayPayload.explorerFocus;
+    if (focus && typeof focus === "object" && !Array.isArray(focus) && (focus as Record<string, unknown>).status === "selected") {
+      return ui.journey.provenance.focusSelected;
+    }
+    return ui.journey.provenance.focusSkipped;
+  }
   if (item.reasonCode === "explicit_report_signal_publish") return ui.journey.provenance.report;
   if (item.feedKind === "ally") return ui.journey.provenance.ally;
   if (item.feedKind === "gift") return ui.journey.provenance.gift;
