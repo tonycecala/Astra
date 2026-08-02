@@ -84,10 +84,10 @@ export function JourneyStepReader({
         {acknowledged ? <p className="journey-acknowledged" role="status"><span aria-hidden="true">✓</span><strong>{ui.journey.notedStep}</strong><span>{ui.journey.notedHint}</span></p> : null}
         {error ? <p className="form-error" role="alert">{error}</p> : null}
         {notice ? <p className="journey-notice" role="status"><span>{notice.message}</span><button className="text-button" disabled={pendingId === notice.feedItemId} onClick={() => act(notice.feedItemId, "restore")} type="button">{ui.journey.undo}</button></p> : null}
+        {currentStep.primaryAction ? <Link className="journey-open-link" href={currentStep.primaryAction.href} prefetch={false}>{currentStep.primaryAction.label}<span aria-hidden="true">→</span></Link> : null}
         <div className="journey-step-actions" aria-label={ui.journey.stepActionsLabel}>
-          {currentStep.primaryAction ? <Link className="button journey-action-primary" href={currentStep.primaryAction.href} prefetch={false}>{currentStep.primaryAction.label}</Link> : null}
-          <button className={`button ${currentStep.primaryAction ? "journey-action-secondary" : "journey-action-primary"}`} disabled={acknowledged || pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "acknowledge")} type="button">{acknowledged ? ui.journey.notedStep : ui.journey.okStep}</button>
-          <button className="button journey-action-tertiary" disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "archive")} type="button">{ui.journey.archiveStep}</button>
+          <button className="button journey-action-primary" disabled={acknowledged || pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "acknowledge")} type="button">{acknowledged ? ui.journey.notedStep : ui.journey.okStep}</button>
+          <button className="text-button journey-action-archive" disabled={pendingId === currentStep.item.id} onClick={() => act(currentStep.item.id, "archive")} type="button">{ui.journey.archiveStep}</button>
         </div>
       </main>
       <aside className="journey-queue" aria-label={ui.journey.upNextLabel}>

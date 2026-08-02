@@ -61,7 +61,7 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   await db.update(appUserProfiles).set({ onboardingStatus: "complete", updatedAt: new Date() }).where(eq(appUserProfiles.userId, userB));
   await db.update(appUserProfiles).set({ onboardingStatus: "complete", updatedAt: new Date() }).where(eq(appUserProfiles.userId, userC));
   await db.update(appUserProfiles).set({ role: "admin", onboardingStatus: "complete", updatedAt: new Date() }).where(eq(appUserProfiles.userId, adminUserId));
-  await seedStep(userA, { rank: 600, title: "A private current step", kind: "artifact" });
+  const currentStep = await seedStep(userA, { rank: 600, title: "A private current step", kind: "artifact" });
   const orphanSignal = await seedStep(userA, { rank: 550, title: "Obsolete imported report signal", kind: "report_signal" });
   await seedStep(userA, { rank: 500, title: "A private next step" });
   await seedStep(userA, { rank: 400, title: "A private third step" });
@@ -98,7 +98,11 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   await pageA.getByRole("button", { name: "Archive" }).click();
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private next step");
   await expect(pageA.getByText("Step archived.")).toBeVisible();
+  const undoArchiveResponse = pageA.waitForResponse((response) => response.request().method() === "PATCH"
+    && new URL(response.url()).pathname.includes(`/api/journey/items/${encodeURIComponent(currentStep.id)}`)
+    && Boolean(response.request().postData()?.includes('"restore"')));
   await pageA.getByRole("button", { name: "Undo" }).click();
+  expect((await undoArchiveResponse).ok()).toBe(true);
   await pageA.reload();
   await expect(card.locator(".astraPublishedCardTitle")).toHaveText("A private current step");
 
