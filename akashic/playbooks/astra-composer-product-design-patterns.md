@@ -11,7 +11,7 @@ tags:
   - playbook
 source_import: ../imports/astra-product-design-pattern-library/
 created: 2026-06-16
-updated: 2026-06-17
+updated: 2026-08-09
 timestamp: 2026-06-17
 ---
 
@@ -143,3 +143,7 @@ Before shipping, ask:
 Would this still feel respectful if Astra explained exactly what it is doing and why?
 
 If the answer is no, redesign it.
+
+## Approval-Bound Engineering Closeout
+
+After substantial changed Astra or Composer work, finish the task normally and let the installed Stop lifecycle create the closeout receipt. On the next turn, review the recorded diff and make exactly one explicit decision with `ak closeout lesson`, `ak closeout playbook`, or `ak closeout none --reason <text>`. Do not invoke the hook or manufacture a receipt manually. The 2026-08-09 rollout verification proved that a normal two-document session automatically recorded its baseline commit, resulting commit, and changed paths before later product work resumed.
