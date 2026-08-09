@@ -12,6 +12,7 @@
 - Repeated screenshots or computer-use require a written justification: reason, structured evidence checked, and expected visual proof.
 - Before patching a bug, use one hypothesis and one test; do not patch multiple suspected causes unless evidence proves one shared root cause.
 - The gate must never deadlock work: claim, close, release, or reopen actionable mail with `ak mail`, or edit files inside `akashic/mail/`. Purpose `know` mail is context, not a blocker.
+- After substantial changed work, the Stop hook creates a pending receipt in `akashic/closeouts/`. Before later product work, complete it with exactly one explicit decision: `ak closeout lesson`, `ak closeout playbook`, or `ak closeout none --reason <text>`. The hook never writes lesson content.
 - Before final Git closeout, run the repo's Steward review over the actual diff and validation evidence. Record the judgment as accept, accept-with-notes, retry/fix, or blocked; a passing check alone is not review.
 - For every substantial dev/debug session, update the most relevant repo-local file in `akashic/playbooks/` with the reusable procedure or verification gained from the work. Prefer improving an existing playbook over creating a near-duplicate.
 - After that review, capture each genuinely reusable discovery with `ak learn <skill|warning|adr|mission> <title> --body <text>` in the source repo. Do not manufacture lessons: if none exists, state `No new reusable lesson` in the closeout review.
