@@ -40,10 +40,6 @@ Lesson and playbook decisions must reference an artifact created or changed for 
 
 While a closeout is pending, read-only inspection, standard validation/review commands, `ak learn`, `ak capture`, `ak closeout`, and edits to Akashic learning artifacts remain available. Existing actionable Mail retains priority and its Mail-only remediation path: edit `akashic/mail/` or run `ak mail` commands first.
 
-### Verified Rollout Note — 2026-08-09
-
-The approval-bound closeout rollout merged in `565bdf0` (`chore: install approval-bound closeouts`). The installed `.codex/config.toml` wires `SessionStart` and `Stop` to the same preflight hook; the completed pilot receipt `AKC-20260809-154114` confirms the lifecycle recorded a one-file `.codex` probe and its explicit `none` decision. Treat that receipt as rollout evidence only: agents must not invoke the hook, manually create receipts, or preemptively make a closeout decision. End the changed-work session normally and let the installed lifecycle create any new receipt.
-
 ## Preflight
 
 Before non-trivial edits, complete this preflight:
