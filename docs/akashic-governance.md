@@ -26,6 +26,20 @@ To prevent deadlock, the gate allows:
 
 Repos without an `akashic/` directory no-op cleanly.
 
+## Approval-Bound Learning Closeout
+
+At `SessionStart`, the hook stores a private baseline under Git's internal path. At `Stop`, it compares the baseline with current Git-visible work. A single source/config/test change, or two other non-generated changes, creates an automatic Markdown receipt under `akashic/closeouts/`. Unchanged and trivial one-document sessions create no receipt.
+
+A pending receipt blocks later product work until exactly one learning decision is recorded:
+
+- `ak closeout lesson <receipt-id> <artifact-path>` after using `ak learn` or `ak capture` to write a genuinely reusable lesson.
+- `ak closeout playbook <receipt-id> akashic/playbooks/<file>.md` after updating an existing playbook.
+- `ak closeout none <receipt-id> --reason <text>` when review finds no reusable lesson.
+
+Lesson and playbook decisions must reference an artifact created or changed for that receipt. The hook creates the receipt and changed-file inventory only; it never generates lesson content or decides what was learned.
+
+While a closeout is pending, read-only inspection, standard validation/review commands, `ak learn`, `ak capture`, `ak closeout`, and edits to Akashic learning artifacts remain available. Existing actionable Mail retains priority and its Mail-only remediation path: edit `akashic/mail/` or run `ak mail` commands first.
+
 ## Preflight
 
 Before non-trivial edits, complete this preflight:
@@ -54,16 +68,12 @@ Before final Git status/commit reporting for a substantial dev or debug session:
 
 1. Review the actual diff and validation evidence using the repo's Steward review checklist. Record one judgment: accept, accept-with-notes, retry/fix, or blocked.
 2. Update the most relevant repo-local `akashic/playbooks/*.md` file with the reusable procedure, decision rule, or verification path proven by the session. Improve an existing playbook instead of creating a duplicate when possible.
-3. Capture every genuinely reusable discovery in the source repo with `ak learn <skill|warning|adr|mission> <title> --body <text>`.
-4. If no new reusable lesson exists, record `No new reusable lesson` in the review instead of creating noise.
-5. When the lesson should be shared, run `ak ingest <source-repo-path>` from central Akashic and review the imported artifact before canonical promotion.
-6. If JCodeMunch reported a stale commit during the session, refresh its repo
-   index after the final commit and verify the indexed commit matches `HEAD`.
-   Do not carry a known-stale code index into the next work session.
+3. Capture every genuinely reusable discovery in the source repo with `ak learn <skill|warning|adr|mission> <title> --body <text>`, then record it with `ak closeout lesson <receipt-id> <artifact-path>`.
+4. When an existing playbook owns the discovery, update it and run `ak closeout playbook <receipt-id> <playbook-path>`.
+5. If no new reusable lesson exists, run `ak closeout none <receipt-id> --reason <text>` instead of manufacturing knowledge.
+6. When the lesson should be shared, run `ak ingest <source-repo-path>` from central Akashic and review the imported artifact before canonical promotion.
 
-The closeout order is: validate, review, update playbook, capture learning,
-commit the verified work, refresh REPOMAP and any known-stale JCodeMunch index,
-then perform final Git inspection.
+The closeout order is: validate, review, update playbook, capture learning, refresh REPOMAP when artifacts changed, then perform final Git inspection.
 
 Before adding a new rule or instruction, apply delete-before-add: check whether the failure came from stale source, bad memory, confusing tooling, excessive reach, missing proof, or obsolete harness first.
 
