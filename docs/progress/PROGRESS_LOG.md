@@ -13,6 +13,27 @@ summary: "Durable session-by-session memory for Astra repo work."
 
 ## Entries
 
+### 2026-08-09 - Approval-Bound Closeout Rollout Documentation
+
+**Report Level:** 3 - Workflow & QA View
+**Actor:** Codex
+**Session Type:** approval-bound governance rollout documentation
+**Status:** complete
+
+#### What Changed
+
+- Recorded the merged `565bdf0` approval-bound closeout rollout in the repo-local governance guide.
+- Documented the verified lifecycle boundary: `SessionStart`/`Stop` own baseline and receipt creation; agents do not invoke the hook, create receipts, or decide closeouts ahead of the lifecycle.
+
+#### Validation
+
+- `ak governance check`
+- Reviewed merged rollout commit, installed hook configuration, and completed pilot receipt `AKC-20260809-154114`.
+
+#### Next Copy/Paste Goal
+
+Perform the next substantive AstraComposer change normally; when the installed lifecycle creates a pending closeout receipt, review the actual diff and validation evidence, then make exactly one justified learning decision.
+
 ### 2026-06-19 - Shared Card Face And Mobile Chrome Stabilization
 
 **Report Level:** 3 - Workflow & QA View
