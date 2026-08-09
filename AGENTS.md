@@ -3,11 +3,23 @@
 ## Akashic Governance
 
 - Run `ak governance check` before broad implementation or debugging to verify the executable attention gate.
-- Before non-trivial edits, check local `akashic/agent-inbox/`, `akashic/warnings/`, and `git status --short`.
+- Before non-trivial edits, run `ak doctor`. If the repo is dirty, run `ak dirty` and classify every dirty file before broad edits.
+- Start and end messages must include a compact dirty summary: dirty file count, likely `owned-mail`/`current-session`/`generated-artifact`/`unknown-risk` groups, files to avoid, and whether `ak dirty`/`ak doctor` should be run next.
+- Dirty state is not bad; unattributed dirty state is bad. When the repo is dirty, classify the dirt before editing.
+- On macOS, `.DS_Store` is ambient Finder noise: keep it ignored, do not mention it in normal reports, and only clean/comment when it is tracked, staged, or blocking a command/check.
+- Check relevant Akashic Mail in `akashic/mail/new/` and `akashic/mail/working/`, then check `akashic/warnings/`.
 - Use REPOMAP, JCodeMunch, source, logs, tests, API responses, and diffs before screenshots or computer-use.
 - Repeated screenshots or computer-use require a written justification: reason, structured evidence checked, and expected visual proof.
 - Before patching a bug, use one hypothesis and one test; do not patch multiple suspected causes unless evidence proves one shared root cause.
-- The gate must never deadlock work: acknowledge/defer/close active messages with `ak inbox ack`, `ak inbox defer`, or `ak inbox close`, or edit files inside `akashic/agent-inbox/` and `akashic/warnings/`.
+- The gate must never deadlock work: claim, close, release, or reopen actionable mail with `ak mail`, or edit files inside `akashic/mail/`. Purpose `know` mail is context, not a blocker.
+- After substantial changed work, the Stop hook creates a pending receipt in `akashic/closeouts/`. Before later product work, complete it with exactly one explicit decision: `ak closeout lesson`, `ak closeout playbook`, or `ak closeout none --reason <text>`. The hook never writes lesson content.
+- Before final Git closeout, run the repo's Steward review over the actual diff and validation evidence. Record the judgment as accept, accept-with-notes, retry/fix, or blocked; a passing check alone is not review.
+- For every substantial dev/debug session, update the most relevant repo-local file in `akashic/playbooks/` with the reusable procedure or verification gained from the work. Prefer improving an existing playbook over creating a near-duplicate.
+- After that review, capture each genuinely reusable discovery with `ak learn <skill|warning|adr|mission> <title> --body <text>` in the source repo. Do not manufacture lessons: if none exists, state `No new reusable lesson` in the closeout review.
+- If a captured lesson should benefit other repos, run `ak ingest <source-repo-path>` from central Akashic; promote it into canonical shared guidance only after review.
+- Act as a senior product-minded engineering partner: surface product intent, user impact, prioritization, tradeoffs, and next-best recommendations when the work is ambiguous, while preserving Tony's owner role.
+- Follow the Continuous Refactoring Constitution in `akashic/principles/CONTINUOUS_REFACTORING_CONSTITUTION.md`: preserve purpose, reduce friction, turn discoveries into durable knowledge, and treat stability as a valid refactoring outcome.
+- Follow the Ponytail YAGNI Contract in `akashic/principles/PONYTAIL_YAGNI_CODEX_CONTRACT.md`: prefer the smallest correct patch, avoid speculative architecture, and use REPOMAP/JCodeMunch before broad file reads.
 
 ## Akashic Stewardship v3 & Reporting Levels
 
@@ -21,7 +33,6 @@
 - Follow `/Users/tony/Documents/Projects/Akashic/akashic/principles/PONYTAIL_YAGNI_CODEX_CONTRACT.md`.
 - Prefer the smallest correct patch. Do not add speculative architecture, migration frameworks, plugin systems, provider abstractions, generic engines, broad config layers, or new dependencies unless the current task clearly requires them.
 - Treat JCodeMunch/JCM and REPOMAP as the default navigation path before broad file reads whenever available.
-
 ## Akashic Knowledge Source
 
 - Treat `/Users/tony/Documents/Projects/Akashic` as the shared engineering knowledge source before broad implementation or debugging.
