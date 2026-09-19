@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-09-19T13:36:00.947Z",
+  "generated_at": "2026-09-19T15:16:34.334Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 476,
-  "total_symbols": 6697,
-  "total_estimated_tokens": 1250073,
+  "files_indexed": 478,
+  "total_symbols": 6711,
+  "total_estimated_tokens": 1254144,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -15939,6 +15939,305 @@
       "importance_bucket": "app/api"
     },
     {
+      "file": "packages/astrology/src/report/portraitsV4.ts",
+      "lang": "typescript",
+      "size": 27221,
+      "lines": 267,
+      "estimated_tokens": 6806,
+      "symbols": [
+        {
+          "name": "ASTRA_PORTRAITS_V4_PROMPT_VERSION",
+          "line": 6,
+          "type": "constant"
+        },
+        {
+          "name": "ASTRA_PORTRAITS_V4_WRITER_MODEL",
+          "line": 7,
+          "type": "constant"
+        },
+        {
+          "name": "ASTRA_PORTRAITS_V4_EDITOR_MODEL",
+          "line": 8,
+          "type": "constant"
+        },
+        {
+          "name": "PortraitEvidence",
+          "line": 9,
+          "type": "type"
+        },
+        {
+          "name": "Writer",
+          "line": 10,
+          "type": "type"
+        },
+        {
+          "name": "draftSchema",
+          "line": 13,
+          "type": "constant"
+        },
+        {
+          "name": "portraitV4ReviewSchema",
+          "line": 21,
+          "type": "constant"
+        },
+        {
+          "name": "reviewSchema",
+          "line": 25,
+          "type": "constant"
+        },
+        {
+          "name": "editsSchema",
+          "line": 26,
+          "type": "constant"
+        },
+        {
+          "name": "PortraitDraft",
+          "line": 32,
+          "type": "type"
+        },
+        {
+          "name": "responseFormat",
+          "line": 33,
+          "type": "function"
+        },
+        {
+          "name": "PortraitV4Metadata",
+          "line": 34,
+          "type": "type"
+        },
+        {
+          "name": "PortraitV4Error",
+          "line": 43,
+          "type": "class"
+        },
+        {
+          "name": "json",
+          "line": 48,
+          "type": "function"
+        },
+        {
+          "name": "progressedSourceBoundary",
+          "line": 52,
+          "type": "constant"
+        },
+        {
+          "name": "readerExperienceContract",
+          "line": 54,
+          "type": "function"
+        },
+        {
+          "name": "portraitV4Prompt",
+          "line": 65,
+          "type": "function"
+        },
+        {
+          "name": "chapter",
+          "line": 66,
+          "type": "constant"
+        },
+        {
+          "name": "validatePortraitV4Draft",
+          "line": 91,
+          "type": "function"
+        },
+        {
+          "name": "allowed",
+          "line": 93,
+          "type": "constant"
+        },
+        {
+          "name": "bodies",
+          "line": 94,
+          "type": "constant"
+        },
+        {
+          "name": "words",
+          "line": 95,
+          "type": "constant"
+        },
+        {
+          "name": "prose",
+          "line": 103,
+          "type": "constant"
+        },
+        {
+          "name": "defensive",
+          "line": 104,
+          "type": "constant"
+        },
+        {
+          "name": "paragraphs",
+          "line": 106,
+          "type": "constant"
+        },
+        {
+          "name": "astroLeads",
+          "line": 107,
+          "type": "constant"
+        },
+        {
+          "name": "applyPortraitV4Edits",
+          "line": 113,
+          "type": "function"
+        },
+        {
+          "name": "result",
+          "line": 115,
+          "type": "constant"
+        },
+        {
+          "name": "totalWords",
+          "line": 116,
+          "type": "constant"
+        },
+        {
+          "name": "changedWords",
+          "line": 117,
+          "type": "constant"
+        },
+        {
+          "name": "source",
+          "line": 120,
+          "type": "constant"
+        },
+        {
+          "name": "start",
+          "line": 121,
+          "type": "constant"
+        },
+        {
+          "name": "end",
+          "line": 123,
+          "type": "constant"
+        },
+        {
+          "name": "edit",
+          "line": 131,
+          "type": "constant"
+        },
+        {
+          "name": "body",
+          "line": 132,
+          "type": "constant"
+        },
+        {
+          "name": "portraitV4OriginAdvisories",
+          "line": 139,
+          "type": "function"
+        },
+        {
+          "name": "patterns",
+          "line": 140,
+          "type": "constant"
+        },
+        {
+          "name": "portraitV4ReviewPrompt",
+          "line": 156,
+          "type": "function"
+        },
+        {
+          "name": "portraitV4ReviewFormat",
+          "line": 172,
+          "type": "constant"
+        },
+        {
+          "name": "editPortraitV4Draft",
+          "line": 174,
+          "type": "function"
+        },
+        {
+          "name": "draft",
+          "line": 175,
+          "type": "constant"
+        },
+        {
+          "name": "changedWords",
+          "line": 177,
+          "type": "constant"
+        },
+        {
+          "name": "revisionLimit",
+          "line": 178,
+          "type": "constant"
+        },
+        {
+          "name": "edited",
+          "line": 180,
+          "type": "constant"
+        },
+        {
+          "name": "review",
+          "line": 212,
+          "type": "constant"
+        },
+        {
+          "name": "verdict",
+          "line": 213,
+          "type": "constant"
+        },
+        {
+          "name": "generatePortraitV4",
+          "line": 223,
+          "type": "function"
+        },
+        {
+          "name": "started",
+          "line": 224,
+          "type": "constant"
+        },
+        {
+          "name": "calls",
+          "line": 226,
+          "type": "constant"
+        },
+        {
+          "name": "result",
+          "line": 231,
+          "type": "constant"
+        },
+        {
+          "name": "raw",
+          "line": 238,
+          "type": "constant"
+        },
+        {
+          "name": "edited",
+          "line": 249,
+          "type": "constant"
+        }
+      ],
+      "imports": [
+        "./portraitVoice",
+        "./providerUsage",
+        "@astra/contracts",
+        "zod"
+      ],
+      "exports": [
+        "ASTRA_PORTRAITS_V4_EDITOR_MODEL",
+        "ASTRA_PORTRAITS_V4_PROMPT_VERSION",
+        "ASTRA_PORTRAITS_V4_WRITER_MODEL",
+        "PortraitEvidence",
+        "PortraitV4Error",
+        "PortraitV4Metadata",
+        "applyPortraitV4Edits",
+        "editPortraitV4Draft",
+        "generatePortraitV4",
+        "portraitV4OriginAdvisories",
+        "portraitV4Prompt",
+        "portraitV4ReviewFormat",
+        "portraitV4ReviewPrompt",
+        "portraitV4ReviewSchema",
+        "validatePortraitV4Draft"
+      ],
+      "routes": [],
+      "route_count": 0,
+      "headings": [],
+      "dependency_in": 2,
+      "dependency_out": 2,
+      "importance_weight": 223.26,
+      "importance_bucket": "other"
+    },
+    {
       "file": "docs/inbox-astra/completed/ASTRA_SEMANTIC_SYNTHESIS_V2_HANDOFF.md",
       "lang": "markdown",
       "size": 44170,
@@ -16328,300 +16627,6 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 222.22,
-      "importance_bucket": "other"
-    },
-    {
-      "file": "packages/astrology/src/report/portraitsV4.ts",
-      "lang": "typescript",
-      "size": 23757,
-      "lines": 251,
-      "estimated_tokens": 5940,
-      "symbols": [
-        {
-          "name": "ASTRA_PORTRAITS_V4_PROMPT_VERSION",
-          "line": 6,
-          "type": "constant"
-        },
-        {
-          "name": "ASTRA_PORTRAITS_V4_WRITER_MODEL",
-          "line": 7,
-          "type": "constant"
-        },
-        {
-          "name": "ASTRA_PORTRAITS_V4_EDITOR_MODEL",
-          "line": 8,
-          "type": "constant"
-        },
-        {
-          "name": "PortraitEvidence",
-          "line": 9,
-          "type": "type"
-        },
-        {
-          "name": "Writer",
-          "line": 10,
-          "type": "type"
-        },
-        {
-          "name": "draftSchema",
-          "line": 13,
-          "type": "constant"
-        },
-        {
-          "name": "portraitV4ReviewSchema",
-          "line": 21,
-          "type": "constant"
-        },
-        {
-          "name": "reviewSchema",
-          "line": 25,
-          "type": "constant"
-        },
-        {
-          "name": "editsSchema",
-          "line": 26,
-          "type": "constant"
-        },
-        {
-          "name": "PortraitDraft",
-          "line": 32,
-          "type": "type"
-        },
-        {
-          "name": "responseFormat",
-          "line": 33,
-          "type": "function"
-        },
-        {
-          "name": "PortraitV4Metadata",
-          "line": 34,
-          "type": "type"
-        },
-        {
-          "name": "PortraitV4Error",
-          "line": 43,
-          "type": "class"
-        },
-        {
-          "name": "json",
-          "line": 48,
-          "type": "function"
-        },
-        {
-          "name": "progressedSourceBoundary",
-          "line": 52,
-          "type": "constant"
-        },
-        {
-          "name": "portraitV4Prompt",
-          "line": 54,
-          "type": "function"
-        },
-        {
-          "name": "chapter",
-          "line": 55,
-          "type": "constant"
-        },
-        {
-          "name": "validatePortraitV4Draft",
-          "line": 79,
-          "type": "function"
-        },
-        {
-          "name": "allowed",
-          "line": 81,
-          "type": "constant"
-        },
-        {
-          "name": "bodies",
-          "line": 82,
-          "type": "constant"
-        },
-        {
-          "name": "words",
-          "line": 83,
-          "type": "constant"
-        },
-        {
-          "name": "prose",
-          "line": 91,
-          "type": "constant"
-        },
-        {
-          "name": "defensive",
-          "line": 92,
-          "type": "constant"
-        },
-        {
-          "name": "paragraphs",
-          "line": 94,
-          "type": "constant"
-        },
-        {
-          "name": "astroLeads",
-          "line": 95,
-          "type": "constant"
-        },
-        {
-          "name": "applyPortraitV4Edits",
-          "line": 101,
-          "type": "function"
-        },
-        {
-          "name": "result",
-          "line": 103,
-          "type": "constant"
-        },
-        {
-          "name": "totalWords",
-          "line": 104,
-          "type": "constant"
-        },
-        {
-          "name": "changedWords",
-          "line": 105,
-          "type": "constant"
-        },
-        {
-          "name": "source",
-          "line": 108,
-          "type": "constant"
-        },
-        {
-          "name": "start",
-          "line": 109,
-          "type": "constant"
-        },
-        {
-          "name": "end",
-          "line": 111,
-          "type": "constant"
-        },
-        {
-          "name": "edit",
-          "line": 119,
-          "type": "constant"
-        },
-        {
-          "name": "body",
-          "line": 120,
-          "type": "constant"
-        },
-        {
-          "name": "portraitV4OriginAdvisories",
-          "line": 127,
-          "type": "function"
-        },
-        {
-          "name": "patterns",
-          "line": 128,
-          "type": "constant"
-        },
-        {
-          "name": "portraitV4ReviewPrompt",
-          "line": 144,
-          "type": "function"
-        },
-        {
-          "name": "portraitV4ReviewFormat",
-          "line": 158,
-          "type": "constant"
-        },
-        {
-          "name": "editPortraitV4Draft",
-          "line": 160,
-          "type": "function"
-        },
-        {
-          "name": "draft",
-          "line": 161,
-          "type": "constant"
-        },
-        {
-          "name": "changedWords",
-          "line": 163,
-          "type": "constant"
-        },
-        {
-          "name": "revisionLimit",
-          "line": 164,
-          "type": "constant"
-        },
-        {
-          "name": "edited",
-          "line": 166,
-          "type": "constant"
-        },
-        {
-          "name": "review",
-          "line": 196,
-          "type": "constant"
-        },
-        {
-          "name": "verdict",
-          "line": 197,
-          "type": "constant"
-        },
-        {
-          "name": "generatePortraitV4",
-          "line": 207,
-          "type": "function"
-        },
-        {
-          "name": "started",
-          "line": 208,
-          "type": "constant"
-        },
-        {
-          "name": "calls",
-          "line": 210,
-          "type": "constant"
-        },
-        {
-          "name": "result",
-          "line": 215,
-          "type": "constant"
-        },
-        {
-          "name": "raw",
-          "line": 222,
-          "type": "constant"
-        },
-        {
-          "name": "edited",
-          "line": 233,
-          "type": "constant"
-        }
-      ],
-      "imports": [
-        "./portraitVoice",
-        "./providerUsage",
-        "@astra/contracts",
-        "zod"
-      ],
-      "exports": [
-        "ASTRA_PORTRAITS_V4_EDITOR_MODEL",
-        "ASTRA_PORTRAITS_V4_PROMPT_VERSION",
-        "ASTRA_PORTRAITS_V4_WRITER_MODEL",
-        "PortraitEvidence",
-        "PortraitV4Error",
-        "PortraitV4Metadata",
-        "applyPortraitV4Edits",
-        "editPortraitV4Draft",
-        "generatePortraitV4",
-        "portraitV4OriginAdvisories",
-        "portraitV4Prompt",
-        "portraitV4ReviewFormat",
-        "portraitV4ReviewPrompt",
-        "portraitV4ReviewSchema",
-        "validatePortraitV4Draft"
-      ],
-      "routes": [],
-      "route_count": 0,
-      "headings": [],
-      "dependency_in": 2,
-      "dependency_out": 2,
-      "importance_weight": 215.28,
       "importance_bucket": "other"
     },
     {
@@ -30466,9 +30471,9 @@
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
       "lang": "markdown",
-      "size": 22761,
-      "lines": 136,
-      "estimated_tokens": 5689,
+      "size": 24235,
+      "lines": 141,
+      "estimated_tokens": 6057,
       "symbols": [
         {
           "name": "Astra Verification Tiers",
@@ -30547,7 +30552,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 42.28,
+      "importance_weight": 42.27,
       "importance_bucket": "akashic"
     },
     {
@@ -39418,6 +39423,67 @@
       "importance_bucket": "other"
     },
     {
+      "file": "docs/evaluations/TC_CA_PLAYFUL_EDITOR_DECISION.md",
+      "lang": "markdown",
+      "size": 6273,
+      "lines": 46,
+      "estimated_tokens": 1566,
+      "symbols": [
+        {
+          "name": "Decision Card: TC–CA playful prose and editor value",
+          "line": 1,
+          "type": "heading"
+        },
+        {
+          "name": "Decision",
+          "line": 7,
+          "type": "heading"
+        },
+        {
+          "name": "Test",
+          "line": 11,
+          "type": "heading"
+        },
+        {
+          "name": "What could fool us",
+          "line": 21,
+          "type": "heading"
+        },
+        {
+          "name": "Qualification and boundaries",
+          "line": 27,
+          "type": "heading"
+        },
+        {
+          "name": "Evidence and decision",
+          "line": 33,
+          "type": "heading"
+        },
+        {
+          "name": "Steward closeout",
+          "line": 41,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Decision Card: TC–CA playful prose and editor value",
+        "Decision",
+        "Test",
+        "What could fool us",
+        "Qualification and boundaries",
+        "Evidence and decision",
+        "Steward closeout"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 24.85,
+      "importance_bucket": "other"
+    },
+    {
       "file": "docs/evaluations/ASTRA_PORTRAITS_V4_PREREGISTRATION.md",
       "lang": "markdown",
       "size": 5430,
@@ -40288,6 +40354,61 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 21.76,
+      "importance_bucket": "other"
+    },
+    {
+      "file": "docs/evaluations/ASTRA_V4_9_PLAINSPOKEN_SYSTEM.md",
+      "lang": "markdown",
+      "size": 5094,
+      "lines": 40,
+      "estimated_tokens": 1271,
+      "symbols": [
+        {
+          "name": "Better writing, not a custom rewrite for Tony",
+          "line": 1,
+          "type": "heading"
+        },
+        {
+          "name": "Product result",
+          "line": 3,
+          "type": "heading"
+        },
+        {
+          "name": "What changes for every new V4 reading",
+          "line": 7,
+          "type": "heading"
+        },
+        {
+          "name": "Why this fixes a system pressure",
+          "line": 18,
+          "type": "heading"
+        },
+        {
+          "name": "Verification and limits",
+          "line": 24,
+          "type": "heading"
+        },
+        {
+          "name": "Steward review",
+          "line": 35,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Better writing, not a custom rewrite for Tony",
+        "Product result",
+        "What changes for every new V4 reading",
+        "Why this fixes a system pressure",
+        "Verification and limits",
+        "Steward review"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 21.75,
       "importance_bucket": "other"
     },
     {
@@ -48143,7 +48264,7 @@
     "allowed": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 81,
+        "line": 93,
         "type": "constant"
       }
     ],
@@ -48804,7 +48925,7 @@
     "applyPortraitV4Edits": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 101,
+        "line": 113,
         "type": "function"
       }
     ],
@@ -50865,7 +50986,7 @@
     "astroLeads": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 95,
+        "line": 107,
         "type": "constant"
       }
     ],
@@ -51925,6 +52046,13 @@
         "type": "function"
       }
     ],
+    "Better writing, not a custom rewrite for Tony": [
+      {
+        "file": "docs/evaluations/ASTRA_V4_9_PLAINSPOKEN_SYSTEM.md",
+        "line": 1,
+        "type": "heading"
+      }
+    ],
     "bHasImage": [
       {
         "file": "apps/composer-web/lib/cardLibrary.ts",
@@ -52243,7 +52371,7 @@
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 82,
+        "line": 94,
         "type": "constant"
       }
     ],
@@ -52340,7 +52468,7 @@
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 120,
+        "line": 132,
         "type": "constant"
       },
       {
@@ -53101,7 +53229,7 @@
     "calls": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 210,
+        "line": 226,
         "type": "constant"
       }
     ],
@@ -53769,12 +53897,12 @@
     "changedWords": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 105,
+        "line": 117,
         "type": "constant"
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 163,
+        "line": 177,
         "type": "constant"
       }
     ],
@@ -53791,7 +53919,7 @@
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 55,
+        "line": 66,
         "type": "constant"
       }
     ],
@@ -59116,6 +59244,11 @@
         "type": "heading"
       },
       {
+        "file": "docs/evaluations/TC_CA_PLAYFUL_EDITOR_DECISION.md",
+        "line": 7,
+        "type": "heading"
+      },
+      {
         "file": "docs/inbox-astra/completed/ASTRA_SEMANTIC_SYNTHESIS_V2_PHASE_6_PRESENTATION_EVALUATION.md",
         "line": 125,
         "type": "heading"
@@ -59137,6 +59270,13 @@
       {
         "file": "docs/architecture/ASTRA_CAELUS_FUTURE_WORK.md",
         "line": 14,
+        "type": "heading"
+      }
+    ],
+    "Decision Card: TC–CA playful prose and editor value": [
+      {
+        "file": "docs/evaluations/TC_CA_PLAYFUL_EDITOR_DECISION.md",
+        "line": 1,
         "type": "heading"
       }
     ],
@@ -59372,7 +59512,7 @@
     "defensive": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 92,
+        "line": 104,
         "type": "constant"
       }
     ],
@@ -60165,7 +60305,7 @@
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 161,
+        "line": 175,
         "type": "constant"
       }
     ],
@@ -60333,7 +60473,7 @@
     "edit": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 119,
+        "line": 131,
         "type": "constant"
       }
     ],
@@ -60375,12 +60515,12 @@
     "edited": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 166,
+        "line": 180,
         "type": "constant"
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 233,
+        "line": 249,
         "type": "constant"
       }
     ],
@@ -60415,7 +60555,7 @@
     "editPortraitV4Draft": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 160,
+        "line": 174,
         "type": "function"
       }
     ],
@@ -60634,7 +60774,7 @@
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 111,
+        "line": 123,
         "type": "constant"
       }
     ],
@@ -60976,6 +61116,13 @@
       {
         "file": "PROJECT.md",
         "line": 36,
+        "type": "heading"
+      }
+    ],
+    "Evidence and decision": [
+      {
+        "file": "docs/evaluations/TC_CA_PLAYFUL_EDITOR_DECISION.md",
+        "line": 33,
         "type": "heading"
       }
     ],
@@ -63092,7 +63239,7 @@
     "generatePortraitV4": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 207,
+        "line": 223,
         "type": "function"
       }
     ],
@@ -71044,7 +71191,7 @@
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 94,
+        "line": 106,
         "type": "constant"
       },
       {
@@ -71652,7 +71799,7 @@
     "patterns": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 128,
+        "line": 140,
         "type": "constant"
       },
       {
@@ -72923,28 +73070,28 @@
     "portraitV4OriginAdvisories": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 127,
+        "line": 139,
         "type": "function"
       }
     ],
     "portraitV4Prompt": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 54,
+        "line": 65,
         "type": "function"
       }
     ],
     "portraitV4ReviewFormat": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 158,
+        "line": 172,
         "type": "constant"
       }
     ],
     "portraitV4ReviewPrompt": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 144,
+        "line": 156,
         "type": "function"
       }
     ],
@@ -74256,6 +74403,13 @@
         "type": "heading"
       }
     ],
+    "Product result": [
+      {
+        "file": "docs/evaluations/ASTRA_V4_9_PLAINSPOKEN_SYSTEM.md",
+        "line": 3,
+        "type": "heading"
+      }
+    ],
     "Product Review Question": [
       {
         "file": "akashic/imports/astra-product-design-pattern-library/source-library/audits/ASTRA_DARK_PATTERN_GUARDRAILS.md",
@@ -74547,7 +74701,7 @@
     "prose": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 91,
+        "line": 103,
         "type": "constant"
       },
       {
@@ -75112,6 +75266,13 @@
         "type": "heading"
       }
     ],
+    "Qualification and boundaries": [
+      {
+        "file": "docs/evaluations/TC_CA_PLAYFUL_EDITOR_DECISION.md",
+        "line": 27,
+        "type": "heading"
+      }
+    ],
     "Qualification and stopping": [
       {
         "file": "docs/evaluations/ASTRA_PORTRAITS_V4_PREREGISTRATION.md",
@@ -75455,7 +75616,7 @@
     "raw": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 222,
+        "line": 238,
         "type": "constant"
       }
     ],
@@ -75610,6 +75771,13 @@
         "file": "apps/astra-web/app/api/reports/route.ts",
         "line": 113,
         "type": "constant"
+      }
+    ],
+    "readerExperienceContract": [
+      {
+        "file": "packages/astrology/src/report/portraitsV4.ts",
+        "line": 54,
+        "type": "function"
       }
     ],
     "readerFocusInstruction": [
@@ -78566,12 +78734,12 @@
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 103,
+        "line": 115,
         "type": "constant"
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 215,
+        "line": 231,
         "type": "constant"
       }
     ],
@@ -78826,7 +78994,7 @@
     "review": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 196,
+        "line": 212,
         "type": "constant"
       }
     ],
@@ -78908,7 +79076,7 @@
     "revisionLimit": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 164,
+        "line": 178,
         "type": "constant"
       }
     ],
@@ -82197,7 +82365,7 @@
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 108,
+        "line": 120,
         "type": "constant"
       },
       {
@@ -82539,7 +82707,7 @@
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 109,
+        "line": 121,
         "type": "constant"
       },
       {
@@ -82596,7 +82764,7 @@
     "started": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 208,
+        "line": 224,
         "type": "constant"
       }
     ],
@@ -82881,10 +83049,24 @@
         "type": "constant"
       }
     ],
+    "Steward closeout": [
+      {
+        "file": "docs/evaluations/TC_CA_PLAYFUL_EDITOR_DECISION.md",
+        "line": 41,
+        "type": "heading"
+      }
+    ],
     "Steward judgment": [
       {
         "file": "docs/evaluations/ASTRA_PORTRAITS_V4_ENGINEERING_REVIEW.md",
         "line": 47,
+        "type": "heading"
+      }
+    ],
+    "Steward review": [
+      {
+        "file": "docs/evaluations/ASTRA_V4_9_PLAINSPOKEN_SYSTEM.md",
+        "line": 35,
         "type": "heading"
       }
     ],
@@ -84489,6 +84671,13 @@
         "type": "constant"
       }
     ],
+    "Test": [
+      {
+        "file": "docs/evaluations/TC_CA_PLAYFUL_EDITOR_DECISION.md",
+        "line": 11,
+        "type": "heading"
+      }
+    ],
     "Test Strategy": [
       {
         "file": "docs/inbox-astra/completed/ASTRA_SEMANTIC_SYNTHESIS_V2_HANDOFF.md",
@@ -85260,7 +85449,7 @@
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 104,
+        "line": 116,
         "type": "constant"
       }
     ],
@@ -86377,7 +86566,7 @@
     "validatePortraitV4Draft": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 79,
+        "line": 91,
         "type": "function"
       }
     ],
@@ -86687,7 +86876,7 @@
     "verdict": [
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 197,
+        "line": 213,
         "type": "constant"
       }
     ],
@@ -86716,6 +86905,13 @@
       {
         "file": "docs/inbox-astra/completed/ASTRA_DUAL_PERSPECTIVE_SYNASTRY_V3_EXPERIMENTAL_HANDOFF.md",
         "line": 188,
+        "type": "heading"
+      }
+    ],
+    "Verification and limits": [
+      {
+        "file": "docs/evaluations/ASTRA_V4_9_PLAINSPOKEN_SYSTEM.md",
+        "line": 24,
         "type": "heading"
       }
     ],
@@ -87115,6 +87311,20 @@
         "type": "heading"
       }
     ],
+    "What changes for every new V4 reading": [
+      {
+        "file": "docs/evaluations/ASTRA_V4_9_PLAINSPOKEN_SYSTEM.md",
+        "line": 7,
+        "type": "heading"
+      }
+    ],
+    "What could fool us": [
+      {
+        "file": "docs/evaluations/TC_CA_PLAYFUL_EDITOR_DECISION.md",
+        "line": 21,
+        "type": "heading"
+      }
+    ],
     "What Happened": [
       {
         "file": "akashic/templates/warning-template.md",
@@ -87476,6 +87686,13 @@
         "type": "heading"
       }
     ],
+    "Why this fixes a system pressure": [
+      {
+        "file": "docs/evaluations/ASTRA_V4_9_PLAINSPOKEN_SYSTEM.md",
+        "line": 18,
+        "type": "heading"
+      }
+    ],
     "Why this now?": [
       {
         "file": "docs/review/focus-first-onboarding/README.md",
@@ -87554,7 +87771,7 @@
       },
       {
         "file": "packages/astrology/src/report/portraitsV4.ts",
-        "line": 83,
+        "line": 95,
         "type": "constant"
       },
       {
@@ -88564,6 +88781,23 @@
         "route_count": 3
       },
       {
+        "file": "packages/astrology/src/report/portraitsV4.ts",
+        "weight": 223.26,
+        "bucket": "other",
+        "estimated_tokens": 6806,
+        "lines": 267,
+        "symbols": 52,
+        "symbol_type_counts": {
+          "class": 1,
+          "constant": 37,
+          "function": 10,
+          "type": 4
+        },
+        "dependency_in": 2,
+        "dependency_out": 2,
+        "route_count": 0
+      },
+      {
         "file": "docs/inbox-astra/completed/ASTRA_SEMANTIC_SYNTHESIS_V2_HANDOFF.md",
         "weight": 222.22,
         "bucket": "other",
@@ -88576,23 +88810,6 @@
         },
         "dependency_in": 0,
         "dependency_out": 0,
-        "route_count": 0
-      },
-      {
-        "file": "packages/astrology/src/report/portraitsV4.ts",
-        "weight": 215.28,
-        "bucket": "other",
-        "estimated_tokens": 5940,
-        "lines": 251,
-        "symbols": 51,
-        "symbol_type_counts": {
-          "class": 1,
-          "constant": 37,
-          "function": 9,
-          "type": 4
-        },
-        "dependency_in": 2,
-        "dependency_out": 2,
         "route_count": 0
       },
       {
@@ -90508,10 +90725,10 @@
       },
       {
         "file": "akashic/playbooks/astra-verification-tiers.md",
-        "weight": 42.28,
+        "weight": 42.27,
         "bucket": "akashic",
-        "estimated_tokens": 5689,
-        "lines": 136,
+        "estimated_tokens": 6057,
+        "lines": 141,
         "symbols": 12,
         "symbol_type_counts": {
           "heading": 12
@@ -92455,6 +92672,20 @@
         "route_count": 0
       },
       {
+        "file": "docs/evaluations/TC_CA_PLAYFUL_EDITOR_DECISION.md",
+        "weight": 24.85,
+        "bucket": "other",
+        "estimated_tokens": 1566,
+        "lines": 46,
+        "symbols": 7,
+        "symbol_type_counts": {
+          "heading": 7
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "docs/evaluations/ASTRA_PORTRAITS_V4_PREREGISTRATION.md",
         "weight": 24.7,
         "bucket": "other",
@@ -92687,6 +92918,20 @@
         "bucket": "other",
         "estimated_tokens": 369,
         "lines": 36,
+        "symbols": 6,
+        "symbol_type_counts": {
+          "heading": 6
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "docs/evaluations/ASTRA_V4_9_PLAINSPOKEN_SYSTEM.md",
+        "weight": 21.75,
+        "bucket": "other",
+        "estimated_tokens": 1271,
+        "lines": 40,
         "symbols": 6,
         "symbol_type_counts": {
           "heading": 6
@@ -95287,9 +95532,9 @@
       }
     ],
     "coverage": {
-      "files": 476,
-      "symbols": 6697,
-      "total_estimated_tokens": 1250073
+      "files": 478,
+      "symbols": 6711,
+      "total_estimated_tokens": 1254144
     }
   }
 }

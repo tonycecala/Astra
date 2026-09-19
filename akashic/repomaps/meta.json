@@ -384,6 +384,23 @@
       "route_count": 3
     },
     {
+      "file": "packages/astrology/src/report/portraitsV4.ts",
+      "weight": 223.26,
+      "bucket": "other",
+      "estimated_tokens": 6806,
+      "lines": 267,
+      "symbols": 52,
+      "symbol_type_counts": {
+        "class": 1,
+        "constant": 37,
+        "function": 10,
+        "type": 4
+      },
+      "dependency_in": 2,
+      "dependency_out": 2,
+      "route_count": 0
+    },
+    {
       "file": "docs/inbox-astra/completed/ASTRA_SEMANTIC_SYNTHESIS_V2_HANDOFF.md",
       "weight": 222.22,
       "bucket": "other",
@@ -396,23 +413,6 @@
       },
       "dependency_in": 0,
       "dependency_out": 0,
-      "route_count": 0
-    },
-    {
-      "file": "packages/astrology/src/report/portraitsV4.ts",
-      "weight": 215.28,
-      "bucket": "other",
-      "estimated_tokens": 5940,
-      "lines": 251,
-      "symbols": 51,
-      "symbol_type_counts": {
-        "class": 1,
-        "constant": 37,
-        "function": 9,
-        "type": 4
-      },
-      "dependency_in": 2,
-      "dependency_out": 2,
       "route_count": 0
     },
     {
@@ -2328,10 +2328,10 @@
     },
     {
       "file": "akashic/playbooks/astra-verification-tiers.md",
-      "weight": 42.28,
+      "weight": 42.27,
       "bucket": "akashic",
-      "estimated_tokens": 5689,
-      "lines": 136,
+      "estimated_tokens": 6057,
+      "lines": 141,
       "symbols": 12,
       "symbol_type_counts": {
         "heading": 12
@@ -4275,6 +4275,20 @@
       "route_count": 0
     },
     {
+      "file": "docs/evaluations/TC_CA_PLAYFUL_EDITOR_DECISION.md",
+      "weight": 24.85,
+      "bucket": "other",
+      "estimated_tokens": 1566,
+      "lines": 46,
+      "symbols": 7,
+      "symbol_type_counts": {
+        "heading": 7
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "docs/evaluations/ASTRA_PORTRAITS_V4_PREREGISTRATION.md",
       "weight": 24.7,
       "bucket": "other",
@@ -4507,6 +4521,20 @@
       "bucket": "other",
       "estimated_tokens": 369,
       "lines": 36,
+      "symbols": 6,
+      "symbol_type_counts": {
+        "heading": 6
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "docs/evaluations/ASTRA_V4_9_PLAINSPOKEN_SYSTEM.md",
+      "weight": 21.75,
+      "bucket": "other",
+      "estimated_tokens": 1271,
+      "lines": 40,
       "symbols": 6,
       "symbol_type_counts": {
         "heading": 6
@@ -7107,8 +7135,8 @@
     }
   ],
   "coverage": {
-    "files": 476,
-    "symbols": 6697,
-    "total_estimated_tokens": 1250073
+    "files": 478,
+    "symbols": 6711,
+    "total_estimated_tokens": 1254144
   }
 }
