@@ -917,7 +917,17 @@ export const synastryV3MetadataSchema = z.object({
       leadingParagraphCount: z.number().int().nonnegative().optional()
     }).optional()
   }),
-  semanticSupport: synastryV3SemanticSupportSchema.optional()
+  semanticSupport: synastryV3SemanticSupportSchema.optional(),
+  editor: z.object({
+    model: z.string().min(1),
+    promptVersion: z.string().min(1),
+    inputTokens: z.number().int().nonnegative().optional(),
+    outputTokens: z.number().int().nonnegative().optional(),
+    reasoningTokens: z.number().int().nonnegative().optional(),
+    totalTokens: z.number().int().nonnegative().optional(),
+    estimatedSpend: z.number().nonnegative().optional(),
+    latencyMs: z.number().int().nonnegative()
+  }).optional()
 });
 
 const reportGenerationPartMetadataSchema = z.object({

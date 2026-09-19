@@ -37,6 +37,7 @@ export async function writeOpenRouterModelText(input: {
   const endpoint = openRouterChatEndpoint(input.baseUrl);
   const startedAt = Date.now();
   const body = { ...openRouterChatRequestBody(input.prompt, input.model, input.maxOutputTokens, input.reasoningEffort), ...(input.responseFormat ? { response_format: input.responseFormat } : {}), ...(input.privatePortraitRoute ? { provider: { only: [input.model === "anthropic/claude-opus-4.8" ? "amazon-bedrock" : "amazon-bedrock/global"], allow_fallbacks: false, data_collection: "deny", zdr: true, max_price: { prompt: 5, completion: 25 } } } : {}) };
+  if (input.reasoningEffort === "none") Object.assign(body, { reasoning: { enabled: false } });
   // Newer Claude endpoints do not support a sampling-temperature override.
   if (input.privatePortraitRoute && input.model !== "anthropic/claude-sonnet-4.6") Reflect.deleteProperty(body, "temperature");
   const response = await input.fetchImpl(endpoint, {
