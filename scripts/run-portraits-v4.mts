@@ -31,7 +31,7 @@ const fetchBudgeted: typeof fetch = async (url, init) => {
   // Sonnet 5 does not advertise temperature support; retain adapter defaults otherwise.
   if (body.model !== "anthropic/claude-sonnet-4.6") delete body.temperature;
   const developmentCap = ["frame-qualification","repair-source-frame","confirmation-source-frame"].includes(process.argv[2]) ? 2.94749 + 2 : ["review-calibration-v2", "development-proportionate"].includes(process.argv[2]) ? 1.668093 + 2 : process.argv[2] === "development-4.5" ? 1.530241 + 2 : process.argv[2] === "chapter-qualification" ? 1.335886 + 1 : ["editor-opus", "development-4.4"].includes(process.argv[2]) ? 0.664807 + 3 : ["opus-canary", "gate-qualification-opus"].includes(process.argv[2]) ? 0.529497 + 2 : process.argv[2] === "gate-qualification" ? 0.488091 + 1 : ["editor-development", "development-4.3"].includes(process.argv[2]) ? 0.312087 + 3 : 30;
-  const reserve = reservePortraitBudget(ledger, body, developmentCap);
+  const reserve = reservePortraitBudget(ledger, body, ["voice", "voice-retry"].includes(process.argv[2]) ? 3.534705 + 2 : developmentCap);
   const id = randomUUID();
   const row: Transaction = { id, state: "reserved", reserve };
   ledger.transactions.push(row); write(ledgerPath, ledger);
@@ -150,13 +150,16 @@ try {
     type Case = [keyof typeof people, "personal" | "progressed" | "synastry", (keyof typeof people)?];
     const cases: Case[] = ["development", "development-4.6", "editor-development", "development-4.3", "editor-opus", "development-4.4", "development-4.5", "development-proportionate"].includes(mode) ? [["donna", "personal"]]
       : ["repair-source-frame","confirmation-source-frame"].includes(mode) ? [["cheyenne","progressed"]]
+      : mode === "voice" ? [["tony", "personal"], ["tony", "progressed"], ["tony", "synastry", "cheyenne"]]
+      : mode === "voice-retry" ? [["tony", "personal"]]
       : mode === "holdout" ? [["tony", "personal"], ["cheyenne", "personal"], ["tony", "progressed"], ["donna", "progressed"], ["cheyenne", "progressed"], ["tony", "synastry", "donna"], ["tony", "synastry", "cheyenne"]]
       : mode === "repeat" ? [["donna", "personal"], ["tony", "progressed"]] : [];
-    if (!cases.length) throw new Error("Use canary, development, holdout or repeat");
+    if (!cases.length) throw new Error("Use canary, development, holdout, repeat or voice");
     const cohort = root + "/" + mode + "-" + new Date().toISOString().replaceAll(":", "-");
     mkdirSync(cohort, { mode: 0o700 });
     const sourcePaths = ["packages/astrology/src/index.ts", "packages/astrology/src/report/portraitsV4.ts", "packages/astrology/src/report/synastryV3.ts", "packages/astrology/src/report/openRouterAdapter.ts", "packages/astrology/src/report/providerUsage.ts", "packages/contracts/src/index.ts", "scripts/run-portraits-v4.mts", "scripts/portraits-v4-budget.ts", "docs/evaluations/ASTRA_PORTRAITS_V4_PREREGISTRATION.md", "docs/evaluations/ASTRA_PORTRAITS_V4_REVIEW_PROTOCOL_V2.md", "docs/evaluations/ASTRA_PORTRAITS_V4_AMENDMENTS.md"];
-    write(cohort + "/manifest.json", { mode, protocol:"portraits-v4-reader-review-2", promptVersion:ASTRA_PORTRAITS_V4_PROMPT_VERSION, date: "2026-09-18", cases, sourceHashes: Object.fromEntries(sourcePaths.map(path => [path, hash(readFileSync(path, "utf8"))])) });
+    sourcePaths.push("packages/astrology/src/report/portraitVoice.ts", "packages/astrology/src/report/synastryV3Validation.ts", "packages/astrology/src/readability.ts");
+    write(cohort + "/manifest.json", { mode, protocol:mode.startsWith("voice") ? "owner-voice-refinement-1" : "portraits-v4-reader-review-2", promptVersion:ASTRA_PORTRAITS_V4_PROMPT_VERSION, date: "2026-09-18", cases, sourceHashes: Object.fromEntries(sourcePaths.map(path => [path, hash(readFileSync(path, "utf8"))])) });
     console.log(JSON.stringify({phase:"started",cohort,cases:cases.length}));
     const mask: Record<string, unknown> = {};
     for (const [person, type, partner] of cases) {

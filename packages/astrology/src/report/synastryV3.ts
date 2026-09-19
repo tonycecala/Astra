@@ -1,8 +1,9 @@
 import type { SynastryToneSnapshot } from "@astra/contracts";
 import { isObservationalTone, synastryToneInstruction, synastryV3Headings } from "./allyTone";
 import type { SynastryV3EvidenceRow, SynastryV3TraceRow } from "./synastryV3Validation";
+import { portraitVoiceContract, PORTRAIT_INTERPRETIVE_PERMISSION } from "./portraitVoice";
 
-export const ASTRA_SYNASTRY_V3_PROMPT_VERSION = "astra-synastry-v3.1.1-psychology-first-2026-08";
+export const ASTRA_SYNASTRY_V3_PROMPT_VERSION = "astra-synastry-v3.2-clear-provocative-2026-09";
 
 export type SynastryEvidenceJob = { title: string; evidenceBullets: Array<{ label: string; meaning: string }> };
 
@@ -35,6 +36,8 @@ export function buildSynastryV3Prompt(input: {
     : `Give ${input.allyName} an independently voiced possible interiority in every chapter, and make the relationship itself a third protagonist in every chapter. Use possibility language, never fabricated dialogue.`;
   return [
     "Write one private Astra Synastry portrait in simple, direct English.",
+    portraitVoiceContract(true),
+    PORTRAIT_INTERPRETIVE_PERMISSION,
     `The selected reader is ${input.readerName}; address ${input.readerName} only as \"you\". The Ally is ${input.allyName}.`,
     `The authored Ally tag is ${input.tone.authoredRelationship}. It routes tone only and proves no biography, consent, history, satisfaction, exclusivity, or outcome.`,
     synastryToneInstruction(input.tone),
@@ -44,9 +47,9 @@ export function buildSynastryV3Prompt(input: {
     "Lead every prose paragraph with the meat: a specific feeling, desire, fear, bodily response, reversal, or hidden relational consequence.",
     `Every prose paragraph must address ${input.readerName} as "you" or "your," contain one plain-language mechanism grounded in its Evidence IDs, one conditional lived expression, and one relational consequence. Blend them into prose; do not label the parts or repeat a disclaimer formula.`,
     `In every chapter, name ${input.allyName.split(/\s+/)[0]} at least once, give ${input.allyName.split(/\s+/)[0]} a distinct but balanced possible response, and show what the relationship itself opens, complicates, or costs.`,
-    "Vary conditional language. Do not begin paragraph after paragraph with if, may, or could. Give the Ally a specific but balanced possible response rather than declaring private thoughts or feelings as fact.",
+    "Vary conditional language. Do not begin paragraph after paragraph with if, may, or could. Give the Ally one distinct, context-specific possible response; do not mechanically list both opposite reactions in every paragraph. A paragraph's possible situation can establish the frame for its direct psychological interpretation without repeated qualifications. Let the relationship's consequence emerge naturally instead of repeatedly announcing 'what this opens' and 'what this costs'. Never declare known private thoughts or consent.",
     "Psychology must lead. An occasional brief reference to a direct aspect is welcome when it genuinely sharpens the mechanism, but give each paragraph only the astrology it needs. Do not explain astrology, stack technical terms, begin a paragraph with astrology, or let recurring paragraphs turn into chart commentary. Put every remaining chart detail in the private Evidence trace and never expose an Evidence ID.",
-    "Do not fabricate dialogue, scenes, behavioral tells, or concrete biography. Do not invent childhood, former relationships, old wounds, unhealed places, inherited expectations, or unconscious history. Ban fate, destined or ancient-bond claims, containment/burden assignments, diagnoses, fixed verdicts, and claims that one person gives, carries, contributes, earns, or costs more.",
+    "Do not fabricate actual dialogue, witnessed scenes, concrete biography, specific childhood incidents, former relationships or trauma. Generalized learned defenses, old sensitivities and inferred motives are allowed as psychological interpretation, without an invented origin event. Keep desire and uncomfortable relational consequences vivid. Ban fate, destined or ancient-bond claims, diagnoses, fixed verdicts and unsupported rankings of who contributes or carries more.",
     "The packet is curated and non-exhaustive. Unlisted contacts are unknown, not absent and not evidence of unequal contribution.",
     "Return exactly two blocks and nothing else:",
     "<portrait_markdown>",
@@ -90,6 +93,7 @@ export function buildSynastryV3SemanticPrompt(input: { portrait: string; evidenc
     "Return compact JSON only. Do not explain, rewrite, quote the portrait, or compare style. Evaluate whether representative emotional claims are supportable possibilities from the supplied Evidence meanings.",
     "Return only JSON: {\"supportedClaims\":string[],\"unsupportedClaims\":string[],\"severity\":\"none\"|\"minor\"|\"severe\"}.",
     "Return at most three short supported claims and at most three short unsupported claims. Use severe only for material misrepresentation, invented fixed reality, or claims opposite to the packet; conservative preference is not severe.",
+    PORTRAIT_INTERPRETIVE_PERMISSION,
     ...(input.previousError ? [`The previous reviewer response failed: ${input.previousError}. Return the JSON object immediately.`] : []),
     "Portrait:", input.portrait,
     "Evidence:", JSON.stringify(input.evidenceIndex)

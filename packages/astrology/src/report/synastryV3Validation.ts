@@ -25,7 +25,10 @@ const technicalLeadPattern = /^(?:(?:your|her|his|their|the|a|an)\s+)?(?:astrolo
 const technicalHousePattern = /\b(?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|\d+(?:st|nd|rd|th)?)\s+house\b/i;
 const technicalDegreePattern = /\b\d+(?:\.\d+)?\s*(?:degrees?|°)\b/i;
 const technicalOppositePattern = /\b(?:sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven)\s+(?:is\s+)?opposite\b|\bopposite\s+(?:the\s+)?(?:sun|moon|mercury|venus|mars|jupiter|saturn|uranus|neptune|pluto|chiron|ascendant|midheaven)\b/i;
-const inventedHistoryPattern = /\b(?:you learned (?:early|in childhood)|when you (?:first met|fell in love)|throughout your (?:marriage|relationship)|always have|never have|built to last|meant to be|fate|destiny|destined|fated|past lives?|ancient bond|what happened between you|after the breakup|old (?:wounds?|ache|sensitivity|history|defenses?)|unhealed (?:place|wound)|inherited expectations?|unconscious (?:pattern|history))\b/i;
+const inventedHistoryPattern = /\b(?:when you (?:first met|fell in love)|throughout your (?:marriage|relationship)|built to last|meant to be|fate|destiny|destined|fated|past lives?|ancient bond|what happened between you|after the breakup)\b/i;
+// Interpretive language is not proof of a fabricated event. Keep it reviewable,
+// while the semantic reviewer still rejects specific invented reality.
+const psychologicalInferencePattern = /\b(?:you learned (?:early|in childhood)|always have|never have|old (?:wounds?|ache|sensitivity|history|defenses?)|unhealed (?:place|wound)|inherited expectations?|unconscious (?:pattern|history))\b/i;
 const fabricatedDialoguePattern = /(?:["“][^"”]*(?:\bI\b|\bme\b|\bmy\b)[^"”]*["”])|(?:\*[^*]*(?:\bI\b|\bme\b|\bmy\b)[^*]*\*[,;:]?\s+(?:she|he|they|\w+)\s+(?:thinks?|feels?|says?))/i;
 const comparativeVerdictPattern = /\b(?:you|\w+)\s+(?:carry|carries|give|gives|contribute|contributes|sacrifice|sacrifices|cost|costs|earn|earns)\s+(?:more|less|most|least)\b|\bmore (?:invested|important|responsible|burdened) than\b/i;
 const containmentBurdenPattern = /\b(?:you|\w+)\s+(?:contain|contains|carry|carries|hold|holds|bear|bears)\s+(?:the other person|their|his|her|your)\s+(?:burden|feelings?|chaos|pain|weight)\b|\bone of you (?:contains|carries|holds|bears) (?:more|the relationship|the bond)\b|\bemotional labor\b/i;
@@ -87,6 +90,7 @@ export function validateSynastryV3(input: {
     reviewNotes.push(`Portrait uses ${technicalMetrics.terms.length} contextual astrology terms across ${technicalMetrics.astrologyParagraphCount} paragraphs without leading with astrology.`);
   }
   if (inventedHistoryPattern.test(input.portrait) || fabricatedDialoguePattern.test(input.portrait)) fatal.add("invented_reality");
+  if (psychologicalInferencePattern.test(input.portrait)) reviewNotes.push("Generalized psychological inference is present; review its meaning, not the keyword. This is advisory, not proof of invented reality.");
   if (comparativeVerdictPattern.test(input.portrait) || containmentBurdenPattern.test(input.portrait)) fatal.add("comparative_verdict");
   if (new RegExp(`\\b${escapeRegExp(input.allyName)}(?:,| is| as) (?:the |your )?${escapeRegExp(input.tone.authoredRelationship)}\\b`, "i").test(input.portrait)) {
     fatal.add("identity_integrity");

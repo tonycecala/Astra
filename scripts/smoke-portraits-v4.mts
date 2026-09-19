@@ -28,6 +28,12 @@ for (const reportType of ["personal", "progressed"] as const) {
   assert(!prompt.includes("State F1"));
   assert(!prompt.includes("Approved paragraph claim plan"));
   assert(prompt.includes("FIRST PLAN"));
+  assert(prompt.includes("INTERPRETIVE LICENSE:"));
+  assert(prompt.includes("READABILITY:"));
+  assert(prompt.includes("No mechanical ban"));
+  const contextualReview = portraitV4ReviewPrompt({ ...request, question: "I recently changed jobs." }, evidence, draft());
+  assert(contextualReview.includes("I recently changed jobs."), "The gate must see authorized context, not falsely label it invented biography.");
+  assert(contextualReview.includes("Intensity or discomfort alone is not grounds"));
   if (reportType === "progressed") assert(prompt.includes("2026-09-18"));
   assert.equal(portraitV4ReviewPrompt(request,evidence,draft()).includes("SOURCE IDENTITY:"),reportType==="progressed");
   let calls=0;
@@ -41,6 +47,7 @@ for (const reportType of ["personal", "progressed"] as const) {
     if(calls>1) { assert.equal(body.reasoning.effort,"medium"); assert.equal(body.temperature,undefined); }
     assert(body.messages[0].content.includes(calls===1 ? "Astra Portraits V4" : calls===2 ? "substantive editor" : "independent acceptance gate"));
     if(calls>1) assert.equal(body.messages[0].content.includes("SOURCE IDENTITY:"),reportType==="progressed");
+    if(calls===2) assert(body.messages[0].content.includes("TRUEBYLINE-STYLE DIAGNOSIS:"));
     return new Response(JSON.stringify({provider:"Amazon Bedrock",choices:[{finish_reason:"stop",message:{content:JSON.stringify(calls===1?draft():calls===2?{edits:[]}:{accepted:true,issues:[]})}}],usage:{prompt_tokens:10,completion_tokens:10,cost:0.001}}));
   }});
   assert.equal(result.status,"completed",result.error);
@@ -53,6 +60,21 @@ for (const reportType of ["personal", "progressed"] as const) {
   assert.equal(result.publicSignal?.summary,"A private portrait is ready to explore.","Public signal must be generic, never private prose or evidence");
 }
 const evidence=buildPortraitV4Evidence(base);
+let formatCalls=0;
+const formatRecovered=await buildAstrologyReportResultAsync(base,{env,fetchImpl:async()=>{
+  formatCalls++;
+  const content=formatCalls===1?JSON.stringify(draft()):formatCalls===2?'{"edits":[]':formatCalls===3?'{"edits":[]}':'{"accepted":true,"issues":[]}';
+  return new Response(JSON.stringify({provider:"Amazon Bedrock",choices:[{finish_reason:"stop",message:{content}}],usage:{cost:0.001}}));
+}});
+assert.equal(formatRecovered.status,"completed",formatRecovered.error);
+assert.equal(formatCalls,4,"One malformed editor response reuses the bounded edit retry, without redrafting.");
+let invalidEditCalls=0;
+const invalidEdits=await buildAstrologyReportResultAsync(base,{env,fetchImpl:async()=>{
+  invalidEditCalls++;
+  return new Response(JSON.stringify({provider:"Amazon Bedrock",choices:[{finish_reason:"stop",message:{content:invalidEditCalls===1?JSON.stringify(draft()):'{"edits":['}}],usage:{cost:0.001}}));
+}});
+assert.equal(invalidEdits.status,"failed");
+assert.equal(invalidEditCalls,3,"Repeated malformed editing stops at the existing two-edit bound.");
 const unknownTimeData={...birthData,time:undefined,birthTimeKnown:false};
 const unknownTime=astrologyReportRequestSchema.parse({...base,birthData:unknownTimeData,reportBasis:{...base.reportBasis,primary:{...base.reportBasis!.primary,birthData:unknownTimeData,calculationMode:"signs-aspects-only"}}});
 const unknownTimeEvidence=buildPortraitV4Evidence(unknownTime);
