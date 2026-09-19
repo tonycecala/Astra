@@ -2,7 +2,7 @@
 
 Verified September 19, 2026 against the existing portraits worktree. This describes current local implementation, not deployed production. No model calls were made to prepare this document.
 
-**Personal and Life Chapter still have a paid editor. Synastry does not.** The recent removal applied only to Synastry.
+**Personal edits only after its source/meaning check finds a material problem.** An accepted draft skips the editor. Life Chapter still has a compulsory editor; Synastry has none.
 
 ## The linked boxes
 
@@ -11,15 +11,21 @@ Solid arrows show the ordinary path. Dotted arrows show bounded retries. Model c
 ```mermaid
 flowchart TD
     R["Report request"] --> T{"Report family"}
-    T -->|Personal or Life Chapter| P["V4.9: select chart evidence"]
+    T -->|Personal or Life Chapter| P["V4.10: select chart evidence"]
     P --> W["PAID: Sonnet writer"]
     W --> C{"Code checks draft"}
-    C -->|Valid| E["PAID: Opus editor — exact replacements"]
+    C -->|Valid| K{"Report family"}
+    K -->|Personal| G0["PAID: Opus source and meaning check"]
+    G0 --> Q{"Ready to show?"}
+    Q -->|Accepted unchanged| O["Final prose plus private support and usage"]
+    Q -->|Specific material findings| E["PAID: Opus editor — exact replacements"]
+    Q -->|Invalid verdict| F["Failed result — no accepted report"]
+    K -->|Life Chapter| E
     C -.->|One writer retry| W
     C -->|Writer attempts exhausted| F["Failed result — no accepted report"]
     E --> A["Code applies and checks replacements"]
     A --> G["PAID: Opus acceptance review"]
-    G -->|Accepted| O["Final prose plus private support and usage"]
+    G -->|Accepted| O
     G -.->|One remaining edit round| E
     G -->|Still rejected| F
     T -->|Relationship| S["Synastry V3.6: select chart evidence"]
@@ -34,12 +40,13 @@ flowchart TD
     click W "../../packages/astrology/src/report/portraitsV4.ts" "V4 writer"
     click E "../../packages/astrology/src/report/portraitsV4.ts" "V4 editor"
     click G "../../packages/astrology/src/report/portraitsV4.ts" "V4 acceptance review"
+    click G0 "../../packages/astrology/src/report/portraitsV4.ts" "Personal review before editing"
     click SW "../../packages/astrology/src/report/synastryV3.ts" "Synastry writer and review prompts"
     click SR "../../packages/astrology/src/index.ts" "Synastry orchestration"
     classDef paid fill:#352b4b,stroke:#be9fea,color:#fff
     classDef code fill:#193c45,stroke:#72bdc9,color:#fff
     classDef failure fill:#512b32,stroke:#d8939e,color:#fff
-    class W,E,G,SW,SR paid
+    class W,E,G,G0,SW,SR paid
     class P,A,S,SC,O,SO,V code
     class F failure
 ```
@@ -53,18 +60,25 @@ The overview shows the main paths. The exact V4 edit loop and less common failur
 | Select evidence | Assemble facts and meanings for this person and report type. Life Chapter includes its selected progression date. | No |
 | Write | Produce a structured draft: connecting idea, section titles, prose and private evidence references. Current standard writer is Sonnet 4.6; configuration can select the writer. | Yes |
 | Check draft | Validate structure, known evidence references, 650–2,200 words, paragraphs, duplicate content and private-data leakage. No paragraph-start quota. These checks do not establish literary quality; the separate meaning/source review remains. | No |
-| Edit | Opus 4.8 returns exact source spans, replacements and reasons. It can return zero edits. It does not reprint the whole report. | Yes |
+| Personal source/meaning check | Opus 4.8 reviews the original draft. Acceptable prose returns unchanged. Only specific material findings open the repair path; wording preferences, reading grade or useful astrology references alone do not. | Yes, Personal only |
+| Edit | Opus 4.8 returns exact source spans, replacements and reasons. Personal repairs only the named findings and immediate implications; Life Chapter retains its existing broader brief. It does not reprint the whole report. | Conditional for Personal; compulsory for Life Chapter |
 | Apply edits | Require each source span to match exactly once; reject overlaps and excessive revision. Preserve headings and support references. | No |
-| Review | A separate Opus 4.8 call decides whether the whole candidate is acceptable and lists material defects. This is a separate call, not a different model from the editor. | Yes |
+| Review after edits | A separate Opus 4.8 call checks the repaired candidate. Personal skips this additional call when its initial check accepted the unchanged draft. | Yes, when editing occurs |
 | Return result | Produce final sections, private evidence/support, review history and combined usage. The caller handles persistence. | No |
 
-**The V4 editor still has a substantive brief.** It can address material errors, repetitive conclusions and high-impact prose habits. The light-touch Synastry brief was never applied to Personal or Life Chapter.
+**A zero-edit option was not conditional editing.** Previously, Personal paid the editor even when the report needed no work. V4.10 makes the independent check control dispatch and removes general style diagnosis from the Personal repair prompt. The source check remains mandatory; Life Chapter's brief is unchanged.
 
 ## The actual V4 edit loop
 
 ```mermaid
 flowchart TD
-    D["Structurally valid writer draft"] --> E["PAID: editor returns replacement list"]
+    D["Structurally valid writer draft"] --> K{"Report family"}
+    K -->|Personal| P["PAID: source and meaning check"]
+    P --> Q0{"Ready to show?"}
+    Q0 -->|Accepted unchanged| O["Return accepted prose"]
+    Q0 -->|Specific material findings| E["PAID: editor returns replacement list"]
+    Q0 -->|Invalid verdict| F["Fail — no silent fallback"]
+    K -->|Life Chapter| E
     E --> J{"Valid edit JSON?"}
     J -.->|No: remaining edit round| E
     J -->|Yes| B{"Exact matches, no overlap, within budget?"}
@@ -74,7 +88,7 @@ flowchart TD
     C -.->|Problems: remaining edit round| E
     C -->|Pass| R["PAID: whole-report acceptance review"]
     R --> Q{"Accepted with no issues?"}
-    Q -->|Yes| O["Return accepted draft"]
+    Q -->|Yes| O
     Q -.->|No: remaining edit round| E
     J -->|No rounds left| F
     C -->|Problems and no rounds left| F
@@ -83,7 +97,7 @@ flowchart TD
     click B "../../packages/astrology/src/report/portraitsV4.ts" "applyPortraitV4Edits"
     click R "../../packages/astrology/src/report/portraitsV4.ts" "portraitV4ReviewPrompt"
     classDef paid fill:#352b4b,stroke:#be9fea,color:#fff
-    class E,R paid
+    class E,R,P paid
 ```
 
 The limits are explicit:
@@ -91,14 +105,15 @@ The limits are explicit:
 - At most **two writer attempts**. A retry addresses invalid draft structure or failed local draft checks.
 - At most **two edit rounds** after a valid draft. Invalid edit JSON consumes a round. Review rejection or edited-draft check failures can use the remaining round.
 - At most **12 replacements per edit response**, with a **cumulative 25% word-revision allowance** across edit rounds. This is a ceiling, not a target.
-- Ordinary successful run: **three paid calls**. The longest successful bounded path can use **six**: two writer calls, two editor calls and two reviews.
-- Zero edits still incurs the editor call and then the acceptance-review call.
-- Truncated model output, invalid/ambiguous replacements, overlap, exceeded edit allowance, provider exceptions or malformed review JSON fail the run. They do not start an unbounded repair loop or silently return unaccepted prose.
+- Ordinary accepted Personal: **two paid calls**, writer and source/meaning review. A single repair uses **four**, adding editor and recheck. Its longest successful bounded path uses **seven**: two writer attempts, the initial review and two editor/review rounds.
+- Ordinary Life Chapter: **three paid calls**. Its longest successful bounded path remains **six**: two writer calls, two editor calls and two reviews.
+- Once a repair is requested, a zero-edit response still requires recheck; it does not override the outstanding finding or silently accept the draft.
+- Truncated model output, invalid/ambiguous replacements, overlap, exceeded edit allowance, provider exceptions, malformed review JSON or inconsistent acceptance/issue fields fail the run. A rejection without findings cannot authorize an editor call. These failures do not silently return unaccepted prose.
 - Exhausting editing does **not** restart the whole writer. The outer writer retry is for draft problems before editing.
 
 ## Synastry: the editor is gone
 
-The current Synastry version is **V3.6**, alongside the **V4.9** Personal/Life Chapter engine. “V4 reports” is therefore an umbrella description, not one identical pipeline.
+The current Synastry version is **V3.6**, alongside the **V4.10** Personal/Life Chapter engine. “V4 reports” is therefore an umbrella description, not one identical pipeline.
 
 - The writer produces prose and paragraph-level private support.
 - A Lover request invites romantic exploration. Writer and reviewer share the same possibility-language guidance: describe an unconfirmed response with natural “can,” “may,” or conditional framing, without hedging every sentence. This changes no stages or call counts.
@@ -111,13 +126,16 @@ The current Synastry version is **V3.6**, alongside the **V4.9** Personal/Life C
 
 ## What this means for cost
 
-Removing the Synastry editor removes that paid stage and its full prose/support regeneration. It does not establish a fixed savings percentage for future reports. Personal and Life Chapter still pay for both editing and acceptance review, including when the editor makes no changes.
+Removing the Synastry editor removes that paid stage and its full prose/support regeneration. Personal now skips its editor when the first source/meaning review accepts the draft; repairs can cost more than a clean run because they require rechecking. Life Chapter still pays for its editor and review. None of these changes establishes a fixed savings percentage for future reports.
+
+Private provenance names the reviewer separately. New accepted Personal results omit `editorModel` when no editor was called; historical metadata remains readable. All actual calls, including failed attempts, continue to contribute to usage and cost.
 
 Reading grade is a diagnostic, not proof that a model call improved the reading. To judge editorial value, compare **writer draft → raw editor output → final rendered prose**, keeping model edits separate from automatic substitutions.
 
 ## Source links
 
 - [V4 writer, editor, checks and retry loops](../../packages/astrology/src/report/portraitsV4.ts)
+- [Personal conditional editing and validation](../evaluations/PERSONAL_CONDITIONAL_EDITOR_V4_10.md)
 - [Model dispatch, evidence selection, Synastry orchestration and phrase normalization](../../packages/astrology/src/index.ts)
 - [Current Synastry writer and semantic-review prompts](../../packages/astrology/src/report/synastryV3.ts)
 - [Removal decision and verification](../evaluations/SYNASTRY_EDITOR_REMOVAL_V3_5.md)
@@ -127,4 +145,4 @@ Reading grade is a diagnostic, not proof that a model call improved the reading.
 - [Writing research: papers, limitations and implications for Astra](../evaluations/LLM_WRITING_RESEARCH_2026_09_19.md)
 - [New simplification tests and the fewer-style-rules standard](../evaluations/REPORT_SIMPLIFICATION_TESTS_2026_09_19.md)
 
-Verified against implementation after the Synastry editor removal. This document changes no generation behavior and authorizes no deployment or further spending.
+Verified against local implementation after Personal conditional editing and the Synastry editor removal. This document authorizes no deployment or further spending.

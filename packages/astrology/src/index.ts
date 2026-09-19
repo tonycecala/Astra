@@ -4169,10 +4169,15 @@ async function buildDebugModelReportResult(
       const writerInput = { request, chartSignature };
       const modelConfig = { reportModel, openRouterApiKey, openRouterBaseUrl };
       if (request.reportType === "personal" || request.reportType === "progressed") {
+        let editorCalled = false;
         portraitGeneration = await generatePortraitV4(request, buildPortraitV4Evidence(request),
-          (prompt, maxOutputTokens, format, stage) => writeOpenRouterModelText(prompt, request, maxOutputTokens, stage === "draft" ? modelConfig : { ...modelConfig, reportModel: ASTRA_PORTRAITS_V4_EDITOR_MODEL }, fetchImpl, format));
+          (prompt, maxOutputTokens, format, stage) => {
+            if (stage === "edit") editorCalled = true;
+            return writeOpenRouterModelText(prompt, request, maxOutputTokens, stage === "draft" ? modelConfig : { ...modelConfig, reportModel: ASTRA_PORTRAITS_V4_EDITOR_MODEL }, fetchImpl, format);
+          });
         portraitGeneration.portraitsV4.writerModel = reportModel;
-        portraitGeneration.portraitsV4.editorModel = ASTRA_PORTRAITS_V4_EDITOR_MODEL;
+        portraitGeneration.portraitsV4.reviewerModel = ASTRA_PORTRAITS_V4_EDITOR_MODEL;
+        if (editorCalled) portraitGeneration.portraitsV4.editorModel = ASTRA_PORTRAITS_V4_EDITOR_MODEL;
         generation = portraitGeneration;
       } else if (request.reportType === "synastry") {
         synastryGeneration = await generateSynastryV3Draft(

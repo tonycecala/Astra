@@ -962,6 +962,7 @@ export const reportGenerationMetadataSchema = z.object({
   portraitsV4: z.object({
     writerModel: z.string().optional(),
     editorModel: z.string().optional(),
+    reviewerModel: z.string().optional(),
     evidence: z.array(z.object({ id: z.string(), topic: z.string(), fact: z.string(), meaning: z.string() })),
     thread: z.string(),
     trace: z.array(z.object({ title: z.string(), evidenceIds: z.array(z.string()) })),
