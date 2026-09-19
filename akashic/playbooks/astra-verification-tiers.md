@@ -147,3 +147,7 @@ When an editorial contract wins a controlled bakeoff for only some report famili
 When Tony requests minimal copy editing, remove broad writer-development instructions from the editor prompt itself. Preserve good prose verbatim, permit unchanged output, and require a clear reader benefit for each local repair. Keep the writer, independent review and trace boundaries intact. Compare the actual editor input with final prose, not only the number of changed paragraphs or a reading-grade reduction. A full-report rerun produces a new draft and is not a controlled same-draft editor comparison. Keep truncated attempts and their costs; a complete prose block with an incomplete trace is still a failed report.
 
 - Attribute edits by stage: compare writer → raw editor → final renderer separately. Existing deterministic normalization can change words even when the API editor returns identical prose. A draft-to-final diff alone cannot measure paid editorial value.
+
+### Synastry editor retirement (V3.5)
+
+The owner retired the paid Synastry prose editor after observing no clear benefit. Current flow is writer → existing semantic review; the light-touch section above records historical evaluation procedure, not an active editing stage. When removing a model stage, delete its prompt and dispatch, redirect failure attribution to the actual producer, assert call counts and usage totals, and preserve optional historical metadata readability. Do not add a replacement stage merely to fill the gap.

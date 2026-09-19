@@ -104,9 +104,6 @@ import { retryModelPart } from "./report/retryOrchestration";
 import { synastryToneSnapshot, synastryV3Headings } from "./report/allyTone";
 import {
   ASTRA_SYNASTRY_V3_PROMPT_VERSION,
-  ASTRA_SYNASTRY_EDITOR_MODEL,
-  ASTRA_SYNASTRY_EDITOR_VERSION,
-  buildSynastryV3EditorPrompt,
   buildSynastryV3EvidenceIndex,
   buildSynastryV3Prompt,
   buildSynastryV3SemanticPrompt,
@@ -3794,9 +3791,7 @@ async function reviewSynastryV3SemanticSupport(
 
 async function generateSynastryV3Draft(
   input: ReportWriterInput,
-  writer: PromptModelWriter,
-  editor: PromptModelWriter = writer,
-  editorModel = "configured-writer-model"
+  writer: PromptModelWriter
 ): Promise<{
   draft: ReportDraft;
   attemptCount: number;
@@ -3847,23 +3842,6 @@ async function generateSynastryV3Draft(
       );
     }
 
-    // The same edited prose and matching trace flow to semantic review, storage
-    // and the reader. An editor failure never silently publishes the raw draft.
-    let editedResponse: ModelWriterResponse | undefined;
-    try {
-      editedResponse = await editor(buildSynastryV3EditorPrompt({ readerName, allyName, tone, evidenceIndex, portrait: parsed.portrait, trace: parsed.trace }), 12000);
-      usage = mergeModelUsage(usage, editedResponse.usage);
-      if (editedResponse.finishReason === "length" || editedResponse.finishReason === "max_tokens") throw new Error("Editor response was truncated.");
-      parsed = parseSynastryV3Response(editedResponse.text);
-      sections = markdownSectionsFromText(parsed.portrait, input.request);
-      if (sections.length !== headings.length || sections.some((section, index) => section.title !== headings[index])) throw new Error("Editor changed the required chapter headings.");
-      validation = validateSynastryV3({ portrait: parsed.portrait, sections, headings, trace: parsed.trace, evidenceIndex, tone, readerName, allyName });
-      if (!validation.greenLight) throw new Error(synastryV3CorrectionMessages(validation).join(" "));
-    } catch (error) {
-      const message = `Synastry editor failed: ${error instanceof Error ? error.message : "unknown error"}`;
-      if (editedResponse) failures.push(synastryV3RetryFailure(attempt, [message], editedResponse, editedResponse.text, "invalid_markdown"));
-      throw new SynastryV3GenerationError(message, { attemptCount: attempt, usage, latencyMs: Date.now() - startedAt, failures });
-    }
     const semanticReview = await reviewSynastryV3SemanticSupport(parsed.portrait, evidenceIndex, writer);
     usage = mergeModelUsage(usage, semanticReview.usage);
     const semantic = semanticReview.semantic;
@@ -3881,7 +3859,7 @@ async function generateSynastryV3Draft(
     });
     if (!validation.greenLight || semantic.severity === "severe") {
       previousErrors = [...synastryV3CorrectionMessages(validation), ...(semantic.severity === "severe" ? semantic.unsupportedClaims.map(claim => `Material semantic failure: ${claim}`) : [])];
-      failures.push(synastryV3RetryFailure(attempt, previousErrors, editedResponse, editedResponse.text, "unsupported_claim"));
+      failures.push(synastryV3RetryFailure(attempt, previousErrors, response, response.text, "unsupported_claim"));
       if (attempt === 1) continue;
       throw new SynastryV3GenerationError(
         `Synastry V3 remained outside its acceptance policy after one corrective retry: ${previousErrors.join(" ")}`,
@@ -3918,7 +3896,6 @@ async function generateSynastryV3Draft(
         tone,
         evidenceIndex,
         chapterTrace: parsed.trace,
-        editor: { model: editorModel, promptVersion: ASTRA_SYNASTRY_EDITOR_VERSION, ...editedResponse.usage, latencyMs: editedResponse.latencyMs },
         validation,
         semanticSupport: {
           ...semantic,
@@ -4200,9 +4177,7 @@ async function buildDebugModelReportResult(
       } else if (request.reportType === "synastry") {
         synastryGeneration = await generateSynastryV3Draft(
           writerInput,
-          (prompt, maxOutputTokens) => writeOpenRouterModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl),
-          (prompt, maxOutputTokens) => writeOpenRouterModelText(prompt, request, maxOutputTokens, { ...modelConfig, reportModel: ASTRA_SYNASTRY_EDITOR_MODEL }, fetchImpl, undefined, "none"),
-          ASTRA_SYNASTRY_EDITOR_MODEL
+          (prompt, maxOutputTokens) => writeOpenRouterModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
         );
         generation = synastryGeneration;
       } else if (request.reportType === "deep") {
@@ -4236,9 +4211,7 @@ async function buildDebugModelReportResult(
       if (request.reportType === "synastry") {
         synastryGeneration = await generateSynastryV3Draft(
           writerInput,
-          (prompt, maxOutputTokens) => writeOpenAIModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl),
-          (prompt, maxOutputTokens) => writeOpenAIModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl),
-          modelConfig.reportModel
+          (prompt, maxOutputTokens) => writeOpenAIModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
         );
         generation = synastryGeneration;
       } else if (request.reportType === "deep") {
