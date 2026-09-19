@@ -102,6 +102,23 @@ const formatRecovered=await buildAstrologyReportResultAsync(base,{env,fetchImpl:
 }});
 assert.equal(formatRecovered.status,"completed",formatRecovered.error);
 assert.equal(formatCalls,4,"One malformed editor response reuses the bounded edit retry, without redrafting.");
+const astrologyLed = draft();
+astrologyLed.sections.forEach((section, sectionIndex) => {
+  section.body = section.body.split(/\n\s*\n/).map((paragraph, paragraphIndex) => `Sun-led paragraph ${sectionIndex}-${paragraphIndex}: ${paragraph}`).join("\n\n");
+});
+assert.equal(astrologyLed.sections.flatMap(section => section.body.split(/\n\s*\n/)).length, 12);
+assert.deepEqual(validatePortraitV4Draft(astrologyLed, evidence), [], "Technical paragraph openings are not a source or prose integrity failure.");
+let zeroEditCalls = 0;
+const zeroEdit = await buildAstrologyReportResultAsync(base, { env, fetchImpl: async () => {
+  zeroEditCalls++;
+  const content = zeroEditCalls === 1 ? JSON.stringify(astrologyLed) : zeroEditCalls === 2 ? JSON.stringify({ edits: [] }) : JSON.stringify({ accepted: true, issues: [] });
+  return new Response(JSON.stringify({ provider: "Amazon Bedrock", choices: [{ finish_reason: "stop", message: { content } }], usage: { cost: 0.001 } }));
+} });
+assert.equal(zeroEdit.status, "completed", zeroEdit.error);
+assert.equal(zeroEditCalls, 3, "A clean zero-edit pipeline must not retry or redraft technical openings.");
+assert.deepEqual(zeroEdit.sections.map(({ title, body }) => ({ title, body })), astrologyLed.sections.map(({ title, body }) => ({ title, body })), "Accepted zero-edit prose must survive unchanged.");
+assert(!JSON.stringify(zeroEdit.sections).includes("P01"), "Private evidence IDs must stay out of visible report sections.");
+assert(zeroEdit.generationMetadata?.portraitsV4?.evidence?.some(item => item.id === "P01"), "Private evidence trace remains available in generation metadata.");
 let invalidEditCalls=0;
 const invalidEdits=await buildAstrologyReportResultAsync(base,{env,fetchImpl:async()=>{
   invalidEditCalls++;

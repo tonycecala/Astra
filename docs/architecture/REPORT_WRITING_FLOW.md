@@ -52,7 +52,7 @@ The overview shows the main paths. The exact V4 edit loop and less common failur
 | --- | --- | --- |
 | Select evidence | Assemble facts and meanings for this person and report type. Life Chapter includes its selected progression date. | No |
 | Write | Produce a structured draft: connecting idea, section titles, prose and private evidence references. Current standard writer is Sonnet 4.6; configuration can select the writer. | Yes |
-| Check draft | Validate structure, known evidence references, 650–2,200 words, paragraphs, duplicate content and private-data leakage. These checks do not establish literary quality. | No |
+| Check draft | Validate structure, known evidence references, 650–2,200 words, paragraphs, duplicate content and private-data leakage. No paragraph-start quota. These checks do not establish literary quality; the separate meaning/source review remains. | No |
 | Edit | Opus 4.8 returns exact source spans, replacements and reasons. It can return zero edits. It does not reprint the whole report. | Yes |
 | Apply edits | Require each source span to match exactly once; reject overlaps and excessive revision. Preserve headings and support references. | No |
 | Review | A separate Opus 4.8 call decides whether the whole candidate is acceptable and lists material defects. This is a separate call, not a different model from the editor. | Yes |

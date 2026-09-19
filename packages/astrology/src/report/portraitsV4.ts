@@ -104,8 +104,6 @@ export function validatePortraitV4Draft(draft: z.infer<typeof draftSchema>, evid
   const defensive = prose.match(/does not (?:prove|establish)|cannot (?:prove|establish)|only means|no (?:proven|demonstrated) (?:skill|talent)/gi) ?? [];
   if (defensive.length >= 3) issues.push("The portrait repeatedly explains what it cannot establish instead of interpreting.");
   const paragraphs = bodies.flatMap(body => body.split(/\n\s*\n/)).map(p => p.trim());
-  const astroLeads = paragraphs.filter(p => /^(?:(?:your|the|progressed|natal)\s+)*(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Ascendant|chart)\b/i.test(p));
-  if (astroLeads.length > Math.max(1, paragraphs.length * 0.15)) issues.push("Too many paragraphs begin with technical astrology instead of human meaning.");
   if (new Set(paragraphs).size !== paragraphs.length) issues.push("Repeated prose paragraphs.");
   return issues;
 }
