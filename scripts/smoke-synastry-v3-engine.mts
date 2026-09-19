@@ -10,6 +10,8 @@ import {
   LOCAL_CHART_ROUTINE_ENGINE,
   OPENROUTER_REPORT_MODEL_PROVIDER,
   ASTRA_SYNASTRY_V3_PROMPT_VERSION,
+  buildSynastryV3Prompt,
+  buildSynastryV3SemanticPrompt,
   buildAstrologyReportResultAsync,
   synastryToneSnapshot,
   synastryV3Headings
@@ -60,9 +62,18 @@ const env = {
 };
 
 const headings = synastryV3Headings(tone, "Partner");
+const smokeEvidence = [{ id: "S01", label: "bond", meaning: "A direct relational signal supports emotional recognition.", evidenceJobs: ["smoke"] }];
+const loverPrompt = buildSynastryV3Prompt({ readerName: "Tony", allyName: "Partner", tone, evidenceIndex: smokeEvidence });
+if (!loverPrompt.includes("A Lover request invites exploration of romantic interest.") || !loverPrompt.includes("the pull can be mutual")) throw new Error("V3.6 writer prompt lost Lover or shared possibility guidance.");
+const semanticPrompt = buildSynastryV3SemanticPrompt({ portrait: "The pull can be mutual, and Partner may feel seen.", evidenceIndex: smokeEvidence });
+if (!semanticPrompt.includes("the pull can be mutual") || !semanticPrompt.includes("Distinguish 'the pull can be mutual' from 'the pull is mutual.'")) throw new Error("V3.6 semantic prompt lost shared possibility guidance.");
+for (const relationship of ["Family", "Business", "Public Figure"] as const) {
+  const prompt = buildSynastryV3Prompt({ readerName: "Tony", allyName: "Partner", tone: synastryToneSnapshot({ allyId: `ally_${relationship}`, relationship }), evidenceIndex: smokeEvidence });
+  if (prompt.includes("A Lover request invites exploration of romantic interest.")) throw new Error(`${relationship} prompt incorrectly received Lover-only context.`);
+}
 function portraitBlock(editorialPhrase = "Partner remains independently present") {
   const sections = headings.map((heading, index) => {
-    const words = `${index === 0 ? "Romantic sexual desire feels immediate. " : ""}${editorialPhrase}, while the relationship between you develops its own feeling and hidden consequence.`.trim().split(/\s+/);
+    const words = `${index === 0 ? "The pull can feel immediate, and Partner may feel seen. " : ""}${editorialPhrase}, while the relationship between you develops its own feeling and hidden consequence.`.trim().split(/\s+/);
     while (words.length < 240) words.push("feeling");
     return `## ${heading}\n\n${words.join(" ")}`;
   });
@@ -92,10 +103,16 @@ const successfulFetch: typeof fetch = async (_url, init) => {
     if (!body.input.includes('Every prose paragraph must address Tony as "you" or "your,"')) {
       throw new Error("V3.1.1 prompt did not keep the selected reader in second person paragraph by paragraph.");
     }
+    if (!body.input.includes("A Lover request invites exploration of romantic interest.") || !body.input.includes("the pull can be mutual")) {
+      throw new Error("V3.6 writer request did not propagate possibility guidance.");
+    }
     return new Response(JSON.stringify({ output_text: portraitBlock(), usage: { input_tokens: 100, output_tokens: 800, total_tokens: 900 } }), { headers: { "content-type": "application/json" } });
   }
   if (body.max_output_tokens !== 1_400) throw new Error("Semantic support call must use the 1,400-token ceiling.");
   if (!body.input?.includes("Partner remains independently present")) throw new Error("Semantic support must review the writer portrait directly.");
+  if (!body.input?.includes("Distinguish 'the pull can be mutual' from 'the pull is mutual.'")) {
+    throw new Error("V3.6 semantic-review request did not propagate possibility guidance.");
+  }
   return new Response(JSON.stringify({ output_text: JSON.stringify({ supportedClaims: ["mutual recognition"], unsupportedClaims: [], severity: "none" }), usage: { input_tokens: 90, output_tokens: 100, total_tokens: 190 } }), { headers: { "content-type": "application/json" } });
 };
 

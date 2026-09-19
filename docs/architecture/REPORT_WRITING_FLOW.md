@@ -22,7 +22,7 @@ flowchart TD
     G -->|Accepted| O["Final prose plus private support and usage"]
     G -.->|One remaining edit round| E
     G -->|Still rejected| F
-    T -->|Relationship| S["Synastry V3.5: select chart evidence"]
+    T -->|Relationship| S["Synastry V3.6: select chart evidence"]
     S --> SW["PAID: configured writer"]
     SW --> SC["Code checks prose and paragraph support"]
     SC --> SR["PAID: semantic review — same configured model"]
@@ -98,9 +98,10 @@ The limits are explicit:
 
 ## Synastry: the editor is gone
 
-The current Synastry version is **V3.5**, alongside the **V4.9** Personal/Life Chapter engine. “V4 reports” is therefore an umbrella description, not one identical pipeline.
+The current Synastry version is **V3.6**, alongside the **V4.9** Personal/Life Chapter engine. “V4 reports” is therefore an umbrella description, not one identical pipeline.
 
 - The writer produces prose and paragraph-level private support.
+- A Lover request invites romantic exploration. Writer and reviewer share the same possibility-language guidance: describe an unconfirmed response with natural “can,” “may,” or conditional framing, without hedging every sentence. This changes no stages or call counts.
 - Code checks that output, then a semantic-review call assesses support for its claims.
 - Ordinary success uses **two paid calls**. On the current standard OpenRouter route, both use Sonnet 4.6. The legacy OpenAI route uses its configured model.
 - Invalid writer output or material semantic failure can trigger one corrective writer attempt. Persistent failure returns a failed report.
@@ -120,6 +121,7 @@ Reading grade is a diagnostic, not proof that a model call improved the reading.
 - [Model dispatch, evidence selection, Synastry orchestration and phrase normalization](../../packages/astrology/src/index.ts)
 - [Current Synastry writer and semantic-review prompts](../../packages/astrology/src/report/synastryV3.ts)
 - [Removal decision and verification](../evaluations/SYNASTRY_EDITOR_REMOVAL_V3_5.md)
+- [V3.6: romantic potential and natural uncertainty](../evaluations/SYNASTRY_POTENTIAL_V3_6.md)
 - [V4 checks and current verification guidance](../../akashic/playbooks/astra-verification-tiers.md)
 - [Measured quality/cost review and proposed simplification](../evaluations/REPORT_QUALITY_COST_REVIEW_2026_09_19.md)
 - [Writing research: papers, limitations and implications for Astra](../evaluations/LLM_WRITING_RESEARCH_2026_09_19.md)

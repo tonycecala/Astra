@@ -152,3 +152,7 @@ When Tony requests minimal copy editing, remove broad writer-development instruc
 ### Synastry editor retirement (V3.5)
 
 The owner retired the paid Synastry prose editor after observing no clear benefit. Current flow is writer → existing semantic review; the light-touch section above records historical evaluation procedure, not an active editing stage. When removing a model stage, delete its prompt and dispatch, redirect failure attribution to the actual producer, assert call counts and usage totals, and preserve optional historical metadata readability. Do not add a replacement stage merely to fill the gap.
+
+### Synastry possibility language (V3.6)
+
+Tony clarified that a Lover request is a reason to explore romantic interest naturally. Do not turn uncertainty about the other person's response into a clinical or apologetic reading. Writer and reviewer should distinguish an evidence-grounded possibility (“the pull can be mutual”) from asserted private reality (“the pull is mutual”). A natural local conditional frame can carry the passage; do not count modal words or require hedging in every sentence. Keep the Lover context scoped to that tone, preserve family/professional/observational boundaries, and retain source/consent checks. Mocked prompt tests prove wiring and unchanged call counts, not that a live model has mastered the distinction.
