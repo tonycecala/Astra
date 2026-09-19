@@ -32,4 +32,14 @@ Only this harness and durable guidance change. No runtime prompt/model policy, a
 
 ## Evidence and decision
 
-Pending acquisition and masked review. Private artifacts: `.astra-exports/portraits-v4/tc-ca-playful-v1/`. A successful result may recommend a future production change but does not silently promote one.
+Three calls completed, no retries, total $0.096330 (writer $0.025002; Haiku edit $0.009513; Opus edit $0.061815). Ledger now $4.395551. Private artifacts: `.astra-exports/portraits-v4/tc-ca-playful-v1/`; `FINAL_REPORT.md` contains the mini-report and owner-reading link; `MASKED_REVIEW.md` preserves pre-reveal judgment. Initial progress labels were re-randomized before reading any candidate prose. Exact editor prompt equality and raw requests/responses are preserved.
+
+Opus produced the best sentence-level ease and warmth; Haiku made mostly marginal trims. Body grades were 5.1 (writer), 5.3 (Haiku), 3.8 (Opus), advisory only. All inherited unsupported assertions that another person's withdrawal was a test rather than rejection. Both editors missed that issue; it was not introduced by the editing intervention. The initial masked conclusion conflated inherited errors with the preregistered prohibition on introduced errors; the final mini-report explicitly corrects that interpretation without overwriting the original judgment. Opus showed local stylistic value, not end-to-end factual clearance. One case does not justify a general model winner or a mandatory editing stage.
+
+The final owner copy is a disclosed parent-authored revision, not an unedited model success. No runtime promotion. Recommendation: writer-first playful voice, no automatic cheap edit, optional Opus style pass when demonstrably needed; preserve a separate integrity review. Owner taste calibration precedes any broader production change.
+
+## Steward closeout
+
+**Accept-with-notes:** reviewed actual two-file implementation diff, output lineage, cost arithmetic, and complete readings. Tests: `node --import tsx scripts/tc-ca-playful-voice.mts --check` passed after correcting a fixture's expected word count from 720 to 600; `npm run typecheck`, `npm run lint`, and `npm run build` passed. Lint retains the pre-existing unrelated `_staleNote` warning. No routes or runtime were touched, so browser replay would not test this Markdown experiment and was not repeated. Existing governance check reports pre-existing missing advisory retrieval and doctor reports old metadata/placeholders; no actionable Mail or unrelated repairs.
+
+Private output shape checks are deliberately narrower than production acceptance: six chapters, named subject/reader, private-token absence, output completion and bounded calls. They are not semantic-quality gates. Parent-read findings, failure-to-clear notes and manual editing remain visible rather than described as autonomous acceptance. No extra model calls are needed to finish this owner sample.

@@ -121,6 +121,9 @@ When an editorial contract wins a controlled bakeoff for only some report famili
 
 ### Portraits V4: test the delivered writing, not only the machinery
 
+- To test editor value cheaply, give each editor the identical fresh draft and brief, preserve the no-editor control, conceal model attribution before whole-reading judgment, and separate incremental editor cost from the complete production pipeline. Record reasoning settings; disabling extra reasoning or omitting semantic review/trace changes the comparison. One case supports a local preference, not a universal model policy.
+- Plainspoken relationship writing needs a lighter rhetorical structure as well as simpler words. Forced mechanism/example/consequence in every paragraph and a compulsory long ending can recreate density. Test changes privately; keep factual support and production trace requirements separate from the visible paragraph formula. Never translate withdrawal into secret interest or a test of persistence. Distinguish inherited errors an editor missed from errors it introduced when interpreting the comparison.
+
 - Reuse exact-span model-ism detectors as advisory pointers, not phrase bans or automatic prose surgery. Judge the rhetorical function; a useful distinction may deserve to remain. Keep detector counts separate from literary scores.
 - Distinguish generalized psychological inference from invented specific events. Record actual editorial cuts separately from prompt constraints; expose interpretive judgment to the owner instead of describing all caution as factual correction.
 - Compare readability on the same body-only representation, excluding headings and private evidence. Treat empty prose as unscorable; report heuristic grades without claiming comprehension or quality. Hold dated inputs fixed when revising prose.
