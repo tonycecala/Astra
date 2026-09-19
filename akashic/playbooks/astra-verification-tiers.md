@@ -121,6 +121,8 @@ When an editorial contract wins a controlled bakeoff for only some report famili
 
 ### Portraits V4: test the delivered writing, not only the machinery
 
+- Optimize the writing system rather than memorizing an owner's edited sample. When a report repeats one thesis across chapters, inspect planning, minimum length and the closing instruction together. Give each insight one home in the private chapter plan, allow concise completeness, and ask the existing editor/gate to compare conclusions across chapters. Readability metrics alone miss semantic repetition. Verify contract propagation with unrelated reader contexts; do not call those fixtures proof of generated literary quality.
+
 - To test editor value cheaply, give each editor the identical fresh draft and brief, preserve the no-editor control, conceal model attribution before whole-reading judgment, and separate incremental editor cost from the complete production pipeline. Record reasoning settings; disabling extra reasoning or omitting semantic review/trace changes the comparison. One case supports a local preference, not a universal model policy.
 - Plainspoken relationship writing needs a lighter rhetorical structure as well as simpler words. Forced mechanism/example/consequence in every paragraph and a compulsory long ending can recreate density. Test changes privately; keep factual support and production trace requirements separate from the visible paragraph formula. Never translate withdrawal into secret interest or a test of persistence. Distinguish inherited errors an editor missed from errors it introduced when interpreting the comparison.
 

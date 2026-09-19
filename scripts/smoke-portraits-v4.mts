@@ -31,9 +31,16 @@ for (const reportType of ["personal", "progressed"] as const) {
   assert(prompt.includes("INTERPRETIVE LICENSE:"));
   assert(prompt.includes("READABILITY:"));
   assert(prompt.includes("No mechanical ban"));
+  assert(prompt.includes("IDEA ECONOMY:"));
+  assert(prompt.includes("one-sentence chapter purposes"));
+  assert(prompt.includes("650-2200"));
+  assert(!prompt.includes("1400-1800"));
+  assert.equal(prompt.includes("PRACTICAL LIFE CHAPTER:"), reportType === "progressed");
+  assert.equal(prompt.includes("PERSONAL PORTRAIT:"), reportType === "personal");
   const contextualReview = portraitV4ReviewPrompt({ ...request, question: "I recently changed jobs." }, evidence, draft());
   assert(contextualReview.includes("I recently changed jobs."), "The gate must see authorized context, not falsely label it invented biography.");
   assert(contextualReview.includes("Intensity or discomfort alone is not grounds"));
+  assert(contextualReview.includes("compare the conclusions of chapters"));
   if (reportType === "progressed") assert(prompt.includes("2026-09-18"));
   assert.equal(portraitV4ReviewPrompt(request,evidence,draft()).includes("SOURCE IDENTITY:"),reportType==="progressed");
   let calls=0;
@@ -48,6 +55,8 @@ for (const reportType of ["personal", "progressed"] as const) {
     assert(body.messages[0].content.includes(calls===1 ? "Astra Portraits V4" : calls===2 ? "substantive editor" : "independent acceptance gate"));
     if(calls>1) assert.equal(body.messages[0].content.includes("SOURCE IDENTITY:"),reportType==="progressed");
     if(calls===2) assert(body.messages[0].content.includes("TRUEBYLINE-STYLE DIAGNOSIS:"));
+    assert(body.messages[0].content.includes("IDEA ECONOMY:"), "Planning, editing and review must share the reader standard.");
+    assert.equal(body.messages[0].content.includes("PRACTICAL LIFE CHAPTER:"), reportType === "progressed");
     return new Response(JSON.stringify({provider:"Amazon Bedrock",choices:[{finish_reason:"stop",message:{content:JSON.stringify(calls===1?draft():calls===2?{edits:[]}:{accepted:true,issues:[]})}}],usage:{prompt_tokens:10,completion_tokens:10,cost:0.001}}));
   }});
   assert.equal(result.status,"completed",result.error);
@@ -60,6 +69,31 @@ for (const reportType of ["personal", "progressed"] as const) {
   assert.equal(result.publicSignal?.summary,"A private portrait is ready to explore.","Public signal must be generic, never private prose or evidence");
 }
 const evidence=buildPortraitV4Evidence(base);
+// Cross-context plumbing tests, not generated literary evidence. No Tony lesson
+// or manually edited sample may become a template for unrelated readers.
+for (const [subjectName, question, fact] of [
+  ["Morgan", "I want to make more time for friends.", "A supplied connection pattern."],
+  ["Riley", "I am content with work and want to enjoy a hobby.", "A supplied creative expression pattern."],
+  ["Sam", "I need more quiet time.", "A supplied rest and solitude pattern."]
+]) {
+  const request = astrologyReportRequestSchema.parse({...base, subjectName, question, reportType:"progressed", reportBasis:{...base.reportBasis,type:"progressed",asOfDate:"2026-09-18"}});
+  const prompt = portraitV4Prompt(request,[{id:"P01",topic:"Selected theme",fact,meaning:"Interpret this supplied theme only."}]);
+  assert(prompt.includes(fact) && prompt.includes(question));
+  assert(prompt.includes("do not force work, ambition, approval, intimacy"));
+  assert(!/Tony|Cheyenne|Donna|Performer and the Craftsman|Finish Something You Can Use/.test(prompt));
+}
+function sizedDraft(words: number) {
+  const value=draft();
+  value.sections.forEach((section,index)=>{
+    const count=Math.floor(words/4)+(index<words%4?1:0);
+    section.body=Array.from({length:count},(_,i)=>`word${index}_${i}`).join(" ").replace(" ","\n\n");
+  });
+  return value;
+}
+assert.deepEqual(validatePortraitV4Draft(sizedDraft(650),evidence),[],"Concise complete structure must not be padded to the old 1050-word floor.");
+assert(validatePortraitV4Draft(sizedDraft(649),evidence).some(x=>x.includes("650-2200")));
+assert.deepEqual(validatePortraitV4Draft(sizedDraft(2200),evidence),[]);
+assert(validatePortraitV4Draft(sizedDraft(2201),evidence).some(x=>x.includes("650-2200")));
 let formatCalls=0;
 const formatRecovered=await buildAstrologyReportResultAsync(base,{env,fetchImpl:async()=>{
   formatCalls++;
