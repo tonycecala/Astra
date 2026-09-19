@@ -121,5 +121,8 @@ Reading grade is a diagnostic, not proof that a model call improved the reading.
 - [Current Synastry writer and semantic-review prompts](../../packages/astrology/src/report/synastryV3.ts)
 - [Removal decision and verification](../evaluations/SYNASTRY_EDITOR_REMOVAL_V3_5.md)
 - [V4 checks and current verification guidance](../../akashic/playbooks/astra-verification-tiers.md)
+- [Measured quality/cost review and proposed simplification](../evaluations/REPORT_QUALITY_COST_REVIEW_2026_09_19.md)
+- [Writing research: papers, limitations and implications for Astra](../evaluations/LLM_WRITING_RESEARCH_2026_09_19.md)
+- [New simplification tests and the fewer-style-rules standard](../evaluations/REPORT_SIMPLIFICATION_TESTS_2026_09_19.md)
 
 Verified against implementation after the Synastry editor removal. This document changes no generation behavior and authorizes no deployment or further spending.
