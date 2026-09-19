@@ -707,6 +707,7 @@ export const recordChartMakerResultSchema = z.object({
 
 export const astrologyReportStatusSchema = z.enum(["queued", "processing", "completed", "failed", "cancelled"]);
 export const astrologyReportTypeSchema = z.enum([
+  "personal",
   "identity",
   "core",
   "deep",
@@ -717,7 +718,7 @@ export const astrologyReportTypeSchema = z.enum([
   "daily_stream",
   "question_intention"
 ]);
-export const orderableAstrologyReportTypeSchema = z.enum(["identity", "core", "deep", "progressed", "synastry"]);
+export const orderableAstrologyReportTypeSchema = z.enum(["personal", "identity", "core", "deep", "progressed", "synastry"]);
 export const reportBasisTypeSchema = z.enum(["natal", "progressed", "synastry"]);
 export const synastryPerspectiveSchema = z.enum(["primary", "comparison"]);
 export const reportChartSourceSnapshotSchema = z.object({
@@ -947,7 +948,16 @@ export const reportGenerationMetadataSchema = z.object({
   estimatedSpend: z.number().nonnegative().optional(),
   reasoningEffort: z.enum(["none", "minimal", "low", "medium", "high", "xhigh", "max"]).optional(),
   latencyMs: z.number().int().nonnegative().optional(),
-  orchestration: z.enum(["monolithic", "sectioned-v1", "synastry-v3"]).optional(),
+  orchestration: z.enum(["monolithic", "sectioned-v1", "synastry-v3", "portraits-v4"]).optional(),
+  portraitsV4: z.object({
+    writerModel: z.string().optional(),
+    editorModel: z.string().optional(),
+    evidence: z.array(z.object({ id: z.string(), topic: z.string(), fact: z.string(), meaning: z.string() })),
+    thread: z.string(),
+    trace: z.array(z.object({ title: z.string(), evidenceIds: z.array(z.string()) })),
+    reviews: z.array(z.object({ accepted: z.boolean(), issues: z.array(z.string()) })),
+    advisories: z.array(z.string()).optional()
+  }).optional(),
   reviewNotes: z.array(reportGenerationRetryIssueSchema).optional(),
   failures: z.array(reportGenerationRetryFailureSchema).optional(),
   thesis: reportGenerationPartMetadataSchema.optional(),
@@ -979,7 +989,7 @@ export const astrologyReportRequestSchema = z.object({
 
 export const createAstrologyReportRequestSchema = z.object({
   chartRequestId: idSchema,
-  reportType: orderableAstrologyReportTypeSchema.default("identity"),
+  reportType: orderableAstrologyReportTypeSchema.default("personal"),
   reportBasis: reportChartBasisInputSchema,
   question: z.string().min(1).optional(),
   intent: z.string().min(1).optional(),

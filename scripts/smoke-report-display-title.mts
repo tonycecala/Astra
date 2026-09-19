@@ -29,7 +29,7 @@ const synastryRequest = {
 } as unknown as AstrologyReportRequest;
 
 const synastryTitle = reportDisplayTitle(synastryRequest, "Tony Cecala — Synastry Report");
-if (synastryTitle !== "Tony Cecala + Brandi McCulley — Synastry Report") {
+if (synastryTitle !== "Tony Cecala + Brandi McCulley — Relationship") {
   throw new Error(`Synastry display title must include both people; received: ${synastryTitle}`);
 }
 
@@ -48,11 +48,12 @@ if (reportDisplayTitle(welcomeRequest) !== "Tony Cecala — Welcome Report" || r
 }
 
 const familyCases = [
+  ["personal", "Personal"],
   ["identity", "Identity Report"],
   ["core", "Core Report"],
   ["deep", "Deep Report"],
-  ["progressed", "Progressed Report"],
-  ["synastry", "Synastry Report"]
+  ["progressed", "Life Chapter"],
+  ["synastry", "Relationship"]
 ] as const;
 for (const [reportType, expected] of familyCases) {
   if (reportFamilyLabel(reportType) !== expected) throw new Error(`${reportType} must display as ${expected}.`);
@@ -74,7 +75,7 @@ const reciprocalSynastryRequest = {
     partner: synastryBasis.primary
   }
 } as AstrologyReportRequest;
-if (reportDisplayTitle(reciprocalSynastryRequest, "Brandi McCulley — Synastry Report") !== "Brandi McCulley + Tony Cecala — Synastry Report") {
+if (reportDisplayTitle(reciprocalSynastryRequest, "Brandi McCulley — Synastry Report") !== "Brandi McCulley + Tony Cecala — Relationship") {
   throw new Error("A reciprocal Synastry reading must retain the selected reader first in its separate saved title.");
 }
 
@@ -89,7 +90,7 @@ const legacySynastryRequest = {
     }
   }
 } as unknown as AstrologyReportRequest;
-if (reportDisplayTitle(legacySynastryRequest, "Tony Cecala — Synastry Report") !== "Tony Cecala + Cheyenne Autumn — Synastry Report") {
+if (reportDisplayTitle(legacySynastryRequest, "Tony Cecala — Synastry Report") !== "Tony Cecala + Cheyenne Autumn — Relationship") {
   throw new Error("Imported Synastry reports must recover both names from legacy subject context.");
 }
 

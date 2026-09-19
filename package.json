@@ -58,6 +58,8 @@
     "test:report-rule-catalog": "node --import tsx scripts/smoke-report-rule-catalog.mts",
     "test:astrology-public-api": "node --import tsx scripts/smoke-astrology-public-api.mts",
     "test:report-model-strategy": "node --import tsx scripts/smoke-report-model-strategy.mts",
+    "test:portraits-v4": "node --import tsx scripts/smoke-portraits-v4.mts && node --import tsx scripts/smoke-portraits-v4-budget.mts && node --import tsx scripts/smoke-portraits-v4-inspection.mts",
+    "portraits:v4:inspect": "node --import tsx scripts/inspect-portraits-v4.mts",
     "test:report-deep-quality": "node --import tsx scripts/smoke-report-deep-quality.mts",
     "test:report-paragraphs": "node --import tsx scripts/smoke-report-paragraphs.mts",
     "test:report-display-title": "node --import tsx scripts/smoke-report-display-title.mts",

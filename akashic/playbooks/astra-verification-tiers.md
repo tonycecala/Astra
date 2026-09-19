@@ -4,7 +4,7 @@ type: "playbook"
 description: "Select fast, focused, responsive, security, and release verification by changed boundary."
 status: "active"
 project: "astra"
-updated: "2026-08-01"
+updated: "2026-09-18"
 tags: ["verification", "playwright", "performance"]
 ---
 
@@ -118,3 +118,13 @@ Standalone experiment scripts do not automatically load Next.js environment file
 ## Family-scoped writer contract promotion
 
 When an editorial contract wins a controlled bakeoff for only some report families, place it in the shared prompt-policy layer but gate it by report type. Wire every production prompt shape for each approved family (for example, both monolithic and sectioned Core) and keep excluded families returning an empty contract. Preserve private evidence selection, thesis planning, retry policy, and validation behavior unless separately approved. Add a focused fixture that captures each affected prompt shape, asserts the contract is present where approved and absent where excluded, and asserts new-generation provenance identifies the contract version without changing saved reports.
+
+### Portraits V4: test the delivered writing, not only the machinery
+
+- Reproduce the actual saved request shape before diagnosing a writing regression. A schema-1 bakeoff does not qualify a schema-2 production path. Inspect the full assembled prompt: a psychological introduction can be overridden by a later aspect-by-aspect paragraph formula. Model-written is not synonymous with good writing, and passing synthetic-prose fixtures is not reader-quality evidence.
+- Preserve the selected calculation/meaning graph. Pass its actual values and configuration participants to the writer, not bare labels or relevance scores that invite invented interpretation. Compose the complete portrait around a private connective idea; the private trace serves auditability, not the visible chapter structure.
+- Separate material integrity failures from editorial near misses. Tony's V2 reader standard permits an isolated generalized “learned early” or small non-central overstatement in otherwise strong writing. Wrong subject/chart/date/relationship, invented specific events or diagnoses, claimed reciprocity/consent, promised outcomes and private trace leaks remain consequential failures. A hard hold must explain the effect on the complete reading, not merely quote a keyword. Accepted-with-notes is acceptance, not another mandatory paid revision.
+- Keep exact-span editing bounded by unique source matches, nonoverlap and cumulative revision size. An arbitrary minimum character count can reject a perfectly valid short edit. Test short unique spans, blank/ambiguous spans and budget limits without model calls.
+- Automate run mechanics with `npm run portraits:v4:inspect -- <private-cohort-directory>`: completeness, schemas, artifact agreement, context, private traces and source drift. The program uses no model, credentials, network or database. It must never assign a literary score or turn advisory phrasing into a rejection. Use a separately calibrated whole-report reader for insight, voice, coherence and usefulness.
+- Freeze the dated input matrix and implementation before paid acquisition; keep development, primary cases and preplanned repeats distinct. Preserve failed outputs, original judgments, actual costs and prospective owner-authorized standard changes. A source-hash drift is visible historical provenance, not grounds to rewrite the original observation.
+- For local UI verification, seed isolated Better Auth sessions and complete chart arrival through its real local API before expecting paid report controls. Test confirmation, gifted-Star debits, failed generation retry without another debit, immutable completed reports, and owner/public support separation across desktop/tablet/mobile. Wait for test navigation to settle before initiating another navigation; do not suppress general console failures to hide aborted prefetches.

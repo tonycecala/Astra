@@ -34,7 +34,7 @@ export function mergeProviderUsage(left: ProviderUsage, right: ProviderUsage): P
 export function reportModelTimeoutMsFor(reportType: string, standardTimeoutMs: number, deepTimeoutMs: number) {
   // Synastry V3.1 asks the provider for a long-form portrait plus a private
   // paragraph trace, so it needs the same bounded generation window as Deep.
-  return reportType === "deep" || reportType === "synastry" ? deepTimeoutMs : standardTimeoutMs;
+  return ["deep", "synastry", "personal", "progressed"].includes(reportType) ? deepTimeoutMs : standardTimeoutMs;
 }
 
 export function maxModelOutputTokensFor(reportType: string) {

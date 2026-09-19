@@ -8,6 +8,7 @@ export function isWelcomeReport(request: AstrologyReportRequest | null | undefin
 
 export function reportFamilyLabel(reportType?: string, request?: AstrologyReportRequest | null) {
   if (isWelcomeReport(request)) return ui.library.reportTypeWelcome;
+  if (reportType === "personal") return ui.library.reportTypePersonal;
   if (reportType === "identity") return ui.library.reportTypeIdentity;
   if (reportType === "core" || reportType === "core_self") return ui.library.reportTypeCore;
   if (reportType === "deep") return ui.library.reportTypeDeep;

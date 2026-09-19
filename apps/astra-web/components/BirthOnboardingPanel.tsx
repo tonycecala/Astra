@@ -119,6 +119,7 @@ type FormState = {
   synastryPartnerChartRequestId: string;
   synastryPerspective: SynastryPerspective;
   progressedAsOfDate: string;
+  portraitQuestion: string;
   date: string;
   time: string;
   timezone: string;
@@ -150,7 +151,8 @@ const defaultForm = (
   subjectName: chartRequest?.subjectName ?? initialSubjectName ?? displayName,
   relationship: typeof chartSubjectContext(chartRequest)?.relationship === "string" ? chartSubjectContext(chartRequest)?.relationship as string : "",
   note: typeof chartSubjectContext(chartRequest)?.note === "string" ? chartSubjectContext(chartRequest)?.note as string : "",
-  reportType: "identity",
+  reportType: "personal",
+  portraitQuestion: "",
   zodiacMode: "tropical",
   houseSystem: "whole-sign",
   synastryPartnerChartRequestId: "",
@@ -236,6 +238,7 @@ function reportStatusLabel(status: string) {
 
 function reportTypeLabel(reportType: AstrologyReportRequest["reportType"], welcome = false) {
   if (welcome) return ui.library.reportTypeWelcome;
+  if (reportType === "personal") return ui.library.reportTypePersonal;
   if (reportType === "identity") return ui.library.reportTypeIdentity;
   if (reportType === "deep") return ui.library.reportTypeDeep;
   if (reportType === "progressed") return ui.library.reportTypeProgressed;
@@ -345,6 +348,8 @@ export function BirthOnboardingPanel({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmissionComplete, setIsSubmissionComplete] = useState(false);
+  const [retryReportId, setRetryReportId] = useState<string | null>(null);
+  const [generatingReportId, setGeneratingReportId] = useState<string | null>(null);
   const [isConfirmingReport, setIsConfirmingReport] = useState(false);
   const [isBirthMomentSheetOpen, setIsBirthMomentSheetOpen] = useState(false);
   const [isBirthLocationSheetOpen, setIsBirthLocationSheetOpen] = useState(false);
@@ -822,6 +827,7 @@ export function BirthOnboardingPanel({
         body: JSON.stringify({
           chartRequestId: chartRequest.id,
           reportType: selectedReportType,
+          question: optional(form.portraitQuestion),
           reportBasis
         })
       });
@@ -843,6 +849,7 @@ export function BirthOnboardingPanel({
 
   function startAnotherOnboarding() {
     setIsSubmissionComplete(false);
+    setRetryReportId(null);
     setActiveStep("subject");
     setMessage("");
     setIsConfirmingReport(false);
@@ -857,6 +864,8 @@ export function BirthOnboardingPanel({
   }
 
   async function generateReport(requestId: string) {
+    if (generatingReportId) return;
+    setGeneratingReportId(requestId);
     setMessage(ui.self.reportGenerateWorking);
 
     try {
@@ -873,10 +882,16 @@ export function BirthOnboardingPanel({
       setReportResults((current) => [payload.result, ...current.filter((result) => result.requestId !== payload.result.requestId)]);
       setMessage(payload.result.status === "completed" ? ui.self.reportGenerateCompleted : ui.self.reportGenerateFailed);
       if (payload.result.status === "completed") {
+        setRetryReportId(null);
         openReportArtifact(payload.result.requestId);
+      } else {
+        setRetryReportId(requestId);
       }
     } catch (error) {
+      setRetryReportId(requestId);
       setMessage(error instanceof Error ? error.message : ui.self.reportGenerateError);
+    } finally {
+      setGeneratingReportId(null);
     }
   }
 
@@ -966,7 +981,7 @@ export function BirthOnboardingPanel({
           {!isSingleStepFlow ? (
             <p className={styles.progressText} aria-live="polite">
               {isWizardComplete
-                ? ui.self.onboardingProgressQueued
+                ? generatingReportId ? ui.self.reportGenerateWorking : retryReportId ? ui.self.reportRetryReady : ui.self.onboardingProgressQueued
                 : ui.self.onboardingProgress(displayedStepIndex + 1, visibleSteps.length, stepLabel(activeStep))}
             </p>
           ) : null}
@@ -994,10 +1009,14 @@ export function BirthOnboardingPanel({
               </button>
             ) : isWizardComplete ? (
               <div className={styles.completionActions}>
-                <button className={`${styles.buttonDone} button`} type="button" disabled>
+                {retryReportId ? (
+                  <button className="button" type="button" disabled={Boolean(generatingReportId)} onClick={() => generateReport(retryReportId)}>
+                    {generatingReportId ? ui.self.reportGenerateWorking : ui.self.reportRetry}
+                  </button>
+                ) : <button className={`${styles.buttonDone} button`} type="button" disabled>
                   <Check aria-hidden="true" size={18} />
                   {ui.self.chartRequestQueued}
-                </button>
+                </button>}
                 <button className="button secondary" onClick={startAnotherOnboarding} type="button">
                   {ui.self.chartRequestStartOver}
                 </button>
@@ -1109,6 +1128,8 @@ export function BirthOnboardingPanel({
                   <p>{isExistingChartLocked ? compactBirthLine(existingChartRequest?.birthData) : compactFormBirthLine(form)}</p>
                 </div>
               ) : null}
+              <details>
+                <summary>{ui.self.chartSettingsLabel}</summary>
               <fieldset className={`${styles.optionGroup} ${styles.chartSettingsGroup}`}>
                 <legend>{ui.self.chartSettingsLabel}</legend>
                 <div className={styles.settingsGrid}>
@@ -1150,6 +1171,7 @@ export function BirthOnboardingPanel({
                   </div>
                 </div>
               </fieldset>
+              </details>
               {!isChartArrivalFlow ? <fieldset className={styles.optionGroup} aria-label={ui.self.onboardingReportTypeLabel}>
                 {availableReportTypes.map((reportType) => (
                   <label className={styles.option} key={reportType}>
@@ -1161,15 +1183,20 @@ export function BirthOnboardingPanel({
                     />
                     <span>
                       <strong className={styles.optionTitle}>
-                        {reportTypeLabel(reportType)}
+                        {reportType in ui.self.portraitTypes ? ui.self.portraitTypes[reportType as keyof typeof ui.self.portraitTypes] : reportTypeLabel(reportType)}
                         {" "}
-                        <em>{ui.self.reportOptionMeta(reportTypeCost(reportType), reportBasisLabel(reportType))}</em>
+                        <em>{ui.stars.reportCost(reportTypeCost(reportType))}</em>
                       </strong>
                       {ui.self.onboardingReportTypeDescriptions[reportType]}
                     </span>
                   </label>
                 ))}
               </fieldset> : null}
+              {!isChartArrivalFlow ? <label>
+                <span>{ui.self.portraitQuestionLabel}</span>
+                <textarea maxLength={500} rows={2} value={form.portraitQuestion} onChange={(event) => updateField("portraitQuestion", event.target.value)} />
+                <small>{ui.self.portraitQuestionHint}</small>
+              </label> : null}
               {!isChartArrivalFlow && form.reportType === "progressed" ? (
                 <label>
                   <span>{ui.self.progressedAsOfLabel}</span>
@@ -1334,7 +1361,7 @@ export function BirthOnboardingPanel({
                   onClick={submitConfirmedReport}
                   disabled={isSubmitting || !canAffordSelectedReport}
                 >
-                  {isAlly ? ui.allies.createReport : ui.self.reportConfirmOk}
+                  {ui.self.portraitCreate}
                 </button>
               </div>
             </section>

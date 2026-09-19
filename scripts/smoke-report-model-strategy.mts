@@ -6,7 +6,7 @@ import {
   ASTRA_REPORT_MODEL_PROFILE_ENV,
   ASTRA_REPORT_MODEL_PROVIDER_ENV,
   ASTRA_REPORT_PROMPT_VERSION,
-  ASTRA_PROGRESSED_EVIDENCE_TO_PROSE_PROMPT_VERSION,
+  ASTRA_PORTRAITS_V4_PROMPT_VERSION,
   ASTRA_REPORT_WRITER_ENV,
   ASTRA_SYNASTRY_PRODUCTION_REPORT_MODEL,
   DEBUG_MODEL_REPORT_WRITER,
@@ -176,13 +176,11 @@ assert.match(corePrompt, /Core earns its value through four distinct chapters/);
 const progressedGenerated = await modelResultFor(progressedRequest, { "Current Chapter": 250, "Progressed Sun": 225, "Progressed Moon": 225, Integration: 180 });
 assert.equal(progressedGenerated.result.status, "completed", progressedGenerated.result.error);
 const progressedPrompt = progressedGenerated.prompt;
-assert.match(progressedPrompt, /Current Chapter: target 225-300 words; remain between 200 and 340 words/);
-assert.match(progressedPrompt, /Integration: target 150-225 words; remain between 140 and 260 words/);
-assert.match(progressedPrompt, /Private Astra Progressed Evidence-to-Prose Contract for this draft:/);
-assert.match(progressedPrompt, /selected progressed placements and progressed-to-natal contacts supplied for this report/i);
-assert.match(progressedPrompt, /supplied as-of date as the only time basis/i);
+assert.match(progressedPrompt, /Astra Portraits V4/);
+assert.match(progressedPrompt, /Life Chapter as of 2026-07-17/);
+assert.match(progressedPrompt, /secondary progression, not transits or an event forecast/);
 assert.doesNotMatch(progressedPrompt, /When a selected house supports the mechanism/i, "The rejected B+ house rule must not be promoted.");
-assert.equal(progressedGenerated.result.generationMetadata?.promptVersion, ASTRA_PROGRESSED_EVIDENCE_TO_PROSE_PROMPT_VERSION);
+assert.equal(progressedGenerated.result.generationMetadata?.promptVersion, ASTRA_PORTRAITS_V4_PROMPT_VERSION);
 assert.doesNotMatch(identityPrompt, /Private Astra Progressed Evidence-to-Prose Contract/);
 assert.doesNotMatch(corePrompt, /Private Astra Progressed Evidence-to-Prose Contract/);
 
@@ -316,8 +314,15 @@ async function modelResultFor(input: AstrologyReportRequest, sectionWords: Recor
     fetchImpl: async (_url, init) => {
       const body = JSON.parse(String(init?.body)) as { messages?: Array<{ content?: string }> };
       prompt ||= body.messages?.[0]?.content ?? "";
+      const v4Content = input.reportType === "progressed" ? JSON.stringify(body.messages?.[0]?.content?.includes("independent acceptance gate")
+        ? { accepted: true, issues: [] }
+        : body.messages?.[0]?.content?.includes("substantive editor") ? { edits: [] }
+        : { thread: "Synthetic routing fixture, not evidence of prose quality.", sections: Array.from({ length: 4 }, (_, i) => ({
+          title: `Topic ${i + 1}`, evidenceIds: ["P01"], body: Array.from({ length: 3 }, (_, j) => `${i}-${j}: ` + sizedBody(`You consider topic ${i} from viewpoint ${j} as a reflective possibility.`, 100).replaceAll("\n\n", " ")).join("\n\n")
+        })) }) : content;
       return new Response(JSON.stringify({
-        choices: [{ message: { content }, finish_reason: "stop" }],
+        provider: "Amazon Bedrock",
+        choices: [{ message: { content: v4Content }, finish_reason: "stop" }],
         usage: { prompt_tokens: 1200, completion_tokens: 600, total_tokens: 1800, cost: 0.042 }
       }), { status: 200, headers: { "content-type": "application/json" } });
     }
