@@ -121,6 +121,9 @@ When an editorial contract wins a controlled bakeoff for only some report famili
 
 ### Portraits V4: test the delivered writing, not only the machinery
 
+- Manual editorial success is development evidence, not production acceptance. Wire the edit into the actual generation path; then validate, review, persist and render that exact edited prose with its matching private trace. Preserve stage-specific cost/model provenance. A malformed editor response must not silently ship the raw draft. Review failures must retain the edited candidate that was actually judged, not its earlier draft.
+- Plain language is not the lowest possible reading grade. For adult relationship writing, the owner-approved guide is roughly FK 7–9 with varied sentence rhythm; watch short-declaration chains even when every word is simple. Numeric scores are advisory. Judge untouched end-to-end API output before claiming the voice is solved.
+
 - Optimize the writing system rather than memorizing an owner's edited sample. When a report repeats one thesis across chapters, inspect planning, minimum length and the closing instruction together. Give each insight one home in the private chapter plan, allow concise completeness, and ask the existing editor/gate to compare conclusions across chapters. Readability metrics alone miss semantic repetition. Verify contract propagation with unrelated reader contexts; do not call those fixtures proof of generated literary quality.
 
 - To test editor value cheaply, give each editor the identical fresh draft and brief, preserve the no-editor control, conceal model attribution before whole-reading judgment, and separate incremental editor cost from the complete production pipeline. Record reasoning settings; disabling extra reasoning or omitting semantic review/trace changes the comparison. One case supports a local preference, not a universal model policy.
