@@ -57,25 +57,25 @@ for (const reportType of ["personal", "progressed"] as const) {
     assert.equal(body.provider.allow_fallbacks,false);
     assert.equal(body.provider.data_collection,"deny");
     if(calls>1) { assert.equal(body.reasoning.effort,"medium"); assert.equal(body.temperature,undefined); }
-    assert(body.messages[0].content.includes(calls===1 ? "Astra Portraits V4" : reportType === "personal" ? "independent acceptance gate" : calls===2 ? "substantive editor" : "independent acceptance gate"));
+    assert(body.messages[0].content.includes(calls===1 ? "Astra Portraits V4" : "independent acceptance gate"));
     if(calls>1) assert.equal(body.messages[0].content.includes("SOURCE IDENTITY:"),reportType==="progressed");
-    if(calls===2 && reportType === "progressed") assert(body.messages[0].content.includes("TRUEBYLINE-STYLE DIAGNOSIS:"));
+    if(calls===2) assert(!body.messages[0].content.includes("TRUEBYLINE-STYLE DIAGNOSIS:"));
     assert(body.messages[0].content.includes("IDEA ECONOMY:"), "Planning, editing and review must share the reader standard.");
     assert.equal(body.messages[0].content.includes("PRACTICAL LIFE CHAPTER:"), reportType === "progressed");
-    const content = calls === 1 ? draft() : reportType === "personal" ? { accepted: true, issues: [] } : calls === 2 ? { edits: [] } : { accepted: true, issues: [] };
+    const content = calls === 1 ? draft() : { accepted: true, issues: [] };
     return new Response(JSON.stringify({provider:"Amazon Bedrock",choices:[{finish_reason:"stop",message:{content:JSON.stringify(content)}}],usage:{prompt_tokens:10,completion_tokens:10,cost:0.001}}));
   }});
   assert.equal(result.status,"completed",result.error);
-  assert.equal(calls, reportType === "personal" ? 2 : 3);
+  assert.equal(calls, 2);
   assert.equal(result.generationMetadata?.promptVersion,ASTRA_PORTRAITS_V4_PROMPT_VERSION);
   assert.equal(result.generationMetadata?.orchestration,"portraits-v4");
-  assert.equal(result.generationMetadata?.estimatedSpend, reportType === "personal" ? 0.002 : 0.003);
+  assert.equal(result.generationMetadata?.estimatedSpend, 0.002);
   assert.equal(result.generationMetadata?.portraitsV4?.reviewerModel, "anthropic/claude-opus-4.8");
-  assert.equal(result.generationMetadata?.portraitsV4?.editorModel, reportType === "progressed" ? "anthropic/claude-opus-4.8" : undefined);
+  assert.equal(result.generationMetadata?.portraitsV4?.editorModel, undefined);
   const parsedMetadata = reportGenerationMetadataSchema.parse(result.generationMetadata);
   assert(parsedMetadata.portraitsV4);
   assert.equal(parsedMetadata.portraitsV4.reviewerModel, "anthropic/claude-opus-4.8");
-  assert.equal(parsedMetadata.portraitsV4.editorModel, reportType === "progressed" ? "anthropic/claude-opus-4.8" : undefined);
+  assert.equal(parsedMetadata.portraitsV4.editorModel, undefined);
   assert.equal(result.sections.length,4);
   assert(!JSON.stringify(result.sections).includes("P01"));
   assert.equal(result.publicSignal?.summary,"A private portrait is ready to explore.","Public signal must be generic, never private prose or evidence");
@@ -103,6 +103,33 @@ function sizedDraft(words: number) {
   return value;
 }
 const progressedRequest = astrologyReportRequestSchema.parse({ ...base, reportType: "progressed", reportBasis: { ...base.reportBasis, type: "progressed", asOfDate: "2026-09-18" } });
+for (const request of [base, progressedRequest]) {
+  for (const privatePlan of ["x".repeat(1688), "short", ""]) {
+    let planCalls = 0;
+    const planned = draft();
+    planned.thread = privatePlan;
+    const plannedResult = await buildAstrologyReportResultAsync(request, { env, fetchImpl: async () => {
+      planCalls++;
+      const content = planCalls === 1 ? planned : { accepted: true, issues: [] };
+      return new Response(JSON.stringify({ provider: "Amazon Bedrock", choices: [{ finish_reason: "stop", message: { content: JSON.stringify(content) } }], usage: { cost: 0.001 } }));
+    } });
+    assert.equal(plannedResult.status, "completed", plannedResult.error);
+    assert.equal(planCalls, 2, "Long, short, and empty private plans must still reach the mandatory review in two calls.");
+    assert.equal(plannedResult.generationMetadata?.portraitsV4?.thread, privatePlan);
+    assert.deepEqual(plannedResult.sections.map(({ title, body }) => ({ title, body })), planned.sections.map(({ title, body }) => ({ title, body })));
+  }
+}
+for (const invalidDraft of [
+  { ...draft(), thread: 42 },
+  { ...draft(), sections: draft().sections.map(({ title, body }) => ({ title, body })) }
+] as unknown[]) {
+  let invalidPlanCalls = 0;
+  const invalidPlan = await buildAstrologyReportResultAsync(base, { env, fetchImpl: async () => {
+    invalidPlanCalls++;
+    return new Response(JSON.stringify({ provider: "Amazon Bedrock", choices: [{ finish_reason: "stop", message: { content: JSON.stringify(invalidDraft) } }], usage: { cost: 0.001 } }));
+  } });
+  assert.equal(invalidPlan.status, "failed"); assert.equal(invalidPlanCalls, 2, "Wrong-type private plans and missing required evidence source remain rejected.");
+}
 assert.deepEqual(validatePortraitV4Draft(sizedDraft(650),evidence),[],"Concise complete structure must not be padded to the old 1050-word floor.");
 assert(validatePortraitV4Draft(sizedDraft(649),evidence).some(x=>x.includes("650-2200")));
 assert.deepEqual(validatePortraitV4Draft(sizedDraft(2200),evidence),[]);
@@ -110,11 +137,11 @@ assert(validatePortraitV4Draft(sizedDraft(2201),evidence).some(x=>x.includes("65
 let formatCalls=0;
 const formatRecovered=await buildAstrologyReportResultAsync(progressedRequest,{env,fetchImpl:async()=>{
   formatCalls++;
-  const content=formatCalls===1?JSON.stringify(draft()):formatCalls===2?'{"edits":[]':formatCalls===3?'{"edits":[]}':'{"accepted":true,"issues":[]}';
+  const content=formatCalls===1?JSON.stringify(draft()):formatCalls===2?JSON.stringify({accepted:false,issues:["Correct one source claim."]}):formatCalls===3?'{"edits":[':formatCalls===4?'{"edits":[]}':'{"accepted":true,"issues":[]}';
   return new Response(JSON.stringify({provider:"Amazon Bedrock",choices:[{finish_reason:"stop",message:{content}}],usage:{cost:0.001}}));
 }});
 assert.equal(formatRecovered.status,"completed",formatRecovered.error);
-assert.equal(formatCalls,4,"One malformed editor response reuses the bounded edit retry, without redrafting.");
+assert.equal(formatCalls,5,"One malformed Life editor response reuses the bounded edit retry, without redrafting.");
 const astrologyLed = draft();
 astrologyLed.sections.forEach((section, sectionIndex) => {
   section.body = section.body.split(/\n\s*\n/).map((paragraph, paragraphIndex) => `Sun-led paragraph ${sectionIndex}-${paragraphIndex}: ${paragraph}`).join("\n\n");
@@ -135,10 +162,11 @@ assert(zeroEdit.generationMetadata?.portraitsV4?.evidence?.some(item => item.id 
 let invalidEditCalls=0;
 const invalidEdits=await buildAstrologyReportResultAsync(progressedRequest,{env,fetchImpl:async()=>{
   invalidEditCalls++;
-  return new Response(JSON.stringify({provider:"Amazon Bedrock",choices:[{finish_reason:"stop",message:{content:invalidEditCalls===1?JSON.stringify(draft()):'{"edits":['}}],usage:{cost:0.001}}));
+  const content=invalidEditCalls===1?JSON.stringify(draft()):invalidEditCalls===2?JSON.stringify({accepted:false,issues:["Correct one source claim."]}):'{"edits":[';
+  return new Response(JSON.stringify({provider:"Amazon Bedrock",choices:[{finish_reason:"stop",message:{content}}],usage:{cost:0.001}}));
 }});
 assert.equal(invalidEdits.status,"failed");
-assert.equal(invalidEditCalls,3,"Repeated malformed editing stops at the existing two-edit bound.");
+assert.equal(invalidEditCalls,4,"Repeated malformed Life editing stops at the existing two-edit bound.");
 let malformedInitialCalls = 0;
 const malformedInitial = await buildAstrologyReportResultAsync(base, { env, fetchImpl: async () => {
   malformedInitialCalls++;
@@ -158,6 +186,10 @@ assert.equal(malformedReviewCalls, 2, "A malformed Personal review fails closed 
 const missingFindingsCalls = { value: 0 };
 await assert.rejects(() => editPortraitV4Draft(base, evidence, draft(), async () => { missingFindingsCalls.value++; throw new Error("editor must not be called"); }), /material findings/);
 assert.equal(missingFindingsCalls.value, 0, "Personal editing without material findings must fail before any paid call.");
+const sourceEdit = { sectionIndex: 0, original: "Your Sun is in Libra.", replacement: "Your Sun is in Aries.", reason: "Corrects the source-supported Sun sign." };
+const missingLifeFindingsCalls = { value: 0 };
+await assert.rejects(() => editPortraitV4Draft(progressedRequest, evidence, draft(), async () => { missingLifeFindingsCalls.value++; throw new Error("editor must not be called"); }), /material findings/);
+assert.equal(missingLifeFindingsCalls.value, 0, "Life editing without material findings must fail before any paid call.");
 const unknownTimeData={...birthData,time:undefined,birthTimeKnown:false};
 const unknownTime=astrologyReportRequestSchema.parse({...base,birthData:unknownTimeData,reportBasis:{...base.reportBasis,primary:{...base.reportBasis!.primary,birthData:unknownTimeData,calculationMode:"signs-aspects-only"}}});
 const unknownTimeEvidence=buildPortraitV4Evidence(unknownTime);
@@ -194,6 +226,24 @@ assert.equal(repaired.generationMetadata?.estimatedSpend, 0.004);
 assert(repaired.sections[0]?.body.includes("Your Sun is in Aries."), "The material source repair must change the requested exact span.");
 assert(repaired.sections[0]?.body.includes("This distinct example 0-1-0 supports reflection."), "An exact-span repair must preserve unrelated prose.");
 assert.deepEqual(repaired.sections.map(({ title, body }) => ({ title, body })), expectedRepairedDraft.sections.map(({ title, body }) => ({ title, body })), "Only the requested source span may change; all other section prose must remain equivalent.");
+let lifeRepairCalls = 0;
+const lifeRepair = await buildAstrologyReportResultAsync(progressedRequest, { env, fetchImpl: async (_url, init) => {
+  lifeRepairCalls++;
+  const body = JSON.parse(String(init?.body)) as { messages?: Array<{ content?: string }> };
+  if (lifeRepairCalls === 2) {
+    assert(body.messages?.[0]?.content?.includes("SOURCE IDENTITY:"));
+    assert(body.messages?.[0]?.content?.includes("2026-09-18"));
+  }
+  if (lifeRepairCalls === 3) {
+    assert(body.messages?.[0]?.content?.includes("SOURCE IDENTITY:"));
+    assert(body.messages?.[0]?.content?.includes("2026-09-18"));
+    assert(body.messages?.[0]?.content?.includes("This is a targeted repair, not a polishing pass."));
+    assert(!body.messages?.[0]?.content?.includes("TRUEBYLINE-STYLE DIAGNOSIS:"));
+  }
+  const content = lifeRepairCalls === 1 ? repairDraft : lifeRepairCalls === 2 ? { accepted: false, issues: ["Your Sun is in Libra conflicts with source P01 Aries; correct the sign."] } : lifeRepairCalls === 3 ? { edits: [sourceEdit] } : { accepted: true, issues: [] };
+  return new Response(JSON.stringify({ provider: "Amazon Bedrock", choices: [{ finish_reason: "stop", message: { content: JSON.stringify(content) } }], usage: { cost: 0.001 } }));
+} });
+assert.equal(lifeRepair.status, "completed", lifeRepair.error); assert.equal(lifeRepairCalls, 4); assert.equal(lifeRepair.generationMetadata?.portraitsV4?.editorModel, "anthropic/claude-opus-4.8");
 for (const verdict of [{ accepted: true, issues: ["A contradictory issue must not accompany acceptance."] }, { accepted: false, issues: ["   "] }]) {
   let inconsistentCalls = 0;
   const inconsistent = await buildAstrologyReportResultAsync(base, { env, fetchImpl: async () => {
@@ -203,7 +253,6 @@ for (const verdict of [{ accepted: true, issues: ["A contradictory issue must no
   } });
   assert.equal(inconsistent.status, "failed"); assert.equal(inconsistentCalls, 2, "Inconsistent or blank Personal verdicts fail closed before editing.");
 }
-const sourceEdit = { sectionIndex: 0, original: "Your Sun is in Libra.", replacement: "Your Sun is in Aries.", reason: "Corrects the source-supported Sun sign." };
 let recoveredPersonalEditCalls = 0;
 const recoveredPersonalEdit = await buildAstrologyReportResultAsync(base, { env, fetchImpl: async () => {
   recoveredPersonalEditCalls++;
