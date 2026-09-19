@@ -3851,7 +3851,7 @@ async function generateSynastryV3Draft(
     // and the reader. An editor failure never silently publishes the raw draft.
     let editedResponse: ModelWriterResponse | undefined;
     try {
-      editedResponse = await editor(buildSynastryV3EditorPrompt({ readerName, allyName, tone, evidenceIndex, portrait: parsed.portrait, trace: parsed.trace }), 8000);
+      editedResponse = await editor(buildSynastryV3EditorPrompt({ readerName, allyName, tone, evidenceIndex, portrait: parsed.portrait, trace: parsed.trace }), 12000);
       usage = mergeModelUsage(usage, editedResponse.usage);
       if (editedResponse.finishReason === "length" || editedResponse.finishReason === "max_tokens") throw new Error("Editor response was truncated.");
       parsed = parseSynastryV3Response(editedResponse.text);

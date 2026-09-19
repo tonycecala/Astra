@@ -97,7 +97,7 @@ const successfulFetch: typeof fetch = async (_url, init) => {
   }
   if (calls === 2) {
     if (!body.input?.startsWith("Edit this Astra Synastry portrait")) throw new Error("Synastry editor prompt did not use the dedicated editor stage.");
-    if (body.max_output_tokens !== 8_000) throw new Error("Synastry editor must use the 8,000-token ceiling.");
+    if (body.max_output_tokens !== 12_000) throw new Error("Synastry editor must use the 12,000-token ceiling.");
     return new Response(JSON.stringify({ output_text: portraitBlock("The edited portrait keeps Partner independently present"), usage: { input_tokens: 120, output_tokens: 850, total_tokens: 970 } }), { headers: { "content-type": "application/json" } });
   }
   if (body.max_output_tokens !== 1_400) throw new Error("Semantic support call must use the 1,400-token ceiling.");
@@ -256,7 +256,7 @@ const openRouterFetch: typeof fetch = async (_url, init) => {
   }
   if (openRouterCalls === 2) {
     if (!prompt.startsWith("Edit this Astra Synastry portrait") || body.model !== ASTRA_SYNASTRY_EDITOR_MODEL) throw new Error("OpenRouter Synastry editor model or prompt was incorrect.");
-    if (body.max_tokens !== 8_000 || body.reasoning?.enabled !== false) throw new Error("OpenRouter Synastry editor must disable reasoning and use the 8,000-token ceiling.");
+    if (body.max_tokens !== 12_000 || body.reasoning?.enabled !== false) throw new Error("OpenRouter Synastry editor must disable reasoning and use the 12,000-token ceiling.");
     if (openRouterEditorFailure) return new Response(JSON.stringify({ provider: "Amazon Bedrock", choices: [{ message: { content: portraitBlock().slice(0, 220) }, finish_reason: "length" }], usage: { prompt_tokens: 120, completion_tokens: 120, total_tokens: 240, cost: 0.02 } }), { headers: { "content-type": "application/json" } });
     return new Response(JSON.stringify({ provider: "Amazon Bedrock", choices: [{ message: { content: portraitBlock("The edited portrait keeps Partner independently present") }, finish_reason: "stop" }], usage: { prompt_tokens: 120, completion_tokens: 850, total_tokens: 970, cost: 0.02 } }), { headers: { "content-type": "application/json" } });
   }
