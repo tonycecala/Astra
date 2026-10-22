@@ -22,7 +22,7 @@ const routes = [
   { path: "/charts", heading: "Sign in to see your charts", mobileHeading: "Charts" },
   { path: "/library", heading: "Artifacts worth keeping", mobileHeading: "Library" },
   { path: "/gifts", heading: "Sign in to see Gifts", mobileHeading: "Gifts" },
-  { path: "/login", heading: "Welcome back to Astra" }
+  { path: "/login", heading: "Welcome back." }
 ];
 
 async function chooseUnknownBirthMoment(page: Page, input: { year: string; month: string; day: string }) {
@@ -460,8 +460,10 @@ test.describe("clean-start routes", () => {
     expect(prematureChartRequests).toBe(0);
 
     await page.goto("/journey");
-    await expect(page.getByRole("heading", { name: "Your Journey is clear" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Begin with your Self" })).toHaveAttribute("href", "/self");
+    await expect(page.getByRole("heading", { name: "Your Next Step Awaits." })).toBeVisible();
+    await expect(page.getByText("Choose a tab below to continue exploring.")).toBeVisible();
+    await page.getByRole("button", { name: "Switch to dark mode" }).first().click();
+    await page.getByRole("button", { name: "Switch to light mode" }).first().click();
     const onboardingFeed = await listUserFeedItems(db, { userId: onboardingUserId, state: "available", limit: 20 });
     expect(onboardingFeed.items.filter((item) => item.reasonCode === "composer_onboarding_card")).toHaveLength(0);
 
@@ -673,6 +675,22 @@ test.describe("clean-start routes", () => {
 
     await createCompletedAllyChart(email, { name: "Admin Comparison", relationship: "Colleague" });
     await page.goto("/self#self-birth-onboarding");
+    const selfProfileActions = page.locator(".self-profile-actions");
+    const requestReportAction = selfProfileActions.getByRole("link", { name: "Request Report", exact: true });
+    const viewChartAction = selfProfileActions.getByRole("link", { name: "View Chart", exact: true });
+    const selfPrimaryStyles = await requestReportAction.evaluate((element) => {
+      const probe = document.createElement("span");
+      probe.style.color = getComputedStyle(document.documentElement).getPropertyValue("--gold");
+      document.body.append(probe);
+      const gold = getComputedStyle(probe).color;
+      probe.remove();
+      return { background: getComputedStyle(element).backgroundColor, gold };
+    });
+    const selfSecondaryBackground = await viewChartAction.evaluate((element) => getComputedStyle(element).backgroundColor);
+    await expect(requestReportAction).toBeVisible();
+    await expect(viewChartAction).toBeVisible();
+    expect(selfPrimaryStyles.background).toBe(selfPrimaryStyles.gold);
+    expect(selfSecondaryBackground).not.toBe(selfPrimaryStyles.gold);
     await expect(page.getByRole("heading", { name: "Request Report" })).toBeVisible();
     await expect(page.getByText("Step 1 of 2: Birth details")).toBeVisible();
     await expect(page.getByRole("button", { name: "Order Report", exact: true })).toHaveCount(0);

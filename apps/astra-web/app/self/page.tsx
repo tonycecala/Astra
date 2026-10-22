@@ -175,7 +175,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
               <ChartPie aria-hidden="true" size={16} />
               {ui.self.viewChart}
             </Link>
-            <Link className="button secondary" href={requestReportHref}>
+            <Link className="button" href={requestReportHref}>
               <Sparkles aria-hidden="true" size={16} />
               {ui.self.createProfile}
             </Link>

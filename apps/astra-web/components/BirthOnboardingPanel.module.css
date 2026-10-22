@@ -534,7 +534,7 @@
 .completionActions .buttonDone {
   border-color: color-mix(in srgb, var(--gold) 62%, var(--line));
   background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 90%, white), var(--gold));
-  color: #1a1305;
+  color: var(--gold-ink);
 }
 
 .formActions button {
@@ -606,7 +606,7 @@
   min-width: 112px;
   border-color: color-mix(in srgb, var(--gold) 70%, var(--line));
   background: var(--gold);
-  color: #1a1305;
+  color: var(--gold-ink);
 }
 
 .confirmActions button {
@@ -889,7 +889,7 @@
     justify-content: center;
     border-color: color-mix(in srgb, var(--gold) 62%, var(--line));
     background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 90%, white), var(--gold));
-    color: #1a1305;
+    color: var(--gold-ink);
     font-weight: 800;
   }
 }

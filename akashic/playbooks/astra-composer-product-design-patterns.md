@@ -177,3 +177,9 @@ Use `05-progressive-disclosure.md`, `07-empty-states.md`, `13-intent-mirroring.m
 ## Self Report Action Disclosure
 
 When Self already has a saved chart, default `Request Report` to Step 1, Birth details. Do not expose the final `Order Report` action on default arrival; show it only after the user explicitly advances into Report or follows the `start=report` deep link. Keep first-chart onboarding and logged-out behavior unchanged. This applies Progressive Disclosure, Setup Defaults, Intent Mirroring, and Trust Building; runtime analytics remain N/A until Astra has an analytics transport.
+
+## Astra Button Hierarchy
+
+Use Astra gold for the single primary action in a decision group. Bare `.button` is the shared primary treatment; use `.secondary` for supporting utilities, `.ghost` for low-priority dismissal, and `.dangerButton` for destructive actions. Do not solve inconsistent white buttons by recoloring every control: first classify each control by role. Primary actions use generous horizontal padding, strong verb-led copy, a visible focus ring, a restrained darker-gold hover, and `var(--gold-ink)` for accessible text contrast. Disabled actions retain their role but reduce opacity and remove the pointer cursor.
+
+On Self, `Request Report` is primary while `View Chart`, `Edit Birth Details`, and Admin remain secondary. On Journey, the current step action or `Begin with your Self` is primary; Save and Dismiss remain subordinate. Apply `15-pattern-alignment.md`, `32-jtbd-copywriting.md`, and `36-trust-building.md`. Logged-out, empty, loading, success, error, light, dark, and responsive states inherit the same role system. Runtime analytics are N/A until Astra has an analytics transport; this styling must not introduce urgency, coercion, or disguised destructive actions.

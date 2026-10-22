@@ -64,7 +64,7 @@
   border-radius: 999px;
   padding: 0 13px;
   background: var(--gold);
-  color: #171412;
+  color: var(--gold-ink);
   cursor: pointer;
   font-size: 0.88rem;
   font-weight: 800;

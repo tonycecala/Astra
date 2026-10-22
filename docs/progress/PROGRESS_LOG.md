@@ -830,3 +830,10 @@ the experiment did not change production runtime, routes, data, or UI.
 - Saved-chart arrival on `/self` now opens `Request Report` at Step 1, Birth details, without rendering `Order Report`; the explicit `start=report` deep link still opens Report directly.
 - The affected Self journey passed on desktop, tablet, and mobile with lint, typecheck, i18n, production build, and live port 3011 route health. Logged-out, first-chart, persistence, report API, credits, and public/private behavior are unchanged.
 - Steward review: **accept**. This is a route-scoped initial-state correction with regression coverage proving the paid action is absent by default and present only after explicit report intent.
+
+## 2026-08-01 — Astra primary button hierarchy
+
+- Replaced the shared ink/white primary button treatment with Astra gold, generous horizontal padding, clear hover/focus/disabled states, and explicit secondary, ghost, and destructive variants. Centralized gold-button text on `--gold-ink`; contrast is 4.57:1 in light and 10.07:1 in dark.
+- `Begin with your Self` now matches `Add an Ally`. Self uses one gold `Request Report` action while View Chart, Edit Birth Details, and Admin remain secondary.
+- The primary/secondary hierarchy passed the authenticated Journey and Self flow on desktop, tablet, and mobile, including light/dark gold assertions and horizontal-overflow/console coverage. No route, data, credit, report-generation, or public/private behavior changed.
+- Steward review: **accept**. The diff establishes one shared role-based button contract, preserves explicit subordinate and destructive variants, meets measured color contrast, and changes no runtime boundary. No risk-register update is needed.

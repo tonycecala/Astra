@@ -7,6 +7,7 @@
   --muted: #625a50;
   --line: #ded8ce;
   --gold: #a66f2d;
+  --gold-ink: #120c02;
   --blue: #315b7d;
   --purple: #6d579f;
   --green: #476b55;
@@ -494,17 +495,6 @@ textarea {
   max-width: 210px;
   min-width: 0;
   padding-inline: 12px;
-  color: var(--paper);
-  border-color: transparent;
-  background: var(--ink);
-}
-
-.self-profile-actions .button:hover,
-.self-profile-actions .button:focus-visible {
-  color: var(--paper);
-  border-color: color-mix(in srgb, var(--gold) 44%, var(--ink));
-  background: color-mix(in srgb, var(--ink) 88%, var(--gold));
-  outline: none;
 }
 
 .self-profile-actions .button svg {
@@ -1850,7 +1840,7 @@ html[data-astra-theme="dark"] .reportReaderDocument {
 .reportActionsToolbar .primaryButton {
   border-color: color-mix(in srgb, var(--gold) 62%, var(--line));
   background: var(--gold);
-  color: #1a1305;
+  color: var(--gold-ink);
 }
 
 .reportActionsToolbar .secondaryButton {
@@ -2615,16 +2605,51 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   cursor: pointer;
 }
 
-.segmented-control button.active,
-.button {
+.segmented-control button.active {
   color: var(--paper);
   background: var(--ink);
+}
+
+.button {
+  border-color: color-mix(in srgb, var(--gold) 72%, var(--line));
+  padding: 0 20px;
+  color: var(--gold-ink);
+  background: var(--gold);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.button:not(.secondary):not(.ghost):not(.dangerButton):hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--gold) 62%, var(--ink));
+  background: color-mix(in srgb, var(--gold) 88%, var(--ink));
+}
+
+.button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--gold) 72%, transparent);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
 }
 
 .button.secondary {
   color: var(--ink);
   border-color: var(--line);
   background: var(--soft);
+}
+
+.button.ghost {
+  color: var(--muted);
+  border-color: transparent;
+  background: transparent;
+}
+
+.button.dangerButton {
+  color: var(--rose);
+  border-color: color-mix(in srgb, var(--rose) 34%, var(--line));
+  background: color-mix(in srgb, var(--rose) 7%, var(--panel));
 }
 
 .auth-form {
@@ -2796,7 +2821,7 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   width: auto;
   border-color: color-mix(in srgb, var(--gold) 72%, var(--line));
   padding: 0 22px;
-  color: #1a1305;
+  color: var(--gold-ink);
   background: var(--gold);
   font-size: 0.95rem;
   font-weight: 800;

@@ -1,11 +1,11 @@
 {
   "repomap_version": "2.0.0",
   "generator": "ak",
-  "generated_at": "2026-08-01T20:50:42.859Z",
+  "generated_at": "2026-08-01T21:10:27.975Z",
   "root_name": "astra-clean-start",
-  "files_indexed": 455,
-  "total_symbols": 6301,
-  "total_estimated_tokens": 1192337,
+  "files_indexed": 456,
+  "total_symbols": 6329,
+  "total_estimated_tokens": 1194291,
   "files": [
     {
       "file": "packages/astrology/src/index.ts",
@@ -11169,9 +11169,9 @@
     {
       "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
       "lang": "typescript",
-      "size": 44310,
-      "lines": 764,
-      "estimated_tokens": 11076,
+      "size": 47274,
+      "lines": 810,
+      "estimated_tokens": 11817,
       "symbols": [
         {
           "name": "JsonObject",
@@ -11429,193 +11429,278 @@
           "type": "constant"
         },
         {
+          "name": "beginWithSelf",
+          "line": 464,
+          "type": "constant"
+        },
+        {
+          "name": "beginWithSelfStyles",
+          "line": 466,
+          "type": "constant"
+        },
+        {
+          "name": "probe",
+          "line": 467,
+          "type": "constant"
+        },
+        {
+          "name": "gold",
+          "line": 470,
+          "type": "constant"
+        },
+        {
+          "name": "styles",
+          "line": 472,
+          "type": "constant"
+        },
+        {
+          "name": "goldInkProbe",
+          "line": 473,
+          "type": "constant"
+        },
+        {
+          "name": "goldInk",
+          "line": 476,
+          "type": "constant"
+        },
+        {
+          "name": "darkBeginWithSelfStyles",
+          "line": 485,
+          "type": "constant"
+        },
+        {
+          "name": "probe",
+          "line": 486,
+          "type": "constant"
+        },
+        {
+          "name": "gold",
+          "line": 489,
+          "type": "constant"
+        },
+        {
           "name": "onboardingFeed",
-          "line": 465,
+          "line": 495,
           "type": "constant"
         },
         {
           "name": "locationDialog",
-          "line": 477,
+          "line": 507,
           "type": "constant"
         },
         {
           "name": "searchBox",
-          "line": 478,
+          "line": 508,
           "type": "constant"
         },
         {
           "name": "currentSelection",
-          "line": 479,
+          "line": 509,
           "type": "constant"
         },
         {
           "name": "searchBounds",
-          "line": 480,
+          "line": 510,
           "type": "constant"
         },
         {
           "name": "selectionBounds",
-          "line": 481,
-          "type": "constant"
-        },
-        {
-          "name": "createChartButton",
-          "line": 491,
-          "type": "constant"
-        },
-        {
-          "name": "chartSettings",
-          "line": 496,
-          "type": "constant"
-        },
-        {
-          "name": "settingsBox",
-          "line": 498,
-          "type": "constant"
-        },
-        {
-          "name": "arrivalResponsePromise",
-          "line": 505,
-          "type": "constant"
-        },
-        {
-          "name": "glimpse",
           "line": 511,
           "type": "constant"
         },
         {
+          "name": "createChartButton",
+          "line": 521,
+          "type": "constant"
+        },
+        {
+          "name": "chartSettings",
+          "line": 526,
+          "type": "constant"
+        },
+        {
+          "name": "settingsBox",
+          "line": 528,
+          "type": "constant"
+        },
+        {
+          "name": "arrivalResponsePromise",
+          "line": 535,
+          "type": "constant"
+        },
+        {
+          "name": "glimpse",
+          "line": 541,
+          "type": "constant"
+        },
+        {
           "name": "userId",
-          "line": 514,
-          "type": "constant"
-        },
-        {
-          "name": "existingAllyChart",
-          "line": 525,
-          "type": "constant"
-        },
-        {
-          "name": "existingOrderPanel",
-          "line": 527,
-          "type": "constant"
-        },
-        {
-          "name": "existingAllyCard",
           "line": 544,
           "type": "constant"
         },
         {
+          "name": "existingAllyChart",
+          "line": 555,
+          "type": "constant"
+        },
+        {
+          "name": "existingOrderPanel",
+          "line": 557,
+          "type": "constant"
+        },
+        {
+          "name": "existingAllyCard",
+          "line": 574,
+          "type": "constant"
+        },
+        {
           "name": "addAllyPanel",
-          "line": 554,
-          "type": "constant"
-        },
-        {
-          "name": "email",
-          "line": 577,
-          "type": "constant"
-        },
-        {
-          "name": "completed",
           "line": 584,
           "type": "constant"
         },
         {
+          "name": "email",
+          "line": 607,
+          "type": "constant"
+        },
+        {
+          "name": "completed",
+          "line": 614,
+          "type": "constant"
+        },
+        {
           "name": "legacyHeadline",
-          "line": 587,
+          "line": 617,
           "type": "constant"
         },
         {
           "name": "email",
-          "line": 603,
-          "type": "constant"
-        },
-        {
-          "name": "name",
-          "line": 604,
-          "type": "constant"
-        },
-        {
-          "name": "starsDialog",
-          "line": 616,
-          "type": "constant"
-        },
-        {
-          "name": "checkoutResponse",
-          "line": 626,
-          "type": "constant"
-        },
-        {
-          "name": "checkoutBody",
           "line": 633,
           "type": "constant"
         },
         {
+          "name": "name",
+          "line": 634,
+          "type": "constant"
+        },
+        {
+          "name": "starsDialog",
+          "line": 646,
+          "type": "constant"
+        },
+        {
+          "name": "checkoutResponse",
+          "line": 656,
+          "type": "constant"
+        },
+        {
+          "name": "checkoutBody",
+          "line": 663,
+          "type": "constant"
+        },
+        {
           "name": "checkout",
-          "line": 635,
+          "line": 665,
           "type": "constant"
         },
         {
           "name": "checkoutSessionId",
-          "line": 636,
-          "type": "constant"
-        },
-        {
-          "name": "fulfilled",
-          "line": 639,
-          "type": "constant"
-        },
-        {
-          "name": "revealChart",
           "line": 666,
           "type": "constant"
         },
         {
+          "name": "fulfilled",
+          "line": 669,
+          "type": "constant"
+        },
+        {
+          "name": "revealChart",
+          "line": 696,
+          "type": "constant"
+        },
+        {
+          "name": "selfProfileActions",
+          "line": 706,
+          "type": "constant"
+        },
+        {
+          "name": "requestReportAction",
+          "line": 707,
+          "type": "constant"
+        },
+        {
+          "name": "viewChartAction",
+          "line": 708,
+          "type": "constant"
+        },
+        {
+          "name": "selfPrimaryStyles",
+          "line": 709,
+          "type": "constant"
+        },
+        {
+          "name": "probe",
+          "line": 710,
+          "type": "constant"
+        },
+        {
+          "name": "gold",
+          "line": 713,
+          "type": "constant"
+        },
+        {
+          "name": "selfSecondaryBackground",
+          "line": 717,
+          "type": "constant"
+        },
+        {
           "name": "completedChart",
-          "line": 686,
+          "line": 732,
           "type": "constant"
         },
         {
           "name": "selfEditPanel",
-          "line": 688,
+          "line": 734,
           "type": "constant"
         },
         {
           "name": "existingSelfBirthDialog",
-          "line": 695,
+          "line": 741,
           "type": "constant"
         },
         {
           "name": "existingSelfLocationDialog",
-          "line": 699,
+          "line": 745,
           "type": "constant"
         },
         {
           "name": "completedReport",
-          "line": 705,
+          "line": 751,
           "type": "constant"
         },
         {
           "name": "selectedChart",
-          "line": 723,
+          "line": 769,
           "type": "constant"
         },
         {
           "name": "reportFilters",
-          "line": 733,
+          "line": 779,
           "type": "constant"
         },
         {
           "name": "reportFilterSelect",
-          "line": 735,
+          "line": 781,
           "type": "constant"
         },
         {
           "name": "reportChartPlate",
-          "line": 749,
+          "line": 795,
           "type": "constant"
         },
         {
           "name": "debugDetails",
-          "line": 756,
+          "line": 802,
           "type": "constant"
         }
       ],
@@ -11635,7 +11720,7 @@
       "headings": [],
       "dependency_in": 0,
       "dependency_out": 2,
-      "importance_weight": 317.22,
+      "importance_weight": 368.22,
       "importance_bucket": "other"
     },
     {
@@ -12834,9 +12919,9 @@
     {
       "file": "docs/progress/PROGRESS_LOG.md",
       "lang": "markdown",
-      "size": 64245,
-      "lines": 833,
-      "estimated_tokens": 16057,
+      "size": 65264,
+      "lines": 840,
+      "estimated_tokens": 16312,
       "symbols": [
         {
           "name": "Astra Progress Log",
@@ -13287,6 +13372,11 @@
           "name": "2026-08-01 — Self report action progressive disclosure",
           "line": 828,
           "type": "heading"
+        },
+        {
+          "name": "2026-08-01 — Astra primary button hierarchy",
+          "line": 834,
+          "type": "heading"
         }
       ],
       "imports": [],
@@ -13305,7 +13395,7 @@
       ],
       "dependency_in": 0,
       "dependency_out": 0,
-      "importance_weight": 274.19,
+      "importance_weight": 277.19,
       "importance_bucket": "other"
     },
     {
@@ -18287,9 +18377,9 @@
     {
       "file": "apps/astra-web/app/self/page.tsx",
       "lang": "typescript",
-      "size": 12242,
+      "size": 12232,
       "lines": 294,
-      "estimated_tokens": 3060,
+      "estimated_tokens": 3058,
       "symbols": [
         {
           "name": "normalizeRole",
@@ -27331,6 +27421,108 @@
       "importance_bucket": "other"
     },
     {
+      "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
+      "lang": "markdown",
+      "size": 9712,
+      "lines": 186,
+      "estimated_tokens": 2428,
+      "symbols": [
+        {
+          "name": "Astra and Composer Product Design Patterns",
+          "line": 18,
+          "type": "heading"
+        },
+        {
+          "name": "North Star",
+          "line": 27,
+          "type": "heading"
+        },
+        {
+          "name": "Required Design Review",
+          "line": 48,
+          "type": "heading"
+        },
+        {
+          "name": "Adopt First",
+          "line": 59,
+          "type": "heading"
+        },
+        {
+          "name": "Adapt Carefully",
+          "line": 78,
+          "type": "heading"
+        },
+        {
+          "name": "Avoid Or Defer",
+          "line": 94,
+          "type": "heading"
+        },
+        {
+          "name": "Immediate Product Impact",
+          "line": 103,
+          "type": "heading"
+        },
+        {
+          "name": "Composer-Specific Rules",
+          "line": 115,
+          "type": "heading"
+        },
+        {
+          "name": "Astra-Specific Rules",
+          "line": 127,
+          "type": "heading"
+        },
+        {
+          "name": "i18n Chrome Enforcement",
+          "line": 139,
+          "type": "heading"
+        },
+        {
+          "name": "Review Question",
+          "line": 153,
+          "type": "heading"
+        },
+        {
+          "name": "Long Mobile Choice Forms",
+          "line": 161,
+          "type": "heading"
+        },
+        {
+          "name": "Allies List, Chart, And Report Separation",
+          "line": 165,
+          "type": "heading"
+        },
+        {
+          "name": "Self Report Action Disclosure",
+          "line": 177,
+          "type": "heading"
+        },
+        {
+          "name": "Astra Button Hierarchy",
+          "line": 181,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Astra and Composer Product Design Patterns",
+        "North Star",
+        "Required Design Review",
+        "Adopt First",
+        "Adapt Carefully",
+        "Avoid Or Defer",
+        "Immediate Product Impact",
+        "Composer-Specific Rules"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 51.35,
+      "importance_bucket": "akashic"
+    },
+    {
       "file": "packages/astrology/src/report/relationshipContext.ts",
       "lang": "typescript",
       "size": 3146,
@@ -27737,103 +27929,6 @@
       "dependency_out": 3,
       "importance_weight": 48.37,
       "importance_bucket": "other"
-    },
-    {
-      "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
-      "lang": "markdown",
-      "size": 8511,
-      "lines": 180,
-      "estimated_tokens": 2128,
-      "symbols": [
-        {
-          "name": "Astra and Composer Product Design Patterns",
-          "line": 18,
-          "type": "heading"
-        },
-        {
-          "name": "North Star",
-          "line": 27,
-          "type": "heading"
-        },
-        {
-          "name": "Required Design Review",
-          "line": 48,
-          "type": "heading"
-        },
-        {
-          "name": "Adopt First",
-          "line": 59,
-          "type": "heading"
-        },
-        {
-          "name": "Adapt Carefully",
-          "line": 78,
-          "type": "heading"
-        },
-        {
-          "name": "Avoid Or Defer",
-          "line": 94,
-          "type": "heading"
-        },
-        {
-          "name": "Immediate Product Impact",
-          "line": 103,
-          "type": "heading"
-        },
-        {
-          "name": "Composer-Specific Rules",
-          "line": 115,
-          "type": "heading"
-        },
-        {
-          "name": "Astra-Specific Rules",
-          "line": 127,
-          "type": "heading"
-        },
-        {
-          "name": "i18n Chrome Enforcement",
-          "line": 139,
-          "type": "heading"
-        },
-        {
-          "name": "Review Question",
-          "line": 153,
-          "type": "heading"
-        },
-        {
-          "name": "Long Mobile Choice Forms",
-          "line": 161,
-          "type": "heading"
-        },
-        {
-          "name": "Allies List, Chart, And Report Separation",
-          "line": 165,
-          "type": "heading"
-        },
-        {
-          "name": "Self Report Action Disclosure",
-          "line": 177,
-          "type": "heading"
-        }
-      ],
-      "imports": [],
-      "exports": [],
-      "routes": [],
-      "route_count": 0,
-      "headings": [
-        "Astra and Composer Product Design Patterns",
-        "North Star",
-        "Required Design Review",
-        "Adopt First",
-        "Adapt Carefully",
-        "Avoid Or Defer",
-        "Immediate Product Impact",
-        "Composer-Specific Rules"
-      ],
-      "dependency_in": 0,
-      "dependency_out": 0,
-      "importance_weight": 48.36,
-      "importance_bucket": "akashic"
     },
     {
       "file": "apps/composer-web/app/course/page.tsx",
@@ -33646,6 +33741,78 @@
       "dependency_in": 0,
       "dependency_out": 0,
       "importance_weight": 33.12,
+      "importance_bucket": "akashic"
+    },
+    {
+      "file": "akashic/skills/classify-astra-buttons-by-action-role-before-styling.md",
+      "lang": "markdown",
+      "size": 2637,
+      "lines": 55,
+      "estimated_tokens": 660,
+      "symbols": [
+        {
+          "name": "Classify Astra buttons by action role before styling",
+          "line": 15,
+          "type": "heading"
+        },
+        {
+          "name": "Problem",
+          "line": 17,
+          "type": "heading"
+        },
+        {
+          "name": "Signals",
+          "line": 20,
+          "type": "heading"
+        },
+        {
+          "name": "Root Cause",
+          "line": 27,
+          "type": "heading"
+        },
+        {
+          "name": "Investigation",
+          "line": 30,
+          "type": "heading"
+        },
+        {
+          "name": "Resolution",
+          "line": 37,
+          "type": "heading"
+        },
+        {
+          "name": "Prevention",
+          "line": 44,
+          "type": "heading"
+        },
+        {
+          "name": "Related Files",
+          "line": 47,
+          "type": "heading"
+        },
+        {
+          "name": "Related ADRs",
+          "line": 53,
+          "type": "heading"
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "routes": [],
+      "route_count": 0,
+      "headings": [
+        "Classify Astra buttons by action role before styling",
+        "Problem",
+        "Signals",
+        "Root Cause",
+        "Investigation",
+        "Resolution",
+        "Prevention",
+        "Related Files"
+      ],
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "importance_weight": 33.08,
       "importance_bucket": "akashic"
     },
     {
@@ -43827,6 +43994,13 @@
         "type": "heading"
       }
     ],
+    "2026-08-01 — Astra primary button hierarchy": [
+      {
+        "file": "docs/progress/PROGRESS_LOG.md",
+        "line": 834,
+        "type": "heading"
+      }
+    ],
     "2026-08-01 — Self report action progressive disclosure": [
       {
         "file": "docs/progress/PROGRESS_LOG.md",
@@ -44910,7 +45084,7 @@
     "addAllyPanel": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 554,
+        "line": 584,
         "type": "constant"
       }
     ],
@@ -46201,7 +46375,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 505,
+        "line": 535,
         "type": "constant"
       }
     ],
@@ -46753,6 +46927,13 @@
       {
         "file": "docs/inbox-astra/completed/astra-birth-date-time-ux-implementation-plan.md",
         "line": 21,
+        "type": "heading"
+      }
+    ],
+    "Astra Button Hierarchy": [
+      {
+        "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
+        "line": 181,
         "type": "heading"
       }
     ],
@@ -48993,6 +49174,20 @@
       {
         "file": "apps/astra-web/e2e/birth-date-time-sheet.spec.ts",
         "line": 21,
+        "type": "constant"
+      }
+    ],
+    "beginWithSelf": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 464,
+        "type": "constant"
+      }
+    ],
+    "beginWithSelfStyles": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 466,
         "type": "constant"
       }
     ],
@@ -51441,7 +51636,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 496,
+        "line": 526,
         "type": "constant"
       },
       {
@@ -51628,21 +51823,21 @@
     "checkout": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 635,
+        "line": 665,
         "type": "constant"
       }
     ],
     "checkoutBody": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 633,
+        "line": 663,
         "type": "constant"
       }
     ],
     "checkoutResponse": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 626,
+        "line": 656,
         "type": "constant"
       }
     ],
@@ -51654,7 +51849,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 636,
+        "line": 666,
         "type": "constant"
       }
     ],
@@ -51793,6 +51988,13 @@
         "file": "packages/astrology/src/meaningComplexNetwork.ts",
         "line": 232,
         "type": "function"
+      }
+    ],
+    "Classify Astra buttons by action role before styling": [
+      {
+        "file": "akashic/skills/classify-astra-buttons-by-action-role-before-styling.md",
+        "line": 15,
+        "type": "heading"
       }
     ],
     "classifyHouseMode": [
@@ -52573,7 +52775,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 584,
+        "line": 614,
         "type": "constant"
       },
       {
@@ -52606,14 +52808,14 @@
     "completedChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 686,
+        "line": 732,
         "type": "constant"
       }
     ],
     "completedReport": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 705,
+        "line": 751,
         "type": "constant"
       }
     ],
@@ -54943,7 +55145,7 @@
     "createChartButton": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 491,
+        "line": 521,
         "type": "constant"
       }
     ],
@@ -55558,7 +55760,7 @@
     "currentSelection": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 479,
+        "line": 509,
         "type": "constant"
       }
     ],
@@ -55656,6 +55858,13 @@
         "file": "akashic/imports/astra-product-design-pattern-library/source-library/audits/ASTRA_APPLICABILITY_MATRIX.md",
         "line": 47,
         "type": "heading"
+      }
+    ],
+    "darkBeginWithSelfStyles": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 485,
+        "type": "constant"
       }
     ],
     "darkDialog": [
@@ -55898,7 +56107,7 @@
     "debugDetails": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 756,
+        "line": 802,
         "type": "constant"
       }
     ],
@@ -57247,12 +57456,12 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 577,
+        "line": 607,
         "type": "constant"
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 603,
+        "line": 633,
         "type": "constant"
       },
       {
@@ -57874,14 +58083,14 @@
     "existingAllyCard": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 544,
+        "line": 574,
         "type": "constant"
       }
     ],
     "existingAllyChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 525,
+        "line": 555,
         "type": "constant"
       }
     ],
@@ -57895,7 +58104,7 @@
     "existingOrderPanel": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 527,
+        "line": 557,
         "type": "constant"
       }
     ],
@@ -57923,14 +58132,14 @@
     "existingSelfBirthDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 695,
+        "line": 741,
         "type": "constant"
       }
     ],
     "existingSelfLocationDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 699,
+        "line": 745,
         "type": "constant"
       }
     ],
@@ -59164,7 +59373,7 @@
     "fulfilled": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 639,
+        "line": 669,
         "type": "constant"
       }
     ],
@@ -59869,7 +60078,7 @@
     "glimpse": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 511,
+        "line": 541,
         "type": "constant"
       },
       {
@@ -59945,6 +60154,35 @@
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
         "line": 307,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 470,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 489,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 713,
+        "type": "constant"
+      }
+    ],
+    "goldInk": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 476,
+        "type": "constant"
+      }
+    ],
+    "goldInkProbe": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 473,
         "type": "constant"
       }
     ],
@@ -61725,6 +61963,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/classify-astra-buttons-by-action-role-before-styling.md",
+        "line": 30,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/enforce-astra-interface-chrome-through-i18n.md",
         "line": 30,
         "type": "heading"
@@ -62692,7 +62935,7 @@
     "legacyHeadline": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 587,
+        "line": 617,
         "type": "constant"
       }
     ],
@@ -63142,7 +63385,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 477,
+        "line": 507,
         "type": "constant"
       }
     ],
@@ -64573,7 +64816,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 604,
+        "line": 634,
         "type": "constant"
       },
       {
@@ -66009,7 +66252,7 @@
     "onboardingFeed": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 465,
+        "line": 495,
         "type": "constant"
       }
     ],
@@ -69012,6 +69255,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/classify-astra-buttons-by-action-role-before-styling.md",
+        "line": 44,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/enforce-astra-interface-chrome-through-i18n.md",
         "line": 39,
         "type": "heading"
@@ -69478,6 +69726,21 @@
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
         "line": 304,
         "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 467,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 486,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 710,
+        "type": "constant"
       }
     ],
     "Problem": [
@@ -69488,6 +69751,11 @@
       },
       {
         "file": "akashic/skills/budget-synastry-portrait-and-private-trace-together.md",
+        "line": 17,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/classify-astra-buttons-by-action-role-before-styling.md",
         "line": 17,
         "type": "heading"
       },
@@ -71532,6 +71800,11 @@
         "type": "heading"
       },
       {
+        "file": "akashic/skills/classify-astra-buttons-by-action-role-before-styling.md",
+        "line": 53,
+        "type": "heading"
+      },
+      {
         "file": "akashic/skills/enforce-astra-interface-chrome-through-i18n.md",
         "line": 48,
         "type": "heading"
@@ -71606,6 +71879,11 @@
       {
         "file": "akashic/skills/budget-synastry-portrait-and-private-trace-together.md",
         "line": 35,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/classify-astra-buttons-by-action-role-before-styling.md",
+        "line": 47,
         "type": "heading"
       },
       {
@@ -72254,7 +72532,7 @@
     "reportChartPlate": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 749,
+        "line": 795,
         "type": "constant"
       }
     ],
@@ -72395,14 +72673,14 @@
     "reportFilters": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 733,
+        "line": 779,
         "type": "constant"
       }
     ],
     "reportFilterSelect": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 735,
+        "line": 781,
         "type": "constant"
       }
     ],
@@ -73257,6 +73535,13 @@
         "type": "type"
       }
     ],
+    "requestReportAction": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 707,
+        "type": "constant"
+      }
+    ],
     "requestReportHref": [
       {
         "file": "apps/astra-web/app/self/page.tsx",
@@ -73537,6 +73822,11 @@
       {
         "file": "akashic/skills/budget-synastry-portrait-and-private-trace-together.md",
         "line": 29,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/classify-astra-buttons-by-action-role-before-styling.md",
+        "line": 37,
         "type": "heading"
       },
       {
@@ -74180,7 +74470,7 @@
     "revealChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 666,
+        "line": 696,
         "type": "constant"
       }
     ],
@@ -74624,6 +74914,11 @@
       {
         "file": "akashic/skills/budget-synastry-portrait-and-private-trace-together.md",
         "line": 23,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/classify-astra-buttons-by-action-role-before-styling.md",
+        "line": 27,
         "type": "heading"
       },
       {
@@ -75424,14 +75719,14 @@
     "searchBounds": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 480,
+        "line": 510,
         "type": "constant"
       }
     ],
     "searchBox": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 478,
+        "line": 508,
         "type": "constant"
       }
     ],
@@ -76050,7 +76345,7 @@
     "selectedChart": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 723,
+        "line": 769,
         "type": "constant"
       }
     ],
@@ -76238,7 +76533,7 @@
     "selectionBounds": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 481,
+        "line": 511,
         "type": "constant"
       }
     ],
@@ -76301,7 +76596,7 @@
     "selfEditPanel": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 688,
+        "line": 734,
         "type": "constant"
       }
     ],
@@ -76317,6 +76612,27 @@
         "file": "apps/astra-web/app/self/page.tsx",
         "line": 90,
         "type": "type"
+      }
+    ],
+    "selfPrimaryStyles": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 709,
+        "type": "constant"
+      }
+    ],
+    "selfProfileActions": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 706,
+        "type": "constant"
+      }
+    ],
+    "selfSecondaryBackground": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 717,
+        "type": "constant"
       }
     ],
     "SelfTabAvatar": [
@@ -76607,7 +76923,7 @@
     "settingsBox": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 498,
+        "line": 528,
         "type": "constant"
       }
     ],
@@ -76986,6 +77302,11 @@
       },
       {
         "file": "akashic/skills/budget-synastry-portrait-and-private-trace-together.md",
+        "line": 20,
+        "type": "heading"
+      },
+      {
+        "file": "akashic/skills/classify-astra-buttons-by-action-role-before-styling.md",
         "line": 20,
         "type": "heading"
       },
@@ -77734,7 +78055,7 @@
     "starsDialog": [
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 616,
+        "line": 646,
         "type": "constant"
       }
     ],
@@ -78314,6 +78635,11 @@
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
         "line": 309,
+        "type": "constant"
+      },
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 472,
         "type": "constant"
       }
     ],
@@ -81263,7 +81589,7 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "line": 514,
+        "line": 544,
         "type": "constant"
       },
       {
@@ -81769,6 +82095,13 @@
       {
         "file": "apps/astra-web/app/library/page.tsx",
         "line": 70,
+        "type": "constant"
+      }
+    ],
+    "viewChartAction": [
+      {
+        "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
+        "line": 708,
         "type": "constant"
       }
     ],
@@ -83267,13 +83600,13 @@
       },
       {
         "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-        "weight": 317.22,
+        "weight": 368.22,
         "bucket": "other",
-        "estimated_tokens": 11076,
-        "lines": 764,
-        "symbols": 89,
+        "estimated_tokens": 11817,
+        "lines": 810,
+        "symbols": 106,
         "symbol_type_counts": {
-          "constant": 79,
+          "constant": 96,
           "function": 9,
           "type": 1
         },
@@ -83332,13 +83665,13 @@
       },
       {
         "file": "docs/progress/PROGRESS_LOG.md",
-        "weight": 274.19,
+        "weight": 277.19,
         "bucket": "other",
-        "estimated_tokens": 16057,
-        "lines": 833,
-        "symbols": 90,
+        "estimated_tokens": 16312,
+        "lines": 840,
+        "symbols": 91,
         "symbol_type_counts": {
-          "heading": 90
+          "heading": 91
         },
         "dependency_in": 0,
         "dependency_out": 0,
@@ -83656,7 +83989,7 @@
         "file": "apps/astra-web/app/self/page.tsx",
         "weight": 146.33,
         "bucket": "other",
-        "estimated_tokens": 3060,
+        "estimated_tokens": 3058,
         "lines": 294,
         "symbols": 33,
         "symbol_type_counts": {
@@ -85035,6 +85368,20 @@
         "route_count": 0
       },
       {
+        "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
+        "weight": 51.35,
+        "bucket": "akashic",
+        "estimated_tokens": 2428,
+        "lines": 186,
+        "symbols": 15,
+        "symbol_type_counts": {
+          "heading": 15
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
         "file": "packages/astrology/src/report/relationshipContext.ts",
         "weight": 50.28,
         "bucket": "other",
@@ -85114,20 +85461,6 @@
         },
         "dependency_in": 0,
         "dependency_out": 3,
-        "route_count": 0
-      },
-      {
-        "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
-        "weight": 48.36,
-        "bucket": "akashic",
-        "estimated_tokens": 2128,
-        "lines": 180,
-        "symbols": 14,
-        "symbol_type_counts": {
-          "heading": 14
-        },
-        "dependency_in": 0,
-        "dependency_out": 0,
         "route_count": 0
       },
       {
@@ -86259,6 +86592,20 @@
         "bucket": "akashic",
         "estimated_tokens": 599,
         "lines": 57,
+        "symbols": 9,
+        "symbol_type_counts": {
+          "heading": 9
+        },
+        "dependency_in": 0,
+        "dependency_out": 0,
+        "route_count": 0
+      },
+      {
+        "file": "akashic/skills/classify-astra-buttons-by-action-role-before-styling.md",
+        "weight": 33.08,
+        "bucket": "akashic",
+        "estimated_tokens": 660,
+        "lines": 55,
         "symbols": 9,
         "symbol_type_counts": {
           "heading": 9
@@ -89903,9 +90250,9 @@
       }
     ],
     "coverage": {
-      "files": 455,
-      "symbols": 6301,
-      "total_estimated_tokens": 1192337
+      "files": 456,
+      "symbols": 6329,
+      "total_estimated_tokens": 1194291
     }
   }
 }

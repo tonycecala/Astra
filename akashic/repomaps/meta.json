@@ -174,13 +174,13 @@
     },
     {
       "file": "apps/astra-web/e2e/foundation-routes.spec.ts",
-      "weight": 317.22,
+      "weight": 368.22,
       "bucket": "other",
-      "estimated_tokens": 11076,
-      "lines": 764,
-      "symbols": 89,
+      "estimated_tokens": 11817,
+      "lines": 810,
+      "symbols": 106,
       "symbol_type_counts": {
-        "constant": 79,
+        "constant": 96,
         "function": 9,
         "type": 1
       },
@@ -239,13 +239,13 @@
     },
     {
       "file": "docs/progress/PROGRESS_LOG.md",
-      "weight": 274.19,
+      "weight": 277.19,
       "bucket": "other",
-      "estimated_tokens": 16057,
-      "lines": 833,
-      "symbols": 90,
+      "estimated_tokens": 16312,
+      "lines": 840,
+      "symbols": 91,
       "symbol_type_counts": {
-        "heading": 90
+        "heading": 91
       },
       "dependency_in": 0,
       "dependency_out": 0,
@@ -563,7 +563,7 @@
       "file": "apps/astra-web/app/self/page.tsx",
       "weight": 146.33,
       "bucket": "other",
-      "estimated_tokens": 3060,
+      "estimated_tokens": 3058,
       "lines": 294,
       "symbols": 33,
       "symbol_type_counts": {
@@ -1942,6 +1942,20 @@
       "route_count": 0
     },
     {
+      "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
+      "weight": 51.35,
+      "bucket": "akashic",
+      "estimated_tokens": 2428,
+      "lines": 186,
+      "symbols": 15,
+      "symbol_type_counts": {
+        "heading": 15
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
       "file": "packages/astrology/src/report/relationshipContext.ts",
       "weight": 50.28,
       "bucket": "other",
@@ -2021,20 +2035,6 @@
       },
       "dependency_in": 0,
       "dependency_out": 3,
-      "route_count": 0
-    },
-    {
-      "file": "akashic/playbooks/astra-composer-product-design-patterns.md",
-      "weight": 48.36,
-      "bucket": "akashic",
-      "estimated_tokens": 2128,
-      "lines": 180,
-      "symbols": 14,
-      "symbol_type_counts": {
-        "heading": 14
-      },
-      "dependency_in": 0,
-      "dependency_out": 0,
       "route_count": 0
     },
     {
@@ -3166,6 +3166,20 @@
       "bucket": "akashic",
       "estimated_tokens": 599,
       "lines": 57,
+      "symbols": 9,
+      "symbol_type_counts": {
+        "heading": 9
+      },
+      "dependency_in": 0,
+      "dependency_out": 0,
+      "route_count": 0
+    },
+    {
+      "file": "akashic/skills/classify-astra-buttons-by-action-role-before-styling.md",
+      "weight": 33.08,
+      "bucket": "akashic",
+      "estimated_tokens": 660,
+      "lines": 55,
       "symbols": 9,
       "symbol_type_counts": {
         "heading": 9
@@ -6810,8 +6824,8 @@
     }
   ],
   "coverage": {
-    "files": 455,
-    "symbols": 6301,
-    "total_estimated_tokens": 1192337
+    "files": 456,
+    "symbols": 6329,
+    "total_estimated_tokens": 1194291
   }
 }
