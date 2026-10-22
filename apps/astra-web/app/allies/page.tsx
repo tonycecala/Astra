@@ -136,21 +136,26 @@ function AllyCard({
         </div>
         <div className="ally-card-controls">
           <div className="ally-card-actions" role="group" aria-label={`${ui.allies.cardActionsLabel}: ${ally.name}`}>
-            <Link className="button ally-create-report" href={createPortraitHref}>
+            <Link aria-label={ui.allies.createReport} className="button ally-create-report" href={createPortraitHref}>
               <Sparkles aria-hidden="true" size={16} />
-              {ui.allies.createReport}
+              {ui.allies.createAction}
             </Link>
             {report ? (
-              <Link className="button secondary ally-view-report" href={`/library?reportId=${encodeURIComponent(report.requestId)}`}>
+              <Link aria-label={ui.allies.viewReport} className="button secondary ally-view-report" href={`/library?reportId=${encodeURIComponent(report.requestId)}`}>
                 <BookOpenText aria-hidden="true" size={16} />
-                {ui.allies.viewReport}
+                {ui.allies.viewAction}
               </Link>
-            ) : null}
+            ) : (
+              <button aria-label={ui.allies.viewReport} className="button secondary ally-view-report" disabled title={ui.allies.noReportToView} type="button">
+                <BookOpenText aria-hidden="true" size={16} />
+                {ui.allies.viewAction}
+              </button>
+            )}
             {chartRequest ? (
               <Link aria-label={ui.charts.viewChart} className="button secondary" href={`/charts?chart=${encodeURIComponent(chartRequest.id)}&from=allies`} title={ui.charts.viewChart}>
                 <ChartPie aria-hidden="true" size={16} />
               </Link>
-            ) : null}
+            ) : <span aria-hidden="true" className="ally-chart-placeholder" />}
             <AllyRelationshipEditor allyId={ally.id} allyName={ally.name} editBirthHref={editBirthHref} relationship={ally.relationship} />
             <AllyRemoveButton allyId={ally.id} allyName={ally.name} />
           </div>

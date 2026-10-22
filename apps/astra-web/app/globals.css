@@ -4846,3 +4846,21 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
   outline: 2px solid var(--gold);
   outline-offset: 3px;
 }
+
+.ally-card-actions .ally-view-report:disabled {
+  color: var(--muted);
+  background: color-mix(in srgb, var(--muted) 12%, var(--panel));
+  border-color: var(--line);
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.ally-chart-placeholder {
+  flex: 0 0 44px;
+  height: 44px;
+}
+
+@media (max-width: 700px) {
+  .ally-chart-placeholder { display: none; }
+}
