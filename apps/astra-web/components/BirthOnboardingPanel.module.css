@@ -6,6 +6,10 @@
   align-items: start;
 }
 
+.panelSingle {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .form {
   margin-top: 16px;
 }

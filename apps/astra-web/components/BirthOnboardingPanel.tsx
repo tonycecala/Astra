@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { type CSSProperties, FormEvent, useMemo, useState } from "react";
+import { type CSSProperties, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpenText, Check, Send, Sparkles } from "lucide-react";
 import {
   allyRelationshipTags,
@@ -97,6 +97,8 @@ type BirthOnboardingPanelProps = {
   initialReportResults: AstrologyReportResult[];
   subjectType?: "self" | "ally";
   initialAllies?: Ally[];
+  initialAlly?: Ally;
+  cancelHref?: string;
   initialBirthData?: ChartBirthData;
   initialChartRequestId?: string;
   initialSubjectName?: string;
@@ -312,6 +314,8 @@ export function BirthOnboardingPanel({
   initialReportResults = [],
   subjectType = "self",
   initialAllies = [],
+  initialAlly,
+  cancelHref,
   initialBirthData,
   initialChartRequestId,
   initialSubjectName,
@@ -326,13 +330,18 @@ export function BirthOnboardingPanel({
   const initialChartRequest = initialChartRequestId
     ? initialRequests.find((request) => request.id === initialChartRequestId)
     : undefined;
-  const initialForm = defaultForm(displayName, initialBirthData, initialChartRequest, initialSubjectName);
+  const initialForm = defaultForm(displayName, initialBirthData, initialChartRequest, initialAlly?.name ?? initialSubjectName);
+  if (initialAlly) {
+    initialForm.relationship = initialAlly.relationship;
+    initialForm.note = initialAlly.note ?? "";
+  }
   const requestedInitialStep = initialChartRequest ? initialStep ?? "report" : initialStep ?? "subject";
   const initialActiveStep = (() => {
     if (chartArrivalEligible && !initialExplorerFocus && !initialChartArrival) return "focus";
-    if (!chartArrivalEligible || requestedInitialStep !== "report") return requestedInitialStep;
+    if (requestedInitialStep !== "report") return requestedInitialStep;
     if (!optional(initialForm.subjectName)) return "subject";
-    return isValidDateOnly(initialForm.date) ? "report" : "birth_details";
+    return isValidDateOnly(initialForm.date) && !isFutureDateOnly(initialForm.date) && optional(initialForm.timezone) &&
+      (!initialForm.birthTimeKnown || isValidTimeOnly(initialForm.time)) ? "report" : "birth_details";
   })();
   const [form, setForm] = useState<FormState>(initialForm);
   const [allies, setAllies] = useState(initialAllies);
@@ -343,7 +352,7 @@ export function BirthOnboardingPanel({
   const [, setReportResults] = useState(initialReportResults);
   const [message, setMessage] = useState(
     requestedInitialStep === "report" && initialActiveStep === "birth_details"
-      ? ui.self.birthMomentDateRequired
+      ? ui.self.reportSetupBirthRequired
       : ""
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -358,6 +367,11 @@ export function BirthOnboardingPanel({
   const [focusKey, setFocusKey] = useState<ExplorerFocusKey | undefined>(initialExplorerFocus?.status === "selected" ? initialExplorerFocus.key : undefined);
   const [focusQuestion, setFocusQuestion] = useState(initialExplorerFocus?.status === "selected" ? initialExplorerFocus.question ?? "" : "");
   const [isCompletingArrival, setIsCompletingArrival] = useState(false);
+  const [isEditingReportBirth, setIsEditingReportBirth] = useState(requestedInitialStep === "birth_details" || initialActiveStep === "birth_details");
+  const taskHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (cancelHref) taskHeading.current?.focus({ preventScroll: true });
+  }, [cancelHref]);
 
   const isAlly = subjectType === "ally";
   const isAllyAddFlow = isAlly && allyFlow === "add";
@@ -383,14 +397,12 @@ export function BirthOnboardingPanel({
   const selectedReportCost = reportTypeCost(selectedReportType);
   const balanceAfterReport = starBalance - selectedReportCost;
   const canAffordSelectedReport = isAdmin || balanceAfterReport >= 0;
-  const isExistingChartBirthEditMode = isAlly && isUsingExistingChart && requestedInitialStep === "birth_details";
-  const isExistingChartOrderMode = isAlly && isUsingExistingChart && !isExistingChartBirthEditMode;
-  const isExistingChartLocked = isExistingChartOrderMode;
+  const isExistingChartOrderMode = isUsingExistingChart && !isChartArrivalFlow && !isEditingReportBirth;
   const visibleSteps: readonly Step[] = isAllyAddFlow
     ? ["subject", "birth_details"]
     : isExistingChartOrderMode
       ? ["report"]
-      : isUsingExistingChart
+      : isUsingExistingChart || initialAlly
         ? isChartArrivalFlow ? ["focus", "birth_details", "report"] : ["birth_details", "report"]
         : isChartArrivalFlow ? steps : ["subject", "birth_details", "report"];
   const visibleStepIndex = visibleSteps.indexOf(activeStep);
@@ -410,9 +422,7 @@ export function BirthOnboardingPanel({
   const reviewSubjectName = !isChartArrivalFlow && form.reportType === "synastry"
     ? synastryReaderName
     : form.subjectName;
-  const previewBirthData = isExistingChartLocked && existingChartRequest
-    ? existingChartRequest.birthData
-    : birthDataFor(form);
+  const previewBirthData = birthDataFor(form);
   const hasHouseCalculation = chartCalculationModeForBirthData(previewBirthData) === "full";
   const reviewRows = [
       [ui.self.onboardingReviewName, reviewSubjectName || ui.self.onboardingReviewMissing],
@@ -777,7 +787,7 @@ export function BirthOnboardingPanel({
     setMessage(isAlly ? ui.allies.reportWorking : ui.self.chartRequestWorking);
 
     try {
-      const ally = !existingChartRequest && isAlly ? await createAllyRecord() : undefined;
+      const ally = !existingChartRequest && isAlly ? initialAlly ?? await createAllyRecord() : undefined;
       const subjectContext = {
         ...(existingChartRequest?.context?.subject ?? {}),
         subjectType,
@@ -791,7 +801,7 @@ export function BirthOnboardingPanel({
         zodiacMode: form.zodiacMode,
         houseSystem: form.houseSystem
       };
-      const canReuseExistingChart = Boolean(existingChartRequest && (isExistingChartLocked || birthDataMatchesForm(existingChartRequest.birthData, form)));
+      const canReuseExistingChart = Boolean(existingChartRequest && birthDataMatchesForm(existingChartRequest.birthData, form));
       const reportBirthData = canReuseExistingChart && existingChartRequest ? existingChartRequest.birthData : birthDataFor(form);
       const chartBody = {
         subjectName: form.subjectName.trim(),
@@ -926,11 +936,12 @@ export function BirthOnboardingPanel({
   }
 
   return (
-    <section className={styles.panel} aria-label={isAllyAddFlow ? ui.allies.addPanelLabel : isAlly ? ui.allies.reportPanelLabel : panelCopy.chartRequestPanelLabel}>
+    <section className={`${styles.panel} ${hideSummaryRail ? styles.panelSingle : ""}`} aria-label={isAllyAddFlow ? ui.allies.addPanelLabel : isAlly ? ui.allies.reportPanelLabel : panelCopy.chartRequestPanelLabel}>
       <article className="card">
-        <h2>{isAllyAddFlow ? ui.allies.addTitle : isAlly ? ui.allies.reportTitle(form.subjectName) : isChartArrivalFlow ? ui.self.chartArrivalPanelTitle : panelCopy.chartRequestTitle}</h2>
+        <h2 ref={taskHeading} tabIndex={cancelHref ? -1 : undefined}>{isAllyAddFlow ? ui.allies.addTitle : isAlly ? ui.allies.reportTitle(form.subjectName) : isChartArrivalFlow ? ui.self.chartArrivalPanelTitle : panelCopy.chartRequestTitle}</h2>
         {isAllyAddFlow ? <p>{ui.allies.addIntro}</p> : !isAlly && !isExistingChartOrderMode ? <p>{isChartArrivalFlow ? ui.self.chartArrivalPanelIntro : panelCopy.chartRequestIntro}</p> : null}
 
+        {cancelHref ? <Link className="report-setup-cancel" href={cancelHref}>{ui.self.reportSetupCancel}</Link> : null}
         {!isSingleStepFlow ? (
           <div
             className={styles.stepper}
@@ -1072,8 +1083,6 @@ export function BirthOnboardingPanel({
                 <span>{panelCopy.chartSubjectLabel}</span>
                 <input
                   aria-invalid={Boolean(subjectNameError)}
-                  disabled={isExistingChartLocked}
-                  readOnly={isExistingChartLocked}
                   value={form.subjectName}
                   onChange={(event) => updateField("subjectName", event.target.value)}
                   required
@@ -1086,10 +1095,9 @@ export function BirthOnboardingPanel({
                     <span>{ui.allies.wizardRelationshipLabel}</span>
                     <select
                       aria-invalid={Boolean(relationshipError)}
-                      disabled={isExistingChartLocked}
                       value={form.relationship}
                       onChange={(event) => updateField("relationship", event.target.value)}
-                      required={!isExistingChartLocked}
+                      required
                     >
                       <option value="">{ui.allies.wizardRelationshipPlaceholder}</option>
                       {form.relationship && !normalizeAllyRelationshipTag(form.relationship) ? (
@@ -1105,8 +1113,6 @@ export function BirthOnboardingPanel({
                   <label>
                     <span>{ui.allies.wizardNoteLabel}</span>
                     <textarea
-                      disabled={isExistingChartLocked}
-                      readOnly={isExistingChartLocked}
                       value={form.note}
                       onChange={(event) => updateField("note", event.target.value)}
                       rows={3}
@@ -1119,13 +1125,19 @@ export function BirthOnboardingPanel({
 
           {activeStep === "report" ? (
             <div className={styles.subjectFields}>
-              {isUsingExistingChart ? (
+              {isUsingExistingChart || initialAlly ? (
                 <div className={styles.existingChartSummary} aria-label={ui.self.onboardingReviewLabel}>
                   <div className={styles.existingChartTitleRow}>
                     <h3>{form.subjectName}</h3>
                     {form.relationship ? <span>{form.relationship}</span> : null}
                   </div>
-                  <p>{isExistingChartLocked ? compactBirthLine(existingChartRequest?.birthData) : compactFormBirthLine(form)}</p>
+                  <p>{compactFormBirthLine(form)}</p>
+                  <button className="button secondary" type="button" onClick={() => {
+                    setIsEditingReportBirth(true);
+                    setActiveStep("birth_details");
+                    setIsConfirmingReport(false);
+                    setMessage("");
+                  }} disabled={isSubmitting || isWizardComplete}>{ui.self.editBirthDetails}</button>
                 </div>
               ) : null}
               <details>
@@ -1192,6 +1204,9 @@ export function BirthOnboardingPanel({
                   </label>
                 ))}
               </fieldset> : null}
+              {!isChartArrivalFlow && activeStepError ? (
+                <p className={styles.subjectFieldError} aria-live="polite">{activeStepError}</p>
+              ) : null}
               {!isChartArrivalFlow ? <label>
                 <span>{ui.self.portraitQuestionLabel}</span>
                 <textarea maxLength={500} rows={2} value={form.portraitQuestion} onChange={(event) => updateField("portraitQuestion", event.target.value)} />
@@ -1262,7 +1277,6 @@ export function BirthOnboardingPanel({
               <button
                 aria-label={ui.self.birthMomentOpen}
                 className={styles.birthMomentButton}
-                disabled={isExistingChartLocked}
                 onClick={() => setIsBirthMomentSheetOpen(true)}
                 type="button"
               >
@@ -1270,12 +1284,11 @@ export function BirthOnboardingPanel({
                   <strong>{ui.self.birthMomentEdit}</strong>
                   <em>{birthMomentSummary(form)}</em>
                 </span>
-                <span>{isExistingChartLocked ? ui.self.birthMomentLocked : ui.self.birthMomentEditAction}</span>
+                <span>{ui.self.birthMomentEditAction}</span>
               </button>
               <button
                 aria-label={ui.self.birthLocationOpen}
                 className={styles.birthMomentButton}
-                disabled={isExistingChartLocked}
                 onClick={() => setIsBirthLocationSheetOpen(true)}
                 type="button"
               >
@@ -1283,7 +1296,7 @@ export function BirthOnboardingPanel({
                   <strong>{ui.self.birthLocationEdit}</strong>
                   <em>{form.location || ui.self.birthLocationNotSelected}</em>
                 </span>
-                <span>{isExistingChartLocked ? ui.self.birthMomentLocked : ui.self.birthMomentEditAction}</span>
+                <span>{ui.self.birthMomentEditAction}</span>
               </button>
             </>
           ) : null}
@@ -1303,8 +1316,7 @@ export function BirthOnboardingPanel({
         </form>
         {isBirthMomentSheetOpen ? (
           <BirthDateTimeSheet
-            ctaLabel={isExistingChartLocked ? ui.self.birthMomentSave : ui.self.birthMomentContinue}
-            disabled={isExistingChartLocked}
+            ctaLabel={ui.self.birthMomentContinue}
             onClose={() => setIsBirthMomentSheetOpen(false)}
             onSave={applyBirthMoment}
             open={isBirthMomentSheetOpen}
@@ -1314,8 +1326,7 @@ export function BirthOnboardingPanel({
         ) : null}
         {isBirthLocationSheetOpen ? (
           <BirthLocationSheet
-            ctaLabel={isExistingChartLocked ? ui.self.birthMomentSave : ui.self.birthMomentContinue}
-            disabled={isExistingChartLocked}
+            ctaLabel={ui.self.birthMomentContinue}
             onClose={() => setIsBirthLocationSheetOpen(false)}
             onSave={applyBirthLocation}
             open={isBirthLocationSheetOpen}

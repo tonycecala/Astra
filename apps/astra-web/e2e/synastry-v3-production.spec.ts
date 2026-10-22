@@ -58,7 +58,7 @@ test.describe("Synastry V3 production boundary", () => {
         chartSettings: { zodiacMode: "tropical", houseSystem: "whole-sign" }
       }
     });
-    await page.locator(`[id="ally-${ally.id}"]`).getByRole("link", { name: "Create Report" }).click();
+    await page.locator(`[id="ally-${ally.id}"]`).getByRole("link", { name: "Create report" }).click();
     const reportOrderPanel = page.locator('section[aria-label="Create an Ally Report"]');
     await expect(reportOrderPanel.getByText("Lover", { exact: true })).toBeVisible();
     const mobileReportSubmit = reportOrderPanel.locator("[data-mobile-report-submit]");

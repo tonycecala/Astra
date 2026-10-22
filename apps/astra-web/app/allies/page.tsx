@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { BookOpenText, ChartPie, Plus, Search } from "lucide-react";
+import { BookOpenText, ChartPie, Plus, Search, Sparkles } from "lucide-react";
 import { normalizeAllyRelationshipTag, type Ally, type AstrologyReportRequest, type AstrologyReportResult, type ChartMakerRequest } from "@astra/contracts";
 import { PageHeader } from "../../components/PageHeader";
 import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
 import { AllyRemoveButton } from "../../components/AllyRemoveButton";
 import { AllyRelationshipEditor } from "../../components/AllyRelationshipEditor";
-import { SelfTabAvatar } from "../../components/SelfTabAvatar";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
 import { db, listUserAllies, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests } from "@astra/db";
@@ -66,47 +65,6 @@ function compactBirthLine(chartRequest?: ChartMakerRequest) {
   ].filter(Boolean).join(" · ");
 }
 
-function initialsFor(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  return (parts.length > 1 ? `${parts[0]?.[0] ?? ""}${parts[parts.length - 1]?.[0] ?? ""}` : name.slice(0, 2)).toUpperCase();
-}
-
-function AlliesConstellation({
-  allies,
-  selfEmail,
-  selfInitial
-}: {
-  allies: Ally[];
-  selfEmail: string;
-  selfInitial: string;
-}) {
-  const orbitAllies = allies.slice(0, 8);
-
-  return (
-    <section className="allies-constellation" aria-label={ui.allies.relationshipTitle}>
-      <div className="allies-constellation-copy">
-        <p>{ui.allies.relationshipLayer}</p>
-        <h2>{ui.allies.relationshipTitle}</h2>
-      </div>
-      <div className="allies-orbit" aria-hidden="true">
-        <span className="allies-orbit-ring allies-orbit-ring-one" />
-        <span className="allies-orbit-ring allies-orbit-ring-two" />
-        <span className="allies-orbit-ring allies-orbit-ring-three" />
-        <div className="allies-orbit-self">
-          <SelfTabAvatar className="allies-orbit-avatar" email={selfEmail || null} initial={selfInitial} size={112} />
-          <strong>{ui.allies.youLabel}</strong>
-        </div>
-        {orbitAllies.map((ally, index) => (
-          <span className={`allies-orbit-node allies-orbit-node-${index + 1}`} key={ally.id} title={ally.name}>
-            {initialsFor(ally.name)}
-          </span>
-        ))}
-      </div>
-      <div className="allies-constellation-count">{ui.allies.allyCount(allies.length)}</div>
-    </section>
-  );
-}
-
 function AllyCard({
   ally,
   chartRequest,
@@ -118,10 +76,10 @@ function AllyCard({
 }) {
   const createPortraitHref = chartRequest
     ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=report#ally-birth-onboarding`
-    : "/allies?action=add#ally-birth-onboarding";
+    : `/allies?ally=${encodeURIComponent(ally.id)}&start=report#ally-birth-onboarding`;
   const editBirthHref = chartRequest
     ? `/allies?chart=${encodeURIComponent(chartRequest.id)}&start=birth_details#ally-birth-onboarding`
-    : undefined;
+    : `/allies?ally=${encodeURIComponent(ally.id)}&start=birth_details#ally-birth-onboarding`;
   const relationshipLabel = normalizeAllyRelationshipTag(ally.relationship);
 
   return (
@@ -136,22 +94,21 @@ function AllyCard({
         </div>
         <div className="ally-card-controls">
           <div className="ally-card-actions" role="group" aria-label={`${ui.allies.cardActionsLabel}: ${ally.name}`}>
+            <Link className="button ally-create-report" href={createPortraitHref}>
+              <Sparkles aria-hidden="true" size={16} />
+              {ui.allies.createReport}
+            </Link>
+            {report ? (
+              <Link className="button secondary ally-view-report" href={`/library?reportId=${encodeURIComponent(report.requestId)}`}>
+                <BookOpenText aria-hidden="true" size={16} />
+                {ui.allies.viewReport}
+              </Link>
+            ) : null}
             {chartRequest ? (
               <Link aria-label={ui.charts.viewChart} className="button secondary" href={`/charts?chart=${encodeURIComponent(chartRequest.id)}&from=allies`} title={ui.charts.viewChart}>
                 <ChartPie aria-hidden="true" size={16} />
               </Link>
             ) : null}
-            {report ? (
-              <span className="compact-list-report-actions">
-                <Link aria-label={ui.allies.viewReport} href={`/library?reportId=${encodeURIComponent(report.requestId)}`} title={ui.allies.viewReport}>
-                  <BookOpenText aria-hidden="true" size={16} />
-                </Link>
-              </span>
-            ) : (
-              <Link aria-label={ui.allies.createReport} className="button secondary" href={createPortraitHref} title={ui.allies.createReport}>
-                <BookOpenText aria-hidden="true" size={16} />
-              </Link>
-            )}
             <AllyRelationshipEditor allyId={ally.id} allyName={ally.name} editBirthHref={editBirthHref} relationship={ally.relationship} />
             <AllyRemoveButton allyId={ally.id} allyName={ally.name} />
           </div>
@@ -164,6 +121,7 @@ function AllyCard({
 type AlliesPageParams = {
   searchParams?: Promise<{
     chart?: string;
+    ally?: string;
     q?: string;
     relationship?: string;
     start?: string;
@@ -222,15 +180,18 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
       latestChartRequestByAllyId.set(ally.id, request);
     }
   }
+  const selectedAlly = params.ally ? alliesById.get(params.ally) : undefined;
   const selectedOnboardingChart = params.chart
     ? allyChartRequests.find((request) => request.id === params.chart)
-    : undefined;
+    : selectedAlly ? latestChartRequestByAllyId.get(selectedAlly.id) : undefined;
+  const onboardingAlly = selectedOnboardingChart ? liveAllyForChart(selectedOnboardingChart, alliesById) : selectedAlly;
   const initialOnboardingStep = selectedOnboardingChart
     ? onboardingStepFromParam(params.start) ?? "report"
     : onboardingStepFromParam(params.start);
   const isAddingAlly = params.action === "add";
   const clearFilterParams = new URLSearchParams();
   if (params.chart) clearFilterParams.set("chart", params.chart);
+  if (params.ally) clearFilterParams.set("ally", params.ally);
   if (params.start) clearFilterParams.set("start", params.start);
   const clearFilterHref = `/allies${clearFilterParams.toString() ? `?${clearFilterParams.toString()}` : ""}`;
   const filterQuery = params.q?.trim() ?? "";
@@ -246,22 +207,38 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
 
   return (
     <>
-      <section className="allies-v1-intro" aria-labelledby="allies-title">
-        <p>{ui.allies.eyebrow}</p>
-        <h1 id="allies-title">{ui.allies.title}</h1>
-        <div>{ui.allies.intro}</div>
+      <header className="allies-task-header">
+        <h1 id="allies-title">{ui.allies.eyebrow}</h1>
         <Link className="button allies-add-action" href="/allies?action=add#ally-birth-onboarding">
           <Plus aria-hidden="true" size={18} />
           {ui.allies.addAction}
         </Link>
-      </section>
-      <AlliesConstellation
-        allies={allies}
-        selfEmail={profile.email}
-        selfInitial={profile.displayName.trim().slice(0, 1).toUpperCase() || "A"}
-      />
+      </header>
+      {isAddingAlly || selectedOnboardingChart || onboardingAlly ? <section id="ally-birth-onboarding">
+        <BirthOnboardingPanel
+          allyFlow={isAddingAlly ? "add" : "report"}
+          displayName=""
+          initialAllies={allies}
+          initialAlly={onboardingAlly}
+          cancelHref="/allies"
+          key={selectedOnboardingChart ? `${selectedOnboardingChart.id}:${initialOnboardingStep}:${liveAllyForChart(selectedOnboardingChart, alliesById)?.relationship ?? "unknown"}` : `${onboardingAlly?.id ?? "new-ally-chart"}:${initialOnboardingStep}`}
+          role={profile.role}
+          starBalance={profile.starBalance}
+          initialRequests={allyChartRequests}
+          synastryComparisonRequests={hydratedChartRequests}
+          initialReportRequests={allyReportRequests}
+          initialReportResults={allyReportResults}
+          initialBirthData={selectedOnboardingChart?.birthData}
+          initialChartRequestId={selectedOnboardingChart?.id}
+          initialStep={initialOnboardingStep}
+          subjectType="ally"
+          hideSummaryRail
+        />
+      </section> : null}
+
       <form action="/allies" className="list-filter-bar allies-list-filter-bar">
         {params.chart ? <input name="chart" type="hidden" value={params.chart} /> : null}
+        {params.ally ? <input name="ally" type="hidden" value={params.ally} /> : null}
         {params.start ? <input name="start" type="hidden" value={params.start} /> : null}
         <div className="list-filter-control list-filter-search-control">
           <span className="list-filter-search">
@@ -312,25 +289,7 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
           </article>
         )}
       </section>
-      {isAddingAlly || selectedOnboardingChart ? <section id="ally-birth-onboarding">
-        <BirthOnboardingPanel
-          allyFlow={isAddingAlly ? "add" : "report"}
-          displayName=""
-          initialAllies={allies}
-          key={selectedOnboardingChart ? `${selectedOnboardingChart.id}:${initialOnboardingStep}:${liveAllyForChart(selectedOnboardingChart, alliesById)?.relationship ?? "unknown"}` : "new-ally-chart"}
-          role={profile.role}
-          starBalance={profile.starBalance}
-          initialRequests={allyChartRequests}
-          synastryComparisonRequests={hydratedChartRequests}
-          initialReportRequests={allyReportRequests}
-          initialReportResults={allyReportResults}
-          initialBirthData={selectedOnboardingChart?.birthData}
-          initialChartRequestId={selectedOnboardingChart?.id}
-          initialStep={initialOnboardingStep}
-          subjectType="ally"
-          hideSummaryRail
-        />
-      </section> : null}
+
     </>
   );
 }

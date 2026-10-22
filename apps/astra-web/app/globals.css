@@ -2893,195 +2893,6 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   padding-inline: 16px;
 }
 
-.allies-v1-intro {
-  display: grid;
-  gap: clamp(14px, 4vw, 26px);
-  margin: 0;
-  padding: clamp(16px, 4vw, 32px) clamp(8px, 2vw, 16px) clamp(12px, 3vw, 22px);
-  background:
-    radial-gradient(circle at 82% 10%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 28%),
-    radial-gradient(circle at 18% 34%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 36%),
-    linear-gradient(180deg, color-mix(in srgb, var(--purple) 14%, var(--paper)), color-mix(in srgb, var(--paper) 96%, #171024));
-}
-
-.allies-v1-intro p {
-  margin: 0;
-  color: var(--ink);
-  font-size: clamp(1.25rem, 4vw, 1.75rem);
-  font-weight: 760;
-  line-height: 1.15;
-}
-
-.allies-v1-intro h1 {
-  max-width: 11ch;
-  margin: 0;
-  color: var(--gold);
-  font-size: clamp(3rem, 13vw, 6.6rem);
-  line-height: 1.04;
-  letter-spacing: 0;
-}
-
-.allies-v1-intro div {
-  max-width: 21ch;
-  color: color-mix(in srgb, var(--muted) 82%, var(--blue));
-  font-size: clamp(1.35rem, 5vw, 2.2rem);
-  font-weight: 760;
-  line-height: 1.4;
-}
-
-.allies-v1-intro .allies-add-action {
-  justify-self: start;
-  width: auto;
-  border-color: color-mix(in srgb, var(--gold) 72%, var(--line));
-  padding: 0 22px;
-  color: #1a1305;
-  background: var(--gold);
-  font-size: 0.95rem;
-  font-weight: 800;
-}
-
-.allies-constellation {
-  position: relative;
-  display: grid;
-  min-height: 520px;
-  margin: 0 0 8px;
-  border-bottom: 1px solid color-mix(in srgb, var(--gold) 24%, transparent);
-  padding: clamp(14px, 3vw, 24px) clamp(8px, 2vw, 16px);
-  background:
-    radial-gradient(circle at 78% 10%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 26%),
-    radial-gradient(circle at 25% 40%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 36%),
-    linear-gradient(180deg, color-mix(in srgb, var(--paper) 96%, #171024), var(--paper));
-  overflow: hidden;
-}
-
-.allies-constellation-copy {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  gap: 16px;
-  align-self: start;
-}
-
-.allies-constellation-copy p {
-  margin: 0;
-  color: var(--ink);
-  font-size: clamp(1.35rem, 4vw, 1.8rem);
-  font-weight: 760;
-  line-height: 1.1;
-}
-
-.allies-constellation-copy h2 {
-  max-width: 13ch;
-  margin: 0;
-  color: var(--gold);
-  font-size: clamp(2.35rem, 9vw, 4.9rem);
-  line-height: 0.98;
-  letter-spacing: 0;
-}
-
-.allies-orbit {
-  position: absolute;
-  inset: 130px 0 46px;
-  z-index: 1;
-}
-
-.allies-orbit::before {
-  position: absolute;
-  inset: 28% 20% 22% 24%;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--blue) 26%, transparent), transparent 72%);
-  content: "";
-  filter: blur(4px);
-}
-
-.allies-orbit-ring {
-  position: absolute;
-  border: 2px solid color-mix(in srgb, var(--gold) 14%, transparent);
-  border-radius: 50%;
-  transform: rotate(-7deg);
-}
-
-.allies-orbit-ring-one {
-  inset: 18% 16% 14% 3%;
-}
-
-.allies-orbit-ring-two {
-  inset: 8% 11% 2% -6%;
-}
-
-.allies-orbit-ring-three {
-  inset: -5% 5% -10% -14%;
-}
-
-.allies-orbit-self {
-  position: absolute;
-  top: 36%;
-  left: 50%;
-  display: grid;
-  justify-items: center;
-  width: min(280px, 62vw);
-  color: #f7f0e6;
-  text-align: center;
-  transform: translate(-50%, -50%);
-}
-
-.allies-orbit-avatar {
-  width: 112px;
-  height: 112px;
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--gold) 36%, transparent),
-    0 0 90px color-mix(in srgb, var(--gold) 30%, transparent),
-    0 0 140px color-mix(in srgb, var(--blue) 32%, transparent);
-}
-
-.allies-orbit-self strong {
-  margin-top: 12px;
-  color: #f7f0e6;
-  font-size: clamp(2rem, 8vw, 3.1rem);
-  line-height: 1;
-}
-
-.allies-orbit-node {
-  position: absolute;
-  display: grid;
-  width: clamp(48px, 12vw, 76px);
-  height: clamp(48px, 12vw, 76px);
-  place-items: center;
-  border: 2px solid color-mix(in srgb, var(--gold) 34%, transparent);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 28%, color-mix(in srgb, #fff 26%, transparent), transparent 28%),
-    color-mix(in srgb, var(--panel) 72%, transparent);
-  color: color-mix(in srgb, var(--gold) 84%, #f7f0e6);
-  font-size: clamp(0.85rem, 3.6vw, 1.25rem);
-  font-weight: 860;
-  box-shadow: 0 0 0 18px color-mix(in srgb, var(--blue) 12%, transparent);
-}
-
-.allies-orbit-node-1 { top: 10%; right: 20%; }
-.allies-orbit-node-2 { top: 19%; right: 9%; }
-.allies-orbit-node-3 { top: 33%; right: 3%; }
-.allies-orbit-node-4 { top: 48%; right: 1%; }
-.allies-orbit-node-5 { top: 63%; right: 8%; }
-.allies-orbit-node-6 { top: 72%; right: 22%; }
-.allies-orbit-node-7 { top: 61%; right: 34%; }
-.allies-orbit-node-8 { top: 39%; right: 27%; }
-
-.allies-constellation-count {
-  position: relative;
-  z-index: 2;
-  align-self: end;
-  justify-self: start;
-  border: 1px solid color-mix(in srgb, var(--gold) 38%, var(--line));
-  border-radius: 999px;
-  padding: 9px 18px;
-  color: var(--gold);
-  font-size: clamp(1rem, 3vw, 1.35rem);
-  font-weight: 900;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
 .ally-card {
   display: grid;
   border-color: color-mix(in srgb, var(--gold) 18%, transparent);
@@ -4778,4 +4589,88 @@ div[aria-label="Birth data onboarding steps"] > button:focus-visible > span {
   .main .list {
     gap: 3px;
   }
+}
+
+
+/* Report entry is the primary task; utilities remain grouped beside it. */
+.ally-card-actions .button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.ally-card-actions .ally-create-report,
+.ally-card-actions .ally-view-report {
+  width: auto;
+  padding: 10px 12px;
+  white-space: nowrap;
+}
+
+.report-setup-cancel {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+#self-birth-onboarding,
+#ally-birth-onboarding {
+  scroll-margin-top: 96px;
+}
+
+@media (max-width: 700px) {
+  .ally-card-header {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .ally-card-controls,
+  .ally-card-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+
+.allies-task-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.allies-task-header h1 {
+  margin: 0;
+  color: var(--gold);
+}
+
+.ally-card-actions .ally-create-report,
+.allies-task-header .allies-add-action {
+  color: var(--paper);
+  background: color-mix(in srgb, var(--gold) 84%, var(--ink));
+  border-color: transparent;
+}
+
+.self-profile-actions .self-create-report {
+  color: var(--paper);
+  background: color-mix(in srgb, var(--gold) 84%, var(--ink));
+  border-color: transparent;
+}
+
+
+.ally-card-actions .ally-create-report:hover,
+.ally-card-actions .ally-create-report:focus-visible,
+.allies-task-header .allies-add-action:hover,
+.allies-task-header .allies-add-action:focus-visible,
+.self-profile-actions .self-create-report:hover,
+.self-profile-actions .self-create-report:focus-visible {
+  color: var(--paper);
+  background: color-mix(in srgb, var(--gold) 72%, var(--ink));
+}
+
+.ally-card-actions .button:focus-visible,
+.self-profile-actions .self-create-report:focus-visible,
+.report-setup-cancel:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
 }

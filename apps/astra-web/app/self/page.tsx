@@ -146,13 +146,37 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
   const onboardingChart = selectedOnboardingChart ?? selfChartRequest;
   const requestReportHref = onboardingChart
     ? `/self?chart=${encodeURIComponent(onboardingChart.id)}&start=report#self-birth-onboarding`
-    : "#self-birth-onboarding";
+    : "/self?start=report#self-birth-onboarding";
   const editBirthDetailsHref = onboardingChart
     ? `/self?chart=${encodeURIComponent(onboardingChart.id)}&start=birth_details#self-birth-onboarding`
-    : "#self-birth-onboarding";
+    : "/self?start=birth_details#self-birth-onboarding";
+  const isExplicitOnboarding = Boolean(onboardingStepFromParam(params.start));
   const roleLine = normalizeRole(profile.role);
   const explorerFocus = explorerFocusFromMetadata(profile.metadata);
   const birthLine = formatBirthSummary(selfChartRequest);
+  const onboardingPanel = (
+    <section id="self-birth-onboarding">
+        <BirthOnboardingPanel
+          displayName={profile.displayName}
+          key={`${onboardingChart?.id ?? "self-chart"}:${params.start ?? "default"}`}
+          role={profile.role}
+          starBalance={profile.starBalance}
+          initialRequests={chartRequests}
+          initialReportRequests={visibleReportRequests}
+          initialReportResults={visibleReportResults}
+          initialChartArrival={isExplicitOnboarding ? undefined : chartArrival ?? undefined}
+          initialExplorerFocus={explorerFocus}
+          chartArrivalEligible={chartArrivalEligible && !isExplicitOnboarding}
+          initialBirthData={onboardingChart?.birthData}
+          initialChartRequestId={onboardingChart?.id}
+          initialSubjectName={profile.displayName === profile.email ? "" : profile.displayName}
+          initialStep={onboardingStepFromParam(params.start) ?? (onboardingChart ? "birth_details" : undefined)}
+          cancelHref={isExplicitOnboarding ? "/self" : undefined}
+          hideSummaryRail={isExplicitOnboarding}
+          hideRecentRequestPanels
+        />
+      </section>
+  );
   return (
     <>
       <PageHeader eyebrow={ui.self.eyebrow} title={profile.displayName}>
@@ -174,13 +198,13 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
             )}
           </div>
           <div className="self-profile-actions" role="group" aria-label={ui.self.profileActionsLabel}>
+            <Link className="button self-create-report" href={requestReportHref}>
+              <Sparkles aria-hidden="true" size={16} />
+              {ui.self.createProfile}
+            </Link>
             <Link className="button secondary" href="/charts">
               <ChartPie aria-hidden="true" size={16} />
               {ui.self.viewChart}
-            </Link>
-            <Link className="button secondary" href={requestReportHref}>
-              <Sparkles aria-hidden="true" size={16} />
-              {ui.self.createProfile}
             </Link>
             <Link className="button secondary" href={editBirthDetailsHref}>
               <Pencil aria-hidden="true" size={16} />
@@ -195,6 +219,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
           </div>
         </article>
       </section>
+      {isExplicitOnboarding ? onboardingPanel : null}
       <section className="grid" aria-label={ui.self.timelineLabel}>
         <div className="self-stream-intro-wrap">
           <hr className="self-stream-separator" aria-hidden="true" />
@@ -274,25 +299,7 @@ export default async function SelfPage({ searchParams }: SelfPageParams = {}) {
           </article>
         </section>
       </div>
-      <section id="self-birth-onboarding">
-        <BirthOnboardingPanel
-          displayName={profile.displayName}
-          key={onboardingChart?.id ?? "self-chart"}
-          role={profile.role}
-          starBalance={profile.starBalance}
-          initialRequests={chartRequests}
-          initialReportRequests={visibleReportRequests}
-          initialReportResults={visibleReportResults}
-          initialChartArrival={chartArrival ?? undefined}
-          initialExplorerFocus={explorerFocus}
-          chartArrivalEligible={chartArrivalEligible}
-          initialBirthData={onboardingChart?.birthData}
-          initialChartRequestId={onboardingChart?.id}
-          initialSubjectName={profile.displayName === profile.email ? "" : profile.displayName}
-          initialStep={onboardingStepFromParam(params.start) ?? (onboardingChart ? "birth_details" : undefined)}
-          hideRecentRequestPanels
-        />
-      </section>
+      {!isExplicitOnboarding ? onboardingPanel : null}
     </>
   );
 }

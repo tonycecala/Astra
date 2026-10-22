@@ -40,7 +40,7 @@ test("@portraits-v4 three choices, gifted Stars, immutable reader and private su
   await panel.getByRole("radio", { name: /Personal/ }).check();
   await panel.getByLabel("Anything you’d like this reading to explore? (optional)").fill("How can I make room for curiosity?");
   const beforeConfirmation = await getCreditBalance(db, userId);
-  await panel.getByRole("button", { name: "Create Report", exact: true }).first().click();
+  await panel.getByRole("button", { name: "Create report", exact: true }).first().click();
   const confirmation = page.getByRole("dialog", { name: "Confirm Report" });
   await expect(confirmation).toBeVisible();
   await expect(confirmation.getByText("10 Stars", { exact: true })).toBeVisible();
