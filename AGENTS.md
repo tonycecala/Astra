@@ -2,24 +2,13 @@
 
 ## Akashic Governance
 
-- Run `ak governance check` before broad implementation or debugging to verify the executable attention gate.
-- Before non-trivial edits, run `ak doctor`. If the repo is dirty, run `ak dirty` and classify every dirty file before broad edits.
-- Start and end messages must include a compact dirty summary: dirty file count, likely `owned-mail`/`current-session`/`generated-artifact`/`unknown-risk` groups, files to avoid, and whether `ak dirty`/`ak doctor` should be run next.
-- Dirty state is not bad; unattributed dirty state is bad. When the repo is dirty, classify the dirt before editing.
-- On macOS, `.DS_Store` is ambient Finder noise: keep it ignored, do not mention it in normal reports, and only clean/comment when it is tracked, staged, or blocking a command/check.
-- Check relevant Akashic Mail in `akashic/mail/new/` and `akashic/mail/working/`, then check `akashic/warnings/`.
-- Use REPOMAP, JCodeMunch, source, logs, tests, API responses, and diffs before screenshots or computer-use.
-- Repeated screenshots or computer-use require a written justification: reason, structured evidence checked, and expected visual proof.
-- Before patching a bug, use one hypothesis and one test; do not patch multiple suspected causes unless evidence proves one shared root cause.
-- The gate must never deadlock work: claim, close, release, or reopen actionable mail with `ak mail`, or edit files inside `akashic/mail/`. Purpose `know` mail is context, not a blocker.
-- After substantial changed work, the Stop hook creates a pending receipt in `akashic/closeouts/`. Before later product work, complete it with exactly one explicit decision: `ak closeout lesson`, `ak closeout playbook`, or `ak closeout none --reason <text>`. The hook never writes lesson content.
-- Before final Git closeout, run the repo's Steward review over the actual diff and validation evidence. Record the judgment as accept, accept-with-notes, retry/fix, or blocked; a passing check alone is not review.
-- For every substantial dev/debug session, update the most relevant repo-local file in `akashic/playbooks/` with the reusable procedure or verification gained from the work. Prefer improving an existing playbook over creating a near-duplicate.
-- After that review, capture each genuinely reusable discovery with `ak learn <skill|warning|adr|mission> <title> --body <text>` in the source repo. Do not manufacture lessons: if none exists, state `No new reusable lesson` in the closeout review.
-- If a captured lesson should benefit other repos, run `ak ingest <source-repo-path>` from central Akashic; promote it into canonical shared guidance only after review.
-- Act as a senior product-minded engineering partner: surface product intent, user impact, prioritization, tradeoffs, and next-best recommendations when the work is ambiguous, while preserving Tony's owner role.
-- Follow the Continuous Refactoring Constitution in `akashic/principles/CONTINUOUS_REFACTORING_CONSTITUTION.md`: preserve purpose, reduce friction, turn discoveries into durable knowledge, and treat stability as a valid refactoring outcome.
-- Follow the Ponytail YAGNI Contract in `akashic/principles/PONYTAIL_YAGNI_CODEX_CONTRACT.md`: prefer the smallest correct patch, avoid speculative architecture, and use REPOMAP/JCodeMunch before broad file reads.
+Tony retired mandatory AK rituals on 2026-10-22. This owner decision supersedes older AK requirements elsewhere in this repository or historical guidance.
+
+- Do not require AK preflight, doctor/dirty/onboard sequences, Mail sweeps, closeout receipts, Steward ceremonies, forced lessons, ingest, reports, or REPOMAP rebuilds to do or finish work.
+- No AK hook may block tools, create receipts, or require an owner override. Existing receipts, Mail, knowledge, and audit history remain intact; pending history is not a work blocker.
+- Keep meaningful project tests, evidence review, privacy safeguards, explicit authorization boundaries, and protection of other agents' work. These are ordinary engineering responsibilities.
+- Use knowledge, search, validation, and useful handoffs when they help the actual task. Update a useful document directly when there is something worth preserving. Do not manufacture lessons or paperwork.
+- Honor Tony's explicit direction. Do not reinstall retired enforcement or interrupt running agents to refresh instructions.
 
 ## Akashic Stewardship v3 & Reporting Levels
 
@@ -35,27 +24,12 @@
 - Treat JCodeMunch/JCM and REPOMAP as the default navigation path before broad file reads whenever available.
 ## Akashic Knowledge Source
 
-- Treat `/Users/tony/Documents/Projects/Akashic` as the shared engineering knowledge source before broad implementation or debugging.
-- First read `/Users/tony/Documents/Projects/Akashic/akashic/repomaps/current.md`.
-- Then consult relevant Akashic artifacts under `akashic/skills`, `akashic/playbooks`, `akashic/warnings`, `akashic/decisions`, and `akashic/frameworks`.
-- For code navigation, use this order: local `akashic/repomaps/current.md` for orientation, local `akashic/repomaps/meta.json` or `REPOMAP.json` for ranked files, then JCodeMunch MCP for symbol-level retrieval when available.
-- Do not open large source files blindly. Use REPOMAP first to choose likely files, then use JCodeMunch tools such as `resolve_repo`, `get_repo_outline`, `search_symbols`, `get_file_outline`, `get_symbol_source`, `get_ranked_context`, or `get_blast_radius` before full-file reads.
-- If JCodeMunch is unavailable or unindexed, say that briefly, use REPOMAP plus targeted search instead, and do not block the task solely on JCodeMunch.
-- Before broad architectural, refactor, migration, or generation work, review local `akashic/agent-inbox/`, `akashic/warnings/`, `akashic/decisions/`, and `akashic/repomaps/current.md`.
-- Use `docs/inbox-<repo-or-agent>/` only as a human-visible pointer; the canonical message store is `akashic/agent-inbox/`.
-- Active inbox items must be acknowledged, acted on, explicitly deferred, superseded, or closed by updating their frontmatter `status`.
-- For Next.js, Vercel, route, compile, or testing work, start with:
-  - `/Users/tony/Documents/Projects/Akashic/akashic/frameworks/nextjs/platform-lessons.md`
-  - `/Users/tony/Documents/Projects/Akashic/akashic/skills/verify-nextjs-change-locally.md`
-  - `/Users/tony/Documents/Projects/Akashic/akashic/skills/playwright-route-smoke-checks.md`
-  - `/Users/tony/Documents/Projects/Akashic/akashic/playbooks/nextjs-platform-change-validation.md`
-- If Akashic contains a relevant warning, treat it as a hard-earned prior unless current repo evidence proves otherwise.
-- For new repo-local learning, run `ak capture ...` or `ak learn ...` in the repo where the lesson was discovered.
-- Central Akashic does not learn automatically from local captures. After meaningful local learning, run `ak ingest <repo-path>` from `/Users/tony/Documents/Projects/Akashic` so central Akashic gains the knowledge with provenance.
-- Direct-edit central Akashic only when deliberately promoting a lesson into canonical cross-project guidance; then run `ak repomap build && ak validate`.
-- When unsure, capture locally first, ingest centrally second, and promote canonically only after the lesson proves reusable.
-- Use `ak notify <repo-path> <title> --body <text> [--priority high] [--type warning]` when another repo's agent needs to know something; do not rely on Tony as the message carrier.
-- Preserve local repo instructions first when they are stricter or more specific.
+- Shared knowledge lives in `/Users/tony/Documents/Projects/Akashic`; use relevant playbooks, warnings, decisions, skills, and frameworks when useful.
+- Search with available JCodeMunch/JDocMunch/JDataMunch, `rg`, or `ak search`. REPOMAP is an optional navigation aid. Unavailable indexes never block work; keep Munch sharing/statistics off.
+- Use `ak validate` when checking knowledge edits or preparing knowledge for sharing, not as a prerequisite to unrelated work.
+- Use `ak notify <repo-path>` and basic `ak mail` commands for an actual cross-repository handoff. Include the action, evidence, and relevant paths; do not make Tony relay context. Mail is not an execution gate.
+- Direct Markdown edits are welcome. Capture, ingest, reports, and other legacy commands remain manual conveniences, not required workflow.
+- The owner retired mandatory AK rituals on 2026-10-22; this supersedes older AK workflow requirements while preserving project-specific safety and correctness rules.
 
 ## Operating Standard
 
