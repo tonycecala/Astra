@@ -5,6 +5,7 @@ import { PageHeader } from "../../components/PageHeader";
 import { BirthOnboardingPanel } from "../../components/BirthOnboardingPanel";
 import { AllyRemoveButton } from "../../components/AllyRemoveButton";
 import { AllyRelationshipEditor } from "../../components/AllyRelationshipEditor";
+import { SelfTabAvatar } from "../../components/SelfTabAvatar";
 import { getAstraAuthContext } from "../../lib/auth/profile";
 import { ui } from "../../lib/i18n";
 import { db, listUserAllies, listUserAstrologyReportRequests, listUserAstrologyReportResults, listUserChartMakerRequests } from "@astra/db";
@@ -63,6 +64,47 @@ function compactBirthLine(chartRequest?: ChartMakerRequest) {
     chartRequest.birthData.birthTimeKnown === false ? ui.self.birthMomentUnknownTimeShort : chartRequest.birthData.time,
     chartRequest.birthData.location
   ].filter(Boolean).join(" · ");
+}
+
+function initialsFor(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  return (parts.length > 1 ? `${parts[0]?.[0] ?? ""}${parts[parts.length - 1]?.[0] ?? ""}` : name.slice(0, 2)).toUpperCase();
+}
+
+function AlliesConstellation({
+  allies,
+  selfEmail,
+  selfInitial
+}: {
+  allies: Ally[];
+  selfEmail: string;
+  selfInitial: string;
+}) {
+  const orbitAllies = allies.slice(0, 8);
+
+  return (
+    <section className="allies-constellation" aria-label={ui.allies.relationshipTitle}>
+      <div className="allies-constellation-copy">
+        <p>{ui.allies.relationshipLayer}</p>
+        <h2>{ui.allies.relationshipTitle}</h2>
+      </div>
+      <div className="allies-orbit" aria-hidden="true">
+        <span className="allies-orbit-ring allies-orbit-ring-one" />
+        <span className="allies-orbit-ring allies-orbit-ring-two" />
+        <span className="allies-orbit-ring allies-orbit-ring-three" />
+        <div className="allies-orbit-self">
+          <SelfTabAvatar className="allies-orbit-avatar" email={selfEmail || null} initial={selfInitial} size={112} />
+          <strong>{ui.allies.youLabel}</strong>
+        </div>
+        {orbitAllies.map((ally, index) => (
+          <span className={`allies-orbit-node allies-orbit-node-${index + 1}`} key={ally.id} title={ally.name}>
+            {initialsFor(ally.name)}
+          </span>
+        ))}
+      </div>
+      <div className="allies-constellation-count">{ui.allies.allyCount(allies.length)}</div>
+    </section>
+  );
 }
 
 function AllyCard({
@@ -207,13 +249,20 @@ export default async function AlliesPage({ searchParams }: AlliesPageParams = {}
 
   return (
     <>
-      <header className="allies-task-header">
-        <h1 id="allies-title">{ui.allies.eyebrow}</h1>
+      <section className="allies-v1-intro" aria-labelledby="allies-title">
+        <p>{ui.allies.eyebrow}</p>
+        <h1 id="allies-title">{ui.allies.title}</h1>
+        <div>{ui.allies.intro}</div>
         <Link className="button allies-add-action" href="/allies?action=add#ally-birth-onboarding">
           <Plus aria-hidden="true" size={18} />
           {ui.allies.addAction}
         </Link>
-      </header>
+      </section>
+      <AlliesConstellation
+        allies={allies}
+        selfEmail={profile.email}
+        selfInitial={profile.displayName.trim().slice(0, 1).toUpperCase() || "A"}
+      />
       {isAddingAlly || selectedOnboardingChart || onboardingAlly ? <section id="ally-birth-onboarding">
         <BirthOnboardingPanel
           allyFlow={isAddingAlly ? "add" : "report"}

@@ -45,6 +45,19 @@
   gap: 12px;
 }
 
+.optionalDetails > summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 10px 0;
+  color: var(--ink);
+}
+
+.optionalDetails > label {
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+
 .subjectFields input[aria-invalid="true"] {
   border-color: var(--rose);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rose) 50%, transparent);

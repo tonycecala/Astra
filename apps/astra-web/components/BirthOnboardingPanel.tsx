@@ -369,6 +369,36 @@ export function BirthOnboardingPanel({
   const [isCompletingArrival, setIsCompletingArrival] = useState(false);
   const [isEditingReportBirth, setIsEditingReportBirth] = useState(requestedInitialStep === "birth_details" || initialActiveStep === "birth_details");
   const taskHeading = useRef<HTMLHeadingElement>(null);
+  const confirmationDialog = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!isConfirmingReport) return;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const dialog = confirmationDialog.current;
+    const buttons = () => Array.from(dialog?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)") ?? []);
+    buttons()[0]?.focus();
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setIsConfirmingReport(false);
+      } else if (event.key === "Tab") {
+        const controls = buttons();
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
+    }
+    dialog?.addEventListener("keydown", handleKeyDown);
+    return () => {
+      dialog?.removeEventListener("keydown", handleKeyDown);
+      previousFocus?.focus({ preventScroll: true });
+    };
+  }, [isConfirmingReport]);
   useEffect(() => {
     if (cancelHref) taskHeading.current?.focus({ preventScroll: true });
   }, [cancelHref]);
@@ -996,57 +1026,6 @@ export function BirthOnboardingPanel({
                 : ui.self.onboardingProgress(displayedStepIndex + 1, visibleSteps.length, stepLabel(activeStep))}
             </p>
           ) : null}
-          <div className={`${styles.formActions} ${isSingleStepFlow ? styles.formActionsSingle : ""}`}>
-            {!isSingleStepFlow ? (
-              <button
-                className="button secondary"
-                disabled={displayedStepIndex === 0 || isSubmitting || isWizardComplete}
-                onClick={(event) => {
-                  event.preventDefault();
-                  goBack();
-                }}
-                type="button"
-              >
-                <ArrowLeft aria-hidden="true" size={18} />
-                {ui.self.onboardingBack}
-              </button>
-            ) : null}
-            {canSubmit ? (
-              <button className={`button ${styles.primarySubmitAction}`} type="submit" disabled={isSubmitting || Boolean(activeStepError)}>
-                {isSubmitting ? <Send aria-hidden="true" size={18} /> : null}
-                {isSubmitting
-                  ? isAllyAddFlow ? ui.allies.addWorking : isAlly ? ui.allies.reportWorking : isChartArrivalFlow ? ui.self.chartArrivalReading : ui.self.chartRequestWorking
-                  : isAllyAddFlow ? ui.allies.addSubmit : isAlly ? ui.allies.createReport : isChartArrivalFlow ? ui.self.chartArrivalReveal : ui.self.chartRequestSubmit}
-              </button>
-            ) : isWizardComplete ? (
-              <div className={styles.completionActions}>
-                {retryReportId ? (
-                  <button className="button" type="button" disabled={Boolean(generatingReportId)} onClick={() => generateReport(retryReportId)}>
-                    {generatingReportId ? ui.self.reportGenerateWorking : ui.self.reportRetry}
-                  </button>
-                ) : <button className={`${styles.buttonDone} button`} type="button" disabled>
-                  <Check aria-hidden="true" size={18} />
-                  {ui.self.chartRequestQueued}
-                </button>}
-                <button className="button secondary" onClick={startAnotherOnboarding} type="button">
-                  {ui.self.chartRequestStartOver}
-                </button>
-              </div>
-            ) : (
-              <button
-                className="button"
-                disabled={Boolean(activeStepError)}
-                onClick={(event) => {
-                  event.preventDefault();
-                  goNext();
-                }}
-                type="button"
-              >
-                {ui.self.onboardingNext}
-                <ArrowRight aria-hidden="true" size={18} />
-              </button>
-            )}
-          </div>
           {activeStep === "focus" ? (
             <div className={styles.subjectFields}>
               <fieldset className={styles.optionGroup}>
@@ -1140,50 +1119,6 @@ export function BirthOnboardingPanel({
                   }} disabled={isSubmitting || isWizardComplete}>{ui.self.editBirthDetails}</button>
                 </div>
               ) : null}
-              <details>
-                <summary>{ui.self.chartSettingsLabel}</summary>
-              <fieldset className={`${styles.optionGroup} ${styles.chartSettingsGroup}`}>
-                <legend>{ui.self.chartSettingsLabel}</legend>
-                <div className={styles.settingsGrid}>
-                  <div className={styles.settingsRow}>
-                    <span className={styles.controlLabel}>{ui.self.zodiacModeLabel}</span>
-                    <div className={styles.radioOptionRow} role="radiogroup" aria-label={ui.self.zodiacModeLabel}>
-                      {(["tropical", "sidereal"] as const).map((zodiacMode) => (
-                        <label className={styles.radioOption} key={zodiacMode}>
-                          <input
-                            checked={form.zodiacMode === zodiacMode}
-                            name="zodiacMode"
-                            onChange={() => updateField("zodiacMode", zodiacMode)}
-                            type="radio"
-                          />
-                          <span>{ui.self.zodiacModes[zodiacMode]}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                  <div className={styles.settingsRow}>
-                    <span className={styles.controlLabel}>{ui.self.houseSystemLabel}</span>
-                    {hasHouseCalculation ? (
-                      <div className={styles.radioOptionRow} role="radiogroup" aria-label={ui.self.houseSystemLabel}>
-                        {(["whole-sign", "placidus"] as const).map((houseSystem) => (
-                          <label className={styles.radioOption} key={houseSystem}>
-                            <input
-                              checked={form.houseSystem === houseSystem}
-                              name="houseSystem"
-                              onChange={() => updateField("houseSystem", houseSystem)}
-                              type="radio"
-                            />
-                            <span>{ui.self.houseSystems[houseSystem]}</span>
-                          </label>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className={styles.fieldHint}>{ui.self.houseSystemUnavailable}</span>
-                    )}
-                  </div>
-                </div>
-              </fieldset>
-              </details>
               {!isChartArrivalFlow ? <fieldset className={styles.optionGroup} aria-label={ui.self.onboardingReportTypeLabel}>
                 {availableReportTypes.map((reportType) => (
                   <label className={styles.option} key={reportType}>
@@ -1207,11 +1142,6 @@ export function BirthOnboardingPanel({
               {!isChartArrivalFlow && activeStepError ? (
                 <p className={styles.subjectFieldError} aria-live="polite">{activeStepError}</p>
               ) : null}
-              {!isChartArrivalFlow ? <label>
-                <span>{ui.self.portraitQuestionLabel}</span>
-                <textarea maxLength={500} rows={2} value={form.portraitQuestion} onChange={(event) => updateField("portraitQuestion", event.target.value)} />
-                <small>{ui.self.portraitQuestionHint}</small>
-              </label> : null}
               {!isChartArrivalFlow && form.reportType === "progressed" ? (
                 <label>
                   <span>{ui.self.progressedAsOfLabel}</span>
@@ -1269,6 +1199,58 @@ export function BirthOnboardingPanel({
                   ) : null}
                 </>
               ) : null}
+              {!isChartArrivalFlow ? <details className={styles.optionalDetails}>
+                <summary>{ui.self.reportQuestionDisclosure}</summary>
+                <label>
+                  <span>{ui.self.portraitQuestionLabel}</span>
+                  <textarea maxLength={500} rows={2} value={form.portraitQuestion} onChange={(event) => updateField("portraitQuestion", event.target.value)} />
+                  <small>{ui.self.portraitQuestionHint}</small>
+                </label>
+              </details> : null}
+              <details className={styles.optionalDetails}>
+                <summary>{ui.self.chartSettingsLabel}</summary>
+              <fieldset className={`${styles.optionGroup} ${styles.chartSettingsGroup}`}>
+                <legend>{ui.self.chartSettingsLabel}</legend>
+                <div className={styles.settingsGrid}>
+                  <div className={styles.settingsRow}>
+                    <span className={styles.controlLabel}>{ui.self.zodiacModeLabel}</span>
+                    <div className={styles.radioOptionRow} role="radiogroup" aria-label={ui.self.zodiacModeLabel}>
+                      {(["tropical", "sidereal"] as const).map((zodiacMode) => (
+                        <label className={styles.radioOption} key={zodiacMode}>
+                          <input
+                            checked={form.zodiacMode === zodiacMode}
+                            name="zodiacMode"
+                            onChange={() => updateField("zodiacMode", zodiacMode)}
+                            type="radio"
+                          />
+                          <span>{ui.self.zodiacModes[zodiacMode]}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div className={styles.settingsRow}>
+                    <span className={styles.controlLabel}>{ui.self.houseSystemLabel}</span>
+                    {hasHouseCalculation ? (
+                      <div className={styles.radioOptionRow} role="radiogroup" aria-label={ui.self.houseSystemLabel}>
+                        {(["whole-sign", "placidus"] as const).map((houseSystem) => (
+                          <label className={styles.radioOption} key={houseSystem}>
+                            <input
+                              checked={form.houseSystem === houseSystem}
+                              name="houseSystem"
+                              onChange={() => updateField("houseSystem", houseSystem)}
+                              type="radio"
+                            />
+                            <span>{ui.self.houseSystems[houseSystem]}</span>
+                          </label>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className={styles.fieldHint}>{ui.self.houseSystemUnavailable}</span>
+                    )}
+                  </div>
+                </div>
+              </fieldset>
+              </details>
             </div>
           ) : null}
 
@@ -1301,13 +1283,65 @@ export function BirthOnboardingPanel({
             </>
           ) : null}
 
+          <div className={`${styles.formActions} ${isSingleStepFlow ? styles.formActionsSingle : ""}`}>
+            {!isSingleStepFlow && displayedStepIndex > 0 ? (
+              <button
+                className="button secondary"
+                disabled={isSubmitting || isWizardComplete}
+                onClick={(event) => {
+                  event.preventDefault();
+                  goBack();
+                }}
+                type="button"
+              >
+                <ArrowLeft aria-hidden="true" size={18} />
+                {ui.self.onboardingBack}
+              </button>
+            ) : null}
+            {canSubmit ? (
+              <button className={`button ${styles.primarySubmitAction}`} type="submit" disabled={isSubmitting || Boolean(activeStepError)}>
+                {isSubmitting ? <Send aria-hidden="true" size={18} /> : null}
+                {isSubmitting
+                  ? isAllyAddFlow ? ui.allies.addWorking : isAlly ? ui.allies.reportWorking : isChartArrivalFlow ? ui.self.chartArrivalReading : ui.self.chartRequestWorking
+                  : isAllyAddFlow ? ui.allies.addSubmit : isChartArrivalFlow ? ui.self.chartArrivalReveal : ui.self.reportReview}
+              </button>
+            ) : isWizardComplete ? (
+              <div className={styles.completionActions}>
+                {retryReportId ? (
+                  <button className="button" type="button" disabled={Boolean(generatingReportId)} onClick={() => generateReport(retryReportId)}>
+                    {generatingReportId ? ui.self.reportGenerateWorking : ui.self.reportRetry}
+                  </button>
+                ) : <button className={`${styles.buttonDone} button`} type="button" disabled>
+                  <Check aria-hidden="true" size={18} />
+                  {ui.self.chartRequestQueued}
+                </button>}
+                <button className="button secondary" onClick={startAnotherOnboarding} type="button">
+                  {ui.self.chartRequestStartOver}
+                </button>
+              </div>
+            ) : (
+              <button
+                className="button"
+                disabled={Boolean(activeStepError)}
+                onClick={(event) => {
+                  event.preventDefault();
+                  goNext();
+                }}
+                type="button"
+              >
+                {activeStep === "birth_details" && !isChartArrivalFlow ? ui.self.reportChoose : ui.self.onboardingNext}
+                <ArrowRight aria-hidden="true" size={18} />
+              </button>
+            )}
+          </div>
+
           {canSubmit && !isConfirmingReport ? (
             <div className={styles.mobileSubmitBar} data-mobile-report-submit>
               <button className="button" disabled={isSubmitting || Boolean(activeStepError)} type="submit">
                 {isSubmitting ? <Send aria-hidden="true" size={18} /> : null}
                 {isSubmitting
                   ? isAllyAddFlow ? ui.allies.addWorking : isAlly ? ui.allies.reportWorking : isChartArrivalFlow ? ui.self.chartArrivalReading : ui.self.chartRequestWorking
-                  : isAllyAddFlow ? ui.allies.addSubmit : isAlly ? ui.allies.createReport : isChartArrivalFlow ? ui.self.chartArrivalReveal : ui.self.chartRequestSubmit}
+                  : isAllyAddFlow ? ui.allies.addSubmit : isChartArrivalFlow ? ui.self.chartArrivalReveal : ui.self.reportReview}
               </button>
             </div>
           ) : null}
@@ -1341,6 +1375,7 @@ export function BirthOnboardingPanel({
         {isConfirmingReport ? (
           <div className={styles.confirmLayer} data-report-confirm-layer role="presentation" style={confirmLayerStyle}>
             <section
+              ref={confirmationDialog}
               aria-labelledby="report-confirm-title"
               aria-modal="true"
               className={styles.confirmDialog}
@@ -1372,7 +1407,7 @@ export function BirthOnboardingPanel({
                   onClick={submitConfirmedReport}
                   disabled={isSubmitting || !canAffordSelectedReport}
                 >
-                  {ui.self.portraitCreate}
+                  {ui.self.reportConfirmCreate(selectedReportCost)}
                 </button>
               </div>
             </section>

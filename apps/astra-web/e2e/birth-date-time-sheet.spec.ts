@@ -215,7 +215,7 @@ test.describe("birth date and time sheet", () => {
 
     if (testInfo.project.name === "mobile") {
       await page.goto("/self?start=report#self-birth-onboarding");
-      const orderReportButton = page.getByRole("button", { name: "Order Report", exact: true });
+      const orderReportButton = page.getByRole("button", { name: "Review report", exact: true });
       await expect(orderReportButton).toBeVisible();
       await orderReportButton.click();
       const confirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
@@ -241,8 +241,8 @@ test.describe("birth date and time sheet", () => {
       });
       await allyDialog.getByRole("button", { name: "Continue" }).first().click();
       await expect(allyDialog).toHaveCount(0);
-      await page.getByRole("button", { name: "Next", exact: true }).click();
-      await page.getByRole("button", { name: "Order Report", exact: true }).focus();
+      await page.getByRole("button", { name: "Choose report", exact: true }).click();
+      await page.getByRole("button", { name: "Review report", exact: true }).focus();
       await page.keyboard.press("Enter");
       const allyConfirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
       await expect(allyConfirmDialog.getByLabel("Review report order")).toContainText("Name");
@@ -250,7 +250,7 @@ test.describe("birth date and time sheet", () => {
       await expect(allyConfirmDialog).toContainText("Current balance");
       await expect(allyConfirmDialog).toContainText("30 Stars");
       await expect(allyConfirmDialog).not.toContainText("Not enough Stars");
-      await expect(allyConfirmDialog.getByRole("button", { name: "Order Report" })).toBeVisible();
+      await expect(allyConfirmDialog.getByRole("button", { name: "Create report · 10 Stars" })).toBeVisible();
       await expect(allyConfirmDialog.getByRole("button", { name: "Cancel" })).toBeVisible();
       await allyConfirmDialog.getByRole("button", { name: "Cancel" }).click();
       await expect(allyConfirmDialog).toHaveCount(0);
@@ -262,8 +262,8 @@ test.describe("birth date and time sheet", () => {
       await expect(savedBirthDetails).toContainText("May 23, 1961");
       await expect(savedBirthDetails).toContainText("9:30 AM");
       await expect(savedBirthDetails).toContainText("America/Chicago");
-      await page.getByRole("button", { name: "Next", exact: true }).click();
-      await page.getByRole("button", { name: "Order Report", exact: true }).focus();
+      await page.getByRole("button", { name: "Choose report", exact: true }).click();
+      await page.getByRole("button", { name: "Review report", exact: true }).focus();
       await page.keyboard.press("Enter");
       const timedConfirmDialog = page.getByRole("dialog", { name: "Confirm Report" });
       const timedReportReview = timedConfirmDialog.getByLabel("Review report order");

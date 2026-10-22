@@ -133,6 +133,7 @@ test.describe("report entry points", () => {
     const withReport = await makeAlly(userId, `Prior Report Ally ${testInfo.project.name}`, { withChart: true, withReport: true });
     const withoutReport = await makeAlly(userId, `No Report Ally ${testInfo.project.name}`, { withChart: true });
     const withoutChart = await makeAlly(userId, `No Chart Ally ${testInfo.project.name}`);
+    const relationshipPartnerChart = await makeChart(userId, `Relationship Partner ${testInfo.project.name}`);
     const guard = guardReportGeneration(page);
     let expectedBlockedPosts = 0;
     const [initialLedger] = await db
@@ -164,6 +165,8 @@ test.describe("report entry points", () => {
     await expect(page).toHaveURL(new RegExp(`[?&]ally=${encodeURIComponent(withoutChart.ally.id)}(?:&|$)`));
 
     if (testInfo.project.name === "desktop") {
+      const nextButton = panel.getByRole("button", { name: "Choose report", exact: true });
+      await expect(nextButton).toBeDisabled();
       await panel.getByLabel("Edit birth details").click();
       const birthDialog = page.getByRole("dialog", { name: "Birth Details" });
       await birthDialog.getByLabel("Birth year").fill("1961");
@@ -172,18 +175,42 @@ test.describe("report entry points", () => {
       await birthDialog.locator('input[type="checkbox"]').check();
       await birthDialog.getByRole("button", { name: "Continue" }).first().click();
       await expect(birthDialog).toHaveCount(0);
-      await panel.getByRole("button", { name: "Next", exact: true }).click();
+      await expect(panel.getByRole("button", { name: "Choose report", exact: true })).toBeEnabled();
+      await panel.getByRole("button", { name: "Choose report", exact: true }).click();
       await expect(panel.getByRole("radio", { name: /Personal/ })).toBeVisible();
 
-      await panel.getByRole("button", { name: "Create report", exact: true }).click();
+      await panel.getByRole("radio", { name: /Relationship/ }).check();
+      await expect(panel.getByLabel("Who is this connection with?")).toBeVisible();
+      await expect(panel.getByRole("button", { name: "Review report", exact: true })).toBeDisabled();
+      await expect(panel.getByText("Choose the other person for this Relationship portrait.")).toBeVisible();
+      await panel.getByLabel("Who is this connection with?").selectOption(relationshipPartnerChart.id);
+      await expect(panel.getByRole("button", { name: "Review report", exact: true })).toBeEnabled();
+
+      await panel.getByRole("radio", { name: /Life Chapter/ }).check();
+      await expect(panel.getByRole("button", { name: "Review report", exact: true })).toBeDisabled();
+      await expect(panel.getByText("Add a known birth time before creating a Life Chapter.")).toBeVisible();
+
+      await panel.getByRole("radio", { name: /Personal/ }).check();
+      const questionDisclosure = panel.getByText("Add a question (optional)", { exact: true });
+      await expect(questionDisclosure).toBeVisible();
+      const question = panel.getByLabel("Anything you’d like this reading to explore? (optional)");
+      await expect(question).toBeHidden();
+      await questionDisclosure.click();
+      await question.fill("How can this person make room for a new chapter?");
+
+      await panel.getByRole("button", { name: "Review report", exact: true }).click();
       const confirmation = page.getByRole("dialog", { name: "Confirm Report" });
       await expect(confirmation.getByLabel("Review report order")).toContainText(`No Chart Ally ${testInfo.project.name}`);
       await expect(confirmation.getByLabel("Review report order")).toContainText("Cost");
+      await expect(confirmation.getByLabel("Review report order")).toContainText("10 Stars");
       await expect(confirmation.getByLabel("Review report order")).toContainText("Stars");
       await expect(confirmation).toContainText("Current balance");
-      await expect(confirmation.getByRole("button", { name: "Create portrait", exact: true })).toBeVisible();
+      await expect(confirmation.getByLabel("Review report order")).toContainText("Personal");
+      await expect(confirmation.getByRole("button", { name: "Create report · 10 Stars", exact: true })).toBeVisible();
       await confirmation.getByRole("button", { name: "Cancel", exact: true }).click();
       await expect(confirmation).toHaveCount(0);
+      await expect(panel.getByRole("radio", { name: /Personal/ })).toBeChecked();
+      await expect(panel.getByLabel("Anything you’d like this reading to explore? (optional)")).toHaveValue("How can this person make room for a new chapter?");
       expect(guard.reportPosts).toEqual([]);
       expect(guard.generationAttempts).toEqual([]);
 
@@ -203,12 +230,12 @@ test.describe("report entry points", () => {
         await route.continue();
       });
 
-      await panel.getByRole("button", { name: "Create report", exact: true }).click();
+      await panel.getByRole("button", { name: "Review report", exact: true }).click();
       const confirmedOrder = page.getByRole("dialog", { name: "Confirm Report" });
       const blockedReportResponse = page.waitForResponse((response) =>
         new URL(response.url()).pathname === "/api/reports" && response.request().method() === "POST" && response.status() === 599
       );
-      await confirmedOrder.getByRole("button", { name: "Create portrait", exact: true }).click();
+      await confirmedOrder.getByRole("button", { name: "Create report · 10 Stars", exact: true }).click();
       await blockedReportResponse;
       expect(chartBodies).toHaveLength(1);
       expect(chartBodies[0].context?.subject?.allyId).toBe(withoutChart.ally.id);
@@ -242,7 +269,7 @@ test.describe("report entry points", () => {
     await page.goto(`/self?chart=${encodeURIComponent(chart.id)}&start=report#self-birth-onboarding`);
     const panel = page.locator('section[aria-label="Birth data onboarding"]');
     await panel.getByRole("radio", { name: /Life Chapter/ }).check();
-    await expect(panel.getByRole("button", { name: "Order Report", exact: true })).toBeDisabled();
+    await expect(panel.getByRole("button", { name: "Review report", exact: true })).toBeDisabled();
     await expect(panel.getByText("Add a known birth time before creating a Life Chapter.")).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await expectNoGenerationOrSpend(userId, Number(initialLedger?.total ?? 0), guard);

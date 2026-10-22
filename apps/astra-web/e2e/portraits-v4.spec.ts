@@ -38,9 +38,10 @@ test("@portraits-v4 three choices, gifted Stars, immutable reader and private su
   await expect(panel.getByLabel("As of", { exact: true })).not.toHaveValue("");
   await expect(panel.getByLabel("Who is this connection with?")).toHaveCount(0);
   await panel.getByRole("radio", { name: /Personal/ }).check();
+  await panel.getByText("Add a question (optional)", { exact: true }).click();
   await panel.getByLabel("Anything you’d like this reading to explore? (optional)").fill("How can I make room for curiosity?");
   const beforeConfirmation = await getCreditBalance(db, userId);
-  await panel.getByRole("button", { name: "Create report", exact: true }).first().click();
+  await panel.getByRole("button", { name: "Review report", exact: true }).click();
   const confirmation = page.getByRole("dialog", { name: "Confirm Report" });
   await expect(confirmation).toBeVisible();
   await expect(confirmation.getByText("10 Stars", { exact: true })).toBeVisible();
@@ -114,11 +115,12 @@ test("@portraits-v4 confirmed order can retry a failed writer without another ch
   await page.waitForLoadState("networkidle");
   await page.goto(`/self?chart=${chart.id}&start=report`);
   await page.waitForLoadState("networkidle");
+  await page.getByText("Add a question (optional)", { exact: true }).click();
   await page.getByLabel("Anything you’d like this reading to explore? (optional)").fill("A place for curiosity");
   const before = await getCreditBalance(db, userId);
-  await page.getByRole("button", { name: "Order Report", exact: true }).first().click();
+  await page.getByRole("button", { name: "Review report", exact: true }).click();
   const created = page.waitForResponse(response => new URL(response.url()).pathname === "/api/reports" && response.request().method() === "POST");
-  await page.getByRole("dialog", { name: "Confirm Report" }).getByRole("button", { name: "Create portrait", exact: true }).click();
+  await page.getByRole("dialog", { name: "Confirm Report" }).getByRole("button", { name: "Create report · 10 Stars", exact: true }).click();
   const response = await created;
   expect(response.status()).toBe(201);
   const { request } = await response.json();

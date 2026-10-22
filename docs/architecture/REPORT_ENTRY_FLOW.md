@@ -24,7 +24,7 @@ The selected Ally remains the same person when birth details are missing. This i
 
 ## Evidence and patterns
 
-The old Ally card replaced Create with an icon-only View action after a saved report. Its no-chart link went to Add Ally. Self's mount key ignored the requested step. Oversized populated Allies introductory content hid the actual task below the first screen.
+The old Ally card replaced Create with an icon-only View action after a saved report. Its no-chart link went to Add Ally. Self's mount key ignored the requested step. The Allies introduction and avatar stellarium are part of Astra’s intended identity. Their removal was an overreach, corrected on owner review; preserve them while improving report controls.
 
 Mobbin's [Apollo report creation flow](https://mobbin.com/flows/f7d29a45-03fa-4a10-af77-0892be3d449c) visibly separates Create report, configuration, and an explicit Save report. Borrow that action hierarchy, not its analytics dashboard or visual identity. The [Deputy flow](https://mobbin.com/flows/5e01b3be-9c08-4675-ba6c-4c4606b85e28) also retains a visible Create report action alongside existing reports. Reviewed actual returned screen previews.
 
@@ -40,6 +40,16 @@ Implementation and final QA evidence are recorded in the private local `.astra-e
 
 ## Implementation review
 
-The changed paths implement the acceptance criteria directly: Self resets its requested step and skips unrelated arrival setup for an explicit report request; Allies exposes persistent report actions and binds incomplete setup to an owned Ally; the shared panel retains the person, permits birth-detail correction, explains invalid report selections, and preserves priced confirmation. Compact Allies layout removes the redundant illustration and its unused styles. Styling and copy remain in the existing CSS/i18n system.
+The changed paths implement the acceptance criteria directly: Self resets its requested step and skips unrelated arrival setup for an explicit report request; Allies exposes persistent report actions and binds incomplete setup to an owned Ally; the shared panel retains the person, permits birth-detail correction, explains invalid report selections, and preserves priced confirmation. The original Allies introduction and avatar stellarium are restored. Report actions and same-person setup remain intact. Styling and copy remain in the existing CSS/i18n system.
 
 Static validation: typecheck, i18n check, production build, focused birth-date and report-basis checks passed. Repository lint passes with ignored private experiment exports excluded; one pre-existing unused-variable warning remains in an unrelated repair script. Mechanical design review found only the existing Inter font choice, retained as the approved product typography. Rendered review by the UI designer accepted the changed journey. Desktop/tablet/phone click-through found no page errors, horizontal overflow or report writes.
+
+## Ordering refinement — October 22, owner correction
+
+Preserve the lovely, mysterious Allies atmosphere. Simplify the report task, not the product identity. The avatar stellarium and original introduction return unchanged.
+
+The remaining flow is choose → review → deliberately create. Required report-specific details belong immediately after the report choice. Optional questions and chart settings remain available without interrupting that path. The desktop action follows the fields; the phone keeps a reachable action above its navigation. Review wording must not imply that a report has already been ordered; the final creation action must show its Stars cost.
+
+This pass does not change report generation, pricing, personal data, chart calculations, or source checks. Alpha only; all paid endpoints are intercepted during QA. Updated evidence: `.astra-exports/report-order-flow-2026-10-22/QA.md`.
+
+Refinement validation: production build, typecheck, i18n, focused smoke tests and lint pass (one unrelated pre-existing lint warning). Twelve responsive regression cases pass across desktop and tablet/phone runs. Parent click-through at all three sizes confirms the restored stellarium, report selection, Personal/Life cost review and Relationship prerequisite with zero write attempts/page errors/overflow. Confirmation retains focus and cancellation retains the draft.

@@ -579,8 +579,8 @@ test.describe("clean-start routes", () => {
     await expect(existingOrderPanel.getByText("2021-12-23 · 01:50 · Plano, TX")).toBeVisible();
     await expect(existingOrderPanel.getByText("Birth date", { exact: true })).toHaveCount(0);
     await expect(existingOrderPanel.getByText("Birth place", { exact: true })).toHaveCount(0);
-    await expect(existingOrderPanel.getByRole("button", { name: "Create report", exact: true })).toBeVisible();
-    await expect(existingOrderPanel.getByRole("button", { name: "Order Report", exact: true })).toHaveCount(0);
+    await expect(existingOrderPanel.getByRole("button", { name: "Review report", exact: true })).toBeVisible();
+    await expect(existingOrderPanel.getByRole("button", { name: "Create report · 10 Stars", exact: true })).toHaveCount(0);
 
     await page.goto("/allies");
     await expect(page.getByRole("link", { name: "Add an Ally" }).first()).toBeVisible();
@@ -722,13 +722,13 @@ test.describe("clean-start routes", () => {
     await page.goto("/self#self-birth-onboarding");
     await expect(page.getByRole("heading", { name: "Request Report" })).toBeVisible();
     await expect(page.getByText("Step 1 of 2: Birth details")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Order Report", exact: true })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Review report", exact: true })).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Create report", exact: true })).toHaveAttribute("href", /start=report/);
-    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await page.getByRole("button", { name: "Choose report", exact: true }).click();
     await expect(page.getByText("Step 2 of 2: Report")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Order Report", exact: true })).toBeVisible();
-    await page.getByLabel("Synastry Report").check();
-    await expect(page.getByLabel("Comparison chart")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Review report", exact: true })).toBeVisible();
+    await page.getByRole("radio", { name: /Relationship/ }).check();
+    await expect(page.getByLabel("Who is this connection with?")).toBeVisible();
 
     const completedChart = await createCompletedChart(email, { name });
     await page.goto(`/self?chart=${completedChart.request.id}&start=birth_details#self-birth-onboarding`);
