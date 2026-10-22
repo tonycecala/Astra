@@ -1,17 +1,22 @@
 import {
   ASTRA_EPHEMERIS_ENGINE_ENV,
   ASTRA_OPENAI_API_KEY_ENV,
+  ASTRA_OPENROUTER_API_KEY_ENV,
+  ASTRA_OPENROUTER_BASE_URL_ENV,
   ASTRA_REPORT_MODEL_ENV,
   ASTRA_REPORT_MODEL_PROVIDER_ENV,
   ASTRA_REPORT_WRITER_ENV,
   DEBUG_MODEL_REPORT_WRITER,
   LOCAL_CHART_ROUTINE_ENGINE,
+  OPENROUTER_REPORT_MODEL_PROVIDER,
   ASTRA_SYNASTRY_V3_PROMPT_VERSION,
+  buildSynastryV3Prompt,
+  buildSynastryV3SemanticPrompt,
   buildAstrologyReportResultAsync,
   synastryToneSnapshot,
   synastryV3Headings
 } from "@astra/astrology";
-import { astrologyReportRequestSchema } from "@astra/contracts";
+import { astrologyReportRequestSchema, recordAstrologyReportResultSchema } from "@astra/contracts";
 import { reportModelTimeoutMsFor } from "../packages/astrology/src/report/providerUsage";
 
 if (reportModelTimeoutMsFor("synastry", 90_000, 240_000) !== 240_000) {
@@ -57,9 +62,18 @@ const env = {
 };
 
 const headings = synastryV3Headings(tone, "Partner");
-function portraitBlock() {
+const smokeEvidence = [{ id: "S01", label: "bond", meaning: "A direct relational signal supports emotional recognition.", evidenceJobs: ["smoke"] }];
+const loverPrompt = buildSynastryV3Prompt({ readerName: "Tony", allyName: "Partner", tone, evidenceIndex: smokeEvidence });
+if (!loverPrompt.includes("A Lover request invites exploration of romantic interest.") || !loverPrompt.includes("the pull can be mutual")) throw new Error("V3.6 writer prompt lost Lover or shared possibility guidance.");
+const semanticPrompt = buildSynastryV3SemanticPrompt({ portrait: "The pull can be mutual, and Partner may feel seen.", evidenceIndex: smokeEvidence });
+if (!semanticPrompt.includes("the pull can be mutual") || !semanticPrompt.includes("Distinguish 'the pull can be mutual' from 'the pull is mutual.'")) throw new Error("V3.6 semantic prompt lost shared possibility guidance.");
+for (const relationship of ["Family", "Business", "Public Figure"] as const) {
+  const prompt = buildSynastryV3Prompt({ readerName: "Tony", allyName: "Partner", tone: synastryToneSnapshot({ allyId: `ally_${relationship}`, relationship }), evidenceIndex: smokeEvidence });
+  if (prompt.includes("A Lover request invites exploration of romantic interest.")) throw new Error(`${relationship} prompt incorrectly received Lover-only context.`);
+}
+function portraitBlock(editorialPhrase = "Partner remains independently present") {
   const sections = headings.map((heading, index) => {
-    const words = `${index === 0 ? "Romantic sexual desire feels immediate. " : ""}Partner remains independently present, while the relationship between you develops its own feeling and hidden consequence.`.trim().split(/\s+/);
+    const words = `${index === 0 ? "The pull can feel immediate, and Partner may feel seen. " : ""}${editorialPhrase}, while the relationship between you develops its own feeling and hidden consequence.`.trim().split(/\s+/);
     while (words.length < 240) words.push("feeling");
     return `## ${heading}\n\n${words.join(" ")}`;
   });
@@ -89,10 +103,17 @@ const successfulFetch: typeof fetch = async (_url, init) => {
     if (!body.input.includes('Every prose paragraph must address Tony as "you" or "your,"')) {
       throw new Error("V3.1.1 prompt did not keep the selected reader in second person paragraph by paragraph.");
     }
-    return new Response(JSON.stringify({ output_text: portraitBlock() }), { headers: { "content-type": "application/json" } });
+    if (!body.input.includes("A Lover request invites exploration of romantic interest.") || !body.input.includes("the pull can be mutual")) {
+      throw new Error("V3.6 writer request did not propagate possibility guidance.");
+    }
+    return new Response(JSON.stringify({ output_text: portraitBlock(), usage: { input_tokens: 100, output_tokens: 800, total_tokens: 900 } }), { headers: { "content-type": "application/json" } });
   }
   if (body.max_output_tokens !== 1_400) throw new Error("Semantic support call must use the 1,400-token ceiling.");
-  return new Response(JSON.stringify({ output_text: JSON.stringify({ supportedClaims: ["mutual recognition"], unsupportedClaims: [], severity: "none" }) }), { headers: { "content-type": "application/json" } });
+  if (!body.input?.includes("Partner remains independently present")) throw new Error("Semantic support must review the writer portrait directly.");
+  if (!body.input?.includes("Distinguish 'the pull can be mutual' from 'the pull is mutual.'")) {
+    throw new Error("V3.6 semantic-review request did not propagate possibility guidance.");
+  }
+  return new Response(JSON.stringify({ output_text: JSON.stringify({ supportedClaims: ["mutual recognition"], unsupportedClaims: [], severity: "none" }), usage: { input_tokens: 90, output_tokens: 100, total_tokens: 190 } }), { headers: { "content-type": "application/json" } });
 };
 
 const result = await buildAstrologyReportResultAsync(request, { env, fetchImpl: successfulFetch });
@@ -100,6 +121,9 @@ if (result.status !== "completed" || result.sections.length !== 6 || calls !== 2
 const v3 = result.generationMetadata?.synastryV3;
 if (!v3 || v3.schemaVersion !== 2 || v3.sourceReportIds.length || !v3.validation.greenLight || v3.chapterTrace.length !== 6) throw new Error("V3.1 immutable result metadata was incomplete.");
 if (result.generationMetadata?.promptVersion !== ASTRA_SYNASTRY_V3_PROMPT_VERSION) throw new Error("V3.1 prompt version was not persisted.");
+if (v3.editor !== undefined) throw new Error("New Synastry results must not contain editor metadata.");
+if (result.generationMetadata?.inputTokens !== 190 || result.generationMetadata?.outputTokens !== 900) throw new Error("Usage must include only writer and semantic reviewer.");
+if (!result.sections.some((section) => section.body.includes("Partner remains independently present"))) throw new Error("Accepted Synastry result did not preserve writer output.");
 if (result.sections.some((section) => /\b(?:Venus|aspect|S\d{2})\b/i.test(section.body))) throw new Error("Technical astrology leaked into V3 portrait prose.");
 if (/\b(?:zodiac|chart|aspect)\b/i.test(result.publicSignal?.summary ?? "")) throw new Error("Technical astrology leaked into the V3 public signal.");
 
@@ -120,9 +144,10 @@ const reciprocalRequest = astrologyReportRequestSchema.parse({
 });
 const reciprocalHeadings = synastryV3Headings(tone, "Tony");
 let reciprocalCalls = 0;
+let reciprocalPortraitOutput = "";
 const reciprocalFetch: typeof fetch = async (_url, init) => {
   reciprocalCalls += 1;
-  const body = JSON.parse(String(init?.body)) as { input?: string };
+  const body = JSON.parse(String(init?.body)) as { input?: string; max_output_tokens?: number };
   if (reciprocalCalls === 1) {
     if (!body.input?.includes('The selected reader is Partner; address Partner only as "you". The Ally is Tony.')) {
       throw new Error("The reciprocal writer prompt did not preserve the selected comparison reader.");
@@ -141,9 +166,10 @@ const reciprocalFetch: typeof fetch = async (_url, init) => {
       relationalConsequence: "The potential can open closeness or complicate pacing.",
       supportedFeeling: "mutual recognition"
     }));
-    const output = `<portrait_markdown>\n# Partner + Tony\n\n${sections.join("\n\n")}\n</portrait_markdown>\n<evidence_trace_json>\n${JSON.stringify(trace)}\n</evidence_trace_json>`;
-    return new Response(JSON.stringify({ output_text: output }), { headers: { "content-type": "application/json" } });
+    reciprocalPortraitOutput = `<portrait_markdown>\n# Partner + Tony\n\n${sections.join("\n\n")}\n</portrait_markdown>\n<evidence_trace_json>\n${JSON.stringify(trace)}\n</evidence_trace_json>`;
+    return new Response(JSON.stringify({ output_text: reciprocalPortraitOutput }), { headers: { "content-type": "application/json" } });
   }
+  if (body.max_output_tokens !== 1_400) throw new Error("Reciprocal semantic call must use the 1,400-token ceiling.");
   return new Response(JSON.stringify({ output_text: JSON.stringify({ supportedClaims: ["mutual recognition"], unsupportedClaims: [], severity: "none" }) }), { headers: { "content-type": "application/json" } });
 };
 const reciprocalResult = await buildAstrologyReportResultAsync(reciprocalRequest, { env, fetchImpl: reciprocalFetch });
@@ -181,4 +207,59 @@ if (!reviewerUnavailable.generationMetadata?.reviewNotes?.some((note) => note.co
   throw new Error("Semantic-reviewer unavailability must create a private review note.");
 }
 
-console.log("Synastry V3.1 engine smoke passed for direct packet input, paragraph Evidence, reviewer-only retry, and fail-open review notes.");
+const openRouterEnv = {
+  [ASTRA_EPHEMERIS_ENGINE_ENV]: LOCAL_CHART_ROUTINE_ENGINE,
+  [ASTRA_REPORT_WRITER_ENV]: DEBUG_MODEL_REPORT_WRITER,
+  [ASTRA_REPORT_MODEL_PROVIDER_ENV]: OPENROUTER_REPORT_MODEL_PROVIDER,
+  [ASTRA_REPORT_MODEL_ENV]: "anthropic/claude-sonnet-4.6",
+  [ASTRA_OPENROUTER_API_KEY_ENV]: "test-key",
+  [ASTRA_OPENROUTER_BASE_URL_ENV]: "https://openrouter.test/v1"
+};
+let openRouterCalls = 0;
+const openRouterFetch: typeof fetch = async (_url, init) => {
+  openRouterCalls += 1;
+  const body = JSON.parse(String(init?.body)) as {
+    model?: string;
+    max_tokens?: number;
+    reasoning?: { enabled?: boolean; effort?: string };
+    provider?: { only?: string[]; allow_fallbacks?: boolean; data_collection?: string; zdr?: boolean };
+    messages?: Array<{ content?: string }>;
+  };
+  const prompt = body.messages?.[0]?.content ?? "";
+  const expectedProvider = "amazon-bedrock/global";
+  if (!body.provider || body.provider.only?.[0] !== expectedProvider || body.provider.allow_fallbacks !== false || body.provider.data_collection !== "deny" || body.provider.zdr !== true) {
+    throw new Error("OpenRouter Synastry calls must be pinned to private Amazon Bedrock with fallback and collection disabled.");
+  }
+  if (openRouterCalls === 1) {
+    if (body.model !== "anthropic/claude-sonnet-4.6") throw new Error("OpenRouter Synastry writer must use Sonnet 4.6.");
+    if (body.max_tokens !== 8_000) throw new Error(`OpenRouter Synastry writer settings changed: ${body.max_tokens}`);
+    return new Response(JSON.stringify({ provider: "Amazon Bedrock", choices: [{ message: { content: portraitBlock() }, finish_reason: "stop" }], usage: { prompt_tokens: 100, completion_tokens: 800, total_tokens: 900, cost: 0.01 } }), { headers: { "content-type": "application/json" } });
+  }
+  if (body.model !== "anthropic/claude-sonnet-4.6" || body.max_tokens !== 1_400 || !prompt.includes("Partner remains independently present")) throw new Error("OpenRouter semantic reviewer did not inspect the original Sonnet portrait.");
+  return new Response(JSON.stringify({ provider: "Amazon Bedrock", choices: [{ message: { content: JSON.stringify({ supportedClaims: ["mutual recognition"], unsupportedClaims: [], severity: "none" }) }, finish_reason: "stop" }], usage: { prompt_tokens: 90, completion_tokens: 100, total_tokens: 190, cost: 0.003 } }), { headers: { "content-type": "application/json" } });
+};
+const openRouterResult = await buildAstrologyReportResultAsync(request, { env: openRouterEnv, fetchImpl: openRouterFetch });
+if (openRouterResult.status !== "completed" || openRouterCalls !== 2) throw new Error(`OpenRouter Synastry writer-review flow did not complete in two calls: ${openRouterResult.status}/${openRouterCalls}/${openRouterResult.error ?? "no error"}`);
+if (openRouterResult.generationMetadata?.synastryV3?.editor !== undefined) throw new Error("Removed editor metadata appeared in a new result.");
+if (Math.abs((openRouterResult.generationMetadata?.estimatedSpend ?? 0) - 0.013) > 1e-12) throw new Error("Total Synastry cost must include only writer and semantic review.");
+
+// Persisted historical editor metadata remains readable; new results omit it.
+const historical = recordAstrologyReportResultSchema.parse({ ...result, generationMetadata: {
+  ...result.generationMetadata, synastryV3: { ...v3, editor: {
+    model: "historical-editor", promptVersion: "historical-version", latencyMs: 1, estimatedSpend: 0.02
+  } }
+} });
+if (historical.generationMetadata?.synastryV3?.editor?.model !== "historical-editor") throw new Error("Historical editor metadata must remain readable.");
+
+let severeCalls = 0;
+const severeResult = await buildAstrologyReportResultAsync(request, { env, fetchImpl: async (_url, init) => {
+  severeCalls++;
+  const body = JSON.parse(String(init?.body));
+  if (body.max_output_tokens === 8_000) return new Response(JSON.stringify({ output_text: portraitBlock() }));
+  if (body.max_output_tokens !== 1_400) throw new Error("Unexpected stage in writer-review retry.");
+  return new Response(JSON.stringify({ output_text: JSON.stringify({ supportedClaims: [], unsupportedClaims: ["Invented relationship history"], severity: "severe" }) }));
+} });
+if (severeResult.status !== "failed" || severeCalls !== 4) throw new Error("Severe semantic failure must trigger only one writer-review retry, then fail.");
+if (severeResult.generationMetadata?.failures?.length !== 2 || severeResult.generationMetadata.failures.some(f => f.rejectedText !== portraitBlock())) throw new Error("Semantic failures must preserve the rejected writer output.");
+
+console.log("Synastry engine smoke passed for two-call writer-review orchestration, reciprocal perspective, reviewer-only retry, malformed writer fail-closed behavior, and usage without an editor.");

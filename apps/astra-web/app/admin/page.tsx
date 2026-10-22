@@ -198,6 +198,7 @@ function ledgerRelatedObject(entry: { idempotencyKey: string; relatedReportDocum
 }
 
 function reportTypeLabel(reportType: string) {
+  if (reportType === "personal") return ui.library.reportTypePersonal;
   if (reportType === "identity") return ui.library.reportTypeIdentity;
   if (reportType === "core_self") return ui.library.reportTypeCoreSelf;
   if (reportType === "chart_interpretation") return ui.library.reportTypeChartInterpretation;

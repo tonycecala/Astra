@@ -111,6 +111,8 @@ import {
   parseSynastryV3SemanticResponse
 } from "./report/synastryV3";
 import { synastryV3CorrectionMessages, validateSynastryV3 } from "./report/synastryV3Validation";
+import { ASTRA_PORTRAITS_V4_PROMPT_VERSION, ASTRA_PORTRAITS_V4_WRITER_MODEL, ASTRA_PORTRAITS_V4_EDITOR_MODEL, generatePortraitV4, PortraitV4Error, type PortraitEvidence } from "./report/portraitsV4";
+export * from "./report/portraitsV4";
 import {
   mergeProviderUsage,
   maxModelOutputTokensFor as maxModelOutputTokensForProvider,
@@ -871,14 +873,14 @@ export function resolveAstrologyReportGenerationConfigForRequest(
   const modelPilot = request.context && typeof request.context === "object" && !Array.isArray(request.context)
     ? request.context.modelPilot
     : undefined;
-  if (request.reportType === "synastry" &&
+  if (["personal", "progressed", "synastry"].includes(request.reportType) &&
     config.reportWriter === DEBUG_MODEL_REPORT_WRITER &&
     config.reportModelProfile === "production" &&
     !env[ASTRA_REPORT_MODEL_ENV]?.trim()) {
     return {
       ...config,
       reportModelProvider: OPENROUTER_REPORT_MODEL_PROVIDER,
-      reportModel: ASTRA_SYNASTRY_PRODUCTION_REPORT_MODEL
+      reportModel: request.reportType === "synastry" ? ASTRA_SYNASTRY_PRODUCTION_REPORT_MODEL : ASTRA_PORTRAITS_V4_WRITER_MODEL
     };
   }
   if (request.reportType !== "identity" || modelPilot !== "gemini-intro-identity" || config.reportWriter !== DEBUG_MODEL_REPORT_WRITER) return config;
@@ -1674,7 +1676,7 @@ function meaningComplexViewForRequest(
   if (request.reportType === "identity") return views.identity;
   if (request.reportType === "deep") return views.deep;
   if (
-    request.reportType === "core" ||
+    request.reportType === "personal" || request.reportType === "core" ||
     request.reportType === "core_self" ||
     request.reportType === "chart_interpretation"
   ) {
@@ -3855,8 +3857,8 @@ async function generateSynastryV3Draft(
       semanticSeverity: semantic.severity,
       semanticReviewUnavailable: semantic.reviewStatus === "unavailable"
     });
-    if (!validation.greenLight) {
-      previousErrors = synastryV3CorrectionMessages(validation);
+    if (!validation.greenLight || semantic.severity === "severe") {
+      previousErrors = [...synastryV3CorrectionMessages(validation), ...(semantic.severity === "severe" ? semantic.unsupportedClaims.map(claim => `Material semantic failure: ${claim}`) : [])];
       failures.push(synastryV3RetryFailure(attempt, previousErrors, response, response.text, "unsupported_claim"));
       if (attempt === 1) continue;
       throw new SynastryV3GenerationError(
@@ -3989,7 +3991,9 @@ async function writeOpenRouterModelText(
   request: AstrologyReportRequest,
   maxOutputTokens: number,
   config: Required<Pick<AstrologyReportGenerationConfig, "reportModel" | "openRouterApiKey" | "openRouterBaseUrl">>,
-  fetchImpl: typeof fetch
+  fetchImpl: typeof fetch,
+  responseFormat?: Record<string, unknown>,
+  reasoningEffortOverride?: string
 ): Promise<ModelWriterResponse> {
   return writeOpenRouterModelTextFromAdapter({
     prompt,
@@ -3998,9 +4002,11 @@ async function writeOpenRouterModelText(
     baseUrl: config.openRouterBaseUrl,
     maxOutputTokens,
     timeoutMs: reportModelTimeoutMsFor(request),
-    reasoningEffort: reportReasoningEffortForModel(config.reportModel),
+    reasoningEffort: reasoningEffortOverride ?? (config.reportModel === ASTRA_PORTRAITS_V4_EDITOR_MODEL ? "medium" : reportReasoningEffortForModel(config.reportModel)),
     siteUrl: process.env.OPENROUTER_SITE_URL?.trim() || ASTRA_OPENROUTER_SITE_URL,
     appName: process.env.OPENROUTER_APP_NAME?.trim() || ASTRA_OPENROUTER_APP_NAME,
+    responseFormat,
+    privatePortraitRoute: request.reportType === "personal" || request.reportType === "progressed" || request.reportType === "synastry",
     fetchImpl
   });
 }
@@ -4070,10 +4076,54 @@ function buildLocalChartRoutineResult(input: AstrologyReportRequest, draft?: Rep
 }
 
 function reportPromptVersionFor(request: AstrologyReportRequest) {
-  if (request.reportType === "progressed") return ASTRA_PROGRESSED_EVIDENCE_TO_PROSE_PROMPT_VERSION;
+  if (request.reportType === "personal" || request.reportType === "progressed") return ASTRA_PORTRAITS_V4_PROMPT_VERSION;
   return request.reportType === "core" || request.reportType === "core_self" || request.reportType === "chart_interpretation" || request.reportType === "deep"
     ? ASTRA_EVIDENCE_TO_PROSE_PROMPT_VERSION
     : ASTRA_REPORT_PROMPT_VERSION;
+}
+
+/** The V4 writer receives selected evidence, not the V2 atomic paragraph claim plan. */
+export function buildPortraitV4Evidence(request: AstrologyReportRequest): PortraitEvidence[] {
+  const headings = request.reportType === "progressed"
+    ? ["Right Now", "Emotions", "Relationships", "Work", "Integration"]
+    : ["Identity", "Emotions", "Relationships", "Work", "Integration"];
+  const cards = buildReportSectionSignalCardsForRequest(request, headings);
+  const network = meaningComplexNetworkForReportRequest(request);
+  const preciseFact = (signal: ReportSectionSignalCard["chartSignals"][number]) => {
+    const nodes = network?.nodes.filter(node => node.label.toLowerCase() === signal.label.toLowerCase()) ?? [];
+    if (!nodes.length) return `${signal.label}: ${signal.facts.join("; ")}`;
+    const facts = nodes.flatMap(node => {
+      if (node.type === "PersonalActivation") {
+        const ids = node.attributes.evidenceIds;
+        if (!Array.isArray(ids)) return [];
+        // Relevance is a selection score, not interpretive evidence. Send its actual contacts.
+        return network!.nodes.filter(item => item.type === "Aspect" && ids.some(id => id === item.attributes.aspectId))
+          .map(item => `${item.label}: ${JSON.stringify(item.attributes)}`);
+      }
+      const participantIds = node.attributes.participantIds;
+      const bindings = Array.isArray(participantIds) ? network!.nodes.filter(item =>
+        ["Planet", "Luminary"].includes(item.type) && participantIds.some(id => id === item.attributes.pointId)
+      ).map(item => ({ label: item.label, ...item.attributes })) : [];
+      return [`${node.label}: ${JSON.stringify(node.attributes)}${bindings.length ? `; participants: ${JSON.stringify(bindings)}` : ""}`];
+    });
+    return facts.join("; ");
+  };
+  const selected = new Map<string, PortraitEvidence>();
+  for (const card of cards) {
+    for (const signal of card.chartSignals.slice(0, 4)) {
+      if (selected.has(signal.label)) continue;
+      const fact = preciseFact(signal);
+      if (!fact) continue;
+      selected.set(signal.label, {
+        id: `P${String(selected.size + 1).padStart(2, "0")}`,
+        topic: card.title,
+        fact,
+        meaning: `Explore ${card.capacities.join(", ")}; tension: ${card.tensions.join(", ")}. Interpret the actual combined symbolism, not a claim of observed behavior.`
+      });
+    }
+  }
+  if (!selected.size) throw new Error("V4 requires selected chart evidence.");
+  return [...selected.values()];
 }
 
 async function buildDebugModelReportResult(
@@ -4092,11 +4142,15 @@ async function buildDebugModelReportResult(
   if (config.reportModelProvider !== OPENAI_REPORT_MODEL_PROVIDER && config.reportModelProvider !== OPENROUTER_REPORT_MODEL_PROVIDER) {
     return buildReportModelProviderUnavailableResult(request, config.reportModelProvider);
   }
+  if ((request.reportType === "personal" || request.reportType === "progressed") && config.reportModelProvider !== OPENROUTER_REPORT_MODEL_PROVIDER) {
+    return buildReportWriterUnavailableResult(request, "Portraits V4 requires its qualified OpenRouter writing and editorial route.");
+  }
 
   const chartSignature = buildChartSignature(request);
   let draft: ReportDraft;
   let writerSummary: string;
-  let generation: Awaited<ReturnType<typeof parseValidatedModelDraft>> | Awaited<ReturnType<typeof generateSectionedDeepDraft>> | Awaited<ReturnType<typeof generateSectionedEnrichedCoreDraft>> | Awaited<ReturnType<typeof generateSynastryV3Draft>>;
+  let generation: Awaited<ReturnType<typeof parseValidatedModelDraft>> | Awaited<ReturnType<typeof generateSectionedDeepDraft>> | Awaited<ReturnType<typeof generateSectionedEnrichedCoreDraft>> | Awaited<ReturnType<typeof generateSynastryV3Draft>> | Awaited<ReturnType<typeof generatePortraitV4>>;
+  let portraitGeneration: Awaited<ReturnType<typeof generatePortraitV4>> | null = null;
   let sectionedGeneration: Awaited<ReturnType<typeof generateSectionedDeepDraft>> | null = null;
   let sectionedCoreGeneration: Awaited<ReturnType<typeof generateSectionedEnrichedCoreDraft>> | null = null;
   let synastryGeneration: Awaited<ReturnType<typeof generateSynastryV3Draft>> | null = null;
@@ -4114,7 +4168,18 @@ async function buildDebugModelReportResult(
       const openRouterBaseUrl = config.openRouterBaseUrl;
       const writerInput = { request, chartSignature };
       const modelConfig = { reportModel, openRouterApiKey, openRouterBaseUrl };
-      if (request.reportType === "synastry") {
+      if (request.reportType === "personal" || request.reportType === "progressed") {
+        let editorCalled = false;
+        portraitGeneration = await generatePortraitV4(request, buildPortraitV4Evidence(request),
+          (prompt, maxOutputTokens, format, stage) => {
+            if (stage === "edit") editorCalled = true;
+            return writeOpenRouterModelText(prompt, request, maxOutputTokens, stage === "draft" ? modelConfig : { ...modelConfig, reportModel: ASTRA_PORTRAITS_V4_EDITOR_MODEL }, fetchImpl, format);
+          });
+        portraitGeneration.portraitsV4.writerModel = reportModel;
+        portraitGeneration.portraitsV4.reviewerModel = ASTRA_PORTRAITS_V4_EDITOR_MODEL;
+        if (editorCalled) portraitGeneration.portraitsV4.editorModel = ASTRA_PORTRAITS_V4_EDITOR_MODEL;
+        generation = portraitGeneration;
+      } else if (request.reportType === "synastry") {
         synastryGeneration = await generateSynastryV3Draft(
           writerInput,
           (prompt, maxOutputTokens) => writeOpenRouterModelText(prompt, request, maxOutputTokens, modelConfig, fetchImpl)
@@ -4176,6 +4241,14 @@ async function buildDebugModelReportResult(
       writerSummary = `${OPENAI_REPORT_MODEL_PROVIDER}/${config.reportModel}`;
     }
   } catch (error) {
+    if (error instanceof PortraitV4Error) {
+      return buildReportModelCallFailedResult(request, error.message, {
+        writer: DEBUG_MODEL_REPORT_WRITER, provider: config.reportModelProvider, model: config.reportModel,
+        modelProfile: config.reportModelProfile, promptVersion: ASTRA_PORTRAITS_V4_PROMPT_VERSION,
+        orchestration: "portraits-v4", attemptCount: error.generation.attemptCount,
+        ...error.generation.usage, latencyMs: error.generation.latencyMs
+      });
+    }
     if (error instanceof SynastryV3GenerationError) {
       return buildReportModelCallFailedResult(request, error.message, {
         writer: DEBUG_MODEL_REPORT_WRITER,
@@ -4238,6 +4311,14 @@ async function buildDebugModelReportResult(
     }
     return buildReportModelCallFailedResult(request, error instanceof Error ? error.message : "Unknown model writer error.");
   }
+  if (portraitGeneration) {
+    draft = { ...draft, publicSignal: {
+      reportId: `${request.id}:signal`, requestId: request.id, reportType: request.reportType,
+      headline: request.reportType === "progressed" ? "Life Chapter" : "Personal portrait",
+      summary: "A private portrait is ready to explore.", tone: "grounded", boundary: "public_signal",
+      provenanceSummary: "Astra Portraits V4; private evidence retained separately."
+    } };
+  }
   const result = buildLocalChartRoutineResult(request, draft);
 
   return recordAstrologyReportResultSchema.parse({
@@ -4254,7 +4335,9 @@ async function buildDebugModelReportResult(
       attemptCount: generation.attemptCount,
       ...generation.usage,
       latencyMs: generation.latencyMs,
-      ...(synastryGeneration
+      ...(portraitGeneration
+        ? { orchestration: "portraits-v4" as const, portraitsV4: portraitGeneration.portraitsV4, readability: reportReadabilityMetadata(draft.sections) }
+        : synastryGeneration
         ? {
             orchestration: "synastry-v3" as const,
             synastryV3: synastryGeneration.synastryV3,
@@ -4304,6 +4387,7 @@ async function buildDebugModelReportResult(
 
 export function buildAstrologyReportResult(input: AstrologyReportRequest): RecordAstrologyReportResult {
   const request = astrologyReportRequestSchema.parse(input);
+  if (request.reportType === "personal" || request.reportType === "progressed") return buildReportWriterUnavailableResult(request, "Portraits V4 requires the asynchronous model writer.");
   const config = resolveAstrologyReportGenerationConfig();
   if (config.ephemerisEngine === LOCAL_CHART_ROUTINE_ENGINE) {
     if (config.reportWriter !== LOCAL_DETERMINISTIC_REPORT_WRITER) {
@@ -4325,6 +4409,7 @@ export async function buildAstrologyReportResultAsync(
     if (config.reportWriter === DEBUG_MODEL_REPORT_WRITER) {
       return buildDebugModelReportResult(request, config, fetchImpl);
     }
+    if (request.reportType === "personal" || request.reportType === "progressed") return buildReportWriterUnavailableResult(request, "Portraits V4 requires a configured model writer; no default prose fallback.");
     if (config.reportWriter !== LOCAL_DETERMINISTIC_REPORT_WRITER) {
       return buildReportWriterUnavailableResult(request, config.reportWriter ?? "");
     }

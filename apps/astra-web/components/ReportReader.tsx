@@ -95,7 +95,10 @@ export function ReportReader({
       ) : null}
 
       <article className="reportReaderDocument">
-        <ReportChartPlate request={request} chart={chartSnapshot} />
+        <details className="reportChartDetails">
+          <summary>{ui.self.chartSettingsLabel}</summary>
+          <ReportChartPlate request={request} chart={chartSnapshot} />
+        </details>
         {reviewNotes.length ? (
           <details className="reportReviewNotes">
             <summary>{ui.library.reportReviewNotesTitle} · {ui.library.reportReviewNotesCount(reviewNotes.length)}</summary>
@@ -306,6 +309,14 @@ function buildReportChartSnapshot(request: AstrologyReportRequest | null) {
 
 function buildReportEvidenceByTitle(request: AstrologyReportRequest | null, report: AstrologyReportResult): ReportEvidenceByTitle {
   if (!request || !report.sections.length) return {};
+  const v4 = report.generationMetadata?.portraitsV4;
+  if (v4) {
+    const evidence = new Map(v4.evidence.map(item => [item.id, item]));
+    return Object.fromEntries(v4.trace.map(chapter => [chapter.title, chapter.evidenceIds.flatMap(id => {
+      const item = evidence.get(id);
+      return item ? [{ id, label: item.fact, meaning: item.meaning }] : [];
+    })]));
+  }
   const v3 = report.generationMetadata?.synastryV3;
   if (v3) {
     const evidenceById = new Map(v3.evidenceIndex.map((item) => [item.id, item]));

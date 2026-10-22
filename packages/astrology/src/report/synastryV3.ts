@@ -1,8 +1,11 @@
 import type { SynastryToneSnapshot } from "@astra/contracts";
 import { isObservationalTone, synastryToneInstruction, synastryV3Headings } from "./allyTone";
 import type { SynastryV3EvidenceRow, SynastryV3TraceRow } from "./synastryV3Validation";
+import { portraitVoiceContract, PORTRAIT_INTERPRETIVE_PERMISSION } from "./portraitVoice";
 
-export const ASTRA_SYNASTRY_V3_PROMPT_VERSION = "astra-synastry-v3.1.1-psychology-first-2026-08";
+export const ASTRA_SYNASTRY_V3_PROMPT_VERSION = "astra-synastry-v3.6-relationship-potential-2026-09";
+const relationshipReaderContract = "ADULT PLAIN SPOKEN VOICE: warm, perceptive good sense, with pleasure and playful wit where this relationship tone allows. Familiar verbs, specific wants and recognizable situations; no clinical case study, grand abstractions, baby talk, fake accent or folksy persona. Make the reader feel an insight without explaining it twice. Give each insight one home; later chapters must add something rather than repackage it. Do not make every paragraph a warning, a lesson or an instruction. Never translate withdrawal, silence or rejection into hidden attraction or a test of persistence. The packet cannot prove reciprocal feelings. Preserve bold interpretation without inventing consent or what the other person actually thinks.";
+const relationshipPotentialContract = "Describe evidence-grounded emotional dynamics as possibilities worth exploring. Use can, may, could or a natural conditional frame for an unconfirmed response: 'the pull can be mutual' or 'she may feel seen,' rather than certifying that it is mutual or that she feels it. Keep the uncertainty attached to that claim; an opening disclaimer does not qualify a later assertion of fact. Preserve direct, vivid prose within the possible situation. Do not hedge every sentence, list opposite outcomes mechanically, or add repeated reminders that the chart cannot know.";
 
 export type SynastryEvidenceJob = { title: string; evidenceBullets: Array<{ label: string; meaning: string }> };
 
@@ -35,18 +38,22 @@ export function buildSynastryV3Prompt(input: {
     : `Give ${input.allyName} an independently voiced possible interiority in every chapter, and make the relationship itself a third protagonist in every chapter. Use possibility language, never fabricated dialogue.`;
   return [
     "Write one private Astra Synastry portrait in simple, direct English.",
+    portraitVoiceContract(true),
+    relationshipReaderContract,
+    PORTRAIT_INTERPRETIVE_PERMISSION,
     `The selected reader is ${input.readerName}; address ${input.readerName} only as \"you\". The Ally is ${input.allyName}.`,
     `The authored Ally tag is ${input.tone.authoredRelationship}. It routes tone only and proves no biography, consent, history, satisfaction, exclusivity, or outcome.`,
     synastryToneInstruction(input.tone),
+    ...(input.tone.normalizedTag === "Lover" ? ["A Lover request invites exploration of romantic interest. Take that interest seriously and write naturally about attraction and desire; do not spend the reading questioning why it was requested. The other person's actual interest remains unknown. Describe what the connection can invite without assigning odds or treating the tag as proof of reciprocity."] : []),
     perspective,
-    "Write exactly six Markdown chapters in the exact order below. Target 1,500 words total; 1,350-1,650 is acceptable. Make the final chapter at least 320 words.",
-    "Treat every interpretation as relationship potential, never proof of mutual feelings, attraction, intimacy, history, commitment, contact, or present relationship depth.",
+    "Write exactly six Markdown chapters in the exact order below. Aim for 1,350-1,650 words without filler. Let the final chapter land naturally rather than replaying the earlier conclusions.",
+    relationshipPotentialContract,
     "Lead every prose paragraph with the meat: a specific feeling, desire, fear, bodily response, reversal, or hidden relational consequence.",
-    `Every prose paragraph must address ${input.readerName} as "you" or "your," contain one plain-language mechanism grounded in its Evidence IDs, one conditional lived expression, and one relational consequence. Blend them into prose; do not label the parts or repeat a disclaimer formula.`,
+    `Every prose paragraph must address ${input.readerName} as "you" or "your," and develop a supported human observation. The private trace records its mechanism, possible expression and consequence; these are not three compulsory visible clauses. Let paragraphs have different shapes and finish when the thought lands.`,
     `In every chapter, name ${input.allyName.split(/\s+/)[0]} at least once, give ${input.allyName.split(/\s+/)[0]} a distinct but balanced possible response, and show what the relationship itself opens, complicates, or costs.`,
-    "Vary conditional language. Do not begin paragraph after paragraph with if, may, or could. Give the Ally a specific but balanced possible response rather than declaring private thoughts or feelings as fact.",
+    "A paragraph's possible situation can establish the frame for its direct psychological interpretation without repeated qualifications. Let the relationship's consequence emerge naturally instead of repeatedly announcing 'what this opens' and 'what this costs'. Never turn that possible situation into claimed history, contact, commitment, known private thoughts or consent.",
     "Psychology must lead. An occasional brief reference to a direct aspect is welcome when it genuinely sharpens the mechanism, but give each paragraph only the astrology it needs. Do not explain astrology, stack technical terms, begin a paragraph with astrology, or let recurring paragraphs turn into chart commentary. Put every remaining chart detail in the private Evidence trace and never expose an Evidence ID.",
-    "Do not fabricate dialogue, scenes, behavioral tells, or concrete biography. Do not invent childhood, former relationships, old wounds, unhealed places, inherited expectations, or unconscious history. Ban fate, destined or ancient-bond claims, containment/burden assignments, diagnoses, fixed verdicts, and claims that one person gives, carries, contributes, earns, or costs more.",
+    "Do not fabricate actual dialogue, witnessed scenes, concrete biography, specific childhood incidents, former relationships or trauma. Generalized learned defenses, old sensitivities and inferred motives are allowed as psychological interpretation, without an invented origin event. Keep desire and uncomfortable relational consequences vivid. Ban fate, destined or ancient-bond claims, diagnoses, fixed verdicts and unsupported rankings of who contributes or carries more.",
     "The packet is curated and non-exhaustive. Unlisted contacts are unknown, not absent and not evidence of unequal contribution.",
     "Return exactly two blocks and nothing else:",
     "<portrait_markdown>",
@@ -90,6 +97,9 @@ export function buildSynastryV3SemanticPrompt(input: { portrait: string; evidenc
     "Return compact JSON only. Do not explain, rewrite, quote the portrait, or compare style. Evaluate whether representative emotional claims are supportable possibilities from the supplied Evidence meanings.",
     "Return only JSON: {\"supportedClaims\":string[],\"unsupportedClaims\":string[],\"severity\":\"none\"|\"minor\"|\"severe\"}.",
     "Return at most three short supported claims and at most three short unsupported claims. Use severe only for material misrepresentation, invented fixed reality, or claims opposite to the packet; conservative preference is not severe.",
+    PORTRAIT_INTERPRETIVE_PERMISSION,
+    relationshipPotentialContract,
+    "An evidence-grounded possible feeling or mutual attraction is not unsupported merely because it has not been observed. Assess the claim in its surrounding conditional frame, not by counting modal words. Distinguish 'the pull can be mutual' from 'the pull is mutual.' Treat claims that withdrawal or rejection means hidden interest or testing pursuit, and claims of known mutual attraction or private inner speech, as material invented reality when the inputs do not establish them. Adding may or can does not excuse a claim that contradicts the evidence or recasts rejection as encouragement. Review the delivered prose.",
     ...(input.previousError ? [`The previous reviewer response failed: ${input.previousError}. Return the JSON object immediately.`] : []),
     "Portrait:", input.portrait,
     "Evidence:", JSON.stringify(input.evidenceIndex)

@@ -11,7 +11,7 @@ import {
 import { synastryToneSnapshot } from "@astra/astrology";
 import { db, getUserAlly, getUserChartMakerRequest, listUserAstrologyReportRequests, purchaseAstrologyReportRequest } from "@astra/db";
 import { getAstraAuthContext } from "../../../lib/auth/profile";
-import { reportProductFor } from "../../../lib/reportCatalog";
+import { isOrderableReportType, reportProductFor } from "../../../lib/reportCatalog";
 import { synastryBasisForPerspective } from "../../../lib/synastryPerspective";
 
 function unauthorized() {
@@ -96,6 +96,7 @@ export async function POST(request: Request) {
     );
   }
 
+  if (!isOrderableReportType(parsed.data.reportType)) return NextResponse.json({ error: "REPORT_TYPE_RETIRED", message: "Choose Personal, Relationship or Life Chapter. Saved reports are unchanged." }, { status: 400 });
   const product = reportProductFor(parsed.data.reportType);
   if (parsed.data.reportBasis.type !== product.basis) {
     return invalidBasis(`${parsed.data.reportType} reports require a ${product.basis} basis.`);

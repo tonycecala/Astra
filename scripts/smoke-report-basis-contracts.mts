@@ -13,7 +13,7 @@ const validCreate = createAstrologyReportRequestSchema.parse({
   reportBasis: { type: "natal", chartSettings }
 });
 
-if (validCreate.reportType !== "identity") {
+if (validCreate.reportType !== "personal") {
   throw new Error(`New report requests must default to Identity, got ${validCreate.reportType}.`);
 }
 

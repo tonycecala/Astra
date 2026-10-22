@@ -46,6 +46,12 @@ for (const boundary of [1350, 1650]) {
   }
 }
 const short = portraitWith(1349);
+for (const interpretation of ["You learned early to keep some distance.", "An old wound can make your desire harder to name.", "An unconscious pattern can shape what you ask of Cheyenne."]) {
+  const sample = appendToChapters(portraitWith(1500), [interpretation]);
+  const reviewed = validateSynastryV3({ ...sample, headings, trace, evidenceIndex, tone, readerName, allyName });
+  if (reviewed.fatalCategories.includes("invented_reality")) throw new Error("Generalized psychological inference must not be a keyword-based factual failure.");
+  if (!reviewed.reviewNotes.some(note => note.includes("psychological inference"))) throw new Error("Keep generalized inference visible as a private advisory.");
+}
 if (!validateSynastryV3({ ...short, headings, trace, evidenceIndex, tone, readerName, allyName }).reviewNotes.some((note) => note.includes("accepted range"))) {
   throw new Error("An out-of-band word count must produce a review note.");
 }
@@ -75,7 +81,7 @@ const correctionMessages = synastryV3CorrectionMessages(twoResult).join(" ");
 if (!correctionMessages.includes("occasional direct-aspect references") || correctionMessages.includes("no more than four terms total")) {
   throw new Error("A corrective retry must request psychology-first thinning without imposing a prose quota.");
 }
-const threeCategory = portraitWith(1500, "Venus Mars Saturn Uranus Neptune Pluto Sun Moon Mercury Jupiter Chiron Aries Taurus Gemini Cancer Leo. You carry more. You learned early.");
+const threeCategory = portraitWith(1500, "Venus Mars Saturn Uranus Neptune Pluto Sun Moon Mercury Jupiter Chiron Aries Taurus Gemini Cancer Leo. You carry more. After the breakup you knew.");
 if (validateSynastryV3({ ...threeCategory, headings, trace, evidenceIndex, tone, readerName, allyName }).greenLight) {
   throw new Error("Three editorial fatal categories must be rejected.");
 }

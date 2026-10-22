@@ -6,7 +6,7 @@ status: "active"
 project: "astra"
 created: "2026-07-31"
 date: "2026-07-31"
-updated: "2026-07-31"
+updated: "2026-09-19"
 timestamp: "2026-07-31"
 okf_version: "0.1"
 tags: ["warning", "captured"]
@@ -24,3 +24,5 @@ The prompt supplied the stored `spouse` label to select an adult-romantic lens. 
 ## How To Avoid It
 
 Separate the authored display label from a normalized report-tone lens. State explicitly that the label is routing context only, keep romantic material evidence-gated, and validate against biography and outcome claims. The romantic language whitelist is `companion`, `ex`, `friend`, `lover`, and `spouse`: `friend` stays friendship-led and permits romantic overtones; `lover` leads with romantic and sexual overtones grounded in selected interaspects; `companion`, `ex`, and `spouse` permit the full romantic lens. Every other Ally type prohibits romantic and erotic framing. Default unclear labels to a neutral lens. Child and family-caregiving lenses must use non-romantic chapters and prohibit eroticization, adult-partner equivalence, and burden assignment to the child. Symbolic, ancestral, historical, and public-figure labels require comparison language that does not invent lived reciprocity.
+
+September 19 owner clarification: a Lover request invites exploration of romantic interest; do not erase that intent or repeatedly disclaim it. Use natural potential language for the other person's unconfirmed response. “Can” or “may” can preserve a vivid, meaningful interpretation without certifying actual mutual attraction. This does not establish numerical odds, consent, biography, or current relationship status. V3.6 shares the distinction between writer and reviewer without adding a new stage or modal-word quota.

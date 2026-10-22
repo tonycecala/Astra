@@ -32,7 +32,7 @@ type LibraryArtifact = Artifact & {
   isShared?: boolean;
 };
 
-type LibraryReportFilter = "all" | "identity" | "core" | "deep" | "progressed" | "synastry" | "shared";
+type LibraryReportFilter = "all" | "personal" | "progressed" | "synastry" | "shared";
 
 type LibraryPageParams = {
   searchParams: Promise<{
@@ -125,11 +125,9 @@ export default async function LibraryPage({ searchParams }: LibraryPageParams) {
 
 const reportFilters: Array<{ label: string; value: LibraryReportFilter }> = [
   { value: "all", label: ui.library.filterAll },
-  { value: "identity", label: ui.library.filterIdentity },
-  { value: "core", label: ui.library.filterCore },
-  { value: "deep", label: ui.library.filterDeep },
-  { value: "progressed", label: ui.library.filterProgressed },
-  { value: "synastry", label: ui.library.filterSynastry },
+  { value: "personal", label: ui.self.portraitTypes.personal },
+  { value: "synastry", label: ui.self.portraitTypes.synastry },
+  { value: "progressed", label: ui.self.portraitTypes.progressed },
   { value: "shared", label: ui.library.filterShared }
 ];
 
@@ -230,7 +228,8 @@ function normalizeReportId(reportId?: string) {
 }
 
 function normalizeReportFilter(filter?: string): LibraryReportFilter {
-  if (filter === "identity" || filter === "core" || filter === "deep" || filter === "progressed" || filter === "synastry" || filter === "shared") return filter;
+  if (filter === "identity" || filter === "core" || filter === "deep") return "personal";
+  if (filter === "personal" || filter === "progressed" || filter === "synastry" || filter === "shared") return filter;
   return "all";
 }
 
@@ -239,9 +238,8 @@ function normalizeQuery(query?: string) {
 }
 
 function canonicalReportType(reportType?: string) {
-  if (reportType === "core_self") return "core";
-  if (reportType === "identity" || reportType === "core" || reportType === "deep" || reportType === "progressed" || reportType === "synastry") return reportType;
-  return "core";
+  if (reportType === "progressed" || reportType === "synastry") return reportType;
+  return "personal";
 }
 
 function reportCardName(artifact: LibraryArtifact) {

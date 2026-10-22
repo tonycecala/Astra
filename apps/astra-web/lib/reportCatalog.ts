@@ -8,14 +8,13 @@ export type ReportProductDefinition = {
 };
 
 export const REPORT_PRODUCT_ORDER: readonly OrderableAstrologyReportType[] = [
-  "identity",
-  "core",
-  "deep",
-  "progressed",
-  "synastry"
+  "personal",
+  "synastry",
+  "progressed"
 ];
 
 export const REPORT_PRODUCTS: Record<OrderableAstrologyReportType, ReportProductDefinition> = {
+  personal: { basis: "natal", costStars: 10, requiresKnownBirthTime: false, requiresPartner: false },
   identity: { basis: "natal", costStars: 1, requiresKnownBirthTime: false, requiresPartner: false },
   core: { basis: "natal", costStars: 5, requiresKnownBirthTime: false, requiresPartner: false },
   deep: { basis: "natal", costStars: 10, requiresKnownBirthTime: false, requiresPartner: false },

@@ -63,8 +63,8 @@ test.describe("Synastry V3 production boundary", () => {
     await expect(reportOrderPanel.getByText("Lover", { exact: true })).toBeVisible();
     const mobileReportSubmit = reportOrderPanel.locator("[data-mobile-report-submit]");
     if (testInfo.project.name === "mobile") {
-      await reportOrderPanel.getByLabel("Synastry Report").check();
-      await reportOrderPanel.getByLabel("Comparison chart").selectOption({ index: 1 });
+      await reportOrderPanel.getByRole("radio", {name:/Relationship/}).check();
+      await reportOrderPanel.getByLabel("Who is this connection with?").selectOption({ index: 1 });
       await reportOrderPanel.getByText("Reading perspective").scrollIntoViewIfNeeded();
       await expect(mobileReportSubmit).toBeVisible();
       await expect(mobileReportSubmit).toBeInViewport();
@@ -131,11 +131,11 @@ test.describe("Synastry V3 production boundary", () => {
         }
       }
     });
-    const share = await createAstrologyReportShare(db, { requestId: request.id, userId, baseUrl: "http://localhost:3011" });
+    const share = await createAstrologyReportShare(db, { requestId: request.id, userId, baseUrl: testInfo.project.use.baseURL ?? "http://localhost:3011" });
     if (!share) throw new Error("Could not create browser share fixture.");
 
     await page.goto(`/library?reportId=${requestId}`);
-    await expect(page.getByRole("heading", { name: "V3 Reader — Synastry Report" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "V3 Reader — Relationship" })).toBeVisible();
     await expect(page.locator("details.reportMarkdownEvidence")).toHaveCount(6);
     await page.locator("details.reportMarkdownEvidence").first().getByText("Chart Evidence").click();
     await expect(page.getByText(/S01 · PRIVATE_TECHNICAL_EVIDENCE/).first()).toBeVisible();
@@ -144,7 +144,7 @@ test.describe("Synastry V3 production boundary", () => {
 
     await page.context().clearCookies();
     await page.goto(share.shareUrl);
-    await expect(page.getByRole("heading", { name: "V3 Reader — Synastry Report" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "V3 Reader — Relationship" })).toBeVisible();
     await expect(page.locator("details.reportMarkdownEvidence")).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText(/S01|PRIVATE_TECHNICAL_EVIDENCE|PRIVATE_V3_REVIEW_NOTE|INTERNAL_REVIEW_NOTE/);
     const response = await page.request.get(share.shareUrl);

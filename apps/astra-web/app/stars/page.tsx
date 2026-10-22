@@ -37,14 +37,19 @@ export default async function StarsPage({ searchParams }: { searchParams?: Promi
 
       <div className="starsValueGrid" aria-label={ui.stars.usesLabel}>
         <article>
-          <span>{ui.library.reportTypeIdentity}</span>
-          <strong>{ui.stars.reportCost(1)}</strong>
-          <p>{ui.stars.identityUse}</p>
+          <span>{ui.self.portraitTypes.personal}</span>
+          <strong>{ui.stars.reportCost(10)}</strong>
+          <p>{ui.self.onboardingReportTypeDescriptions.personal}</p>
         </article>
         <article>
-          <span>{ui.library.reportTypeCore}</span>
+          <span>{ui.self.portraitTypes.synastry}</span>
+          <strong>{ui.stars.reportCost(10)}</strong>
+          <p>{ui.self.onboardingReportTypeDescriptions.synastry}</p>
+        </article>
+        <article>
+          <span>{ui.self.portraitTypes.progressed}</span>
           <strong>{ui.stars.reportCost(5)}</strong>
-          <p>{ui.stars.coreUse}</p>
+          <p>{ui.self.onboardingReportTypeDescriptions.progressed}</p>
         </article>
         <article>
           <span>{STAR_PACKS.explorer_pack.label}</span>

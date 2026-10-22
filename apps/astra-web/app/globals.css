@@ -2290,13 +2290,15 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   padding-left: 20px;
 }
 
-.reportMarkdownEvidence {
+.reportMarkdownEvidence,
+.reportChartDetails {
   margin: 0 0 18px;
   padding: 12px 0 0;
   border-top: 1px solid color-mix(in srgb, var(--gold) 18%, var(--line));
 }
 
-.reportMarkdownEvidence summary {
+.reportMarkdownEvidence summary,
+.reportChartDetails summary {
   color: color-mix(in srgb, var(--gold) 84%, var(--muted) 16%);
   cursor: pointer;
   font-size: 0.78rem;
@@ -2306,19 +2308,23 @@ html[data-astra-theme="dark"] .reportReaderDocument {
   text-transform: uppercase;
 }
 
-.reportMarkdownEvidence summary::-webkit-details-marker {
+.reportMarkdownEvidence summary::-webkit-details-marker,
+.reportChartDetails summary::-webkit-details-marker {
   display: none;
 }
 
-.reportMarkdownEvidence summary::after {
+.reportMarkdownEvidence summary::after,
+.reportChartDetails summary::after {
   content: " +";
 }
 
-.reportMarkdownEvidence[open] summary {
+.reportMarkdownEvidence[open] summary,
+.reportChartDetails[open] summary {
   margin-bottom: 10px;
 }
 
-.reportMarkdownEvidence[open] summary::after {
+.reportMarkdownEvidence[open] summary::after,
+.reportChartDetails[open] summary::after {
   content: " -";
 }
 
