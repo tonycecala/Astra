@@ -91,7 +91,7 @@ assert.deepEqual(result.generationMetadata, {
 });
 assert.ok((result.generationMetadata?.latencyMs ?? -1) >= 0);
 assert.ok(!result.sections.some((section) => section.body.includes("turn_off_thought")));
-assert.deepEqual(identityReasoning, { effort: "none" });
+assert.deepEqual(identityReasoning, { enabled: false });
 assert.match(identityPrompt, /VOICE MODE: PLAINSPOKEN/);
 assert.match(identityPrompt, /6th to 7th grade reading level, aiming near grade 6\.5/);
 assert.match(identityPrompt, /Write like a wise farmer/);
