@@ -22,4 +22,23 @@ Run the owner's specified three cases once: Tony Personal, Tony Life Chapter at 
 
 ## Validation and result
 
-Pending. The supervising reader will evaluate untouched saved outputs. Code/fixture success alone cannot qualify prose quality.
+The supervising reader evaluates untouched saved outputs; code/fixture success alone cannot qualify prose quality.
+
+### Local verification
+
+- `npm run test:portraits-v4`, `npm run test:synastry-v3-validation`, `npm run test:synastry-v3-packet`, `npm run test:portrait-prose`: passed.
+- `npm run test:synastry-v3-engine`: passed. Covers writer→editor→semantic propagation, reciprocal reader, edited output persistence, malformed/truncated editor and changed-heading failures, reviewer-unavailable notes, and mocked OpenRouter Sonnet/Opus routing. Per-call costs .01/.02/.003 merge to .033 with .02 editor metadata. A test initially expected the Opus provider tag for Sonnet; fixed the fixture to assert each model's actual qualified tag, without weakening runtime policy.
+- `npm run typecheck`, `npm run lint`, `npm run build`: passed after final runtime changes. Lint retains the pre-existing unrelated `_staleNote` warning.
+- `node --env-file=/Users/tony/Documents/Projects/Astra/apps/astra-web/.env.local /tmp/portraits-v4-qa.mjs npm run test:e2e:all -- portraits-v4.spec.ts synastry-v3-production.spec.ts --output .astra-exports/portraits-v4/api-editor-v3-3/browser-qa`: 9/9 passed, automated local Better Auth sessions, isolated QA database, desktop/tablet/mobile. Report ordering, gifted-Star debit, failed-generation retry, immutable reader and owner/public evidence separation verified by Playwright. Browser fixtures have no paid model keys; real provider behavior is checked separately by the live harness.
+
+Pre-existing governance installation/metadata warnings remain unrelated; no actionable Mail. No new deployments or saved-report writes. Luna owned only the bounded engine fixtures; parent owned runtime, cost envelope and literary judgment.
+
+### Live result and Steward decision
+
+All three planned API runs completed. Private cohort: `.astra-exports/portraits-v4/api-wired-2026-09-19T15-30-34.757Z/`; `REVIEW.md` links the untouched final outputs and records parent judgment. Personal grade 7.7/cost $0.282782; Life Chapter 8.1/$0.174315; TC–CA 8.8/$0.357187. Total $0.814284, cumulative $5.209835. No manual post-generation editing, additional bakeoff, or unexpected database writes. The selected date remains frozen, not silently changed to the current date.
+
+The Synastry editor cost $0.243700 with 11,590 input and 7,430 output tokens (zero reasoning tokens), because this implementation re-emits both prose and the full trace. This materially exceeds the earlier prose-only editorial test. All expenses are retained; no cost-efficiency claim is made.
+
+**Steward: accept-with-notes for local API wiring; do not promote as qualified writing.** Actual diff and tests verify editor dispatch, edited-output/trace flow, backward-compatible metadata, total usage and fail-closed editor behavior. Parent read every complete live output. Adult cadence improved, but Life Chapter remains too inward/psychological. Synastry still explains withdrawal as something other than lost interest; its semantic reviewer called unsupported claims minor, letting the report complete. Internal packet phrasing also escaped into visible prose. These are recorded as unresolved literary/materiality failures, not repaired by hand or hidden behind successful transport/tests.
+
+The next bounded improvement is the automated editorial/review contract, including explicit material-boundary findings and edit/trace deltas to reduce reserialization cost. The current run is preserved and not repeated until a prospective implementation change is made. No deployment authorized or attempted.
