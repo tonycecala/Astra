@@ -10,12 +10,6 @@ export function isStarPackKey(value: string): value is StarPackKey {
   return value === "core_pack" || value === "deep_pack" || value === "explorer_pack";
 }
 
-export function starCostForReportType(reportType: string) {
-  if (isOrderableReportType(reportType)) return reportProductFor(reportType).costStars;
-  if (reportType === "core_self" || reportType === "chart_interpretation") return 5;
-  return 0;
-}
-
 export function stripeSecretKey() {
   return process.env.STRIPE_SECRET_KEY?.trim() || process.env.STRIPE_SECRET_TEST_KEY?.trim() || "";
 }
@@ -45,4 +39,3 @@ export function stripePriceIdForStarPack(packKey: StarPackKey) {
 
   return "";
 }
-import { isOrderableReportType, reportProductFor } from "./reportCatalog";

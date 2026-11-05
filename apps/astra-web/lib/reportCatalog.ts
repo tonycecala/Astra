@@ -3,10 +3,9 @@ import type { OrderableAstrologyReportType, ReportBasisType } from "@astra/contr
 export type ReportProductDefinition = {
   basis: ReportBasisType;
   costStars: number;
-  requiresKnownBirthTime: boolean;
-  requiresPartner: boolean;
 };
 
+// Only these products can be purchased. Older request types remain valid for saved reports.
 export const REPORT_PRODUCT_ORDER: readonly OrderableAstrologyReportType[] = [
   "personal",
   "synastry",
@@ -14,12 +13,12 @@ export const REPORT_PRODUCT_ORDER: readonly OrderableAstrologyReportType[] = [
 ];
 
 export const REPORT_PRODUCTS: Record<OrderableAstrologyReportType, ReportProductDefinition> = {
-  personal: { basis: "natal", costStars: 10, requiresKnownBirthTime: false, requiresPartner: false },
-  identity: { basis: "natal", costStars: 1, requiresKnownBirthTime: false, requiresPartner: false },
-  core: { basis: "natal", costStars: 5, requiresKnownBirthTime: false, requiresPartner: false },
-  deep: { basis: "natal", costStars: 10, requiresKnownBirthTime: false, requiresPartner: false },
-  progressed: { basis: "progressed", costStars: 5, requiresKnownBirthTime: true, requiresPartner: false },
-  synastry: { basis: "synastry", costStars: 10, requiresKnownBirthTime: false, requiresPartner: true }
+  personal: { basis: "natal", costStars: 10 },
+  identity: { basis: "natal", costStars: 1 },
+  core: { basis: "natal", costStars: 5 },
+  deep: { basis: "natal", costStars: 10 },
+  progressed: { basis: "progressed", costStars: 5 },
+  synastry: { basis: "synastry", costStars: 10 }
 };
 
 export function isOrderableReportType(value: string): value is OrderableAstrologyReportType {

@@ -14,7 +14,7 @@ const validCreate = createAstrologyReportRequestSchema.parse({
 });
 
 if (validCreate.reportType !== "personal") {
-  throw new Error(`New report requests must default to Identity, got ${validCreate.reportType}.`);
+  throw new Error(`New report requests must default to Personal, got ${validCreate.reportType}.`);
 }
 
 const missingSettings = createAstrologyReportRequestSchema.safeParse({

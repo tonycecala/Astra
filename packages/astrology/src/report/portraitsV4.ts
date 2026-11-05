@@ -116,22 +116,21 @@ export function applyPortraitV4Edits(draft: PortraitDraft, input: unknown): Port
   const result = structuredClone(draft);
   const totalWords = draft.sections.reduce((sum, section) => sum + section.body.split(/\s+/).length, 0);
   let changedWords = 0;
-  const used: Array<{ section: number; start: number; end: number }> = [];
+  const used: Array<{ section: number; start: number; end: number; replacement: string }> = [];
   for (const edit of edits) {
     const source = draft.sections[edit.sectionIndex]?.body;
     const start = source?.indexOf(edit.original) ?? -1;
     if (!source || start < 0 || source.indexOf(edit.original, start + 1) >= 0) throw new Error("Editor original must match exactly once in its source section.");
     const end = start + edit.original.length;
     if (used.some(span => span.section === edit.sectionIndex && start < span.end && end > span.start)) throw new Error("Editor replacements overlap.");
-    used.push({ section: edit.sectionIndex, start, end });
+    used.push({ section: edit.sectionIndex, start, end, replacement: edit.replacement });
     changedWords += Math.max(edit.original.split(/\s+/).length, edit.replacement.split(/\s+/).length);
     if (changedWords > totalWords * 0.25) throw new Error("Editor exceeded the bounded 25% revision allowance.");
   }
   // Reverse source order keeps exact offsets valid without replacing new text.
   for (const span of used.sort((a, b) => b.start - a.start)) {
-    const edit = edits.find(item => item.sectionIndex === span.section && draft.sections[span.section].body.indexOf(item.original) === span.start)!;
     const body = result.sections[span.section].body;
-    result.sections[span.section].body = body.slice(0, span.start) + edit.replacement + body.slice(span.end);
+    result.sections[span.section].body = body.slice(0, span.start) + span.replacement + body.slice(span.end);
   }
   return result;
 }

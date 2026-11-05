@@ -9,6 +9,12 @@ import { mergeProviderUsage, type ProviderUsage } from "../packages/astrology/sr
 import { portraitBudgetExposure, reservePortraitBudget, type PortraitBudgetTransaction as Transaction } from "./portraits-v4-budget";
 
 // Private local acceptance harness. Never writes the application database.
+const mode = process.argv[2] ?? "development";
+// These experiments polished a whole draft without findings. Keep their saved
+// evidence readable, but do not create new cohorts under that retired protocol.
+if (mode === "editor-opus" || mode === "editor-development") {
+  throw new Error("Retired editor experiment: use the saved cohort. New edits require material review findings.");
+}
 const root = resolve(".astra-exports/portraits-v4");
 mkdirSync(root, { recursive: true, mode: 0o700 });
 const write = (path: string, value: unknown) => writeFileSync(path, typeof value === "string" ? value : JSON.stringify(value, null, 2), { mode: 0o600 });
@@ -17,37 +23,38 @@ const key = process.env.OPENROUTER_API_KEY ?? process.env.ASTRA_OPENROUTER_API_K
 if (!key) throw new Error("OpenRouter key missing");
 const lockPath = root + "/spend.lock";
 const lock = openSync(lockPath, "wx", 0o600);
-const ledgerPath = root + "/ledger.json";
-const ledger: { cap: number; transactions: Transaction[] } = existsSync(ledgerPath) ? JSON.parse(readFileSync(ledgerPath, "utf8")) : { cap: 30, transactions: [] };
-const exposure = () => portraitBudgetExposure(ledger);
-const callsDir = root + "/calls";
-mkdirSync(callsDir, { recursive: true, mode: 0o700 });
-const fetchBudgeted: typeof fetch = async (url, init) => {
-  if (String(url) !== "https://openrouter.ai/api/v1/chat/completions") throw new Error("Unapproved provider endpoint");
-  if (ledger.transactions.some(row => row.state === "reserved")) throw new Error("Unsettled call reservation: reconcile before proceeding");
-  const body = JSON.parse(String(init?.body));
-  if (!["anthropic/claude-sonnet-5", "anthropic/claude-sonnet-4.6", "anthropic/claude-opus-4.8"].includes(body.model)) throw new Error("Unapproved model");
-  body.provider = { only: [body.model === "anthropic/claude-opus-4.8" ? "amazon-bedrock" : "amazon-bedrock/global"], allow_fallbacks: false, data_collection: "deny", zdr: true, max_price: { prompt: 5, completion: 25 } };
-  // Sonnet 5 does not advertise temperature support; retain adapter defaults otherwise.
-  if (body.model !== "anthropic/claude-sonnet-4.6") delete body.temperature;
-  const developmentCap = ["frame-qualification","repair-source-frame","confirmation-source-frame"].includes(process.argv[2]) ? 2.94749 + 2 : ["review-calibration-v2", "development-proportionate"].includes(process.argv[2]) ? 1.668093 + 2 : process.argv[2] === "development-4.5" ? 1.530241 + 2 : process.argv[2] === "chapter-qualification" ? 1.335886 + 1 : ["editor-opus", "development-4.4"].includes(process.argv[2]) ? 0.664807 + 3 : ["opus-canary", "gate-qualification-opus"].includes(process.argv[2]) ? 0.529497 + 2 : process.argv[2] === "gate-qualification" ? 0.488091 + 1 : ["editor-development", "development-4.3"].includes(process.argv[2]) ? 0.312087 + 3 : 30;
-  const reserve = reservePortraitBudget(ledger, body, process.argv[2] === "synastry-light" ? 5.209835 + 1.5 : process.argv[2] === "api-wired" ? 4.395551 + 1.5 : ["voice", "voice-retry"].includes(process.argv[2]) ? 3.534705 + 2 : developmentCap);
-  const id = randomUUID();
-  const row: Transaction = { id, state: "reserved", reserve };
-  ledger.transactions.push(row); write(ledgerPath, ledger);
-  write(`${callsDir}/${id}.request.json`, { requestedAt: new Date().toISOString(), body, sha256: hash(JSON.stringify(body)) });
-  const response = await fetch(url, { ...init, body: JSON.stringify(body) });
-  const payload = await response.clone().json();
-  write(`${callsDir}/${id}.response.json`, { status: response.status, payload });
-  if (typeof payload.usage?.cost !== "number" || !Number.isFinite(payload.usage.cost) || payload.usage.cost < 0) throw new Error("Provider cost unavailable; reservation retained, acquisition stopped");
-  row.state = "settled"; row.cost = payload.usage.cost; row.providerCallId = payload.id; write(ledgerPath, ledger);
-  if (payload.provider !== "Amazon Bedrock") throw new Error("Unexpected actual provider; acquisition stopped");
-  if (exposure() > 30 || payload.usage.cost > reserve) throw new Error("Cost bound violated; acquisition stopped");
-  return response;
-};
-
+// Protect setup as well as provider calls: malformed ledgers must fail closed
+// without leaving a stale lock. Never remove an existing spend reservation.
 try {
-  const mode = process.argv[2] ?? "development";
+  const ledgerPath = root + "/ledger.json";
+  const ledger: { cap: number; transactions: Transaction[] } = existsSync(ledgerPath) ? JSON.parse(readFileSync(ledgerPath, "utf8")) : { cap: 30, transactions: [] };
+  const exposure = () => portraitBudgetExposure(ledger);
+  const callsDir = root + "/calls";
+  mkdirSync(callsDir, { recursive: true, mode: 0o700 });
+  const fetchBudgeted: typeof fetch = async (url, init) => {
+    if (String(url) !== "https://openrouter.ai/api/v1/chat/completions") throw new Error("Unapproved provider endpoint");
+    if (ledger.transactions.some(row => row.state === "reserved")) throw new Error("Unsettled call reservation: reconcile before proceeding");
+    const body = JSON.parse(String(init?.body));
+    if (!["anthropic/claude-sonnet-5", "anthropic/claude-sonnet-4.6", "anthropic/claude-opus-4.8"].includes(body.model)) throw new Error("Unapproved model");
+    body.provider = { only: [body.model === "anthropic/claude-opus-4.8" ? "amazon-bedrock" : "amazon-bedrock/global"], allow_fallbacks: false, data_collection: "deny", zdr: true, max_price: { prompt: 5, completion: 25 } };
+    // Sonnet 5 does not advertise temperature support; retain adapter defaults otherwise.
+    if (body.model !== "anthropic/claude-sonnet-4.6") delete body.temperature;
+    const developmentCap = ["frame-qualification","repair-source-frame","confirmation-source-frame"].includes(process.argv[2]) ? 2.94749 + 2 : ["review-calibration-v2", "development-proportionate"].includes(process.argv[2]) ? 1.668093 + 2 : process.argv[2] === "development-4.5" ? 1.530241 + 2 : process.argv[2] === "chapter-qualification" ? 1.335886 + 1 : mode === "development-4.4" ? 0.664807 + 3 : ["opus-canary", "gate-qualification-opus"].includes(process.argv[2]) ? 0.529497 + 2 : process.argv[2] === "gate-qualification" ? 0.488091 + 1 : mode === "development-4.3" ? 0.312087 + 3 : 30;
+    const reserve = reservePortraitBudget(ledger, body, process.argv[2] === "synastry-light" ? 5.209835 + 1.5 : process.argv[2] === "api-wired" ? 4.395551 + 1.5 : ["voice", "voice-retry"].includes(process.argv[2]) ? 3.534705 + 2 : developmentCap);
+    const id = randomUUID();
+    const row: Transaction = { id, state: "reserved", reserve };
+    ledger.transactions.push(row); write(ledgerPath, ledger);
+    write(`${callsDir}/${id}.request.json`, { requestedAt: new Date().toISOString(), body, sha256: hash(JSON.stringify(body)) });
+    const response = await fetch(url, { ...init, body: JSON.stringify(body) });
+    const payload = await response.clone().json();
+    write(`${callsDir}/${id}.response.json`, { status: response.status, payload });
+    if (typeof payload.usage?.cost !== "number" || !Number.isFinite(payload.usage.cost) || payload.usage.cost < 0) throw new Error("Provider cost unavailable; reservation retained, acquisition stopped");
+    row.state = "settled"; row.cost = payload.usage.cost; row.providerCallId = payload.id; write(ledgerPath, ledger);
+    if (payload.provider !== "Amazon Bedrock") throw new Error("Unexpected actual provider; acquisition stopped");
+    if (exposure() > 30 || payload.usage.cost > reserve) throw new Error("Cost bound violated; acquisition stopped");
+    return response;
+  };
+
   if (mode === "review-calibration-v2" || mode === "frame-qualification") {
     const cohort = root + "/" + mode + "-" + new Date().toISOString().replaceAll(":", "-");
     mkdirSync(cohort, { mode: 0o700 });
@@ -148,7 +155,7 @@ try {
       cheyenne: sources["approved-relationship"].request.reportBasis.partner
     };
     type Case = [keyof typeof people, "personal" | "progressed" | "synastry", (keyof typeof people)?];
-    const cases: Case[] = ["development", "development-4.6", "editor-development", "development-4.3", "editor-opus", "development-4.4", "development-4.5", "development-proportionate"].includes(mode) ? [["donna", "personal"]]
+    const cases: Case[] = ["development", "development-4.6", "development-4.3", "development-4.4", "development-4.5", "development-proportionate"].includes(mode) ? [["donna", "personal"]]
       : ["repair-source-frame","confirmation-source-frame"].includes(mode) ? [["cheyenne","progressed"]]
       : ["voice", "api-wired"].includes(mode) ? [["tony", "personal"], ["tony", "progressed"], ["tony", "synastry", "cheyenne"]]
       : mode === "synastry-light" ? [["tony", "synastry", "cheyenne"]]
@@ -178,23 +185,21 @@ try {
           ...(partnerSource ? { partner: partnerSource } : {}), ...(type === "progressed" ? { asOfDate: "2026-09-18" } : {}) }
       });
       write(`${cohort}/${candidate}.input.json`, request);
-      const result: RecordAstrologyReportResult = ["editor-development", "editor-opus","repair-source-frame"].includes(mode) ? await (async () => {
-        const repair=mode==="repair-source-frame";
-        const opus=mode!=="editor-development";
-        const parentPath = root + (repair ? "/holdout-2026-09-19T03-11-19.315Z/R-207b443d.result.json" : "/development-4.6-2026-09-19T02-19-44.594Z/R-e1fe69a5.result.json");
+      const result: RecordAstrologyReportResult = mode === "repair-source-frame" ? await (async () => {
+        const parentPath = root + "/holdout-2026-09-19T03-11-19.315Z/R-207b443d.result.json";
         const parent = JSON.parse(readFileSync(parentPath, "utf8"));
         const metadata = parent.generationMetadata.portraitsV4;
-        write(cohort + "/lineage.json", { parentPath, parentSha256: hash(readFileSync(parentPath, "utf8")), amendment: repair ? "A14" : mode === "editor-opus" ? "A10" : "A07" });
+        write(cohort + "/lineage.json", { parentPath, parentSha256: hash(readFileSync(parentPath, "utf8")), amendment: "A14" });
         let usage: ProviderUsage = {}; let attemptCount = 0; const started = Date.now();
         const edited = await editPortraitV4Draft(request, metadata.evidence, {
           thread: metadata.thread,
           sections: parent.sections.map((section: { title: string; body: string }, index: number) => ({ ...section, evidenceIds: metadata.trace[index].evidenceIds }))
         }, async (prompt, maxOutputTokens, responseFormat) => {
           attemptCount++;
-          const response = await writeOpenRouterModelText({ prompt, maxOutputTokens, responseFormat, model: opus ? "anthropic/claude-opus-4.8" : "anthropic/claude-sonnet-4.6", apiKey: key, baseUrl: "https://openrouter.ai/api/v1", timeoutMs: 240_000, reasoningEffort: opus ? "medium" : "none", siteUrl: "https://astraportrait.com", appName: "Astra private V4 development", privatePortraitRoute:true, fetchImpl: fetchBudgeted });
+          const response = await writeOpenRouterModelText({ prompt, maxOutputTokens, responseFormat, model: "anthropic/claude-opus-4.8", apiKey: key, baseUrl: "https://openrouter.ai/api/v1", timeoutMs: 240_000, reasoningEffort: "medium", siteUrl: "https://astraportrait.com", appName: "Astra private V4 development", privatePortraitRoute:true, fetchImpl: fetchBudgeted });
           usage = mergeProviderUsage(usage, response.usage);
           return response;
-        }, [], repair ? ["The Relationships chapter misidentifies P07's natal Mars in Libra as P09's separate progressed Mars in Scorpio/2nd house. Correct the exact aspect participants and remove consequences that depend on that conflation, preserving the supported psychological distinction and the rest of the reading. Do not rewrite unrelated good chapters."] : []);
+        }, [], ["The Relationships chapter misidentifies P07's natal Mars in Libra as P09's separate progressed Mars in Scorpio/2nd house. Correct the exact aspect participants and remove consequences that depend on that conflation, preserving the supported psychological distinction and the rest of the reading. Do not rewrite unrelated good chapters."]);
         return { ...parent, requestId: request.id, sections: edited.draft.sections.map((section,index) => ({ id: `${request.id}:v4:${index+1}`, title: section.title, body: section.body, emphasis: index===0 ? "primary" : "supporting" })),
           generationMetadata: { ...parent.generationMetadata, promptVersion: ASTRA_PORTRAITS_V4_PROMPT_VERSION, ...usage, attemptCount, latencyMs: Date.now()-started, portraitsV4: { ...metadata, reviews: edited.reviews, advisories:edited.advisories } } };
       })() : await buildAstrologyReportResultAsync(request, { env: {
