@@ -150,8 +150,8 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   const legacyComplete = await pageB.request.patch(`/api/journey/items/${encodeURIComponent(userBOnly.id)}`, { data: { action: "complete" } });
   expect(legacyComplete.status()).toBe(200);
   await pageB.reload();
-  await expect(pageB.getByRole("heading", { name: "Your Journey is clear" })).toBeVisible();
-  await expect(pageB.getByRole("link", { name: "Begin with your Self" })).toHaveAttribute("href", "/self");
+  await expect(pageB.getByRole("heading", { name: "Your Next Step Awaits." })).toBeVisible();
+  await expect(pageB.getByText("Choose a tab below to continue exploring.")).toBeVisible();
 
   const customerReports = Array.from({ length: 5 }, (_, index) => {
     const requestId = randomUUID();
@@ -253,7 +253,7 @@ test("JourneyStep is private, durable, recoverable, and responsive @auth @journe
   })));
 
   await adminPage.goto("/journey");
-  await expect(adminPage.getByRole("heading", { name: "Your Journey is clear" })).toBeVisible();
+  await expect(adminPage.getByRole("heading", { name: "Your Next Step Awaits." })).toBeVisible();
   const adminJourney = await listUserFeedItems(db, { userId: adminUserId, state: "available", limit: 20 });
   expect(adminJourney.items.filter((item) => item.feedKind === "report_signal")).toHaveLength(0);
 

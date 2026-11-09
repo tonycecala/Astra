@@ -16,13 +16,13 @@ function isExpectedNavigationCancellation(message: string) {
 
 const routes = [
   { path: "/", heading: "Astra meets you where you are", mobileHeading: "Journey" },
-  { path: "/journey", heading: "Welcome back to Astra", mobileHeading: "Journey" },
+  { path: "/journey", heading: "Welcome back.", mobileHeading: "Journey" },
   { path: "/allies", heading: "Sign in to create Ally reports", mobileHeading: "Allies" },
   { path: "/self", heading: "Sign in to see your Astra", mobileHeading: "Self" },
   { path: "/charts", heading: "Sign in to see your charts", mobileHeading: "Charts" },
   { path: "/library", heading: "Artifacts worth keeping", mobileHeading: "Library" },
   { path: "/gifts", heading: "Sign in to see Gifts", mobileHeading: "Gifts" },
-  { path: "/login", heading: "Welcome back to Astra" }
+  { path: "/login", heading: "Welcome back." }
 ];
 
 async function chooseUnknownBirthMoment(page: Page, input: { year: string; month: string; day: string }) {
@@ -240,6 +240,10 @@ test.describe("clean-start routes", () => {
   for (const route of routes) {
     test(`${route.path} renders without console errors @smoke @release`, async ({ page }, testInfo) => {
       const errors: string[] = [];
+      const resourceFailures: string[] = [];
+      page.on("response", (response) => {
+        if (response.status() >= 400) resourceFailures.push(`${response.status()} ${response.url()}`);
+      });
       page.on("console", (message) => {
         if (
           message.type() === "error" &&
@@ -261,7 +265,8 @@ test.describe("clean-start routes", () => {
           (message) =>
             !message.includes("cannot have a negative time stamp") &&
             !message.includes("due to access control checks.")
-        )
+        ),
+        `Resource failures: ${resourceFailures.join(", ")}`
       ).toEqual([]);
     });
   }
@@ -466,8 +471,8 @@ test.describe("clean-start routes", () => {
     expect(prematureChartRequests).toBe(0);
 
     await page.goto("/journey");
-    await expect(page.getByRole("heading", { name: "Your Journey is clear" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Begin with your Self" })).toHaveAttribute("href", "/self");
+    await expect(page.getByRole("heading", { name: "Your Next Step Awaits." })).toBeVisible();
+    await expect(page.getByText("Choose a tab below to continue exploring.")).toBeVisible();
     const onboardingFeed = await listUserFeedItems(db, { userId: onboardingUserId, state: "available", limit: 20 });
     expect(onboardingFeed.items.filter((item) => item.reasonCode === "composer_onboarding_card")).toHaveLength(0);
 

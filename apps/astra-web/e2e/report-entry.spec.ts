@@ -5,6 +5,19 @@ import { buildChartMakerRecordResult } from "@astra/chart-maker";
 import { eq, sql } from "drizzle-orm";
 import { signInWithTestSession } from "./support/auth-session";
 
+function contrastRatio(a: string, b: string) {
+  const luminance = (color: string) => {
+    const values = color.match(/[\d.]+/g)?.map(Number).slice(0, 3) ?? [];
+    const channels = values.map((value) => {
+      const channel = color.startsWith("color(srgb") ? value : value / 255;
+      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+    });
+    return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+  };
+  const first = luminance(a), second = luminance(b);
+  return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+}
+
 const birthData = {
   date: "1961-05-23",
   time: "09:30",
@@ -116,7 +129,28 @@ test.describe("report entry points", () => {
 
     await page.goto(`/self?chart=${encodeURIComponent(chart.id)}&start=birth_details#self-birth-onboarding`);
     await expect(page.locator('section[aria-label="Birth data onboarding"]')).toBeVisible();
-    await page.getByRole("link", { name: "Create report", exact: true }).click();
+    const primary = page.getByRole("link", { name: "Create report", exact: true });
+    const secondary = page.getByRole("link", { name: "View chart", exact: true });
+    for (const theme of ["light", "dark"] as const) {
+      const switcher = page.locator(`button[aria-label="Switch to ${theme} mode"]:visible`);
+      if (await switcher.count()) await switcher.click();
+      await expect(page.locator("html")).toHaveAttribute("data-astra-theme", theme);
+      const foreground = await primary.evaluate((element) => getComputedStyle(element).color);
+      await expect(primary).toHaveCSS("color", "rgb(18, 12, 2)");
+      const background = await primary.evaluate((element) => getComputedStyle(element).backgroundColor);
+      expect(background).not.toBe(await secondary.evaluate((element) => getComputedStyle(element).backgroundColor));
+      expect(contrastRatio(foreground, background)).toBeGreaterThanOrEqual(4.5);
+      await primary.hover();
+      await expect.poll(async () => contrastRatio(
+        await primary.evaluate((element) => getComputedStyle(element).color),
+        await primary.evaluate((element) => getComputedStyle(element).backgroundColor)
+      )).toBeGreaterThanOrEqual(4.5);
+      await primary.focus();
+      await page.keyboard.press("ArrowRight");
+      await expect(primary).toBeFocused();
+      expect(await primary.evaluate((element) => parseFloat(getComputedStyle(element).outlineWidth))).toBeGreaterThanOrEqual(2);
+    }
+    await primary.click();
     await expect(page).toHaveURL(new RegExp(`chart=${encodeURIComponent(chart.id)}&start=report`));
     const panel = page.locator('section[aria-label="Birth data onboarding"]');
     await expect(panel.getByRole("radio", { name: /Personal/ })).toBeVisible();

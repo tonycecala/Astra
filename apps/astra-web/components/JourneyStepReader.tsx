@@ -46,7 +46,15 @@ export function JourneyStepReader({
   }
 
   if (!currentStep) {
-    return <section className="journey-empty" aria-label={ui.journey.currentStepLabel}><h2>{ui.journey.emptyTitle}</h2><p>{ui.journey.emptyBody}</p>{error ? <p className="form-error" role="alert">{error}</p> : null}{notice ? <p className="journey-notice" role="status"><span>{notice.message}</span><button className="text-button" disabled={pendingId === notice.feedItemId} onClick={() => act(notice.feedItemId, "restore")} type="button">{ui.journey.undo}</button></p> : null}<Link className="button" href="/self">{ui.journey.emptyAction}</Link></section>;
+    return (
+      <section className="journey-empty" aria-label={ui.journey.currentStepLabel}>
+        <h2>{ui.journey.emptyTitle}</h2>
+        <p>{ui.journey.emptyBody}</p>
+        {error ? <p className="form-error" role="alert">{error}</p> : null}
+        {notice ? <p className="journey-notice" role="status"><span>{notice.message}</span><button className="text-button" disabled={pendingId === notice.feedItemId} onClick={() => act(notice.feedItemId, "restore")} type="button">{ui.journey.undo}</button></p> : null}
+        <p>{ui.journey.emptyAction}</p>
+      </section>
+    );
   }
 
   return (
