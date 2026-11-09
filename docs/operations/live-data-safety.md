@@ -54,7 +54,7 @@ No user-facing layout, copy, navigation, analytics event, or product design patt
 
 ## Signup exposure
 
-Public verified-email signup currently grants 30 beta Stars per account, once per user. This is not a global cost cap, invitation gate, or per-person guarantee. Disposable emails can obtain separate accounts. Login/report notices improve visibility but do not constrain report spend. Tony is choosing the access policy separately; do not silently change eligibility or remove existing testers.
+Public verified-email signup currently grants 30 beta Stars per account, once per user. This is not a global cost cap, invitation gate, or per-person guarantee. Disposable emails can obtain separate accounts. Login/report notices improve visibility but do not constrain report spend. Tony approved a cap of five new accounts per Central calendar day. See [Public signup cap](public-signup-cap.md). Existing tester access is preserved.
 
 ## Production acceptance record
 
@@ -67,4 +67,4 @@ Public verified-email signup currently grants 30 beta Stars per account, once pe
 - After the migration, all nine fingerprinted customer tables exactly matched the consistent backup, including the 71 report results. A final post-deployment comparison is retained locally with the private manifest.
 - The temporary restored local database and temporary test server were removed/stopped. The protected recovery archives remain local under `.astra-exports/backups/`.
 - Only this safety patch was copied into the original local work branch; the prior unshipped UI work was preserved and was not promoted.
-- Signup policy remains awaiting Tony's answer: invite-only (recommended), public with a daily signup cap, or public with alerts only. No silent change to existing tester eligibility was made. The choice was asked explicitly while independent work continued.
+- Tony subsequently chose public signup with a five-account daily cap; see the public-signup-cap operating record. Existing tester eligibility is preserved.

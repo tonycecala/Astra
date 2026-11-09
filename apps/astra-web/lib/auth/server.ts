@@ -1,12 +1,13 @@
 import "server-only";
 
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
-import { betterAuth } from "better-auth";
+import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { emailOTP } from "better-auth/plugins";
 import { headers } from "next/headers";
 import { db } from "@astra/db";
 import * as schema from "@astra/db";
 import { sendEmail } from "../email/send-email";
+import { signupCapBeforeHook, withSignupCapErrors } from "./signup-cap";
 
 function clean(value: string | undefined) {
   return value?.trim().replace(/^['"]|['"]$/g, "") || "";
@@ -33,6 +34,7 @@ function otpSubject(type: "sign-in" | "email-verification" | "forget-password" |
 
 export const auth = betterAuth({
   appName: "Astra",
+  hooks: { before: signupCapBeforeHook(db) },
   baseURL: authBaseUrl(),
   secret: authSecret(),
   rateLimit: {
@@ -46,11 +48,11 @@ export const auth = betterAuth({
       generateId: "uuid"
     }
   },
-  database: drizzleAdapter(db, {
+  database: (options: BetterAuthOptions) => withSignupCapErrors(drizzleAdapter(db, {
     provider: "pg",
     schema,
     transaction: true
-  }),
+  })(options)),
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true

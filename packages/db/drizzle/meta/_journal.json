@@ -92,6 +92,13 @@
       "when": 1794243468214,
       "tag": "0012_owner_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1794248060686,
+      "tag": "0013_public_signup_cap",
+      "breakpoints": true
     }
   ]
 }

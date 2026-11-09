@@ -965,6 +965,7 @@ export const ui = {
     codeSentTo: (email: string) => `Code sent to ${email}`,
     working: "Working",
     authError: "Authentication failed",
+    signupDailyLimit: "Today’s alpha signup places are full. Please try again after midnight Central time. Existing Explorers can still sign in.",
     checkEmail: "Check email for the sign-in code",
     signedIn: "Signed in",
     signedOut: "Signed out"

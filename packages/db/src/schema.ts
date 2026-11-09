@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { boolean, index, integer, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { boolean, date, index, integer, jsonb, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
 export const user = pgTable(
   "user",
@@ -693,3 +693,21 @@ export const ownerNotifications = pgTable("owner_notifications", {
   availableAt: timestamp("available_at", { withTimezone: true }).notNull().defaultNow(),
   leaseToken: text("lease_token")
 }, (table) => ({ pendingIdx: index("owner_notifications_pending_idx").on(table.deliveredAt, table.availableAt) }));
+
+export const signupPolicy = pgTable("signup_policy", {
+  id: text("id").primaryKey(),
+  dailyLimit: integer("daily_limit").notNull(),
+  timeZone: text("time_zone").notNull()
+});
+
+// Retain occupied slots after account deletion; deleting an account must not refund admission.
+export const dailySignupSlots = pgTable("daily_signup_slots", {
+  id: text("id").primaryKey(),
+  signupDay: date("signup_day").notNull(),
+  slot: integer("slot").notNull(),
+  userId: text("user_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+}, (table) => ({
+  daySlotIdx: uniqueIndex("daily_signup_slots_day_slot_idx").on(table.signupDay, table.slot),
+  userIdx: uniqueIndex("daily_signup_slots_user_idx").on(table.userId)
+}));

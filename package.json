@@ -123,7 +123,8 @@
     "db:seed": "node --import tsx scripts/seed-db.mts",
     "db:seed:private-card": "node --import tsx scripts/seed-private-journey-card.mts",
     "test:owner-notifications": "node --import tsx scripts/smoke-owner-notifications.mts",
-    "db:backup": "node --import tsx scripts/backup-live-db.mts"
+    "db:backup": "node --import tsx scripts/backup-live-db.mts",
+    "test:signup-cap": "node --import tsx scripts/smoke-signup-cap.mts"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.11",
