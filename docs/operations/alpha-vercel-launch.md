@@ -1,5 +1,7 @@
 # Astra Weekend Alpha Launch
 
+> Historical launch instructions. Current production routing, database protections, backup/migration procedure, and notifications are in [Live database safety](live-data-safety.md). Production now follows `main` at `astraportrait.com`; do not treat the historical `alpha` preview as an isolated sandbox.
+
 ## Target
 
 - URL: `https://alpha.astraportrait.com`

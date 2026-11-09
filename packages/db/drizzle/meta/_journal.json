@@ -85,6 +85,13 @@
       "when": 1784211973365,
       "tag": "0011_minor_sharon_ventura",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1794243468214,
+      "tag": "0012_owner_notifications",
+      "breakpoints": true
     }
   ]
 }

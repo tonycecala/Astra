@@ -8,6 +8,7 @@ type SendEmailInput = {
   to: string;
   subject: string;
   text: string;
+  idempotencyKey?: string;
 };
 
 async function captureLocalEmail(input: SendEmailInput, captureDir: string) {
@@ -34,7 +35,7 @@ export async function sendEmail(input: SendEmailInput) {
       to: input.to,
       subject: input.subject,
       text: input.text
-    });
+    }, { idempotencyKey: input.idempotencyKey });
     if (result.error) throw new Error(`Resend delivery failed: ${result.error.message}`);
     return;
   }

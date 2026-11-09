@@ -1,3 +1,4 @@
+import { assertLocalDatabase, resolveDatabaseUrl } from "./env";
 import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { createHash, randomBytes } from "node:crypto";
 import {
@@ -612,10 +613,18 @@ export async function readFoundationSnapshot(database: AstraDb): Promise<Foundat
   });
 }
 
+function assertLocalFixtureDatabase(database: AstraDb) {
+  assertLocalDatabase(resolveDatabaseUrl());
+  if (database.$client.options.host.some((host) => !["localhost", "127.0.0.1", "::1"].includes(host))) {
+    throw new Error("Refusing fixture/reset writes through a hosted database connection.");
+  }
+}
+
 export async function seedFoundationData(
   database: AstraDb,
   seed: FoundationSnapshot = seedSnapshot()
 ): Promise<FoundationSeedResult> {
+  assertLocalFixtureDatabase(database);
   const parsed = foundationSeedSchema.parse(seed);
 
   await database
@@ -802,6 +811,7 @@ export async function seedFoundationData(
 }
 
 export async function resetFoundationData(database: AstraDb): Promise<FoundationResetResult> {
+  assertLocalFixtureDatabase(database);
   await database.delete(composerLibraryCollectionCards);
   await database.delete(composerLibraryCollections);
   await database.delete(composerQueuePublishPlans);
@@ -2544,13 +2554,6 @@ export async function upsertComposerStreamArtifact(
   });
 }
 
-export function assertResetAllowed(databaseUrl: string, override = process.env.ASTRA_ALLOW_DB_RESET === "1") {
-  const parsed = new URL(databaseUrl);
-  const localHosts = new Set(["localhost", "127.0.0.1", "::1"]);
-
-  if (localHosts.has(parsed.hostname) || override) return;
-
-  throw new Error(
-    `Refusing to reset non-local database host "${parsed.hostname}". Set ASTRA_ALLOW_DB_RESET=1 only for a disposable database.`
-  );
+export function assertResetAllowed(databaseUrl: string) {
+  assertLocalDatabase(databaseUrl);
 }

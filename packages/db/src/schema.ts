@@ -680,3 +680,16 @@ export const composerDecisions = pgTable(
     userFeedItemIdx: uniqueIndex("composer_decisions_user_feed_item_idx").on(table.userFeedItemId)
   })
 );
+
+// Transactional activity outbox. Contains identifiers only, never report prose or birth data.
+export const ownerNotifications = pgTable("owner_notifications", {
+  id: text("id").primaryKey(),
+  kind: text("kind").notNull(),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  entityId: text("entity_id").notNull(),
+  occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull().defaultNow(),
+  deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+  attempts: integer("attempts").notNull().default(0),
+  availableAt: timestamp("available_at", { withTimezone: true }).notNull().defaultNow(),
+  leaseToken: text("lease_token")
+}, (table) => ({ pendingIdx: index("owner_notifications_pending_idx").on(table.deliveredAt, table.availableAt) }));

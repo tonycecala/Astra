@@ -118,10 +118,12 @@
     "check:boundaries": "node --import tsx scripts/check-boundaries.mts",
     "check:no-supabase": "node --import tsx scripts/check-no-supabase.mts",
     "db:generate": "drizzle-kit generate --config packages/db/drizzle.config.ts",
-    "db:migrate": "drizzle-kit migrate --config packages/db/drizzle.config.ts",
+    "db:migrate": "node --import tsx scripts/migrate-db.mts",
     "db:reset:local": "node --import tsx scripts/reset-local-db.mts",
     "db:seed": "node --import tsx scripts/seed-db.mts",
-    "db:seed:private-card": "node --import tsx scripts/seed-private-journey-card.mts"
+    "db:seed:private-card": "node --import tsx scripts/seed-private-journey-card.mts",
+    "test:owner-notifications": "node --import tsx scripts/smoke-owner-notifications.mts",
+    "db:backup": "node --import tsx scripts/backup-live-db.mts"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.11",
