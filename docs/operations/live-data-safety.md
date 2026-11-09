@@ -30,7 +30,7 @@ Restore into a separate database to test an archive. Never restore over the live
 - Recipient: configured only in Production using `ASTRA_OWNER_NOTIFICATION_EMAIL`.
 - Schedule: every five minutes, defined in `apps/astra-web/vercel.json`.
 - Endpoint: `GET /api/cron/owner-notifications`; requires `Authorization: Bearer <CRON_SECRET>`. No data is returned to anonymous callers.
-- Astra's Vercel Root Directory is `apps/astra-web`, Build Command is `npm run build`, Output Directory is `.next`, with sources outside the root enabled. This keeps its cron configuration out of the separate Composer deployment.
+- Astra's Vercel Root Directory is `apps/astra-web`, Build Command is `npm run build`, Output Directory is `.next`, with sources outside the root enabled. Install Command is `cd ../.. && npm install --include=dev`, so the monorepo root TypeScript/type dependencies are present. This keeps its cron configuration out of the separate Composer deployment.
 - A transactional database outbox records successful sign-ins and first completed reports. Login events survive sign-out. Failed reports do not notify. Replaying/completing the same report again does not send another notice.
 - Admin activity is suppressed; customer activity is notified. A `test` event is an explicit operator delivery test.
 - Notices identify the account and report type/ID, with an authenticated admin link. They omit birth details and private report prose. No customer data is made public.
@@ -55,3 +55,16 @@ No user-facing layout, copy, navigation, analytics event, or product design patt
 ## Signup exposure
 
 Public verified-email signup currently grants 30 beta Stars per account, once per user. This is not a global cost cap, invitation gate, or per-person guarantee. Disposable emails can obtain separate accounts. Login/report notices improve visibility but do not constrain report spend. Tony is choosing the access policy separately; do not silently change eligibility or remove existing testers.
+
+## Production acceptance record
+
+- Deployed source commit: `84c7e9c9d593962cacc2e446c32e4c6957f55dbc`, integrated into `main` without the unrelated local UI checkpoint.
+- Astra READY deployment: `dpl_CKxScwzE2DQgqqbKkARjSPt2yRJu`. Composer READY deployment: `dpl_BkHrfcuHCXZhpCmALUStk7CQnYBN`.
+- An initial Astra deployment failed because the app-scoped install omitted root development dependencies. The working previous deployment stayed live. Explicit root installation fixed the build; application type checking was not disabled.
+- Vercel readback confirms the owner notification cron is enabled on the Astra production deployment at `*/5 * * * *`; Composer has no duplicate notification cron.
+- Live unauthorized cron returned 401. The authorized live cron returned `{ "delivered": 1, "failed": 0 }` for the explicit owner-only test; the database records one successful attempt. Resend reports the notification test as `delivered` at November 9, 2026, 11:12:57 AM Central. Inbox reading/placement was not independently checked.
+- Live Playwright API smoke checks verified cron 401, private reports 401, logged-out session 200/null, admin 307 to login, and authenticated cron 200 with an empty queue on repeat.
+- After the migration, all nine fingerprinted customer tables exactly matched the consistent backup, including the 71 report results. A final post-deployment comparison is retained locally with the private manifest.
+- The temporary restored local database and temporary test server were removed/stopped. The protected recovery archives remain local under `.astra-exports/backups/`.
+- Only this safety patch was copied into the original local work branch; the prior unshipped UI work was preserved and was not promoted.
+- Signup policy remains awaiting Tony's answer: invite-only (recommended), public with a daily signup cap, or public with alerts only. No silent change to existing tester eligibility was made. The choice was asked explicitly while independent work continued.
