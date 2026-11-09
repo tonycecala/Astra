@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 import { db } from "@astra/db";
 import * as schema from "@astra/db";
 import { sendEmail } from "../email/send-email";
-import { signupCapBeforeHook, withSignupCapErrors } from "./signup-cap";
+import { withSignupCapErrors } from "./signup-cap";
 
 function clean(value: string | undefined) {
   return value?.trim().replace(/^['"]|['"]$/g, "") || "";
@@ -34,7 +34,6 @@ function otpSubject(type: "sign-in" | "email-verification" | "forget-password" |
 
 export const auth = betterAuth({
   appName: "Astra",
-  hooks: { before: signupCapBeforeHook(db) },
   baseURL: authBaseUrl(),
   secret: authSecret(),
   rateLimit: {

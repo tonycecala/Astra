@@ -7,7 +7,7 @@ import { emailOTP } from "better-auth/plugins";
 import { closeDatabaseConnection, db } from "@astra/db";
 import * as schema from "@astra/db";
 import { assertLocalDatabase, resolveDatabaseUrl } from "@astra/db/src/env";
-import { assertSignupAvailable, signupCapBeforeHook, withSignupCapErrors } from "../apps/astra-web/lib/auth/signup-cap";
+import { withSignupCapErrors } from "../apps/astra-web/lib/auth/signup-cap";
 
 assertLocalDatabase(resolveDatabaseUrl());
 assert.match(new URL(resolveDatabaseUrl()).pathname, /signup_cap_validation/);
@@ -18,6 +18,7 @@ const create = async (name: string) => {
   return id;
 };
 try {
+  const baselineUsers = Number((await db.execute(sql`select count(*)::int as count from "user"`))[0].count);
   await db.execute(sql`delete from daily_signup_slots`);
   const rollback = randomUUID();
   await assert.rejects(db.transaction(async (tx) => {
@@ -29,11 +30,8 @@ try {
   const raced = await Promise.allSettled(Array.from({ length: 20 }, () => create('concurrent signup')));
   assert.equal(raced.filter((row) => row.status === 'fulfilled').length, 4, "Exactly five total accounts fit, including the existing fixture.");
   assert.equal((await db.execute(sql`select id from daily_signup_slots`)).length, 5);
-  await assert.rejects(assertSignupAvailable(db, 'unknown@example.com'), (error: unknown) => !!error && typeof error === 'object' && 'status' in error && error.status === 'TOO_MANY_REQUESTS');
-  await assertSignupAvailable(db, existingId + '@example.com');
   const otpCodes = new Map<string,string>();
   const auth = betterAuth({
-    hooks: { before: signupCapBeforeHook(db) },
     baseURL: 'http://localhost:3021', secret: 'isolated-signup-cap-validation-secret',
     database: (options: BetterAuthOptions) => withSignupCapErrors(drizzleAdapter(db, { provider: 'pg', schema, transaction: true })(options)),
     emailAndPassword: { enabled: true },
@@ -46,8 +44,10 @@ try {
   }));
   const newEmail = randomUUID()+'@example.com';
   const unavailable = await post('/email-otp/send-verification-otp',{email:newEmail,type:'sign-in'});
-  assert.equal(unavailable.status,429);
-  assert.equal((await unavailable.json()).code,'ASTRA_SIGNUP_DAILY_LIMIT');
+  assert.equal(unavailable.status,200, 'Code requests do not expose account membership when full.');
+  const blockedVerification = await post('/sign-in/email-otp',{email:newEmail,otp:otpCodes.get(newEmail)});
+  assert.equal(blockedVerification.status,429);
+  assert.equal((await blockedVerification.json()).code,'ASTRA_SIGNUP_DAILY_LIMIT');
   const passwordSignup = await post('/sign-up/email',{name:'blocked',email:newEmail,password:'isolated-password-12345'});
   assert.equal(passwordSignup.status,429, "Password signup cannot bypass the database cap.");
   const authContext = await auth.$context;
@@ -61,7 +61,7 @@ try {
   assert.equal(signIn.status,200, "Existing testers can finish sign-in at capacity.");
   assert.ok(signIn.headers.get('set-cookie'));
   const before = (await db.execute(sql`select count(*)::int as count from "user"`))[0].count;
-  assert.equal(Number(before),5,"Rejected requests leave no account behind.");
+  assert.equal(Number(before),baselineUsers+5,"Rejected requests leave no account behind.");
   const removed = raced.find((row) => row.status === 'fulfilled');
   if (removed?.status === 'fulfilled') await db.execute(sql`delete from "user" where id=${removed.value}`);
   await assert.rejects(create('delete bypass'));

@@ -6,7 +6,7 @@ Owner decision, November 9, 2026: keep signup public, admit **five new accounts 
 
 - Anyone can visit public pages. Up to five new account records may be committed each Central day.
 - Existing users can request a code, verify it, and use their accounts even after the cap is full. Their logins and report generation do not consume signup places.
-- New users at capacity see: “Today’s alpha signup places are full. Please try again after midnight Central time. Existing Explorers can still sign in.” The existing form retains their email address.
+- New users who verify their email at capacity see: “Today’s alpha signup places are full. Please try again after midnight Central time. Existing Explorers can still sign in.” The existing form retains their email address.
 - Sending a code does not reserve a place. If the final place is taken before a code is verified, verification returns the same clear 429 response and does not create an account, profile, session, or signup Stars.
 - OTP and email/password creation are covered. The database rule also covers older app deployments or direct adapter writes.
 - Failed/rolled-back account creation does not consume a place. Deleting an admitted account does not refund a place. Occupancy persists across deployments and restarts.
@@ -18,7 +18,7 @@ Migration `0013_public_signup_cap` creates `signup_policy`, `daily_signup_slots`
 
 `signup_policy` is the authoritative configuration: row `public-alpha`, `daily_limit=5`, `time_zone=America/Chicago`. It is database-backed rather than an environment flag, so all application instances sharing this live database enforce the same limit. Changing the limit is an explicit operational decision; do not reset or remove occupancy to create extra places. Future days require no job or model call.
 
-`lib/auth/signup-cap.ts` supplies a helpful pre-send check and translates the authoritative database rejection into HTTP 429, including inside adapter transactions. Better Auth runs email-send callbacks in the background, so enforcement is deliberately **not** placed in that callback. The dictionary owns the interface message. No new client component, route, control, layout, or dependency was added.
+`lib/auth/signup-cap.ts` translates the authoritative database rejection into HTTP 429, including inside adapter transactions. Code requests retain the same response for existing and new addresses, even when full, so they do not expose account membership. Email ownership is verified before a new-account capacity rejection is returned. Better Auth runs email-send callbacks in the background, so enforcement is deliberately **not** placed in that callback. The dictionary owns the interface message. No new client component, route, control, layout, or dependency was added.
 
 Read-only operator check:
 
@@ -36,7 +36,7 @@ The production backup before installation is private at `.astra-exports/backups/
 
 - Isolated PostgreSQL tests competed 20 new users for four remaining places: exactly four committed. No rejected user was retained.
 - Verified rollback releases a place; account deletion does not. Verified prior-day occupancy does not count today, Central midnight boundaries, and the March DST transition.
-- Real Better Auth handler tests verified new OTP requests and password signup return 429 at capacity; existing email OTP verification succeeds with a session cookie. A code issued before capacity cannot create a sixth account afterward.
+- Real Better Auth handler tests verified new-account OTP verification and password signup return 429 at capacity; OTP code requests remain 200 for both new and existing emails; existing email OTP verification succeeds with a session cookie. A code issued before capacity cannot create a sixth account afterward.
 - Direct internal adapter and transaction-adapter tests verified the same readable 429 translation, preventing alternate creation paths from bypassing the rule.
 - The production build ran against an isolated test database. In the in-app browser, a new visitor saw the full-day message with their email preserved. The message rendered at desktop 1440×900, phone 390×844, and tablet 820×1180. An existing fixture requested and verified its code at capacity and reached authenticated `/self` with its Stars intact. No real customer was used for this UI test.
 - Browser error/warning review was empty on the settled sign-in page. Lint (one existing unrelated unused-variable warning), typecheck, foundation checks, i18n check, production build, and the mechanical design check passed.
